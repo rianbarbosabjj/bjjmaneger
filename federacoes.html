@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Federações | BJJ Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
+        
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden text-slate-800 bg-[#F8FAFC]">
+
+    <aside class="hidden md:flex w-64 bg-slate-900 text-white flex-col h-full shadow-2xl shrink-0 z-20">
+        <div class="p-6 text-center border-b border-slate-800 flex flex-col items-center justify-center">
+            <div class="w-16 h-16 mb-3 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-500 flex items-center justify-center shadow-lg text-white font-black text-2xl" id="logo-equipe">B</div>
+            <h1 class="text-sm font-bold tracking-widest text-white uppercase" id="nome-equipe">Carregando...</h1>
+            <p class="text-[9px] text-cyan-400 font-bold uppercase tracking-widest mt-1">BJJ Manager Web</p>
+        </div>
+        <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto hide-scrollbar">
+            <a href="dashboard.html" class="flex items-center px-4 py-3 text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <span class="mr-3 text-lg group-hover:scale-110 transition-transform">📊</span> Visão Geral
+            </a>
+            <a href="alunos.html" class="flex items-center px-4 py-3 text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <span class="mr-3 text-lg group-hover:scale-110 transition-transform">🥋</span> Controle de Alunos
+            </a>
+            <a href="turmas.html" class="flex items-center px-4 py-3 text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <span class="mr-3 text-lg group-hover:scale-110 transition-transform">🗓️</span> Turmas
+            </a>
+            <a href="historico.html" class="flex items-center px-4 py-3 text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <span class="mr-3 text-lg group-hover:scale-110 transition-transform">🎓</span> Graduações
+            </a>
+            <a href="certificados.html" class="flex items-center px-4 py-3 text-sm font-bold text-white bg-slate-800 rounded-xl transition-all shadow-inner group">
+                <span class="mr-3 text-lg group-hover:scale-110 transition-transform">📜</span> Certificados
+            </a>
+            <a href="competicoes.html" class="flex items-center px-4 py-3 text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <span class="mr-3 text-lg group-hover:scale-110 transition-transform">🏆</span> Competições
+            </a>
+            <a href="curriculo.html" class="flex items-center px-4 py-3 text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <span class="mr-3 text-lg group-hover:scale-110 transition-transform">📄</span> Currículo
+            </a>
+            <a href="federacoes.html" class="flex items-center px-4 py-3 text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <span class="mr-3 text-lg group-hover:scale-110 transition-transform">🪪</span> Federações
+            </a>
+            <a href="financeiro.html" class="flex items-center px-4 py-3 text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <span class="mr-3 text-lg group-hover:scale-110 transition-transform">💰</span> Financeiro
+            </a>
+        </nav>
+        <div class="p-4 border-t border-slate-800">
+            <button onclick="sairDoSistema()" class="w-full px-4 py-3 bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white border border-red-500/20 rounded-xl text-xs font-bold transition-all flex items-center justify-center">
+                <span class="mr-2">🚪</span> Sair do Tatame
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative" id="interface-sistema">
+        
+        <div class="flex-1 overflow-hidden p-4 md:p-8 pb-20 md:pb-8 flex flex-col md:flex-row gap-6 max-w-7xl mx-auto w-full h-full">
+            
+            <div id="painel-lista" class="w-full md:w-1/3 flex flex-col h-full bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden shrink-0">
+                <div class="p-5 border-b border-slate-100 bg-slate-50 shrink-0">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-black text-slate-800">Guerreiros</h3>
+                    </div>
+                    <div class="relative w-full">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">🔍</div>
+                        <input type="text" id="input-busca" onkeyup="filtrarLista()" class="bg-white border border-slate-200 text-slate-900 text-sm rounded-xl w-full pl-9 p-3 outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all" placeholder="Buscar atleta...">
+                    </div>
+                </div>
+                <div class="flex-1 overflow-y-auto hide-scrollbar" id="lista-alunos">
+                    <div class="p-8 text-center text-slate-400 text-sm font-medium">Buscando guerreiros...</div>
+                </div>
+            </div>
+
+            <div id="painel-historico" class="w-full md:w-2/3 hidden flex-col h-full gap-4 md:gap-6 overflow-y-auto hide-scrollbar pb-6">
+                
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-4 md:p-6 flex flex-col shrink-0 relative">
+                    <div class="flex items-center gap-3 sm:gap-4">
+                        <button onclick="voltarLista()" class="md:hidden flex items-center justify-center w-10 h-10 bg-slate-100 text-slate-500 rounded-full hover:bg-slate-200 transition-colors shrink-0">
+                            <span class="text-xl">🔙</span>
+                        </button>
+
+                        <div class="w-14 h-14 md:w-16 md:h-16 rounded-full bg-slate-100 flex items-center justify-center text-xl md:text-2xl font-black text-slate-400 border-2 border-slate-200 shrink-0" id="aluno-avatar">--</div>
+                        <div class="flex-1 overflow-hidden">
+                            <h2 class="text-lg md:text-2xl font-black text-slate-800 truncate" id="aluno-nome-detalhe">Nome do Aluno</h2>
+                            <div id="aluno-faixa-badge" class="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm bg-slate-100 border border-slate-200 inline-block mt-1">FAIXA ATUAL</div>
+                        </div>
+                    </div>
+                    
+                    <div id="alerta-vencimento" class="hidden mt-4 p-3 bg-rose-50 border border-rose-200 rounded-xl flex items-start gap-3">
+                        <span class="text-lg">⚠️</span>
+                        <p class="text-xs font-bold text-rose-600 mt-0.5" id="alerta-vencimento-texto">Atenção: Existem carteirinhas vencidas ou a vencer nos próximos 30 dias!</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 flex-1 min-h-[450px]">
+                    
+                    <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-5 md:p-6 flex flex-col h-fit">
+                        <div class="flex items-center gap-2 mb-4 md:mb-6 border-b border-slate-100 pb-3 md:pb-4">
+                            <span class="text-xl">📝</span>
+                            <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm" id="titulo-form-fed">Registar Carteirinha</h3>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Federação</label>
+                                <select id="fed-nome" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">
+                                    <option value="CBJJ/IBJJF">CBJJ/IBJJF</option>
+                                    <option value="CBJJD">CBJJD</option>
+                                    <option value="CBJJO">CBJJO</option>
+                                    <option value="FJJRio">FJJRio</option>
+                                    <option value="SJJSAF">SJJSAF</option>
+                                    <option value="UAEJJF/AJP">UAEJJF/AJP</option>
+                                    <option value="[P]BJJF">[P]BJJF</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nº Registo</label>
+                                <input type="text" id="fed-registro" placeholder="Ex: 123456" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all text-slate-700 font-bold">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Vencimento</label>
+                                    <input type="date" id="fed-vencimento" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all text-slate-700 font-bold">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Status</label>
+                                    <select id="fed-status" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">
+                                        <option value="Ativo">Ativo</option>
+                                        <option value="Pendente">Pendente</option>
+                                        <option value="Vencido">Vencido</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="flex gap-2 mt-2">
+                                <button onclick="cancelarEdicaoFed()" id="btn-cancelar-fed" class="hidden flex-1 bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold py-3 px-4 rounded-xl transition-all text-xs">
+                                    Cancelar
+                                </button>
+                                <button onclick="salvarFederacao()" id="btn-salvar-fed" class="flex-[2] bg-[#10B981] hover:bg-emerald-600 text-white font-black py-3 px-4 rounded-xl shadow-md transition-all uppercase tracking-widest text-xs flex items-center justify-center">
+                                    <span class="mr-2">💾</span> Salvar Filiação
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-5 md:p-6 flex flex-col h-full min-h-[300px] overflow-hidden">
+                        <div class="flex items-center gap-2 mb-4 md:mb-6 border-b border-slate-100 pb-3 md:pb-4 shrink-0">
+                            <span class="text-xl">📜</span>
+                            <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Filiações Registadas</h3>
+                        </div>
+                        
+                        <div class="flex-1 overflow-y-auto pr-2 hide-scrollbar space-y-3" id="lista-federacoes">
+                            <div class="text-center text-sm text-slate-400 mt-10">Selecione um aluno para ver as filiações.</div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div id="painel-vazio" class="hidden md:flex w-full md:w-2/3 h-full flex-col items-center justify-center bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl text-center p-10">
+                <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center text-4xl shadow-sm border border-slate-100 mb-4">🪪</div>
+                <h3 class="text-xl font-black text-slate-700 mb-2">Nenhum guerreiro selecionado</h3>
+                <p class="text-slate-400 text-sm max-w-sm">Pesquise e clique no nome de um aluno na lista ao lado para gerir as suas carteirinhas e anuidades.</p>
+            </div>
+
+        </div>
+        <nav class="md:hidden fixed bottom-0 left-0 w-full bg-slate-900 border-t border-slate-800 flex overflow-x-auto hide-scrollbar flex-nowrap items-center h-16 z-40 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.3)]">
+            <a href="dashboard.html" class="shrink-0 w-16 flex flex-col items-center justify-center h-full text-slate-400 hover:text-white transition-colors">
+                <span class="text-lg mb-0.5">📊</span><span class="text-[8px] font-bold uppercase">Visão</span>
+            </a>
+            <a href="alunos.html" class="shrink-0 w-16 flex flex-col items-center justify-center h-full text-slate-400 hover:text-white transition-colors">
+                <span class="text-lg mb-0.5">🥋</span><span class="text-[8px] font-bold uppercase">Alunos</span>
+            </a>
+             <a href="turmas.html" class="shrink-0 w-16 flex flex-col items-center justify-center h-full text-slate-400 hover:text-white transition-colors">
+                <span class="text-lg mb-0.5">🗓️</span><span class="text-[8px] font-bold uppercase">Turmas</span>
+             </a>
+            <a href="financeiro.html" class="shrink-0 w-16 flex flex-col items-center justify-center h-full text-slate-400 hover:text-white transition-colors">
+                <span class="text-lg mb-0.5">💰</span><span class="text-[8px] font-bold uppercase">Caixa</span>
+            </a>
+            <a href="historico.html" class="shrink-0 w-16 flex flex-col items-center justify-center h-full text-slate-400 hover:text-white transition-colors">
+                <span class="text-lg mb-0.5">🎓</span><span class="text-[8px] font-bold uppercase">Grad.</span>
+            </a>
+            <a href="competicoes.html" class="shrink-0 w-16 flex flex-col items-center justify-center h-full text-slate-400 hover:text-white transition-colors">
+                <span class="text-lg mb-0.5">🏆</span><span class="text-[8px] font-bold uppercase">Comp.</span>
+            </a>
+            <a href="curriculo.html" class="shrink-0 w-16 flex flex-col items-center justify-center h-full text-slate-400 hover:text-white transition-colors">
+                <span class="text-lg mb-0.5">📄</span><span class="text-[8px] font-bold uppercase">Currí.</span>
+            </a>
+            <a href="federacoes.html" class="shrink-0 w-16 flex flex-col items-center justify-center h-full text-cyan-400 relative">
+                <div class="absolute top-0 w-6 h-1 bg-cyan-500 rounded-b-full"></div>
+                <span class="text-lg mb-0.5">🪪</span><span class="text-[8px] font-bold uppercase">Fed.</span>
+            </a>
+        </nav>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
+            authDomain: "bjj-maneger.firebaseapp.com",
+            projectId: "bjj-maneger",
+            storageBucket: "bjj-maneger.firebasestorage.app",
+            messagingSenderId: "415548255893",
+            appId: "1:415548255893:web:61186696fe097be870759c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let uid = null;
+        let alunosCache = [];
+        let federacoesCache = [];
+        let alunoSelecionado = null;
+        let federacaoEditandoId = null;
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                uid = user.uid;
+                carregarInfoEquipe();
+                carregarAlunos(); 
+            } else {
+                window.location.href = "index.html";
+            }
+        });
+
+        // === MAGIA DAS DUAS CORES ===
+        function getCorFaixa(faixaTexto) {
+            const f = faixaTexto ? faixaTexto.toLowerCase() : '';
+            if (f.includes('cinza e branca')) return 'bg-[linear-gradient(135deg,_#94A3B8_50%,_#FFFFFF_50%)] text-slate-800 border border-slate-300';
+            if (f.includes('cinza e preta')) return 'bg-[linear-gradient(135deg,_#94A3B8_50%,_#0F172A_50%)] text-white border border-slate-500';
+            if (f.includes('amarela e branca')) return 'bg-[linear-gradient(135deg,_#FACC15_50%,_#FFFFFF_50%)] text-slate-800 border border-yellow-500';
+            if (f.includes('amarela e preta')) return 'bg-[linear-gradient(135deg,_#FACC15_50%,_#0F172A_50%)] text-white border border-yellow-500';
+            if (f.includes('laranja e branca')) return 'bg-[linear-gradient(135deg,_#F97316_50%,_#FFFFFF_50%)] text-slate-800 border border-orange-500';
+            if (f.includes('laranja e preta')) return 'bg-[linear-gradient(135deg,_#F97316_50%,_#0F172A_50%)] text-white border border-orange-500';
+            if (f.includes('verde e branca')) return 'bg-[linear-gradient(135deg,_#16A34A_50%,_#FFFFFF_50%)] text-slate-800 border border-green-600';
+            if (f.includes('verde e preta')) return 'bg-[linear-gradient(135deg,_#16A34A_50%,_#0F172A_50%)] text-white border border-green-600';
+            if (f.includes('branca')) return 'bg-white text-slate-800 border border-slate-300';
+            if (f.includes('cinza')) return 'bg-slate-400 text-white border border-slate-500';
+            if (f.includes('amarela')) return 'bg-yellow-400 text-yellow-900 border border-yellow-500';
+            if (f.includes('laranja')) return 'bg-orange-500 text-white border border-orange-600';
+            if (f.includes('verde')) return 'bg-green-600 text-white border border-green-700';
+            if (f.includes('azul')) return 'bg-blue-600 text-white border border-blue-700';
+            if (f.includes('roxa')) return 'bg-purple-600 text-white border border-purple-700';
+            if (f.includes('marrom')) return 'bg-amber-800 text-white border border-amber-900';
+            if (f.includes('preta')) return 'bg-slate-900 text-white border border-slate-900';
+            return 'bg-slate-100 text-slate-600 border border-slate-200';
+        }
+
+        async function carregarAlunos() {
+            try {
+                const q = query(collection(db, "alunos"), where("equipe_id", "==", uid), where("status", "==", "ATIVO"));
+                const snap = await getDocs(q);
+                alunosCache = [];
+                snap.forEach(docSnap => {
+                    alunosCache.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                
+                alunosCache.sort((a, b) => a.nome.localeCompare(b.nome));
+                renderizarListaAlunos(alunosCache);
+            } catch (err) {
+                document.getElementById('lista-alunos').innerHTML = `<p class='text-center p-5 text-red-500'>Erro ao carregar guerreiros.</p>`;
+            }
+        }
+
+        function renderizarListaAlunos(lista) {
+            const container = document.getElementById('lista-alunos');
+            container.innerHTML = '';
+            
+            if(lista.length === 0) {
+                container.innerHTML = `<p class='text-center p-8 text-slate-400 text-sm font-medium'>Nenhum aluno encontrado.</p>`;
+                return;
+            }
+
+            lista.forEach(aluno => {
+                const corFaixa = getCorFaixa(aluno.faixa);
+                
+                const item = document.createElement('div');
+                item.className = "p-4 border-b border-slate-50 hover:bg-slate-100 cursor-pointer transition-colors flex items-center justify-between group";
+                item.onclick = () => selecionarAluno(aluno.id);
+                
+                item.innerHTML = `
+                    <div class="flex flex-col truncate pr-3">
+                        <span class="font-bold text-slate-700 text-xs md:text-sm group-hover:text-cyan-600 transition-colors truncate">${aluno.nome}</span>
+                        <span class="text-[9px] md:text-[10px] text-slate-400 uppercase font-bold mt-0.5">${aluno.grau || 'Sem grau'}</span>
+                    </div>
+                    <div class="w-3 h-3 md:w-4 md:h-4 rounded-full shadow-sm ${corFaixa} shrink-0" title="${aluno.faixa}"></div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        window.filtrarLista = function() {
+            const termo = document.getElementById('input-busca').value.toLowerCase();
+            const filtrados = alunosCache.filter(a => a.nome.toLowerCase().includes(termo));
+            renderizarListaAlunos(filtrados);
+        }
+
+        window.selecionarAluno = async function(id) {
+            alunoSelecionado = alunosCache.find(a => a.id === id);
+            if(!alunoSelecionado) return;
+
+            cancelarEdicaoFed(); 
+
+            document.getElementById('painel-vazio').classList.add('hidden');
+            document.getElementById('painel-vazio').classList.remove('md:flex');
+            
+            const painelHistorico = document.getElementById('painel-historico');
+            painelHistorico.classList.remove('hidden');
+            painelHistorico.classList.add('flex');
+
+            const painelLista = document.getElementById('painel-lista');
+            painelLista.classList.add('hidden', 'md:flex'); 
+            painelLista.classList.remove('flex');
+
+            document.getElementById('aluno-nome-detalhe').innerText = alunoSelecionado.nome;
+            document.getElementById('aluno-avatar').innerText = alunoSelecionado.nome.charAt(0).toUpperCase();
+            
+            const badge = document.getElementById('aluno-faixa-badge');
+            badge.innerText = alunoSelecionado.faixa || "BRANCA";
+            badge.className = `px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm inline-block mt-1 ${getCorFaixa(alunoSelecionado.faixa)}`;
+            
+            carregarFederacoes(id);
+        }
+
+        window.voltarLista = function() {
+            const painelLista = document.getElementById('painel-lista');
+            painelLista.classList.remove('hidden', 'md:flex');
+            painelLista.classList.add('flex');
+            
+            const painelHistorico = document.getElementById('painel-historico');
+            painelHistorico.classList.add('hidden');
+            painelHistorico.classList.remove('flex');
+        }
+
+        // === CARREGAR FEDERAÇÕES ===
+        async function carregarFederacoes(alunoId) {
+            const container = document.getElementById('lista-federacoes');
+            container.innerHTML = `<div class="text-center text-slate-400 mt-5 text-sm">Carregando...</div>`;
+            
+            document.getElementById('alerta-vencimento').classList.add('hidden');
+
+            try {
+                const q = query(collection(db, "federacoes"), where("aluno_id", "==", alunoId));
+                const snap = await getDocs(q);
+                
+                federacoesCache = [];
+                snap.forEach(doc => {
+                    federacoesCache.push({ id: doc.id, ...doc.data() });
+                });
+
+                federacoesCache.sort((a, b) => a.nome_federacao.localeCompare(b.nome_federacao));
+                renderizarFederacoes(federacoesCache);
+
+            } catch (error) {
+                console.error(error);
+                container.innerHTML = `<div class="text-center text-red-400 mt-5 text-sm">Erro ao buscar dados.</div>`;
+            }
+        }
+
+        function renderizarFederacoes(fedLista) {
+            const container = document.getElementById('lista-federacoes');
+            container.innerHTML = '';
+
+            if (fedLista.length === 0) {
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-10 text-center">
+                        <div class="text-4xl mb-3 opacity-50">🪪</div>
+                        <p class="text-sm text-slate-500 font-bold">Nenhuma filiação registada.</p>
+                    </div>`;
+                return;
+            }
+
+            const hoje = new Date();
+            hoje.setHours(0,0,0,0);
+            let temAlerta = false;
+
+            fedLista.forEach(fed => {
+                
+                // Formatação Data BR
+                let dataBR = fed.data_vencimento || "--";
+                if(fed.data_vencimento && fed.data_vencimento.includes('-')) {
+                    const p = fed.data_vencimento.split('-');
+                    dataBR = `${p[2]}/${p[1]}/${p[0]}`;
+                }
+
+                // Lógica de Vencimento
+                let corFundo = "bg-slate-50 border-slate-200";
+                let statusBadge = "bg-slate-200 text-slate-600";
+                let icone = "✅";
+                let statusReal = fed.status;
+
+                if (fed.data_vencimento) {
+                    const dataVenc = new Date(fed.data_vencimento + "T00:00:00");
+                    const diffTime = dataVenc - hoje;
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                    if (diffDays < 0) {
+                        corFundo = "bg-rose-50 border-rose-200";
+                        statusBadge = "bg-rose-100 text-rose-700 border-rose-200";
+                        icone = "❌";
+                        statusReal = "Vencido";
+                        temAlerta = true;
+                    } else if (diffDays <= 30) {
+                        corFundo = "bg-amber-50 border-amber-200";
+                        statusBadge = "bg-amber-100 text-amber-700 border-amber-200";
+                        icone = "⚠️";
+                        temAlerta = true;
+                    } else if (statusReal === 'Ativo') {
+                        corFundo = "bg-emerald-50 border-emerald-200";
+                        statusBadge = "bg-emerald-100 text-emerald-700 border-emerald-200";
+                    }
+                }
+
+                if(statusReal === 'Pendente') {
+                    corFundo = "bg-slate-50 border-slate-200";
+                    statusBadge = "bg-slate-200 text-slate-600 border-slate-300";
+                    icone = "⏳";
+                }
+
+                const item = document.createElement('div');
+                item.className = `p-4 rounded-2xl border ${corFundo} hover:shadow-md transition-shadow relative group cursor-pointer`;
+                
+                // Clicar edita
+                item.onclick = (e) => {
+                    if(e.target.tagName !== 'BUTTON') editarFederacao(fed.id);
+                };
+                
+                item.innerHTML = `
+                    <div class="flex gap-3 items-center">
+                        <div class="text-2xl">${icone}</div>
+                        <div class="flex-1 overflow-hidden">
+                            <h4 class="font-black text-slate-800 text-xs md:text-sm truncate pr-14">${fed.nome_federacao}</h4>
+                            <p class="text-[9px] md:text-[10px] text-slate-500 font-bold mt-0.5">Registo: <span class="text-slate-700">${fed.numero_registro || 'N/A'}</span></p>
+                            <p class="text-[9px] md:text-[10px] text-slate-500 font-bold mt-0.5">Validade: <span class="text-slate-700">${dataBR}</span></p>
+                        </div>
+                        <div class="text-right flex flex-col items-end gap-1 absolute top-4 right-4">
+                            <span class="${statusBadge} px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest border">${statusReal}</span>
+                            <div class="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity mt-2">
+                                <button onclick="editarFederacao('${fed.id}')" class="text-[10px] bg-white border border-cyan-200 px-2 py-1 rounded text-cyan-600 font-bold hover:bg-cyan-50">✏️</button>
+                                <button onclick="excluirFederacao('${fed.id}', '${alunoSelecionado.id}')" class="text-[10px] bg-white border border-rose-200 px-2 py-1 rounded text-rose-500 font-bold hover:bg-rose-50">🗑️</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(item);
+            });
+
+            if(temAlerta) {
+                document.getElementById('alerta-vencimento').classList.remove('hidden');
+            }
+        }
+
+        // === INICIA A EDIÇÃO ===
+        window.editarFederacao = function(fedId) {
+            const fed = federacoesCache.find(c => c.id === fedId);
+            if(!fed) return;
+
+            federacaoEditandoId = fedId;
+            
+            document.getElementById('fed-nome').value = fed.nome_federacao || "CBJJ / IBJJF";
+            document.getElementById('fed-registro').value = fed.numero_registro || "";
+            document.getElementById('fed-vencimento').value = fed.data_vencimento || "";
+            document.getElementById('fed-status').value = fed.status || "Ativo";
+
+            document.getElementById('titulo-form-fed').innerText = "Editar Filiação";
+            document.getElementById('btn-salvar-fed').innerHTML = "<span class='mr-2'>💾</span> Atualizar";
+            document.getElementById('btn-cancelar-fed').classList.remove('hidden');
+        }
+
+        window.cancelarEdicaoFed = function() {
+            federacaoEditandoId = null;
+            document.getElementById('fed-nome').value = "CBJJ / IBJJF";
+            document.getElementById('fed-registro').value = "";
+            document.getElementById('fed-vencimento').value = "";
+            document.getElementById('fed-status').value = "Ativo";
+            
+            document.getElementById('titulo-form-fed').innerText = "Registar Carteirinha";
+            document.getElementById('btn-salvar-fed').innerHTML = "<span class='mr-2'>💾</span> Salvar Filiação";
+            document.getElementById('btn-cancelar-fed').classList.add('hidden');
+        }
+
+        // === SALVAR (NOVO OU EDIÇÃO) ===
+        window.salvarFederacao = async function() {
+            if (!alunoSelecionado) return alert("Selecione um aluno primeiro!");
+
+            const nome = document.getElementById('fed-nome').value;
+            const reg = document.getElementById('fed-registro').value;
+            const venc = document.getElementById('fed-vencimento').value;
+            const stat = document.getElementById('fed-status').value;
+
+            if (!nome) return alert("A Federação é obrigatória!");
+
+            const dadosFed = {
+                equipe_id: uid,
+                aluno_id: alunoSelecionado.id,
+                nome_federacao: nome,
+                numero_registro: reg,
+                data_vencimento: venc,
+                status: stat,
+                atualizado_em: new Date().toISOString()
+            };
+
+            try {
+                if (federacaoEditandoId) {
+                    await updateDoc(doc(db, "federacoes", federacaoEditandoId), dadosFed);
+                } else {
+                    await addDoc(collection(db, "federacoes"), dadosFed);
+                }
+
+                cancelarEdicaoFed(); 
+                carregarFederacoes(alunoSelecionado.id); 
+                
+            } catch (error) {
+                console.error(error);
+                alert("Erro ao registar filiação.");
+            }
+        }
+
+        window.excluirFederacao = async function(fedId, alunoId) {
+            if(!confirm("Tem a certeza que deseja apagar este registo?")) return;
+            try {
+                await deleteDoc(doc(db, "federacoes", fedId));
+                if (federacaoEditandoId === fedId) cancelarEdicaoFed();
+                carregarFederacoes(alunoId);
+            } catch (error) {
+                alert("Erro ao excluir registo.");
+            }
+        }
+
+        async function carregarInfoEquipe() {
+            try {
+                const snap = await getDoc(doc(db, "equipes", uid));
+                if(snap.exists()) {
+                    document.getElementById('nome-equipe').innerText = snap.data().nome_equipe;
+                    document.getElementById('logo-equipe').innerText = snap.data().nome_equipe.charAt(0).toUpperCase();
+                }
+            } catch (e) { console.log(e); }
+        }
+
+        window.sairDoSistema = () => signOut(auth).then(() => window.location.href = "index.html");
+
+    </script>
+</body>
+</html>

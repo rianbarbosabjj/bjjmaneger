@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dashboard | BJJ Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
+        
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden text-slate-800 bg-[#F8FAFC] hidden" id="body-content">
+
+    <div id="interface-sistema" class="flex w-full h-full relative">
+        
+        <aside class="hidden md:flex w-64 bg-slate-900 text-white flex-col h-full shadow-2xl shrink-0 z-20">
+            <div class="p-6 text-center border-b border-slate-800 flex flex-col items-center justify-center">
+                <div class="w-16 h-16 mb-3 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-500 flex items-center justify-center shadow-lg text-white font-black text-2xl" id="logo-equipe">B</div>
+                <h1 class="text-sm font-bold tracking-widest text-white uppercase" id="nome-equipe">Carregando...</h1>
+                <p class="text-[9px] text-cyan-400 font-bold uppercase tracking-widest mt-1">BJJ Manager Web</p>
+            </div>
+            
+            <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto hide-scrollbar">
+                <a href="dashboard.html" class="flex items-center px-4 py-3 text-sm font-bold text-white bg-slate-800 rounded-xl transition-all shadow-inner group">
+                    <span class="mr-3 text-lg group-hover:scale-110 transition-transform">📊</span> Visão Geral
+                </a>
+                <a href="alunos.html" class="flex items-center px-4 py-3 text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                    <span class="mr-3 text-lg group-hover:scale-110 transition-transform">🥋</span> Controle de Alunos
+                </a>
+                <a href="turmas.html" class="flex items-center px-4 py-3 text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                    <span class="mr-3 text-lg group-hover:scale-110 transition-transform">🗓️</span> Turmas
+                </a>
+                <a href="historico.html" class="flex items-center px-4 py-3 text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                    <span class="mr-3 text-lg group-hover:scale-110 transition-transform">🎓</span> Graduações
+                </a>
+                <a href="certificados.html" class="flex items-center px-4 py-3 text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                    <span class="mr-3 text-lg group-hover:scale-110 transition-transform">📜</span> Certificados
+                </a>
+                <a href="competicoes.html" class="flex items-center px-4 py-3 text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                    <span class="mr-3 text-lg group-hover:scale-110 transition-transform">🏆</span> Competições
+                </a>
+                <a href="curriculo.html" class="flex items-center px-4 py-3 text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                    <span class="mr-3 text-lg group-hover:scale-110 transition-transform">📄</span> Currículo
+                </a>
+                <a href="federacoes.html" class="flex items-center px-4 py-3 text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                    <span class="mr-3 text-lg group-hover:scale-110 transition-transform">🪪</span> Federações
+                </a>
+                <a href="financeiro.html" class="flex items-center px-4 py-3 text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                    <span class="mr-3 text-lg group-hover:scale-110 transition-transform">💰</span> Financeiro
+                </a>
+            </nav>
+            
+            <div class="p-4 border-t border-slate-800">
+                <div class="bg-slate-800/50 p-3 rounded-xl flex items-center mb-4 border border-slate-700/50">
+                    <div class="w-8 h-8 rounded-full bg-cyan-500 flex items-center justify-center font-bold text-[10px] text-white shadow-inner">ADM</div>
+                    <div class="ml-3 overflow-hidden">
+                        <p class="text-[11px] font-bold text-white truncate" id="email-logado">carregando...</p>
+                        <p class="text-[9px] text-slate-400 uppercase tracking-widest mt-0.5" id="lbl-cargo">Administrador</p>
+                    </div>
+                </div>
+                <button onclick="sairDoSistema()" class="w-full px-4 py-3 bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white border border-rose-500/20 rounded-xl text-xs font-bold transition-all flex items-center justify-center">
+                    <span class="mr-2">🚪</span> Sair do Tatame
+                </button>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+            <div class="flex-1 overflow-y-auto p-5 md:p-8 pb-24 md:pb-10">
+                <div class="max-w-7xl mx-auto">
+                    
+                    <div class="flex justify-center mb-6 md:mb-8">
+                        <img src="topo_curriculo.png" alt="Logo da Equipe" class="h-16 md:h-20 object-contain drop-shadow-sm" onerror="this.style.display='none'">
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 md:mb-8">
+                        <div>
+                            <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Visão Geral</h2>
+                            <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">O seu tatame na palma da mão</p>
+                        </div>
+                        
+                        <div class="flex gap-3 justify-center sm:justify-start">
+                            <button id="btn-gerir-colabs" onclick="abrirModalColaboradores()" class="hidden bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2.5 px-4 rounded-xl shadow-md transition-all flex items-center text-xs md:text-sm">
+                                <span class="mr-2">👥</span> Equipe Técnica
+                            </button>
+                            
+                            <a href="cadastro.html" class="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2.5 px-4 rounded-xl shadow-md transition-all flex items-center text-xs md:text-sm">
+                                <span class="mr-2">➕</span> Novo Aluno
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-cyan-500 flex flex-col justify-center hover:-translate-y-1 transition-transform">
+                            <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">Alunos Ativos</h3>
+                            <p class="text-2xl md:text-3xl font-black text-slate-800" id="card-ativos">⏳</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-slate-800 flex flex-col justify-center hover:-translate-y-1 transition-transform">
+                            <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">Inativos (Resgatar)</h3>
+                            <p class="text-2xl md:text-3xl font-black text-slate-600" id="card-inativos">⏳</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-emerald-500 flex flex-col justify-center hover:-translate-y-1 transition-transform">
+                            <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1" id="lbl-receita">Caixa do Mês</h3>
+                            <p class="text-xl md:text-2xl font-black text-emerald-600 truncate" id="card-receitas">⏳</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-rose-500 flex flex-col justify-center hover:-translate-y-1 transition-transform">
+                            <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">A Receber</h3>
+                            <p class="text-xl md:text-2xl font-black text-rose-500 truncate" id="card-inadimplencia">⏳</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-5 md:p-6 mb-6">
+                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-xs mb-4 border-b border-slate-100 pb-3">🥋 Raio-X do Tatame (Ativos)</h3>
+                        <div class="flex flex-wrap gap-3" id="grid-faixas">
+                            <span class="text-slate-400 text-sm">Calculando faixas...</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        
+                        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-80">
+                            <div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-3xl shrink-0">
+                                <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">🎂</span> Aniversariantes do Mês</h3>
+                            </div>
+                            <div class="flex-1 overflow-y-auto p-4 hide-scrollbar space-y-2" id="lista-niver">
+                                <div class="text-center text-slate-400 text-sm mt-5">A procurar festas...</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-80">
+                            <div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-3xl shrink-0">
+                                <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">👥</span> Faixas por Turma</h3>
+                            </div>
+                            <div class="flex-1 overflow-y-auto p-4 hide-scrollbar space-y-4" id="lista-turmas">
+                                <div class="text-center text-slate-400 text-sm mt-5">A mapear turmas...</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-80">
+                            <div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-3xl flex justify-between items-center shrink-0">
+                                <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">⚠️</span> Atenção Financeira</h3>
+                            </div>
+                            <div class="flex-1 overflow-y-auto p-4 hide-scrollbar space-y-2" id="lista-pendencias">
+                                <div class="text-center text-slate-400 text-sm mt-5">A calcular mensalidades...</div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <nav class="md:hidden fixed bottom-0 left-0 w-full bg-slate-900 border-t border-slate-800 flex overflow-x-auto hide-scrollbar flex-nowrap items-center h-16 z-40 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.3)]">
+                <a href="dashboard.html" class="shrink-0 w-16 flex flex-col items-center justify-center h-full text-cyan-400 relative">
+                    <div class="absolute top-0 w-6 h-1 bg-cyan-500 rounded-b-full"></div>
+                    <span class="text-lg mb-0.5">📊</span><span class="text-[8px] font-bold uppercase">Visão</span>
+                </a>
+                <a href="alunos.html" class="shrink-0 w-16 flex flex-col items-center justify-center h-full text-slate-400 hover:text-white transition-colors">
+                    <span class="text-lg mb-0.5">🥋</span><span class="text-[8px] font-bold uppercase">Alunos</span>
+                </a>
+                <a href="turmas.html" class="shrink-0 w-16 flex flex-col items-center justify-center h-full text-slate-400 hover:text-white transition-colors">
+                    <span class="text-lg mb-0.5">🗓️</span><span class="text-[8px] font-bold uppercase">Turmas</span>
+                </a>
+                <a href="historico.html" class="shrink-0 w-16 flex flex-col items-center justify-center h-full text-slate-400 hover:text-white transition-colors">
+                    <span class="text-lg mb-0.5">🎓</span><span class="text-[8px] font-bold uppercase">Grad.</span>
+                </a>
+                <a href="certificados.html" class="shrink-0 w-16 flex flex-col items-center justify-center h-full text-slate-400 hover:text-white transition-colors">
+                    <span class="text-lg mb-0.5">📜</span><span class="text-[8px] font-bold uppercase">Certif.</span>
+                </a>
+                <a href="competicoes.html" class="shrink-0 w-16 flex flex-col items-center justify-center h-full text-slate-400 hover:text-white transition-colors">
+                    <span class="text-lg mb-0.5">🏆</span><span class="text-[8px] font-bold uppercase">Comp.</span>
+                </a>
+                <a href="curriculo.html" class="shrink-0 w-16 flex flex-col items-center justify-center h-full text-slate-400 hover:text-white transition-colors">
+                    <span class="text-lg mb-0.5">📄</span><span class="text-[8px] font-bold uppercase">Currí.</span>
+                </a>
+                <a href="federacoes.html" class="shrink-0 w-16 flex flex-col items-center justify-center h-full text-slate-400 hover:text-white transition-colors">
+                    <span class="text-lg mb-0.5">🪪</span><span class="text-[8px] font-bold uppercase">Fed.</span>
+                </a>
+                <a href="financeiro.html" class="shrink-0 w-16 flex flex-col items-center justify-center h-full text-slate-400 hover:text-white transition-colors">
+                    <span class="text-lg mb-0.5">💰</span><span class="text-[8px] font-bold uppercase">Caixa</span>
+                </a>
+            </nav>
+        </main>
+    </div>
+
+    <div id="modal-colaboradores" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col">
+            <div class="bg-slate-900 p-4 text-white font-black uppercase tracking-widest text-sm flex justify-between items-center">
+                <span>👥 Equipe Técnica</span>
+                <button onclick="fecharModalColaboradores()" class="text-slate-400 hover:text-white text-xl leading-none">&times;</button>
+            </div>
+            <div class="p-6 flex-1 overflow-y-auto">
+                <div class="flex justify-between items-center mb-4">
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">Co-Administradores (<span id="count-colabs">0</span>/3)</p>
+                    <button id="btn-gerar-link" onclick="gerarLinkConvite()" class="text-[10px] bg-indigo-50 text-indigo-600 border border-indigo-200 px-3 py-1.5 rounded-lg font-bold hover:bg-indigo-100 transition-colors flex items-center">
+                        <span class="mr-1">🔗</span> Copiar Convite
+                    </button>
+                </div>
+                
+                <p class="text-xs text-slate-500 mb-4 pb-4 border-b border-slate-100 leading-relaxed">
+                    Convide outros administradores para acessarem à base de dados desta equipe. Eles poderão gerir alunos e ver informações, mas não poderão apagar ou gerir convites.
+                </p>
+
+                <div id="lista-colaboradores" class="space-y-3">
+                    <div class="text-center text-slate-400 text-xs py-4">A carregar...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, query, where, getDocs, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
+            authDomain: "bjj-maneger.firebaseapp.com",
+            projectId: "bjj-maneger",
+            storageBucket: "bjj-maneger.firebasestorage.app",
+            messagingSenderId: "415548255893",
+            appId: "1:415548255893:web:61186696fe097be870759c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        const VALOR_MENSALIDADE_BASE = 50.00;
+        let uid = null;         
+        let isOwner = false;    
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                uid = user.uid; 
+                document.getElementById('body-content').classList.remove('hidden');
+                document.getElementById('email-logado').innerText = user.email;
+
+                try {
+                    const docSnap = await getDoc(doc(db, "equipes", uid));
+                    
+                    if (docSnap.exists()) {
+                        isOwner = true;
+                        document.getElementById('lbl-cargo').innerText = "Mestre / Administrador";
+                        document.getElementById('btn-gerir-colabs').classList.remove('hidden');
+                        
+                        const nomeEquipe = docSnap.data().nome_equipe;
+                        document.getElementById('nome-equipe').innerText = nomeEquipe;
+                        document.getElementById('logo-equipe').innerText = nomeEquipe.charAt(0).toUpperCase();
+                    } else {
+                        const colabSnap = await getDoc(doc(db, "colaboradores", uid));
+                        if(colabSnap.exists()) {
+                            uid = colabSnap.data().equipe_id;
+                            document.getElementById('lbl-cargo').innerText = "Co-Administrador";
+                            
+                            const equipeMestreSnap = await getDoc(doc(db, "equipes", uid));
+                            if(equipeMestreSnap.exists()) {
+                                document.getElementById('nome-equipe').innerText = equipeMestreSnap.data().nome_equipe;
+                                document.getElementById('logo-equipe').innerText = equipeMestreSnap.data().nome_equipe.charAt(0).toUpperCase();
+                            }
+                        }
+                    }
+                } catch (error) { console.log(error); }
+
+                carregarDashboard();
+            } else {
+                window.location.href = "index.html";
+            }
+        });
+
+        window.abrirModalColaboradores = async function() {
+            document.getElementById('modal-colaboradores').classList.remove('hidden');
+            document.getElementById('modal-colaboradores').classList.add('flex');
+            await carregarListaColaboradores();
+        }
+
+        window.fecharModalColaboradores = function() {
+            document.getElementById('modal-colaboradores').classList.add('hidden');
+            document.getElementById('modal-colaboradores').classList.remove('flex');
+        }
+
+        async function carregarListaColaboradores() {
+            const container = document.getElementById('lista-colaboradores');
+            container.innerHTML = '<div class="text-center text-slate-400 text-xs py-4">A pesquisar professores...</div>';
+            
+            try {
+                const qColabs = query(collection(db, "colaboradores"), where("equipe_id", "==", uid));
+                const snapColabs = await getDocs(qColabs);
+                
+                document.getElementById('count-colabs').innerText = snapColabs.size;
+                
+                if (snapColabs.size >= 3) {
+                    document.getElementById('btn-gerar-link').classList.add('hidden');
+                } else {
+                    document.getElementById('btn-gerar-link').classList.remove('hidden');
+                }
+
+                container.innerHTML = '';
+                
+                if (snapColabs.empty) {
+                    container.innerHTML = '<div class="text-center text-slate-400 text-xs py-5 border border-dashed border-slate-200 rounded-xl bg-slate-50">A sua equipe técnica ainda não tem colaboradores.</div>';
+                    return;
+                }
+
+                snapColabs.forEach(doc => {
+                    const c = doc.data();
+                    container.innerHTML += `
+                        <div class="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                            <div class="overflow-hidden flex-1 pr-2">
+                                <p class="text-xs font-bold text-slate-700 truncate">${c.email}</p>
+                                <p class="text-[9px] text-slate-400 uppercase font-black mt-0.5">Acesso Secundário</p>
+                            </div>
+                            <button onclick="removerColaborador('${doc.id}')" class="text-[10px] bg-white border border-rose-200 text-rose-500 px-3 py-1.5 rounded-lg hover:bg-rose-50 hover:border-rose-300 font-bold ml-2 shrink-0 transition-colors">
+                                Remover
+                            </button>
+                        </div>
+                    `;
+                });
+            } catch(e) {
+                container.innerHTML = '<div class="text-center text-rose-400 text-xs py-4">Erro ao carregar lista.</div>';
+            }
+        }
+
+        window.gerarLinkConvite = async function() {
+            try {
+                let urlBase = window.location.href.split('dashboard.html')[0];
+                if (!urlBase.endsWith('/')) urlBase += '/';
+                const linkConvite = `${urlBase}index.html?convite=${uid}`;
+
+                await navigator.clipboard.writeText(linkConvite);
+                
+                alert(`✅ Link de Convite copiado com sucesso!\n\nEnvie este link para o professor se registar. Quando ele o fizer, terá acesso imediato à sua base de dados.\n\nLink copiado para a área de transferência.`);
+
+            } catch (error) {
+                console.error(error);
+                alert("Erro ao copiar o link. Verifique as permissões do seu navegador.");
+            }
+        }
+
+        window.removerColaborador = async function(colabId) {
+            if(!confirm("Tem a certeza que deseja remover o acesso deste professor?\n\nEle deixará de conseguir ver os dados da sua equipe imediatamente.")) return;
+            try {
+                await deleteDoc(doc(db, "colaboradores", colabId));
+                await carregarListaColaboradores();
+            } catch(e) {
+                alert("Erro ao remover professor.");
+            }
+        }
+
+        function getCorFaixa(faixaTexto) {
+            const f = faixaTexto ? faixaTexto.toLowerCase() : '';
+            if (f.includes('cinza e branca')) return 'bg-[linear-gradient(135deg,_#94A3B8_50%,_#FFFFFF_50%)] text-slate-800 border border-slate-300';
+            if (f.includes('cinza e preta')) return 'bg-[linear-gradient(135deg,_#94A3B8_50%,_#0F172A_50%)] text-white border border-slate-500';
+            if (f.includes('amarela e branca')) return 'bg-[linear-gradient(135deg,_#FACC15_50%,_#FFFFFF_50%)] text-slate-800 border border-yellow-500';
+            if (f.includes('amarela e preta')) return 'bg-[linear-gradient(135deg,_#FACC15_50%,_#0F172A_50%)] text-white border border-yellow-500';
+            if (f.includes('laranja e branca')) return 'bg-[linear-gradient(135deg,_#F97316_50%,_#FFFFFF_50%)] text-slate-800 border border-orange-500';
+            if (f.includes('laranja e preta')) return 'bg-[linear-gradient(135deg,_#F97316_50%,_#0F172A_50%)] text-white border border-orange-500';
+            if (f.includes('verde e branca')) return 'bg-[linear-gradient(135deg,_#16A34A_50%,_#FFFFFF_50%)] text-slate-800 border border-green-600';
+            if (f.includes('verde e preta')) return 'bg-[linear-gradient(135deg,_#16A34A_50%,_#0F172A_50%)] text-white border border-green-600';
+            if (f.includes('branca')) return 'bg-white text-slate-800 border border-slate-300';
+            if (f.includes('cinza')) return 'bg-slate-400 text-white border border-slate-500';
+            if (f.includes('amarela')) return 'bg-yellow-400 text-yellow-900 border border-yellow-500';
+            if (f.includes('laranja')) return 'bg-orange-500 text-white border border-orange-600';
+            if (f.includes('verde')) return 'bg-green-600 text-white border border-green-700';
+            if (f.includes('azul')) return 'bg-blue-600 text-white border border-blue-700';
+            if (f.includes('roxa')) return 'bg-purple-600 text-white border border-purple-700';
+            if (f.includes('marrom')) return 'bg-amber-800 text-white border border-amber-900';
+            if (f.includes('preta')) return 'bg-slate-900 text-white border border-slate-900';
+            return 'bg-slate-100 text-slate-600 border border-slate-200';
+        }
+
+        async function carregarDashboard() {
+            try {
+                const dataAtual = new Date();
+                const mesAtual = String(dataAtual.getMonth() + 1).padStart(2, '0');
+                const anoAtual = dataAtual.getFullYear();
+                const mesFiltro = `${anoAtual}-${mesAtual}`;
+                const diaHoje = dataAtual.getDate();
+                const nomeMes = dataAtual.toLocaleString('pt-BR', { month: 'long' });
+                const formatador = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+
+                document.getElementById('lbl-receita').innerText = `Caixa de ${nomeMes}`;
+
+                const qAlunos = query(collection(db, "alunos"), where("equipe_id", "==", uid));
+                const snapAlunos = await getDocs(qAlunos);
+                
+                let ativos = [];
+                let inativos = 0;
+                let contagemFaixas = {};
+                let aniversariantes = [];
+
+                snapAlunos.forEach(doc => {
+                    const a = { id: doc.id, ...doc.data() };
+                    if (a.status === "ATIVO") {
+                        ativos.push(a);
+                        
+                        const f = a.faixa || "Branca";
+                        contagemFaixas[f] = (contagemFaixas[f] || 0) + 1;
+
+                        if (a.data_nascimento) {
+                            let mesNasc = "", diaNasc = "";
+                            if (a.data_nascimento.includes("-")) {
+                                const p = a.data_nascimento.split("-");
+                                mesNasc = p[1]; diaNasc = p[2];
+                            } else if (a.data_nascimento.includes("/")) {
+                                const p = a.data_nascimento.split("/");
+                                if(p[0].length === 4) { mesNasc = p[1]; diaNasc = p[2]; }
+                                else { mesNasc = p[1]; diaNasc = p[0]; }
+                            }
+                            if (mesNasc === mesAtual) {
+                                aniversariantes.push({ nome: a.nome, dia: parseInt(diaNasc) });
+                            }
+                        }
+                    } else {
+                        inativos++;
+                    }
+                });
+
+                document.getElementById('card-ativos').innerText = ativos.length;
+                document.getElementById('card-inativos').innerText = inativos;
+
+                const gridFaixas = document.getElementById('grid-faixas');
+                gridFaixas.innerHTML = '';
+                const ordemFaixas = ["Branca", "Cinza e Branca", "Cinza", "Cinza e Preta", "Amarela e Branca", "Amarela", "Amarela e Preta", "Laranja e Branca", "Laranja", "Laranja e Preta", "Verde e Branca", "Verde", "Verde e Preta", "Azul", "Roxa", "Marrom", "Preta"];
+                
+                ordemFaixas.forEach(faixa => {
+                    if (contagemFaixas[faixa] > 0) {
+                        const cssCor = getCorFaixa(faixa);
+                        gridFaixas.innerHTML += `
+                            <div class="flex items-center text-xs font-bold bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+                                <div class="px-2 py-1.5 ${cssCor}">${faixa}</div>
+                                <div class="px-3 py-1.5 text-slate-700 bg-slate-50 border-l border-slate-200">${contagemFaixas[faixa]}</div>
+                            </div>
+                        `;
+                    }
+                });
+
+                const listaNiver = document.getElementById('lista-niver');
+                listaNiver.innerHTML = '';
+                if (aniversariantes.length === 0) {
+                    listaNiver.innerHTML = `<div class="text-slate-400 text-sm italic">Nenhuma festa este mês.</div>`;
+                } else {
+                    aniversariantes.sort((a, b) => a.dia - b.dia);
+                    aniversariantes.forEach(aniv => {
+                        listaNiver.innerHTML += `
+                            <div class="p-3 bg-white border border-slate-100 rounded-xl shadow-sm flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-indigo-50 text-indigo-500 font-black flex items-center justify-center text-xs border border-indigo-100">${aniv.dia}</div>
+                                <div class="font-bold text-slate-700 text-sm truncate">${aniv.nome}</div>
+                            </div>
+                        `;
+                    });
+                }
+
+                const qTurmas = query(collection(db, "turmas"), where("equipe_id", "==", uid));
+                const snapTurmas = await getDocs(qTurmas);
+                const listaTurmasUi = document.getElementById('lista-turmas');
+                listaTurmasUi.innerHTML = '';
+
+                if (snapTurmas.empty) {
+                    listaTurmasUi.innerHTML = `<div class="text-slate-400 text-sm italic">Nenhuma turma cadastrada.</div>`;
+                } else {
+                    snapTurmas.forEach(doc => {
+                        const t = doc.data();
+                        const idsNaTurma = t.alunos_ids || [];
+                        const ativosNaTurma = ativos.filter(a => idsNaTurma.includes(a.id));
+                        
+                        if (ativosNaTurma.length > 0) {
+                            let faixasTurma = {};
+                            ativosNaTurma.forEach(a => {
+                                const fx = a.faixa || "Branca";
+                                if (!faixasTurma[fx]) faixasTurma[fx] = [];
+                                faixasTurma[fx].push(a.nome);
+                            });
+
+                            let htmlTurma = `
+                                <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                                    <div class="bg-slate-800 text-white font-black text-xs px-4 py-2 uppercase tracking-widest flex justify-between">
+                                        <span>${t.nome}</span>
+                                        <span class="text-cyan-400">${ativosNaTurma.length} 🥋</span>
+                                    </div>
+                                    <div class="p-3 space-y-2 bg-slate-50">
+                            `;
+
+                            ordemFaixas.forEach(fx => {
+                                if (faixasTurma[fx]) {
+                                    htmlTurma += `
+                                        <div>
+                                            <div class="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-2 mb-1">
+                                                <div class="w-2 h-2 rounded-full ${getCorFaixa(fx)}"></div> ${fx} (${faixasTurma[fx].length})
+                                            </div>
+                                            <div class="pl-4 text-xs text-slate-600 font-medium leading-relaxed">
+                                                ${faixasTurma[fx].join('<br>')}
+                                            </div>
+                                        </div>
+                                    `;
+                                }
+                            });
+
+                            htmlTurma += `</div></div>`;
+                            listaTurmasUi.innerHTML += htmlTurma;
+                        }
+                    });
+                    if(listaTurmasUi.innerHTML === '') listaTurmasUi.innerHTML = `<div class="text-slate-400 text-sm italic">Turmas sem alunos.</div>`;
+                }
+
+                const qFin = query(collection(db, "financeiro"), where("equipe_id", "==", uid), where("mes_ano", "==", mesFiltro));
+                const snapFin = await getDocs(qFin);
+                
+                let totalReceitas = 0;
+                let pagantesIds = [];
+
+                snapFin.forEach(doc => {
+                    const f = doc.data();
+                    if (f.tipo === 'MENSALIDADE') {
+                        totalReceitas += f.valor;
+                        pagantesIds.push(f.aluno_id);
+                    } else if (f.tipo === 'RECEITA') {
+                        totalReceitas += f.valor;
+                    }
+                });
+
+                document.getElementById('card-receitas').innerText = formatador.format(totalReceitas);
+
+                let totalA_Receber = 0;
+                const listaPendUi = document.getElementById('lista-pendencias');
+                listaPendUi.innerHTML = '';
+
+                let temPendencia = false;
+
+                ativos.forEach(aluno => {
+                    const bolsa = aluno.bolsa_perc || 0;
+                    if (bolsa === 100) return; 
+                    
+                    if (!pagantesIds.includes(aluno.id)) {
+                        const diaVenc = aluno.dia_vencimento || 10;
+                        const valorDevido = VALOR_MENSALIDADE_BASE * (1 - bolsa/100);
+                        totalA_Receber += valorDevido;
+                        temPendencia = true;
+
+                        let statusObj = { cor: "bg-amber-50 border-amber-200 text-amber-700", icone: "🟡", txt: "Pendente" };
+                        if (diaHoje > diaVenc) {
+                            statusObj = { cor: "bg-rose-50 border-rose-200 text-rose-700", icone: "🔴", txt: "Atrasado" };
+                        }
+
+                        const nomeEscapado = aluno.nome.replace(/'/g, "\\'");
+
+                        listaPendUi.innerHTML += `
+                            <div class="p-3 border rounded-xl flex items-center justify-between shadow-sm ${statusObj.cor}">
+                                <div class="overflow-hidden flex-1 pr-2">
+                                    <div class="text-xs font-black truncate">${statusObj.icone} ${aluno.nome}</div>
+                                    <div class="text-[10px] font-bold opacity-80 mt-0.5">Venc: Dia ${diaVenc} | ${formatador.format(valorDevido)}</div>
+                                </div>
+                                <button onclick="receberExpress('${aluno.id}', '${nomeEscapado}', ${valorDevido})" class="bg-white px-3 py-1.5 rounded-lg shadow-sm border border-current text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-transform shrink-0">
+                                    Receber
+                                </button>
+                            </div>
+                        `;
+                    }
+                });
+
+                if (!temPendencia) {
+                    listaPendUi.innerHTML = `<div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-600 rounded-xl text-sm font-bold text-center">✅ Todas as faturas do mês estão pagas! Oss!</div>`;
+                }
+
+                document.getElementById('card-inadimplencia').innerText = formatador.format(totalA_Receber);
+
+            } catch (error) {
+                console.error("Erro no dashboard:", error);
+            }
+        }
+
+        window.receberExpress = async function(alunoId, alunoNome, valor) {
+            if(!confirm(`Dar baixa no pagamento de ${alunoNome}?\nValor: R$ ${valor.toFixed(2)}`)) return;
+
+            try {
+                const dataAtual = new Date();
+                const mesFiltro = `${dataAtual.getFullYear()}-${String(dataAtual.getMonth() + 1).padStart(2, '0')}`;
+                const dataHojeISO = dataAtual.toISOString().split('T')[0];
+
+                await addDoc(collection(db, "financeiro"), {
+                    equipe_id: uid,
+                    aluno_id: alunoId,
+                    tipo: "MENSALIDADE",
+                    descricao: `Mensalidade ${mesFiltro} - Pgto Expresso`,
+                    valor: valor,
+                    data: dataHojeISO,
+                    mes_ano: mesFiltro,
+                    registado_em: new Date().toISOString()
+                });
+
+                carregarDashboard(); 
+
+            } catch (error) {
+                alert("Erro ao registar o pagamento.");
+                console.error(error);
+            }
+        }
+
+        window.sairDoSistema = function() {
+            signOut(auth).then(() => { window.location.href = "index.html"; });
+        }
+    </script>
+</body>
+</html>

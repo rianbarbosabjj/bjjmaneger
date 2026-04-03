@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Centro de Controle Financeiro | BJJ Maneger</title>
+    <title>Centro de Controle Financeiro | BJJ Manager</title>
     
     <link rel="icon" type="image/png" href="logo_bjj_maneger.png">
     
@@ -498,58 +498,80 @@
             return resultado;
         }
 
+        // =====================================================================================
+        // 🔥 LÓGICA PADRÃO DE AUTENTICAÇÃO E CARREGAMENTO DE EQUIPE (Mestre e Colaboradores)
+        // =====================================================================================
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 uid = user.uid;
-                const emailLogado = document.getElementById('email-logado');
-                if(emailLogado) emailLogado.innerText = user.email;
-
+                
+                // Configura as datas (específico do financeiro)
                 const hoje = new Date();
                 document.getElementById('filtro-mes').value = String(hoje.getMonth() + 1).padStart(2, '0');
                 document.getElementById('filtro-ano').value = hoje.getFullYear().toString();
 
-                try {
-                    const docSnap = await getDoc(doc(db, "equipes", uid));
-                    if (docSnap.exists()) {
-                        const lblCargo = document.getElementById('lbl-cargo');
-                        if(lblCargo) lblCargo.innerText = "Mestre / Administrador";
-                        const dados = docSnap.data();
-                        equipeNomeGlobal = dados.nome_equipe;
-                        
-                        // CORREÇÃO: Atualizar a div/texto do menu com o nome recuperado do banco
-                        const elNomeEquipe = document.getElementById('nome-equipe') || document.getElementById('equipe-nome') || document.getElementById('lbl-equipe');
-                        if(elNomeEquipe) elNomeEquipe.innerText = equipeNomeGlobal.toUpperCase();
-
-                        if(dados.valor_prazo) equipeBaseConfig.prazo = parseFloat(dados.valor_prazo);
-                        if(dados.valor_atraso) equipeBaseConfig.atraso = parseFloat(dados.valor_atraso);
-                    } else {
-                        const colabSnap = await getDoc(doc(db, "colaboradores", uid));
-                        if(colabSnap.exists()) {
-                            uid = colabSnap.data().equipe_id;
-                            const lblCargo = document.getElementById('lbl-cargo');
-                            if(lblCargo) lblCargo.innerText = "Co-Administrador";
-                            const equipeMestreSnap = await getDoc(doc(db, "equipes", uid));
-                            if(equipeMestreSnap.exists()) {
-                                const dados = equipeMestreSnap.data();
-                                equipeNomeGlobal = dados.nome_equipe;
-                                
-                                // CORREÇÃO: Atualizar a div/texto do menu com o nome recuperado do banco
-                                const elNomeEquipe = document.getElementById('nome-equipe') || document.getElementById('equipe-nome') || document.getElementById('lbl-equipe');
-                                if(elNomeEquipe) elNomeEquipe.innerText = equipeNomeGlobal.toUpperCase();
-
-                                if(dados.valor_prazo) equipeBaseConfig.prazo = parseFloat(dados.valor_prazo);
-                                if(dados.valor_atraso) equipeBaseConfig.atraso = parseFloat(dados.valor_atraso);
-                            }
-                        }
-                    }
-                } catch (error) { console.log(error); }
-
+                await carregarInfoEquipe(user); 
+                
+                // Preenche os campos de configuração com os valores carregados
                 document.getElementById('config-prazo').value = floatToStr(equipeBaseConfig.prazo);
                 document.getElementById('config-atraso').value = floatToStr(equipeBaseConfig.atraso);
 
                 carregarDados();
-            } else { window.location.href = "index.html"; }
+            } else {
+                window.location.href = "index.html";
+            }
         });
+
+        async function carregarInfoEquipe(user) {
+            const elEmailLogado = document.getElementById('email-logado');
+            if (elEmailLogado) elEmailLogado.innerText = user.email;
+
+            try {
+                const docSnap = await getDoc(doc(db, "equipes", uid));
+                let dadosEquipe = null;
+                
+                if (docSnap.exists()) {
+                    const lblCargo = document.getElementById('lbl-cargo');
+                    if(lblCargo) lblCargo.innerText = "Mestre / Administrador";
+                    dadosEquipe = docSnap.data();
+                } else {
+                    const colabSnap = await getDoc(doc(db, "colaboradores", uid));
+                    if(colabSnap.exists()) {
+                        uid = colabSnap.data().equipe_id; 
+                        const lblCargo = document.getElementById('lbl-cargo');
+                        if(lblCargo) lblCargo.innerText = "Co-Administrador";
+                        
+                        const equipeMestreSnap = await getDoc(doc(db, "equipes", uid));
+                        if(equipeMestreSnap.exists()) {
+                            dadosEquipe = equipeMestreSnap.data();
+                        }
+                    }
+                }
+
+                if (dadosEquipe) {
+                    equipeNomeGlobal = dadosEquipe.nome_equipe;
+                    
+                    const elNomeEquipe = document.getElementById('nome-equipe') || document.getElementById('lbl-equipe');
+                    if(elNomeEquipe) elNomeEquipe.innerText = equipeNomeGlobal.toUpperCase();
+
+                    const elLogo = document.getElementById('container-logo');
+                    if (elLogo) {
+                        if (dadosEquipe.url_logo) {
+                            elLogo.style.background = 'transparent';
+                            elLogo.innerHTML = `<img src="${dadosEquipe.url_logo}" class="w-full h-full object-cover" alt="Logo">`;
+                        } else {
+                            elLogo.style.background = ''; 
+                            elLogo.innerHTML = equipeNomeGlobal.charAt(0).toUpperCase();
+                        }
+                    }
+
+                    // Específico do Financeiro: Carrega as configs de atraso
+                    if(dadosEquipe.valor_prazo) equipeBaseConfig.prazo = parseFloat(dadosEquipe.valor_prazo);
+                    if(dadosEquipe.valor_atraso) equipeBaseConfig.atraso = parseFloat(dadosEquipe.valor_atraso);
+                }
+            } catch (error) { console.log(error); }
+        }
+        // =====================================================================================
 
         window.salvarConfiguracaoGeral = async function() {
             const p = strToFloat(document.getElementById('config-prazo').value);

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -62,7 +63,7 @@
                     </div>
 
                     <button onclick="abrirModalRelatorio()" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-colors shrink-0 flex items-center justify-center shadow-sm">
-                        <span class="mr-1">📊</span> PDF
+                        <span class="mr-1">📊</span> Gerar relatório financeiro
                     </button>
                 </div>
             </div>
@@ -121,8 +122,11 @@
                                 <p class="text-[10px] font-bold text-rose-500 uppercase mb-4 h-4" id="acao-alerta-divida"></p>
 
                                 <div class="grid grid-cols-2 gap-2 mb-6 border-b border-slate-100 pb-4">
-                                    <button onclick="gerarReciboPDF()" id="btn-recibo-lateral" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center transition-colors"><span class="mr-1">📄</span> Baixar PDF</button>
-                                    <button onclick="enviarWhatsApp()" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center transition-colors"><span class="mr-1">📱</span> Cobrar</button>
+                                    <button onclick="gerarReciboPDF()" id="btn-recibo-lateral" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center transition-colors"><span class="mr-1">📄</span> Baixar recibo</button>
+                                                                        <button onclick="enviarWhatsApp()" class="bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] font-bold py-2.5 rounded-xl text-[11px] flex items-center justify-center transition-colors">
+                                        <svg class="w-4 h-4 mr-1.5 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                                        Enviar Cobrança
+                                    </button>
                                 </div>
 
                                 <div class="space-y-3 border-b border-slate-100 pb-4 mb-4">
@@ -408,6 +412,91 @@
 
         function floatToStr(valor) {
             return valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function numeroParaExtenso(valor) {
+            const unidades = ["zero", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove"];
+            const especiais = ["dez", "onze", "doze", "treze", "quatorze", "quinze", "dezesseis", "dezessete", "dezoito", "dezenove"];
+            const dezenas = ["", "", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa"];
+            const centenas = ["", "cento", "duzentos", "trezentos", "quatrocentos", "quinhentos", "seiscentos", "setecentos", "oitocentos", "novecentos"];
+
+            function converterMenorQueMil(n) {
+                if (n === 0) return "";
+                if (n === 100) return "cem";
+
+                let texto = "";
+                const c = Math.floor(n / 100);
+                const d = Math.floor((n % 100) / 10);
+                const u = n % 10;
+
+                if (c > 0) texto += centenas[c];
+
+                const resto = n % 100;
+                if (resto > 0) {
+                    if (texto) texto += " e ";
+
+                    if (resto < 10) {
+                        texto += unidades[resto];
+                    } else if (resto < 20) {
+                        texto += especiais[resto - 10];
+                    } else {
+                        texto += dezenas[d];
+                        if (u > 0) texto += " e " + unidades[u];
+                    }
+                }
+
+                return texto;
+            }
+
+            function converterInteiro(n) {
+                if (n === 0) return "zero";
+                if (n < 1000) return converterMenorQueMil(n);
+
+                const milhares = Math.floor(n / 1000);
+                const resto = n % 1000;
+
+                let texto = "";
+                if (milhares === 1) {
+                    texto = "mil";
+                } else {
+                    texto = converterMenorQueMil(milhares) + " mil";
+                }
+
+                if (resto > 0) {
+                    if (resto < 100 || resto % 100 === 0) {
+                        texto += " e ";
+                    } else {
+                        texto += ", ";
+                    }
+                    texto += converterMenorQueMil(resto);
+                }
+
+                return texto;
+            }
+
+            const valorNumero = typeof valor === "number"
+                ? valor
+                : parseFloat(String(valor).replace(/\./g, "").replace(",", "."));
+
+            const reais = Math.floor(valorNumero);
+            const centavos = Math.round((valorNumero - reais) * 100);
+
+            let resultado = "";
+            if (reais === 1) {
+                resultado += "um real";
+            } else {
+                resultado += converterInteiro(reais) + " reais";
+            }
+
+            if (centavos > 0) {
+                if (centavos === 1) {
+                    resultado += " e um centavo";
+                } else {
+                    resultado += " e " + converterInteiro(centavos) + " centavos";
+                }
+            }
+
+            return resultado;
         }
 
         onAuthStateChanged(auth, async (user) => {
@@ -753,6 +842,7 @@
             
             const pagData = alunoSelecionadoMens._calc.reg;
             const alunoData = alunoSelecionadoMens;
+            const valorExtenso = numeroParaExtenso(pagData.valor);
 
             const dataPagto = new Date(pagData.data).toLocaleDateString('pt-BR');
             const pMesAno = pagData.mes_ano.split('-');
@@ -792,10 +882,8 @@
                         <p style="margin: 5px 0 0 0; font-size: 12px; font-weight: bold; color: #64748B; letter-spacing: 2px;">${equipeNomeGlobal.toUpperCase()}</p>
                     </div>
                     <div style="font-size: 15px; line-height: 1.8; color: #334155; text-align: justify;">
-                        Recebemos de <b>${alunoData.nome.toUpperCase()}</b><br>
-                        a quantia de <b>R$ ${floatToStr(pagData.valor)}</b> (Pago via ${pagData.forma_pagamento || 'Dinheiro'})<br>
-                        referente à <b>Mensalidade de Treinamento - ${mesRef}</b>.<br><br>
-                        Para clareza, firmamos o presente recibo.
+                        Recebi de <b>${alunoData.nome.toUpperCase()}</b> a importância de <b>R$ ${floatToStr(pagData.valor)}</b> (<b>${valorExtenso}</b>), paga via <b>${pagData.forma_pagamento || 'Dinheiro'}</b>, referente à mensalidade das aulas de <b>Jiu-Jitsu</b>, correspondente ao mês de <b>${mesRef}</b>.<br><br>
+                        Por ser verdade, firmo o presente recibo para os devidos fins.
                     </div>
                     <div style="margin-top: 25px; text-align: right; font-weight: bold; color: #1E293B; font-size: 14px;">
                         Data do Pagamento: ${dataPagto}

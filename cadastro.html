@@ -18,7 +18,7 @@
         ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
     </style>
 </head>
-<body class="flex h-[100dvh] overflow-hidden text-slate-800 bg-[#F8FAFC]">
+<body class="flex flex-col h-[100dvh] overflow-hidden text-slate-800 bg-[#F8FAFC]">
 
     <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
@@ -242,8 +242,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        
-        // IMPORTA O STORAGE PARA GUARDAR AS FOTOS NA NUVEM
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
         const firebaseConfig = {
@@ -312,17 +310,20 @@
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                uid = user.uid;
-                
-                // Verifica se é Co-Administrador para salvar no ID da Equipe
-                const colabSnap = await getDoc(doc(db, "colaboradores", uid));
-                if(colabSnap.exists()) {
-                    uid = colabSnap.data().equipe_id;
+                // Checa se está no Modo Suporte (Super Admin)
+                const equipeImpersonada = sessionStorage.getItem('admin_impersonate');
+                if (equipeImpersonada) {
+                    uid = equipeImpersonada;
+                } else {
+                    uid = user.uid;
+                    // Verifica se é Co-Administrador para salvar no ID da Equipe correta
+                    const colabSnap = await getDoc(doc(db, "colaboradores", uid));
+                    if(colabSnap.exists()) {
+                        uid = colabSnap.data().equipe_id;
+                    }
                 }
-
                 contarAlunos(); 
             } else {
-                // Se não estiver logado, tem que voltar para o login
                 window.location.href = "index.html";
             }
         });
@@ -400,7 +401,7 @@
                 lgpd_site: document.getElementById('cad-lgpd-site').checked,
                 lgpd_promo: document.getElementById('cad-lgpd-promo').checked,
                 lgpd_relatorios: document.getElementById('cad-lgpd-relatorio').checked,
-                foto_url: "", // Inicia vazio. Se houver foto, nós atualizamos depois.
+                foto_url: "", 
                 data_cadastro: new Date().toISOString()
             };
 
@@ -425,7 +426,7 @@
                 
                 // Exibe a tela de sucesso
                 document.getElementById('container-principal').innerHTML = `
-                    <div class="bg-emerald-50 border border-emerald-200 p-10 rounded-3xl text-center mt-10">
+                    <div class="bg-emerald-50 border border-emerald-200 p-10 rounded-3xl text-center mt-10 shadow-lg">
                         <span class="text-6xl mb-4 block">✅</span>
                         <h2 class="text-2xl font-black text-emerald-800 uppercase">Matrícula Concluída!</h2>
                         <p class="text-emerald-600 font-medium mt-2">O atleta ${nome} foi adicionado à equipe.</p>

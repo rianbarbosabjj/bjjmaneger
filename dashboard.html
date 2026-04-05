@@ -450,8 +450,6 @@
 
                     if (dadosEquipe) {
                         // 🔒 TRAVA DE SEGURANÇA (Verifica se está bloqueado)
-                        // Ignora o bloqueio APENAS SE você for super admin e estiver impersonando para arrumar o sistema. 
-                        // Se você é o dono da conta (não impersonando) e for bloqueado, bloqueia.
                         if (dadosEquipe.status_plano === 'BLOQUEADO' && !isImpersonating) {
                             document.getElementById('interface-sistema').classList.add('hidden');
                             document.getElementById('tela-bloqueio').classList.remove('hidden');
@@ -548,6 +546,36 @@
                 btn.innerHTML = "Confirmar";
             }
         };
+
+        // --- NOVA FUNÇÃO PARA RENDERIZAR FAIXAS BICOLORES E GRADIENTES ---
+        function obterEstiloFaixa(faixa) {
+            const faixasInfo = {
+                'Branca': 'background-color: #ffffff',
+                'Cinza e branca': 'background: linear-gradient(135deg, #94a3b8 50%, #ffffff 50%)',
+                'Cinza': 'background-color: #94a3b8',
+                'Cinza e preta': 'background: linear-gradient(135deg, #94a3b8 50%, #000000 50%)',
+                'Amarela e branca': 'background: linear-gradient(135deg, #eab308 50%, #ffffff 50%)',
+                'Amarela': 'background-color: #eab308',
+                'Amarela e preta': 'background: linear-gradient(135deg, #eab308 50%, #000000 50%)',
+                'Laranja e branca': 'background: linear-gradient(135deg, #f97316 50%, #ffffff 50%)',
+                'Laranja': 'background-color: #f97316',
+                'Laranja e preta': 'background: linear-gradient(135deg, #f97316 50%, #000000 50%)',
+                'Verde e branca': 'background: linear-gradient(135deg, #22c55e 50%, #ffffff 50%)',
+                'Verde': 'background-color: #22c55e',
+                'Verde e preta': 'background: linear-gradient(135deg, #22c55e 50%, #000000 50%)',
+                'Azul': 'background-color: #3b82f6',
+                'Roxa': 'background-color: #a855f7',
+                'Marrom': 'background-color: #78350f',
+                'Preta': 'background-color: #000000',
+                'Coral': 'background: linear-gradient(135deg, #ef4444 50%, #000000 50%)',
+                'Vermelha': 'background-color: #dc2626'
+            };
+            
+            // Garante que o nome da faixa seja normalizado antes de buscar no objeto
+            const faixaNormalizada = faixa ? faixa.charAt(0).toUpperCase() + faixa.slice(1).toLowerCase().trim() : 'Branca';
+            
+            return faixasInfo[faixaNormalizada] || 'background-color: #cbd5e1'; // Padrão se não encontrar
+        }
 
         // --- CARREGAMENTO PRINCIPAL DO DASHBOARD ---
         async function carregarDashboard() {
@@ -694,10 +722,11 @@
                     gridFaixas.innerHTML = '<span class="text-slate-400 text-sm font-medium">Nenhum aluno ativo mapeado.</span>';
                 } else {
                     for (const [faixa, qtd] of Object.entries(faixasCount)) {
-                        const cor = obterCorDaFaixa(faixa);
+                        // USANDO A NOVA FUNÇÃO DE ESTILO
+                        const estiloCss = obterEstiloFaixa(faixa);
                         gridFaixas.innerHTML += `
                             <div class="bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-sm">
-                                <span class="w-3 h-3 rounded-full border border-slate-300 shadow-inner" style="background-color: ${cor}"></span>
+                                <span class="w-3 h-3 rounded-full border border-slate-300 shadow-inner" style="${estiloCss}"></span>
                                 <span class="text-xs font-bold text-slate-700">${faixa}: <span class="text-slate-900">${qtd}</span></span>
                             </div>
                         `;
@@ -726,12 +755,13 @@
                         listaAlunosHTML = `<p class="text-[10px] text-slate-400 text-center italic py-2">Turma Vazia</p>`;
                     } else {
                         for (const al of alunosDaTurma) {
-                            const cor = obterCorDaFaixa(al.faixa);
+                            // USANDO A NOVA FUNÇÃO DE ESTILO
+                            const estiloCss = obterEstiloFaixa(al.faixa);
                             listaAlunosHTML += `
                                 <div class="flex justify-between items-center bg-white p-2.5 rounded-xl border border-slate-100 mb-1.5 shadow-sm">
                                     <span class="text-[11px] font-bold text-slate-700 truncate pr-2 w-[65%]">${al.nome}</span>
                                     <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-slate-50 border border-slate-200 text-[9px] font-bold text-slate-600 shadow-sm shrink-0">
-                                        <span class="w-2 h-2 rounded-full shadow-inner border border-slate-200" style="background-color: ${cor}"></span>${al.faixa}
+                                        <span class="w-2 h-2 rounded-full shadow-inner border border-slate-200" style="${estiloCss}"></span>${al.faixa}
                                     </span>
                                 </div>
                             `;
@@ -760,15 +790,6 @@
                 `;
 
             } catch (error) { console.error(error); }
-        }
-
-        function obterCorDaFaixa(faixa) {
-            const cores = {
-                'Branca': '#ffffff', 'Cinza': '#94a3b8', 'Amarela': '#eab308', 'Laranja': '#f97316',
-                'Verde': '#22c55e', 'Azul': '#3b82f6', 'Roxa': '#a855f7', 'Marrom': '#78350f',
-                'Preta': '#000000', 'Coral': '#ef4444', 'Vermelha': '#dc2626'
-            };
-            return cores[faixa] || '#cbd5e1';
         }
 
         // --- SALVAR DADOS DA EQUIPE ---

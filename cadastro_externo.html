@@ -12,7 +12,7 @@
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="flex h-[100dvh] overflow-hidden text-slate-800 bg-[#F8FAFC]">
+<body class="flex flex-col h-[100dvh] overflow-hidden text-slate-800 bg-[#F8FAFC]">
 
     <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
@@ -26,9 +26,9 @@
     <main class="flex-1 overflow-y-auto p-4 md:p-8 pb-10 hide-scrollbar" id="interface-sistema">
         <div class="max-w-3xl mx-auto">
             
-            <div class="flex justify-center mb-8 mt-4">
-                <img id="logo-equipe" src="" alt="Logo da Equipe" class="w-full max-h-32 object-contain drop-shadow-sm hidden">
-                <div id="fallback-logo" class="w-24 h-24 rounded-full bg-slate-800 text-white flex items-center justify-center text-4xl font-black hidden"></div>
+            <div class="flex justify-center mb-8 mt-4 min-h-[5rem]">
+                <img id="logo-equipe" src="" alt="Logo da Equipe" class="h-20 md:h-28 w-auto object-contain drop-shadow-sm hidden">
+                <div id="fallback-logo" class="w-24 h-24 rounded-full bg-slate-800 text-white flex items-center justify-center text-4xl font-black hidden shadow-md"></div>
             </div>
 
             <div class="mb-8 text-center" id="cabecalho-form">
@@ -339,7 +339,7 @@
                         imgEl.classList.remove('hidden');
                     } else {
                         const fallEl = document.getElementById('fallback-logo');
-                        fallEl.innerText = dadosEquipe.nome_equipe.charAt(0).toUpperCase();
+                        fallEl.innerText = dadosEquipe.nome_equipe ? dadosEquipe.nome_equipe.charAt(0).toUpperCase() : 'E';
                         fallEl.classList.remove('hidden');
                     }
                 } else {
@@ -442,7 +442,7 @@
                 }
 
                 document.getElementById('form-aluno').innerHTML = `
-                    <div class="bg-emerald-50 border border-emerald-200 p-10 rounded-3xl text-center">
+                    <div class="bg-emerald-50 border border-emerald-200 p-10 rounded-3xl text-center shadow-lg">
                         <span class="text-6xl mb-4 block">✅</span>
                         <h2 class="text-2xl font-black text-emerald-800 uppercase">Matrícula Concluída!</h2>
                         <p class="text-emerald-600 font-medium mt-2">Bem-vindo(a) à equipe, ${nome}.</p>
@@ -485,7 +485,7 @@
                 await signOut(auth);
 
                 document.getElementById('form-prof').innerHTML = `
-                    <div class="bg-indigo-50 border border-indigo-200 p-10 rounded-3xl text-center">
+                    <div class="bg-indigo-50 border border-indigo-200 p-10 rounded-3xl text-center shadow-lg">
                         <span class="text-6xl mb-4 block">🤝</span>
                         <h2 class="text-2xl font-black text-indigo-800 uppercase">Acesso Criado!</h2>
                         <p class="text-indigo-600 font-medium mt-2">O seu e-mail <b>${email}</b> agora tem acesso ao sistema da equipe.</p>

@@ -312,9 +312,10 @@
 
         window.gerarLinksConvite = function() {
             if(!uid) return;
-            let baseUrl = window.location.href.split('dashboard.html')[0];
-            document.getElementById('link-convite-prof').value = `${baseUrl}cadastro_externo.html?tipo=prof&equipe=${uid}`;
-            document.getElementById('link-convite-aluno').value = `${baseUrl}cadastro_externo.html?tipo=aluno&equipe=${uid}`;
+            // Usa a raiz do site, não importa se tem .html no navegador ou não
+            let baseUrl = window.location.origin; 
+            document.getElementById('link-convite-prof').value = `${baseUrl}/cadastro_externo.html?tipo=prof&equipe=${uid}`;
+            document.getElementById('link-convite-aluno').value = `${baseUrl}/cadastro_externo.html?tipo=aluno&equipe=${uid}`;
         };
 
         window.copiarLink = function(idInput) {

@@ -241,7 +241,9 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        
+        // IMPORTA O STORAGE PARA GUARDAR AS FOTOS NA NUVEM
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
         const firebaseConfig = {
@@ -311,8 +313,16 @@
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 uid = user.uid;
+                
+                // Verifica se é Co-Administrador para salvar no ID da Equipe
+                const colabSnap = await getDoc(doc(db, "colaboradores", uid));
+                if(colabSnap.exists()) {
+                    uid = colabSnap.data().equipe_id;
+                }
+
                 contarAlunos(); 
             } else {
+                // Se não estiver logado, tem que voltar para o login
                 window.location.href = "index.html";
             }
         });
@@ -390,7 +400,7 @@
                 lgpd_site: document.getElementById('cad-lgpd-site').checked,
                 lgpd_promo: document.getElementById('cad-lgpd-promo').checked,
                 lgpd_relatorios: document.getElementById('cad-lgpd-relatorio').checked,
-                foto_url: "", 
+                foto_url: "", // Inicia vazio. Se houver foto, nós atualizamos depois.
                 data_cadastro: new Date().toISOString()
             };
 

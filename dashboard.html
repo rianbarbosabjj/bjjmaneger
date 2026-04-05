@@ -371,13 +371,13 @@
             try {
                 await addDoc(collection(db, "colaboradores"), { email: email, equipe_id: uid, data_cadastro: new Date().toISOString() });
                 emailInput.value = '';
-                showToast("Professor adicionado!", "success");
+                showToast("Co-Administrador adicionado!", "success");
                 carregarColaboradores();
             } catch (e) { showToast("Erro ao adicionar.", "error"); }
         };
 
         window.removerColaborador = async function(docId) {
-            if(!confirm("Remover o acesso deste professor?")) return;
+            if(!confirm("Remover o acesso deste co-administrador?")) return;
             try {
                 await deleteDoc(doc(db, "colaboradores", docId));
                 showToast("Acesso removido.", "success");

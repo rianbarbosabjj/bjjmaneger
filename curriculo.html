@@ -45,7 +45,7 @@
                         </div>
                     </div>
                     <div class="flex-1 overflow-y-auto hide-scrollbar" id="lista-alunos">
-                        <div class="p-8 text-center text-slate-400 text-sm font-medium">Buscando guerreiros...</div>
+                        <div class="p-8 text-center text-slate-400 text-sm font-medium">Buscando atletas...</div>
                     </div>
                 </div>
 
@@ -295,7 +295,7 @@
                 alunosCache.sort((a, b) => a.nome.localeCompare(b.nome));
                 renderizarListaAlunos(alunosCache);
             } catch (err) {
-                document.getElementById('lista-alunos').innerHTML = `<p class='text-center p-5 text-rose-500'>Erro ao carregar guerreiros.</p>`;
+                document.getElementById('lista-alunos').innerHTML = `<p class='text-center p-5 text-rose-500'>Erro ao carregar atletas.</p>`;
             }
         }
 

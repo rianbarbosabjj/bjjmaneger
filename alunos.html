@@ -172,7 +172,7 @@
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">E-mail</label>
-                            <input type="email" id="aluno-email" placeholder="guerreiro@email.com" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none transition-all">
+                            <input type="email" id="aluno-email" placeholder="xxxxx@email.com" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none transition-all">
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Endereço Completo</label>
@@ -450,7 +450,7 @@
 
             tabela.innerHTML = '';
             if(filtrados.length === 0) {
-                tabela.innerHTML = "<tr><td colspan='7' class='text-center py-12 text-slate-400'>Nenhum guerreiro encontrado.</td></tr>";
+                tabela.innerHTML = "<tr><td colspan='7' class='text-center py-12 text-slate-400'>Nenhum atleta encontrado.</td></tr>";
                 return;
             }
 
@@ -545,7 +545,7 @@
 
         window.salvarAluno = async function() {
             const nome = document.getElementById('aluno-nome').value.toUpperCase();
-            if(!nome) return alert("O Nome do guerreiro é obrigatório!");
+            if(!nome) return alert("O Nome do(a) atleta é obrigatório!");
 
             const dados = {
                 equipe_id: uid,
@@ -589,7 +589,7 @@
         }
 
         window.excluirAluno = async (id) => {
-            if(confirm("Deseja realmente retirar este guerreiro do seu tatame digital?")) {
+            if(confirm("Deseja realmente retirar este atleta de sua equipe?")) {
                 await deleteDoc(doc(db, "alunos", id));
                 buscarAlunosFirebase();
             }

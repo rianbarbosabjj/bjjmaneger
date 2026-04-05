@@ -395,10 +395,13 @@
                 } catch(e) { isSuper = false; }
 
                 try {
+                    let isImpersonating = false;
+
                     if (isSuper) {
                         const equipeImpersonada = sessionStorage.getItem('admin_impersonate');
                         if (equipeImpersonada) {
                             uid = equipeImpersonada; 
+                            isImpersonating = true;
                             
                             // Cria a faixa de suporte no topo
                             const faixaSuporte = document.createElement('div');
@@ -408,12 +411,10 @@
                                 <button onclick="sairModoSuporte()" class="bg-white text-rose-600 px-2 py-0.5 rounded hover:bg-rose-100 transition-colors pointer-events-auto">Sair do Modo Suporte</button>
                             `;
                             document.body.prepend(faixaSuporte);
-
-                        } else {
-                            window.location.href = "super_admin.html";
-                            return;
                         }
-                    } else {
+                    }
+
+                    if (!isImpersonating) {
                         uid = user.uid;
                         const docMestre = await getDoc(doc(db, "equipes", uid));
                         if (!docMestre.exists()) {
@@ -434,7 +435,7 @@
                     
                     if (docSnap.exists()) {
                         const lblCargo = document.getElementById('lbl-cargo');
-                        if(lblCargo) lblCargo.innerText = isSuper ? "SUPER ADMIN (SUPORTE)" : "Mestre / Administrador";
+                        if(lblCargo) lblCargo.innerText = (isSuper && isImpersonating) ? "SUPER ADMIN (SUPORTE)" : "Mestre / Administrador";
                         document.getElementById('btn-config-equipe').classList.remove('hidden');
                         dadosEquipe = docSnap.data();
                     } else {
@@ -449,7 +450,9 @@
 
                     if (dadosEquipe) {
                         // 🔒 TRAVA DE SEGURANÇA (Verifica se está bloqueado)
-                        if (dadosEquipe.status_plano === 'BLOQUEADO') {
+                        // Ignora o bloqueio APENAS SE você for super admin e estiver impersonando para arrumar o sistema. 
+                        // Se você é o dono da conta (não impersonando) e for bloqueado, bloqueia.
+                        if (dadosEquipe.status_plano === 'BLOQUEADO' && !isImpersonating) {
                             document.getElementById('interface-sistema').classList.add('hidden');
                             document.getElementById('tela-bloqueio').classList.remove('hidden');
                             document.getElementById('tela-bloqueio').classList.add('flex');

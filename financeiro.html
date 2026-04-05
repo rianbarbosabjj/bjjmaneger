@@ -902,7 +902,7 @@
             if(a._calc.status === 'PAGO') {
                 msg = `Oss, ${a.nome}! Tudo bem? Passando para confirmar o recebimento da sua mensalidade de *${mesRef}* no valor de R$ ${valorFomatado}. Muito obrigado por fortalecer o nosso tatame! ${equipeNomeGlobal}.`;
             } else {
-                msg = `Oss, ${a.nome}! Tudo bem guerreiro(a)? Passando só para lembrar da sua mensalidade de *${mesRef}* (R$ ${valorFomatado}). Qualquer dúvida, é só chamar. Tamo junto! ${equipeNomeGlobal}.`;
+                msg = `Oss, ${a.nome}! Tudo bem atleta? Passando só para lembrar da sua mensalidade de *${mesRef}* (R$ ${valorFomatado}). Qualquer dúvida, é só chamar. Tamo junto! ${equipeNomeGlobal}.`;
             }
             window.open(`https://api.whatsapp.com/send?phone=55${numero}&text=${encodeURIComponent(msg)}`, '_blank');
         }

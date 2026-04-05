@@ -267,7 +267,6 @@
         const tipoAcesso = paramsUrl.get('tipo'); 
         const equipeId = paramsUrl.get('equipe');
 
-        let quantidadeAlunosAtual = 0;
         let ficheiroFotoSelecionado = null;
 
         // --- SISTEMA DE TOASTS ---
@@ -351,12 +350,10 @@
                     document.getElementById('form-prof').classList.remove('hidden');
                 } else {
                     document.getElementById('form-aluno').classList.remove('hidden');
-                    const qAlunos = query(collection(db, "alunos"), where("equipe_id", "==", equipeId));
-                    const snapAlunos = await getDocs(qAlunos);
-                    quantidadeAlunosAtual = snapAlunos.size;
                 }
 
             } catch (e) {
+                console.error("Erro no carregamento:", e);
                 document.getElementById('cabecalho-form').innerHTML = `<h2 class="text-rose-500 font-black text-xl">Erro de conexão</h2>`;
             }
         };
@@ -393,9 +390,10 @@
                 return showToast("É obrigatório concordar com os termos no final.", "error");
             }
 
+            // GERA UMA MATRÍCULA SEGURA SEM LER O BANCO DE DADOS
             const anoAtual = new Date().getFullYear();
-            const proximaMatriculaNum = quantidadeAlunosAtual + 1;
-            const novaMatriculaStr = anoAtual + proximaMatriculaNum.toString().padStart(4, '0');
+            const numeroAleatorio = Math.floor(Math.random() * 9000) + 1000; // Gera 4 dígitos ex: 4521
+            const novaMatriculaStr = anoAtual.toString() + numeroAleatorio.toString();
 
             const btn = document.getElementById('btn-salvar');
             btn.innerHTML = "<span class='mr-2 text-xl'>⏳</span> A SALVAR DADOS...";
@@ -442,7 +440,7 @@
                 }
 
                 document.getElementById('form-aluno').innerHTML = `
-                    <div class="bg-emerald-50 border border-emerald-200 p-10 rounded-3xl text-center shadow-lg">
+                    <div class="bg-emerald-50 border border-emerald-200 p-10 rounded-3xl text-center shadow-lg mt-8">
                         <span class="text-6xl mb-4 block">✅</span>
                         <h2 class="text-2xl font-black text-emerald-800 uppercase">Matrícula Concluída!</h2>
                         <p class="text-emerald-600 font-medium mt-2">Bem-vindo(a) à equipe, ${nome}.</p>
@@ -485,7 +483,7 @@
                 await signOut(auth);
 
                 document.getElementById('form-prof').innerHTML = `
-                    <div class="bg-indigo-50 border border-indigo-200 p-10 rounded-3xl text-center shadow-lg">
+                    <div class="bg-indigo-50 border border-indigo-200 p-10 rounded-3xl text-center shadow-lg mt-8">
                         <span class="text-6xl mb-4 block">🤝</span>
                         <h2 class="text-2xl font-black text-indigo-800 uppercase">Acesso Criado!</h2>
                         <p class="text-indigo-600 font-medium mt-2">O seu e-mail <b>${email}</b> agora tem acesso ao sistema da equipe.</p>

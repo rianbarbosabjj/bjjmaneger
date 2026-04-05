@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Planos e Assinatura | BJJ Manager</title>
+    
+    <link rel="icon" type="image/png" href="logo_bjj_maneger.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="flex flex-col h-[100dvh] overflow-hidden text-slate-800 bg-[#F8FAFC]">
+
+    <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
+    <div class="w-full bg-slate-900 p-3 text-center relative z-50 shrink-0 shadow-md flex items-center justify-center h-14">
+        <a href="dashboard.html" class="absolute left-4 top-1.5 transition-opacity hover:opacity-80 flex items-center text-slate-400 hover:text-white text-xs font-bold uppercase tracking-widest h-10">
+            <span class="mr-2 text-lg leading-none">«</span> Voltar
+        </a>
+        <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest hidden sm:inline-block">Assinatura do Sistema</span>
+    </div>
+
+    <main class="flex-1 overflow-y-auto p-4 md:p-8 pb-10 hide-scrollbar">
+        <div class="max-w-5xl mx-auto">
+            
+            <div id="card-status-assinatura" class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 mb-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-4 text-center md:text-left flex-col md:flex-row">
+                    <div id="status-icon" class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl shadow-inner">
+                        ✅
+                    </div>
+                    <div>
+                        <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sua Assinatura Atual</h2>
+                        <h3 id="plano-nome" class="text-2xl font-black text-slate-800 uppercase">Carregando...</h3>
+                        <p id="plano-vencimento" class="text-sm font-bold text-slate-500 italic">Verificando validade...</p>
+                    </div>
+                </div>
+                <div class="text-center md:text-right">
+                    <span id="status-badge" class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-emerald-500 text-white shadow-lg shadow-emerald-500/20">Ativa</span>
+                </div>
+            </div>
+
+            <h2 class="text-center font-black text-slate-400 uppercase tracking-[0.2em] text-xs mb-8">Nossos Planos</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 flex flex-col hover:-translate-y-2 transition-transform duration-300">
+                    <h4 class="font-black text-slate-400 uppercase tracking-widest text-[10px] mb-2">Até 30 Alunos</h4>
+                    <h3 class="text-2xl font-black text-slate-800 mb-4">INICIANTE</h3>
+                    <div class="flex items-baseline gap-1 mb-6">
+                        <span class="text-slate-400 text-sm font-bold">R$</span>
+                        <span class="text-4xl font-black text-slate-800">49</span>
+                        <span class="text-slate-400 text-sm font-bold">/mês</span>
+                    </div>
+                    <ul class="space-y-3 mb-8 text-sm font-medium text-slate-500 flex-1">
+                        <li class="flex items-center gap-2 text-slate-700"><span>✅</span> Gestão de Turmas</li>
+                        <li class="flex items-center gap-2 text-slate-700"><span>✅</span> Carteirinha Digital</li>
+                        <li class="flex items-center gap-2"><span>❌</span> Suporte Prioritário</li>
+                    </ul>
+                    <a href="https://wa.me/5521981716074?text=Olá! Quero assinar o Plano Iniciante do BJJ Manager." target="_blank" class="w-full py-4 rounded-2xl bg-slate-100 hover:bg-slate-800 hover:text-white text-slate-800 font-black text-[10px] uppercase tracking-widest text-center transition-all">Assinar</a>
+                </div>
+
+                <div class="bg-white rounded-3xl shadow-2xl border-2 border-cyan-500 p-8 flex flex-col scale-105 relative z-10 hover:-translate-y-2 transition-transform duration-300">
+                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-cyan-500 text-white px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-widest shadow-lg">Mais Popular</div>
+                    <h4 class="font-black text-cyan-600 uppercase tracking-widest text-[10px] mb-2">Até 100 Alunos</h4>
+                    <h3 class="text-2xl font-black text-slate-800 mb-4">PROFISSIONAL</h3>
+                    <div class="flex items-baseline gap-1 mb-6">
+                        <span class="text-slate-400 text-sm font-bold">R$</span>
+                        <span class="text-4xl font-black text-slate-800">89</span>
+                        <span class="text-slate-400 text-sm font-bold">/mês</span>
+                    </div>
+                    <ul class="space-y-3 mb-8 text-sm font-medium text-slate-500 flex-1">
+                        <li class="flex items-center gap-2 text-slate-700"><span>✅</span> Tudo do Iniciante</li>
+                        <li class="flex items-center gap-2 text-slate-700"><span>✅</span> Registro de Co-Admins</li>
+                        <li class="flex items-center gap-2 text-slate-700"><span>✅</span> Suporte por WhatsApp</li>
+                    </ul>
+                    <a href="https://wa.me/5521981716074?text=Olá! Quero assinar o Plano Profissional do BJJ Manager." target="_blank" class="w-full py-4 rounded-2xl bg-cyan-500 hover:bg-cyan-600 text-white font-black text-[10px] uppercase tracking-widest text-center transition-all shadow-lg shadow-cyan-500/30">Upgrade Agora</a>
+                </div>
+
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 flex flex-col hover:-translate-y-2 transition-transform duration-300">
+                    <h4 class="font-black text-slate-400 uppercase tracking-widest text-[10px] mb-2">Alunos Ilimitados</h4>
+                    <h3 class="text-2xl font-black text-slate-800 mb-4">ELITE / FILIAIS</h3>
+                    <div class="flex items-baseline gap-1 mb-6">
+                        <span class="text-slate-400 text-sm font-bold">R$</span>
+                        <span class="text-4xl font-black text-slate-800">149</span>
+                        <span class="text-slate-400 text-sm font-bold">/mês</span>
+                    </div>
+                    <ul class="space-y-3 mb-8 text-sm font-medium text-slate-500 flex-1">
+                        <li class="flex items-center gap-2 text-slate-700"><span>✅</span> Todas as Funções</li>
+                        <li class="flex items-center gap-2 text-slate-700"><span>✅</span> Múltiplas Sedes</li>
+                        <li class="flex items-center gap-2 text-slate-700"><span>✅</span> Auditoria Completa</li>
+                    </ul>
+                    <a href="https://wa.me/5521981716074?text=Olá! Quero assinar o Plano Elite do BJJ Manager." target="_blank" class="w-full py-4 rounded-2xl bg-slate-100 hover:bg-slate-800 hover:text-white text-slate-800 font-black text-[10px] uppercase tracking-widest text-center transition-all">Assinar</a>
+                </div>
+
+            </div>
+
+            <div class="bg-slate-900 rounded-3xl p-6 md:p-8 text-white shadow-2xl">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="font-black uppercase tracking-[0.2em] text-xs">Suporte Financeiro</h3>
+                    <span class="text-slate-500 text-xs">Atualizado em tempo real</span>
+                </div>
+                <p class="text-sm text-slate-400 mb-6">Se você já realizou o pagamento e o sistema ainda consta como pendente, envie o comprovante diretamente para o nosso financeiro.</p>
+                <a href="https://wa.me/5521981716074?text=Olá! Acabei de pagar a mensalidade do sistema e gostaria de agilizar a ativação." target="_blank" class="inline-flex items-center gap-3 bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 px-8 rounded-2xl transition-all uppercase tracking-widest text-[10px]">
+                    <span>📱</span> Enviar Comprovante via WhatsApp
+                </a>
+            </div>
+
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
+            authDomain: "bjj-maneger.firebaseapp.com",
+            projectId: "bjj-maneger",
+            storageBucket: "bjj-maneger.firebasestorage.app",
+            messagingSenderId: "415548255893",
+            appId: "1:415548255893:web:61186696fe097be870759c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                let uid = user.uid;
+                
+                // Tenta buscar como equipe mestre primeiro
+                let equipeDoc = await getDoc(doc(db, "equipes", uid));
+                
+                // Se não encontrar, tenta buscar se é colaborador para achar a equipe pai
+                if (!equipeDoc.exists()) {
+                    const colabSnap = await getDoc(doc(db, "colaboradores", uid));
+                    if(colabSnap.exists()) {
+                        uid = colabSnap.data().equipe_id;
+                        equipeDoc = await getDoc(doc(db, "equipes", uid));
+                    }
+                }
+
+                if (equipeDoc.exists()) {
+                    const dados = equipeDoc.data();
+                    
+                    // Atualiza Nome do Plano
+                    document.getElementById('plano-nome').innerText = dados.nome_plano || "Plano Grátis";
+                    
+                    // Atualiza Vencimento
+                    if (dados.data_vencimento_plano) {
+                        const data = new Date(dados.data_vencimento_plano);
+                        document.getElementById('plano-vencimento').innerText = `Válido até: ${data.toLocaleDateString('pt-BR')}`;
+                    } else {
+                        document.getElementById('plano-vencimento').innerText = "Vencimento não definido";
+                    }
+
+                    // Atualiza Status Visual
+                    const badge = document.getElementById('status-badge');
+                    const icon = document.getElementById('status-icon');
+                    
+                    if (dados.status_plano === 'BLOQUEADO') {
+                        badge.innerText = "BLOQUEADO";
+                        badge.className = "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-rose-500 text-white shadow-lg shadow-rose-500/20";
+                        icon.innerText = "🔒";
+                        icon.className = "w-16 h-16 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-3xl shadow-inner";
+                    } else {
+                        badge.innerText = "ATIVO";
+                        badge.className = "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-emerald-500 text-white shadow-lg shadow-emerald-500/20";
+                        icon.innerText = "✅";
+                        icon.className = "w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl shadow-inner";
+                    }
+                }
+            } else {
+                window.location.href = "index.html";
+            }
+        });
+    </script>
+</body>
+</html>

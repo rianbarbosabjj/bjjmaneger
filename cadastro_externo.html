@@ -219,23 +219,64 @@
                     </div>
                     
                     <div class="space-y-5">
-                        <p class="text-sm text-slate-500 font-medium leading-relaxed">Crie o seu acesso para entrar no sistema como Co-Administrador(a) da equipe.</p>
+                        <p class="text-sm text-slate-500 font-medium leading-relaxed">Crie o seu acesso e preencha os seus dados para entrar no sistema da equipe.</p>
                         
-                        <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Seu E-mail Profissional *</label>
-                            <input type="email" id="prof-email" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700" placeholder="email@exemplo.com">
-                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="md:col-span-2">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Nome Completo *</label>
+                                <input type="text" id="prof-nome" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700 uppercase" placeholder="Digite seu nome...">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">CPF *</label>
+                                <input type="text" id="prof-cpf" maxlength="14" oninput="mascaraCPF(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700" placeholder="000.000.000-00">
+                            </div>
 
-                        <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Criar Senha *</label>
-                            <input type="password" id="prof-senha" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700" placeholder="Mínimo 8 caracteres">
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">WhatsApp / Telefone *</label>
+                                <input type="text" id="prof-tel" maxlength="15" oninput="mascaraTelefone(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700" placeholder="(00) 00000-0000">
+                            </div>
+
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">E-mail Profissional *</label>
+                                <input type="email" id="prof-email" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700" placeholder="email@exemplo.com">
+                            </div>
+
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Criar Senha *</label>
+                                <input type="password" id="prof-senha" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700" placeholder="Mínimo 8 caracteres">
+                            </div>
                         </div>
+                    </div>
+                </div>
+
+                <div class="bg-indigo-50 rounded-3xl shadow-sm border border-indigo-200 p-6 md:p-8 space-y-6">
+                    <div class="flex items-center gap-2 border-b border-indigo-200/50 pb-4">
+                        <span class="text-xl">🔐</span>
+                        <h3 class="font-black text-indigo-900 uppercase tracking-widest text-sm">Termos e Sigilo (LGPD)</h3>
+                    </div>
+                    
+                    <div class="space-y-4 text-sm text-indigo-900">
+                        <p>Como Co-Administrador(a), você terá acesso a dados pessoais e sensíveis dos alunos da equipe.</p>
+                        <ul class="list-disc pl-5 space-y-2 font-medium">
+                            <li>Comprometo-me a manter <b>absoluto sigilo</b> sobre todas as informações cadastradas no sistema.</li>
+                            <li>Utilizarei os dados única e exclusivamente para a gestão desportiva e administrativa da equipe.</li>
+                            <li>É expressamente proibido compartilhar, vender ou utilizar as imagens e contatos dos alunos para fins não autorizados.</li>
+                            <li>Estou ciente das responsabilidades legais e sanções estabelecidas pela Lei Geral de Proteção de Dados (Lei nº 13.853/2019).</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl border border-indigo-100 shadow-sm space-y-4 mt-6">
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" id="prof-lgpd-termos" class="w-6 h-6 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500">
+                            <span class="text-sm font-black text-slate-800 uppercase tracking-widest">Li e Aceito os Termos de Sigilo <span class="text-red-500">*</span></span>
+                        </label>
                     </div>
                 </div>
 
                 <div class="pt-6 pb-8">
                     <button onclick="salvarProfessor()" id="btn-salvar-prof" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-black py-5 rounded-2xl shadow-lg transition-transform transform hover:-translate-y-1 uppercase tracking-widest text-lg flex items-center justify-center">
-                        <span class="mr-2">🔐</span> CRIAR ACESSO
+                        <span class="mr-2">🚀</span> CRIAR ACESSO
                     </button>
                 </div>
             </div>
@@ -267,6 +308,7 @@
         const tipoAcesso = paramsUrl.get('tipo'); 
         const equipeId = paramsUrl.get('equipe');
 
+        let quantidadeAlunosAtual = 0;
         let ficheiroFotoSelecionado = null;
 
         // --- SISTEMA DE TOASTS ---
@@ -350,6 +392,11 @@
                     document.getElementById('form-prof').classList.remove('hidden');
                 } else {
                     document.getElementById('form-aluno').classList.remove('hidden');
+                    
+                    // Conta quantos alunos já tem para gerar a matrícula sequencial
+                    const qAlunos = query(collection(db, "alunos"), where("equipe_id", "==", equipeId));
+                    const snapAlunos = await getDocs(qAlunos);
+                    quantidadeAlunosAtual = snapAlunos.size;
                 }
 
             } catch (e) {
@@ -390,7 +437,7 @@
                 return showToast("É obrigatório concordar com os termos no final.", "error");
             }
 
-            // GERA UMA MATRÍCULA SEGURA SEM LER O BANCO DE DADOS
+            // GERA UMA MATRÍCULA SEGURA SEM LER O BANCO DE DADOS (Evita erro de permissão externa)
             const anoAtual = new Date().getFullYear();
             const numeroAleatorio = Math.floor(Math.random() * 9000) + 1000; // Gera 4 dígitos ex: 4521
             const novaMatriculaStr = anoAtual.toString() + numeroAleatorio.toString();
@@ -455,13 +502,19 @@
             }
         }
 
-        // --- CRIAR ACESSO DO CO-ADMINISTRADOR (COM SENHA) ---
+        // --- CRIAR ACESSO DO CO-ADMINISTRADOR (COM SENHA E DADOS COMPLETOS) ---
         window.salvarProfessor = async function() {
+            const nome = document.getElementById('prof-nome').value.toUpperCase().trim();
+            const cpf = document.getElementById('prof-cpf').value.trim();
+            const tel = document.getElementById('prof-tel').value.trim();
             const email = document.getElementById('prof-email').value.trim().toLowerCase();
             const senha = document.getElementById('prof-senha').value;
+            const concordo = document.getElementById('prof-lgpd-termos').checked;
             
-            if(!email || !email.includes('@')) return showToast("Digite um e-mail válido!", "error");
+            if(!nome || !cpf || !tel || !email) return showToast("Preencha todos os dados pessoais e de contato!", "error");
+            if(!email.includes('@')) return showToast("Digite um e-mail válido!", "error");
             if(senha.length < 8) return showToast("A senha deve ter no mínimo 8 caracteres.", "error");
+            if(!concordo) return showToast("Você deve aceitar os termos de sigilo (LGPD).", "error");
 
             const btn = document.getElementById('btn-salvar-prof');
             btn.innerHTML = "<span class='mr-2 text-xl'>⏳</span> A REGISTRAR...";
@@ -474,8 +527,12 @@
 
                 // 2. Salva o documento no Firestore associando ele à Equipe
                 await setDoc(doc(db, "colaboradores", uidProfessor), {
+                    nome: nome,
+                    cpf: cpf,
+                    telefone: tel,
                     email: email,
                     equipe_id: equipeId,
+                    lgpd_aceite: true,
                     data_cadastro: new Date().toISOString()
                 });
                 
@@ -486,7 +543,7 @@
                     <div class="bg-indigo-50 border border-indigo-200 p-10 rounded-3xl text-center shadow-lg mt-8">
                         <span class="text-6xl mb-4 block">🤝</span>
                         <h2 class="text-2xl font-black text-indigo-800 uppercase">Acesso Criado!</h2>
-                        <p class="text-indigo-600 font-medium mt-2">O seu e-mail <b>${email}</b> agora tem acesso ao sistema da equipe.</p>
+                        <p class="text-indigo-600 font-medium mt-2">Bem-vindo(a), ${nome}. O seu acesso foi configurado com sucesso.</p>
                         <a href="index.html" class="inline-block mt-6 px-6 py-4 bg-indigo-500 text-white font-black uppercase tracking-widest rounded-xl text-xs shadow-sm hover:bg-indigo-600 transition-colors">Fazer Login no Sistema</a>
                     </div>
                 `;
@@ -496,7 +553,7 @@
                 } else {
                     showToast("Erro ao criar acesso. Tente novamente.", "error");
                 }
-                btn.innerHTML = "<span class='mr-2'>🔐</span> CRIAR ACESSO";
+                btn.innerHTML = "<span class='mr-2'>🚀</span> CRIAR ACESSO";
                 btn.disabled = false;
             }
         };

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BJJ Manager | Gestão Profissional de Equipes</title>
+    
+    <meta property="og:title" content="BJJ Manager | Gestão Profissional de Equipes">
+    <meta property="og:description" content="Ecossistema completo para gestão de academias de Jiu-Jitsu. Controle de alunos, financeiro e graduações.">
+    <meta property="og:image" content="https://maneger.bjjdigital.com.br/logo_bjj_maneger.png">
+    <meta property="og:url" content="https://maneger.bjjdigital.com.br">
+    <meta property="og:type" content="website">
+    
+    <link rel="icon" type="image/png" href="logo_bjj_maneger.png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0F172A; scroll-behavior: smooth; }
+        .glass-effect { background: rgba(30, 41, 59, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); }
+        .bg-gradient-bjj { background: radial-gradient(circle at top, #1e293b, #0f172a 80%); }
+        .logo-glow { filter: drop-shadow(0 0 15px rgba(6, 182, 212, 0.4)); }
+        
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Animação Pulsar para o WhatsApp */
+        @keyframes pulse-whatsapp {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+        }
+        .btn-whatsapp {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #25D366;
+            color: white;
+            border-radius: 50px;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            animation: pulse-whatsapp 2s infinite;
+        }
+        .btn-whatsapp:hover { background-color: #20ba5a; transform: scale(1.1); }
+    </style>
+</head>
+<body class="bg-gradient-bjj min-h-screen text-slate-300 overflow-x-hidden">
+
+    <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
+    <a href="https://wa.me/5521981716074?text=Olá! Gostaria de saber mais sobre o BJJ Manager." target="_blank" class="btn-whatsapp">
+        <svg class="w-8 h-8 fill-current" viewBox="0 0 24 24">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+        </svg>
+    </a>
+
+    <header class="pt-12 pb-6 flex flex-col items-center justify-center max-w-7xl mx-auto px-6">
+        <div class="mb-4">
+            <img src="logo_bjj_maneger.png" alt="BJJ Manager Logo" class="h-24 md:h-32 w-auto logo-glow transition-transform hover:scale-105 duration-500">
+        </div>
+        <div class="text-center">
+            <h1 class="text-2xl md:text-3xl font-black text-white tracking-[0.3em] uppercase">BJJ MANAGER</h1>
+            <div class="h-1 w-24 bg-cyan-500 mx-auto mt-2 rounded-full shadow-[0_0_10px_#06b6d4]"></div>
+        </div>
+        
+        <nav class="mt-8 flex gap-6 md:gap-12 text-[10px] font-black uppercase tracking-widest text-slate-500">
+            <a href="#inicio" class="hover:text-cyan-400 transition-colors">Início</a>
+            <a href="#funcionalidades" class="hover:text-cyan-400 transition-colors">Funcionalidades</a>
+            <a href="#contato" class="hover:text-cyan-400 transition-colors">Contato</a>
+            <a href="https://www.bjjdigital.com.br" target="_blank" class="hover:text-cyan-400 transition-colors">Tecnologia</a>
+        </nav>
+    </header>
+
+    <section id="inicio" class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center py-10">
+        <div class="space-y-8 text-center lg:text-left">
+            <div class="space-y-4">
+                <span class="bg-cyan-500/10 text-cyan-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-cyan-500/20">
+                    Ecossistema Completo para Gestão de Equipes
+                </span>
+                <h2 class="text-4xl lg:text-6xl font-black text-white leading-tight tracking-tighter">
+                    O controle total de sua <span class="text-cyan-500">Equipe.</span>
+                </h2>
+                <p class="text-lg text-slate-400 max-w-xl leading-relaxed mx-auto lg:mx-0 font-medium">
+                    Gestão profissional com <span class="text-white">controle financeiro, histórico de graduações e currículo de atletas</span>. Automatize processos e foque no tatame.
+                </p>
+            </div>
+
+            <div class="flex flex-wrap gap-3 justify-center lg:justify-start">
+                <a href="#funcionalidades" class="px-8 py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-2xl transition-all text-xs uppercase tracking-widest border border-slate-700">
+                    Ver Recursos
+                </a>
+            </div>
+        </div>
+
+        <div class="flex justify-center lg:justify-end">
+            <div class="glass-effect p-8 rounded-[2.5rem] w-full max-w-md shadow-2xl relative overflow-hidden border-t border-cyan-500/20">
+                <div class="text-center mb-6">
+                    <h3 class="text-2xl font-black text-white" id="titulo-form">Acesse o Sistema</h3>
+                    <p class="text-[10px] text-slate-500 mt-1 uppercase font-black tracking-[0.2em]" id="sub-form">Gestão de Equipes</p>
+                </div>
+
+                <div id="form-login" class="space-y-5">
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] font-black text-slate-400 uppercase ml-2">E-mail</label>
+                        <input type="email" id="login-email" class="w-full px-6 py-4 bg-slate-900/80 border border-slate-700 rounded-2xl text-white outline-none focus:border-cyan-500 transition-all" placeholder="seu@email.com">
+                    </div>
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between items-center ml-2 mr-2">
+                            <label class="text-[10px] font-black text-slate-400 uppercase">Senha</label>
+                            <button type="button" onclick="recuperarSenha()" class="text-[10px] font-bold text-cyan-400 hover:underline">Esqueci a senha</button>
+                        </div>
+                        <div class="relative">
+                            <input type="password" id="login-senha" class="w-full px-6 py-4 bg-slate-900/80 border border-slate-700 rounded-2xl text-white outline-none focus:border-cyan-500 transition-all pr-12" placeholder="••••••••">
+                            <button type="button" onclick="toggleSenha('login-senha', this)" class="absolute inset-y-0 right-4 flex items-center text-slate-400 hover:text-cyan-400 transition-colors outline-none focus:outline-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="button" id="btn-login" onclick="fazerLogin()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-4 rounded-2xl transition-all shadow-xl shadow-cyan-900/30 uppercase tracking-widest text-xs">
+                        Entrar
+                    </button>
+                    <div class="pt-4 border-t border-slate-700/30 text-center">
+                        <p class="text-[11px] text-slate-500">
+                            Nova academia? <button type="button" onclick="alternarForms()" class="text-cyan-400 font-bold ml-1 hover:underline">Cadastrar Agora</button>
+                        </p>
+                    </div>
+                </div>
+
+                <div id="form-cadastro" class="hidden space-y-4 max-h-[450px] overflow-y-auto pr-2 form-scroll">
+                    <div id="bloco-equipe-master" class="space-y-3">
+                        <h4 class="text-[10px] font-black text-cyan-500 uppercase tracking-widest border-b border-slate-700 pb-1">Instituição</h4>
+                        <input type="text" id="cad-equipe" class="w-full px-5 py-3 bg-slate-900/80 border border-slate-700 rounded-xl text-white outline-none focus:border-emerald-500 transition-all uppercase text-sm" placeholder="Nome da Equipe">
+                        <div>
+                            <label class="text-[9px] font-black text-slate-500 uppercase ml-2">Logo da Equipe</label>
+                            <input type="file" id="cad-logo" accept="image/*" class="w-full px-4 py-2 bg-slate-900/80 border border-slate-700 rounded-xl text-[10px] text-slate-400 file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:bg-emerald-500/10 file:text-emerald-500 cursor-pointer">
+                        </div>
+                    </div>
+                    <div class="space-y-3 pt-2">
+                        <h4 class="text-[10px] font-black text-cyan-500 uppercase tracking-widest border-b border-slate-700 pb-1">Responsável Legal</h4>
+                        <input type="text" id="cad-nome-resp" class="w-full px-5 py-3 bg-slate-900/80 border border-slate-700 rounded-xl text-white outline-none focus:border-emerald-500 transition-all text-sm" placeholder="Nome Completo">
+                        <div class="grid grid-cols-2 gap-3">
+                            <input type="text" id="cad-doc" maxlength="18" oninput="mascaraDoc(this)" class="w-full px-5 py-3 bg-slate-900/80 border border-slate-700 rounded-xl text-white outline-none focus:border-emerald-500 transition-all text-sm" placeholder="CPF ou CNPJ">
+                            <input type="tel" id="cad-tel" maxlength="15" oninput="mascaraTelefone(this)" class="w-full px-5 py-3 bg-slate-900/80 border border-slate-700 rounded-xl text-white outline-none focus:border-emerald-500 transition-all text-sm" placeholder="Whatsapp">
+                        </div>
+                    </div>
+                    <button type="button" onclick="cadastrarEquipeOuColaborador()" id="btn-cadastro" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-4 rounded-xl transition-all uppercase tracking-widest text-xs sticky bottom-0">Criar Conta</button>
+                    <div class="pt-2 text-center">
+                        <button type="button" onclick="alternarForms()" class="text-cyan-400 text-[11px] font-bold">« Voltar para Login</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="funcionalidades" class="max-w-7xl mx-auto px-6 py-24 border-t border-slate-800/50">
+        <div class="text-center mb-16">
+            <span class="bg-cyan-500/10 text-cyan-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-cyan-500/20 mb-4 inline-block">Tudo o que você precisa</span>
+            <h2 class="text-3xl md:text-5xl font-black text-white tracking-tighter uppercase">Tecnologia para o Tatame</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="p-8 rounded-[2rem] bg-slate-800/20 border border-slate-700/40 hover:border-cyan-500/50 transition-all group">
+                <div class="w-12 h-12 bg-cyan-500/10 rounded-xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">🥋</div>
+                <h4 class="text-white font-black text-lg uppercase">Gestão de Turmas</h4>
+                <p class="text-slate-500 text-sm mt-3">Controle total de alunos, frequências e um robô inteligente que distribui atletas por idade.</p>
+            </div>
+            <div class="p-8 rounded-[2rem] bg-slate-800/20 border border-slate-700/40 hover:border-emerald-500/50 transition-all group">
+                <div class="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">💰</div>
+                <h4 class="text-white font-black text-lg uppercase">Financeiro Blindado</h4>
+                <p class="text-slate-500 text-sm mt-3">Gere faturas, envie cobranças via WhatsApp e emita relatórios de Lucro Real em PDF.</p>
+            </div>
+            <div class="p-8 rounded-[2rem] bg-slate-800/20 border border-slate-700/40 hover:border-purple-500/50 transition-all group">
+                <div class="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">🗓️</div>
+                <h4 class="text-white font-black text-lg uppercase">Graduações</h4>
+                <p class="text-slate-500 text-sm mt-3">Linha do tempo completa. Acompanhe automaticamente o tempo de cada atleta na faixa e graus.</p>
+            </div>
+            <div class="p-8 rounded-[2rem] bg-slate-800/20 border border-slate-700/40 hover:border-amber-500/50 transition-all group">
+                <div class="w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">🎓</div>
+                <h4 class="text-white font-black text-lg uppercase">Diplomas OFICIAIS</h4>
+                <p class="text-slate-500 text-sm mt-3">Gere certificados em PDF com design premium e validador digital anti-fraude via QR Code.</p>
+            </div>
+            <div class="p-8 rounded-[2rem] bg-slate-800/20 border border-slate-700/40 hover:border-rose-500/50 transition-all group">
+                <div class="w-12 h-12 bg-rose-500/10 rounded-xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">🏆</div>
+                <h4 class="text-white font-black text-lg uppercase">Competições</h4>
+                <p class="text-slate-500 text-sm mt-3">Registe os pódios, controle carteirinhas de federações e exporte currículos desportivos.</p>
+            </div>
+            <div class="p-8 rounded-[2rem] bg-slate-800/20 border border-slate-700/40 hover:border-indigo-500/50 transition-all group">
+                <div class="w-12 h-12 bg-indigo-500/10 rounded-xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">📱</div>
+                <h4 class="text-white font-black text-lg uppercase">Matrícula Digital</h4>
+                <p class="text-slate-500 text-sm mt-3">Envie um link para o aluno. Ele preenche os dados, aceita a LGPD e entra direto no seu sistema.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-12 border-t border-slate-800/50 text-center">
+        <p class="text-[10px] font-black text-slate-600 uppercase">© 2026 BJJ DIGITAL - O FUTURO DO JIU-JITSU</p>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"; 
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
+            authDomain: "bjj-maneger.firebaseapp.com",
+            projectId: "bjj-maneger",
+            storageBucket: "bjj-maneger.firebasestorage.app",
+            messagingSenderId: "415548255893",
+            appId: "1:415548255893:web:61186696fe097be870759c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // --- SISTEMA DE TOASTS ---
+        window.showToast = function(message, type = 'error') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : 'bg-slate-800');
+            const icon = type === 'success' ? '✅' : (type === 'error' ? '🚨' : 'ℹ️');
+            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transform transition-all duration-300 translate-x-full opacity-0 flex items-center gap-3 font-bold text-sm z-50 pointer-events-auto max-w-sm`;
+            toast.innerHTML = `<span class="text-xl">${icon}</span> <span class="flex-1">${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('translate-x-full', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 4500);
+        }
+
+        // --- OLHINHO DA SENHA ---
+        window.toggleSenha = function(inputId, btnElement) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                btnElement.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>`;
+            } else {
+                input.type = "password";
+                btnElement.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>`;
+            }
+        }
+
+        // --- MÁSCARAS ---
+        window.mascaraDoc = (i) => {
+            let v = i.value.replace(/\D/g, "");
+            if (v.length <= 11) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+            else v = v.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
+            i.value = v;
+        };
+        window.mascaraTelefone = (i) => {
+            let v = i.value.replace(/\D/g, "");
+            v = v.replace(/^(\d{2})(\d)/g, "($1) $2");
+            v = v.replace(/(\d)(\d{4})$/, "$1-$2");
+            i.value = v;
+        };
+        window.mascaraCEP = (i) => {
+            let v = i.value.replace(/\D/g, "");
+            v = v.replace(/^(\d{5})(\d)/, "$1-$2");
+            i.value = v;
+        };
+        window.buscarCEP = async (cep) => {
+            const cleanCep = cep.replace(/\D/g, "");
+            if (cleanCep.length !== 8) return;
+            const r = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`).then(res => res.json());
+            if (!r.erro) {
+                document.getElementById('cad-rua').value = r.logradouro || "";
+                document.getElementById('cad-bairro').value = r.bairro || "";
+                document.getElementById('cad-cidade').value = r.localidade || "";
+                document.getElementById('cad-uf').value = r.uf || "";
+            }
+        };
+
+        window.alternarForms = function() {
+            document.getElementById('form-login').classList.toggle('hidden');
+            document.getElementById('form-cadastro').classList.toggle('hidden');
+        }
+
+        window.fazerLogin = async function() {
+            const email = document.getElementById('login-email').value;
+            const senha = document.getElementById('login-senha').value;
+            const btn = document.getElementById('btn-login');
+            if(!email || !senha) return showToast("Preencha todos os campos.");
+            btn.disabled = true; btn.innerText = "Entrando...";
+            try {
+                const uc = await signInWithEmailAndPassword(auth, email, senha);
+                if (!uc.user.emailVerified) {
+                    await signOut(auth);
+                    showToast("E-mail não verificado.");
+                    btn.disabled = false; btn.innerText = "Entrar";
+                    return;
+                }
+                window.location.href = "dashboard.html";
+            } catch (e) {
+                showToast("Credenciais incorretas.");
+                btn.disabled = false; btn.innerText = "Entrar";
+            }
+        }
+
+        window.cadastrarEquipeOuColaborador = async function() {
+            const email = document.getElementById('cad-email').value;
+            const senha = document.getElementById('cad-senha').value;
+            const equipe = document.getElementById('cad-equipe').value;
+            if(!email || !senha || !equipe) return showToast("Dados obrigatórios faltando.");
+            try {
+                const uc = await createUserWithEmailAndPassword(auth, email, senha);
+                let urlLogo = "";
+                const fl = document.getElementById('cad-logo').files[0];
+                if (fl) {
+                    const refL = ref(storage, `equipes_logos/${uc.user.uid}`);
+                    await uploadBytes(refL, fl);
+                    urlLogo = await getDownloadURL(refL);
+                }
+                await setDoc(doc(db, "equipes", uc.user.uid), {
+                    nome_equipe: equipe,
+                    email_responsavel: email,
+                    url_logo: urlLogo,
+                    data_criacao: new Date().toISOString()
+                });
+                await sendEmailVerification(uc.user);
+                await signOut(auth);
+                showToast("Sucesso! Verifique seu e-mail.", "success");
+                setTimeout(() => window.location.reload(), 3000);
+            } catch (e) { showToast("Erro no cadastro."); }
+        }
+
+        window.recuperarSenha = async function() {
+            const email = document.getElementById('login-email').value;
+            if(!email) return showToast("Digite seu e-mail.");
+            await sendPasswordResetEmail(auth, email);
+            showToast("E-mail de recuperação enviado!", "success");
+        }
+    </script>
+</body>
+</html>

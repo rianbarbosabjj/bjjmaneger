@@ -33,8 +33,9 @@
         
         <div class="max-w-3xl mx-auto" id="container-principal">
             
-            <div class="flex justify-center mb-8 mt-4">
-                <img src="topo_curriculo.png" alt="Logo da Equipe" class="w-full max-w-lg object-contain drop-shadow-sm" onerror="this.style.display='none'">
+            <div class="flex justify-center mb-8 mt-4 min-h-[5rem]">
+                <img id="logo-equipe" src="" alt="Logo da Equipe" class="h-20 md:h-28 w-auto object-contain drop-shadow-sm hidden">
+                <div id="fallback-logo" class="w-24 h-24 rounded-full bg-slate-800 text-white flex items-center justify-center text-4xl font-black hidden shadow-md"></div>
             </div>
 
             <div class="mb-8 text-center">
@@ -322,6 +323,24 @@
                         uid = colabSnap.data().equipe_id;
                     }
                 }
+                
+                // --- CARREGA A LOGO DA EQUIPE ---
+                try {
+                    const docEquipe = await getDoc(doc(db, "equipes", uid));
+                    if (docEquipe.exists()) {
+                        const dadosEquipe = docEquipe.data();
+                        if (dadosEquipe.url_logo) {
+                            const imgEl = document.getElementById('logo-equipe');
+                            imgEl.src = dadosEquipe.url_logo;
+                            imgEl.classList.remove('hidden');
+                        } else {
+                            const fallEl = document.getElementById('fallback-logo');
+                            fallEl.innerText = dadosEquipe.nome_equipe ? dadosEquipe.nome_equipe.charAt(0).toUpperCase() : 'E';
+                            fallEl.classList.remove('hidden');
+                        }
+                    }
+                } catch(e) { console.log("Erro ao carregar logo"); }
+
                 contarAlunos(); 
             } else {
                 window.location.href = "index.html";

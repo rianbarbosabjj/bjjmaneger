@@ -76,11 +76,19 @@
                     </div>
                     
                     <div class="space-y-5">
-                        <div class="md:col-span-2">
-                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Nome Completo *</label>
-                            <input type="text" id="prof-nome" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 font-bold text-slate-700 uppercase">
-                        </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="md:col-span-2">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Nome Completo *</label>
+                                <input type="text" id="prof-nome" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 font-bold text-slate-700 uppercase">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">CPF *</label>
+                                <input type="text" id="prof-cpf" maxlength="14" oninput="mascaraCPF(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 font-bold text-slate-700" placeholder="000.000.000-00">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">WhatsApp / Telefone *</label>
+                                <input type="text" id="prof-tel" maxlength="15" oninput="mascaraTelefone(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 font-bold text-slate-700" placeholder="(00) 00000-0000">
+                            </div>
                             <div>
                                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">E-mail Profissional *</label>
                                 <input type="email" id="prof-email" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 font-bold text-slate-700">
@@ -99,15 +107,15 @@
                         <h3 class="font-black text-indigo-900 uppercase tracking-widest text-sm">Termos e Sigilo (LGPD)</h3>
                     </div>
                     
-                    <p class="text-sm text-indigo-900 leading-relaxed">
-                        Ao se tornar um Co-Administrador(a), você terá acesso a dados confidenciais e compromete-se a utilizá-los exclusivamente para fins administrativos da equipe.
-                    </p>
+                    <div class="space-y-4 text-sm text-indigo-900 leading-relaxed">
+                        <p>Ao tornar-se Co-Administrador(a), você assume a responsabilidade legal pelo sigilo e proteção dos dados dos alunos, comprometendo-se a utilizá-los exclusivamente para fins administrativos da equipe conforme a Lei Geral de Proteção de Dados.</p>
+                    </div>
 
                     <div class="bg-white p-6 rounded-xl border border-indigo-100 shadow-sm">
                         <label class="flex items-center gap-3 cursor-pointer">
                             <input type="checkbox" id="prof-lgpd-termos" class="w-6 h-6 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500">
                             <span class="text-sm font-black text-slate-800 uppercase tracking-widest leading-relaxed">
-                                Li e aceito os <a href="termo.html" target="_blank" class="text-indigo-600 underline decoration-2 underline-offset-2 hover:text-indigo-800">Termos de Uso e Privacidade</a> *
+                                Li e aceito os <a href="termos.html" target="_blank" class="text-indigo-600 underline decoration-2 underline-offset-2 hover:text-indigo-800">Termos de Uso e Privacidade</a> *
                             </span>
                         </label>
                     </div>
@@ -144,15 +152,18 @@
         const tipoAcesso = paramsUrl.get('tipo'); 
         const equipeId = paramsUrl.get('equipe');
 
+        // --- SISTEMA DE TOASTS ---
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.className = `${type === 'success' ? 'bg-emerald-500' : 'bg-rose-500'} text-white px-6 py-4 rounded-2xl shadow-2xl transition-all duration-300 font-bold text-sm z-50 pointer-events-auto`;
+            const bgColor = type === 'success' ? 'bg-emerald-500' : 'bg-rose-500';
+            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transition-all duration-300 font-bold text-sm z-50 pointer-events-auto max-w-sm`;
             toast.innerText = message;
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 4500);
         }
 
+        // --- MÁSCARAS ---
         window.mascaraCPF = (i) => {
             let v = i.value.replace(/\D/g, "");
             v = v.replace(/(\d{3})(\d)/, "$1.$2");
@@ -161,42 +172,69 @@
             i.value = v;
         };
 
+        window.mascaraTelefone = (i) => {
+            let v = i.value.replace(/\D/g, "");
+            v = v.replace(/^(\d{2})(\d)/g, "($1) $2");
+            v = v.replace(/(\d)(\d{4})$/, "$1-$2");
+            i.value = v;
+        };
+
+        // INICIA A PÁGINA
         window.onload = async () => {
             if(!equipeId) return;
             try {
                 const docEquipe = await getDoc(doc(db, "equipes", equipeId));
                 if (docEquipe.exists()) {
                     const dados = docEquipe.data();
-                    document.getElementById('cabecalho-form').innerHTML = `<h2 class="text-2xl font-black text-slate-800 uppercase">${tipoAcesso === 'prof' ? 'Acesso ao Sistema' : 'Ficha de Matrícula'}</h2><p class='text-sm mt-1'>Equipe: <b>${dados.nome_equipe}</b></p>`;
-                    if(dados.url_logo) { document.getElementById('logo-equipe').src = dados.url_logo; document.getElementById('logo-equipe').classList.remove('hidden'); }
-                    else { document.getElementById('fallback-logo').innerText = dados.nome_equipe.charAt(0); document.getElementById('fallback-logo').classList.remove('hidden'); }
+                    document.getElementById('cabecalho-form').innerHTML = `
+                        <h2 class="text-2xl md:text-3xl font-black text-slate-800 uppercase">${tipoAcesso === 'prof' ? 'Acesso ao Sistema' : 'Ficha de Matrícula'}</h2>
+                        <p class='text-sm mt-1 text-slate-500'>Equipe: <b class="text-slate-800 uppercase">${dados.nome_equipe}</b></p>`;
+                    if(dados.url_logo) { 
+                        const img = document.getElementById('logo-equipe');
+                        img.src = dados.url_logo; 
+                        img.classList.remove('hidden'); 
+                    } else { 
+                        const fall = document.getElementById('fallback-logo');
+                        fall.innerText = dados.nome_equipe.charAt(0).toUpperCase(); 
+                        fall.classList.remove('hidden'); 
+                    }
                 }
                 if(tipoAcesso === 'prof') document.getElementById('form-prof').classList.remove('hidden');
                 else document.getElementById('form-aluno').classList.remove('hidden');
             } catch (e) { document.getElementById('cabecalho-form').innerHTML = `<h2 class="text-rose-500 font-black">Erro de conexão</h2>`; }
         };
 
-        window.salvarMatricula = async () => {
-            const nome = document.getElementById('cad-nome').value.toUpperCase().trim();
-            if (!nome || !document.getElementById('cad-lgpd-termos').checked) return showToast("Preencha os campos e confirme os dados!");
-            const mat = new Date().getFullYear().toString() + (Math.floor(Math.random() * 9000) + 1000).toString();
-            try {
-                await addDoc(collection(db, "alunos"), { equipe_id: equipeId, matricula: mat, nome, status: "ATIVO", data_cadastro: new Date().toISOString() });
-                document.getElementById('form-aluno').innerHTML = `<div class='text-center p-10 bg-emerald-50 rounded-3xl'><h2 class='text-2xl font-black text-emerald-800'>Concluído!</h2><p>Sua matrícula: ${mat}</p></div>`;
-            } catch (e) { showToast("Erro ao salvar."); }
-        };
-
         window.salvarProfessor = async () => {
             const nome = document.getElementById('prof-nome').value.toUpperCase().trim();
+            const cpf = document.getElementById('prof-cpf').value.trim();
+            const tel = document.getElementById('prof-tel').value.trim();
             const email = document.getElementById('prof-email').value.trim().toLowerCase();
             const senha = document.getElementById('prof-senha').value;
-            if(!nome || !email || senha.length < 8 || !document.getElementById('prof-lgpd-termos').checked) return showToast("Dados incompletos ou senha curta!");
+            const concordo = document.getElementById('prof-lgpd-termos').checked;
+
+            if(!nome || !cpf || !tel || !email || senha.length < 8) return showToast("Por favor, preencha todos os campos obrigatórios.");
+            if(!concordo) return showToast("Você precisa aceitar os Termos de Uso e Privacidade.");
+
+            const btn = document.getElementById('btn-salvar-prof');
+            btn.disabled = true; btn.innerHTML = "⏳ CRIANDO ACESSO...";
+
             try {
                 const cred = await createUserWithEmailAndPassword(auth, email, senha);
-                await setDoc(doc(db, "colaboradores", cred.user.uid), { nome, email, equipe_id: equipeId, data_cadastro: new Date().toISOString() });
+                await setDoc(doc(db, "colaboradores", cred.user.uid), { 
+                    nome, 
+                    cpf, 
+                    telefone: tel, 
+                    email, 
+                    equipe_id: equipeId, 
+                    aceite_termos: true,
+                    data_cadastro: new Date().toISOString() 
+                });
                 await signOut(auth);
-                document.getElementById('form-prof').innerHTML = `<div class='text-center p-10 bg-indigo-50 rounded-3xl'><h2 class='text-2xl font-black text-indigo-800'>Acesso Criado!</h2><p class='mt-2'>Faça login na tela inicial.</p></div>`;
-            } catch (e) { showToast("Erro ao criar acesso."); }
+                document.getElementById('form-prof').innerHTML = `<div class='text-center p-10 bg-indigo-50 rounded-3xl shadow-lg'><h2 class='text-2xl font-black text-indigo-800'>Acesso Criado!</h2><p class='mt-2'>Parabéns, ${nome}. Seu acesso foi configurado. Faça login na tela inicial.</p><a href='index.html' class='inline-block mt-4 px-6 py-3 bg-indigo-500 text-white font-bold rounded-xl'>Ir para Login</a></div>`;
+            } catch (e) { 
+                showToast("Erro ao criar acesso. Verifique se o e-mail já existe."); 
+                btn.disabled = false; btn.innerHTML = "CRIAR ACESSO";
+            }
         };
     </script>
 </body>

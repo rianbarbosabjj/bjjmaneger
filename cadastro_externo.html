@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Matrícula Digital | BJJ Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden text-slate-800 bg-[#F8FAFC]">
+
+    <div class="w-full bg-slate-900 p-3 text-center relative z-50 shrink-0 shadow-md flex items-center justify-center h-14">
+        <a href="https://www.bjjsystems.com.br" target="_blank" class="absolute left-4 top-1.5 transition-opacity hover:opacity-80" title="Conheça a BJJ Systems">
+            <img src="logo_bjj_maneger.png" alt="BJJ Systems" class="h-10 w-auto object-contain">
+        </a>
+        <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest hidden sm:inline-block">Autoatendimento</span>
+    </div>
+
+    <main class="flex-1 overflow-y-auto p-4 md:p-8 pb-10 hide-scrollbar" id="interface-sistema">
+        <div class="max-w-3xl mx-auto">
+            
+            <div class="flex justify-center mb-8 mt-4">
+                <img id="logo-equipe" src="" alt="Logo da Equipe" class="w-full max-h-32 object-contain drop-shadow-sm hidden">
+                <div id="fallback-logo" class="w-24 h-24 rounded-full bg-slate-800 text-white flex items-center justify-center text-4xl font-black hidden"></div>
+            </div>
+
+            <div class="mb-8 text-center" id="cabecalho-form">
+                <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Carregando formulário...</h2>
+                <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Aguarde um instante.</p>
+            </div>
+
+            <div id="form-aluno" class="space-y-6 hidden">
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
+                    <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
+                        <span class="text-xl">🥋</span>
+                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Dados Pessoais</h3>
+                    </div>
+                    
+                    <div class="flex flex-col items-center justify-center mb-8 pb-6 border-b border-slate-50">
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-3">Foto de Rosto (Fundo Branco)</label>
+                        <div class="relative w-32 h-32 rounded-full border-4 border-dashed border-slate-300 bg-slate-50 flex items-center justify-center overflow-hidden cursor-pointer hover:border-cyan-500 hover:bg-cyan-50 transition-all shadow-sm" onclick="document.getElementById('cad-foto').click()">
+                            <img id="preview-foto" src="" class="w-full h-full object-cover hidden">
+                            <div id="placeholder-foto" class="text-center text-slate-400">
+                                <span class="text-3xl">📷</span>
+                                <p class="text-[9px] font-bold mt-1 uppercase">Enviar Foto</p>
+                            </div>
+                        </div>
+                        <input type="file" id="cad-foto" accept="image/*" class="hidden" onchange="mostrarPreviewFoto(event)">
+                        <p class="text-[9px] text-slate-400 mt-2 font-medium">Sua foto da carteirinha oficial da equipa.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="md:col-span-2">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Nome Completo *</label>
+                            <input type="text" id="cad-nome" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all font-bold text-slate-700 uppercase" placeholder="Digite seu nome completo...">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">CPF *</label>
+                            <input type="text" id="cad-cpf" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="000.000.000-00">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Data de Nascimento *</label>
+                            <input type="date" id="cad-nasc" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Faixa Atual</label>
+                            <select id="cad-faixa" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">
+                                <option value="Branca">Branca</option>
+                                <option value="Cinza e Branca">Cinza e Branca</option>
+                                <option value="Cinza">Cinza</option>
+                                <option value="Cinza e Preta">Cinza e Preta</option>
+                                <option value="Amarela e Branca">Amarela e Branca</option>
+                                <option value="Amarela">Amarela</option>
+                                <option value="Amarela e Preta">Amarela e Preta</option>
+                                <option value="Laranja e Branca">Laranja e Branca</option>
+                                <option value="Laranja">Laranja</option>
+                                <option value="Laranja e Preta">Laranja e Preta</option>
+                                <option value="Verde e Branca">Verde e Branca</option>
+                                <option value="Verde">Verde</option>
+                                <option value="Verde e Preta">Verde e Preta</option>
+                                <option value="Azul">Azul</option>
+                                <option value="Roxa">Roxa</option>
+                                <option value="Marrom">Marrom</option>
+                                <option value="Preta">Preta</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Grau</label>
+                                <select id="cad-grau" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">
+                                    <option value="Sem grau">Sem grau</option>
+                                    <option value="1º">1º</option>
+                                    <option value="2º">2º</option>
+                                    <option value="3º">3º</option>
+                                    <option value="4º">4º</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Peso (Kg)</label>
+                                <input type="text" id="cad-peso" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="Ex: 80">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
+                    <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
+                        <span class="text-xl">📍</span>
+                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Contato e Endereço</h3>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">WhatsApp / Telefone *</label>
+                            <input type="text" id="cad-tel" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="(00) 00000-0000">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">E-mail</label>
+                            <input type="email" id="cad-email" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="email@exemplo.com">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Endereço Completo</label>
+                            <input type="text" id="cad-end" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="Rua, Avenida...">
+                        </div>
+                        <div class="grid grid-cols-3 gap-3 md:col-span-2">
+                            <div class="col-span-1">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Número</label>
+                                <input type="text" id="cad-num" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700">
+                            </div>
+                            <div class="col-span-1">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Bairro</label>
+                                <input type="text" id="cad-bairro" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700">
+                            </div>
+                            <div class="col-span-1">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">CEP</label>
+                                <input type="text" id="cad-cep" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
+                    <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
+                        <span class="text-xl">👪</span>
+                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Responsável Legal <span class="text-[10px] text-slate-400 normal-case">(Apenas para menores)</span></h3>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="md:col-span-2">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Nome do Responsável</label>
+                            <input type="text" id="cad-resp-nome" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700 uppercase" placeholder="Nome da mãe, pai ou tutor...">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">CPF do Responsável</label>
+                            <input type="text" id="cad-resp-cpf" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="000.000.000-00">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-amber-50 rounded-3xl shadow-sm border border-amber-200 p-6 md:p-8 space-y-6">
+                    <div class="flex items-center gap-2 border-b border-amber-200/50 pb-4">
+                        <span class="text-xl">⚖️</span>
+                        <h3 class="font-black text-amber-900 uppercase tracking-widest text-sm">Autorização de Imagem</h3>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <p class="text-sm text-amber-900">De acordo com a Lei Geral de Proteção de Dados (LGPD). Autorizo a utilização de minhas imagens com a finalidade de:</p>
+                        
+                        <div class="space-y-4 bg-white p-6 rounded-xl border border-amber-100 shadow-sm">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="cad-lgpd-redes" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500"> 
+                                <span>Redes sociais da Equipe</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="cad-lgpd-site" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500"> 
+                                <span>Site institucional</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="cad-lgpd-promo" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500"> 
+                                <span>Materiais promocionais</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="cad-lgpd-relatorio" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500"> 
+                                <span>Relatórios desportivos</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl border border-amber-100 shadow-sm space-y-4 mt-6">
+                        <p class="text-sm text-slate-700">Declaro que li e concordo com os termos de matrícula. <span class="text-red-500 font-bold">*</span></p>
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" id="cad-lgpd-termos" class="w-6 h-6 rounded text-amber-600 border-slate-300 focus:ring-amber-500">
+                            <span class="text-sm font-black text-slate-800 uppercase tracking-widest">Concordo</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="pt-6 pb-8">
+                    <button onclick="salvarMatricula()" id="btn-salvar" class="w-full bg-[#10B981] hover:bg-emerald-600 text-white font-black py-5 rounded-2xl shadow-lg transition-transform transform hover:-translate-y-1 uppercase tracking-widest text-lg flex items-center justify-center">
+                        <span class="mr-2">✅</span> FINALIZAR MATRÍCULA
+                    </button>
+                </div>
+            </div>
+
+            <div id="form-prof" class="space-y-6 hidden">
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
+                    <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
+                        <span class="text-xl">👥</span>
+                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Registro de Professor</h3>
+                    </div>
+                    
+                    <div class="space-y-5">
+                        <p class="text-sm text-slate-500 font-medium">Cadastre seu e-mail para ter acesso ao sistema da equipe como Co-Administrador.</p>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Seu E-mail *</label>
+                            <input type="email" id="prof-email" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700" placeholder="email@exemplo.com">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-6 pb-8">
+                    <button onclick="salvarProfessor()" id="btn-salvar-prof" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-black py-5 rounded-2xl shadow-lg transition-transform transform hover:-translate-y-1 uppercase tracking-widest text-lg flex items-center justify-center">
+                        <span class="mr-2">🔐</span> SOLICITAR ACESSO
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
+            authDomain: "bjj-maneger.firebaseapp.com",
+            projectId: "bjj-maneger",
+            storageBucket: "bjj-maneger.firebasestorage.app",
+            messagingSenderId: "415548255893",
+            appId: "1:415548255893:web:61186696fe097be870759c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // Extrair os dados da URL (ex: ?tipo=aluno&equipe=UID_AQUI)
+        const paramsUrl = new URLSearchParams(window.location.search);
+        const tipoAcesso = paramsUrl.get('tipo'); // 'aluno' ou 'prof'
+        const equipeId = paramsUrl.get('equipe');
+
+        let quantidadeAlunosAtual = 0;
+        let ficheiroFotoSelecionado = null;
+
+        // INICIA A PÁGINA (SEM PRECISAR LOGAR)
+        window.onload = async () => {
+            if(!equipeId) {
+                document.getElementById('cabecalho-form').innerHTML = `<h2 class="text-rose-500 font-black text-2xl">Link Inválido</h2><p class="text-slate-500 mt-2">Peça um novo link de convite ao seu professor.</p>`;
+                return;
+            }
+
+            try {
+                // Carrega a identidade visual da equipe
+                const docEquipe = await getDoc(doc(db, "equipes", equipeId));
+                if (docEquipe.exists()) {
+                    const dadosEquipe = docEquipe.data();
+                    
+                    document.getElementById('cabecalho-form').innerHTML = `
+                        <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">${tipoAcesso === 'prof' ? 'Acesso ao Sistema' : 'Ficha de Matrícula'}</h2>
+                        <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Equipe: <b class="text-slate-800 uppercase">${dadosEquipe.nome_equipe}</b></p>
+                    `;
+
+                    if(dadosEquipe.url_logo) {
+                        const imgEl = document.getElementById('logo-equipe');
+                        imgEl.src = dadosEquipe.url_logo;
+                        imgEl.classList.remove('hidden');
+                    } else {
+                        const fallEl = document.getElementById('fallback-logo');
+                        fallEl.innerText = dadosEquipe.nome_equipe.charAt(0).toUpperCase();
+                        fallEl.classList.remove('hidden');
+                    }
+                } else {
+                    document.getElementById('cabecalho-form').innerHTML = `<h2 class="text-rose-500 font-black text-2xl">Equipe Não Encontrada</h2>`;
+                    return;
+                }
+
+                // Libera o formulário correto
+                if(tipoAcesso === 'prof') {
+                    document.getElementById('form-prof').classList.remove('hidden');
+                } else {
+                    document.getElementById('form-aluno').classList.remove('hidden');
+                    
+                    // Conta quantos alunos já tem para gerar a matrícula sequencial
+                    const qAlunos = query(collection(db, "alunos"), where("equipe_id", "==", equipeId));
+                    const snapAlunos = await getDocs(qAlunos);
+                    quantidadeAlunosAtual = snapAlunos.size;
+                }
+
+            } catch (e) {
+                console.log("Erro de conexão", e);
+                document.getElementById('cabecalho-form').innerHTML = `<h2 class="text-rose-500 font-black text-xl">Erro de conexão</h2>`;
+            }
+        };
+
+        // --- PREVIEW DA FOTO ---
+        window.mostrarPreviewFoto = function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                ficheiroFotoSelecionado = file;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgPreview = document.getElementById('preview-foto');
+                    imgPreview.src = e.target.result;
+                    imgPreview.classList.remove('hidden');
+                    document.getElementById('placeholder-foto').classList.add('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // --- SALVAR MATRÍCULA DE ALUNO ---
+        window.salvarMatricula = async function() {
+            const nome = document.getElementById('cad-nome').value.toUpperCase().trim();
+            const cpf = document.getElementById('cad-cpf').value.trim();
+            const nasc = document.getElementById('cad-nasc').value;
+            const tel = document.getElementById('cad-tel').value.trim();
+            const concordo = document.getElementById('cad-lgpd-termos').checked;
+
+            if (!nome || !cpf || !nasc || !tel) {
+                return alert("Atenção: Os campos Nome, CPF, Data de Nascimento e Telefone são obrigatórios!");
+            }
+
+            if (!concordo) {
+                return alert("Atenção: É obrigatório concordar com os termos marcando a caixa no final do formulário.");
+            }
+
+            const anoAtual = new Date().getFullYear();
+            const proximaMatriculaNum = quantidadeAlunosAtual + 1;
+            const novaMatriculaStr = anoAtual + proximaMatriculaNum.toString().padStart(4, '0');
+
+            const btn = document.getElementById('btn-salvar');
+            const textoBotaoOrig = btn.innerHTML;
+            btn.innerHTML = "<span class='mr-2 text-xl'>⏳</span> A SALVAR DADOS...";
+            btn.disabled = true;
+
+            const dadosAluno = {
+                equipe_id: equipeId,
+                matricula: novaMatriculaStr,
+                nome: nome,
+                cpf: cpf,
+                data_nascimento: nasc,
+                faixa: document.getElementById('cad-faixa').value,
+                grau: document.getElementById('cad-grau').value,
+                peso: document.getElementById('cad-peso').value.trim(),
+                telefone: tel,
+                email: document.getElementById('cad-email').value.trim(),
+                endereco: document.getElementById('cad-end').value.trim(),
+                numero: document.getElementById('cad-num').value.trim(),
+                bairro: document.getElementById('cad-bairro').value.trim(),
+                cep: document.getElementById('cad-cep').value.trim(),
+                nome_responsavel: document.getElementById('cad-resp-nome').value.toUpperCase().trim(),
+                cpf_responsavel: document.getElementById('cad-resp-cpf').value.trim(),
+                status: "ATIVO",
+                bolsa_perc: 0,
+                dia_vencimento: 10,
+                lgpd_concordo: concordo,
+                lgpd_redes: document.getElementById('cad-lgpd-redes').checked,
+                lgpd_site: document.getElementById('cad-lgpd-site').checked,
+                lgpd_promo: document.getElementById('cad-lgpd-promo').checked,
+                lgpd_relatorios: document.getElementById('cad-lgpd-relatorio').checked,
+                foto_url: "", 
+                data_cadastro: new Date().toISOString()
+            };
+
+            try {
+                const docRef = await addDoc(collection(db, "alunos"), dadosAluno);
+                
+                if (ficheiroFotoSelecionado) {
+                    btn.innerHTML = "<span class='mr-2 text-xl'>📷</span> A ENVIAR FOTO...";
+                    const fotoPath = `fotos_carteirinha/${equipeId}/${docRef.id}.jpg`;
+                    const storageRef = ref(storage, fotoPath);
+                    await uploadBytes(storageRef, ficheiroFotoSelecionado);
+                    const downloadUrl = await getDownloadURL(storageRef);
+                    await updateDoc(docRef, { foto_url: downloadUrl });
+                }
+
+                // Oculta o form e mostra sucesso
+                document.getElementById('form-aluno').innerHTML = `
+                    <div class="bg-emerald-50 border border-emerald-200 p-10 rounded-3xl text-center">
+                        <span class="text-6xl mb-4 block">✅</span>
+                        <h2 class="text-2xl font-black text-emerald-800 uppercase">Matrícula Concluída!</h2>
+                        <p class="text-emerald-600 font-medium mt-2">Bem-vindo(a) à equipe, ${nome}.</p>
+                        <p class="text-xs text-emerald-500 font-bold mt-4">Sua matrícula: ${novaMatriculaStr}</p>
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error(error);
+                alert("Erro ao salvar cadastro. Verifique a internet e tente de novo.");
+                btn.innerHTML = textoBotaoOrig;
+                btn.disabled = false;
+            }
+        }
+
+        // --- SALVAR PROFESSOR ---
+        window.salvarProfessor = async function() {
+            const email = document.getElementById('prof-email').value.trim().toLowerCase();
+            
+            if(!email || !email.includes('@')) return alert("Digite um e-mail válido!");
+
+            const btn = document.getElementById('btn-salvar-prof');
+            const textoBotaoOrig = btn.innerHTML;
+            btn.innerHTML = "<span class='mr-2 text-xl'>⏳</span> A REGISTRAR...";
+            btn.disabled = true;
+
+            try {
+                // Adiciona na coleção de colaboradores da equipe
+                await addDoc(collection(db, "colaboradores"), {
+                    email: email,
+                    equipe_id: equipeId,
+                    data_cadastro: new Date().toISOString()
+                });
+                
+                document.getElementById('form-prof').innerHTML = `
+                    <div class="bg-indigo-50 border border-indigo-200 p-10 rounded-3xl text-center">
+                        <span class="text-6xl mb-4 block">🤝</span>
+                        <h2 class="text-2xl font-black text-indigo-800 uppercase">Acesso Liberado!</h2>
+                        <p class="text-indigo-600 font-medium mt-2">O e-mail <b>${email}</b> agora tem acesso ao sistema da equipe.</p>
+                        <a href="index.html" class="inline-block mt-6 px-6 py-3 bg-indigo-500 text-white font-bold rounded-xl text-sm shadow-sm hover:bg-indigo-600">Fazer Login no BJJ Manager</a>
+                    </div>
+                `;
+            } catch (e) {
+                console.error(e);
+                alert("Erro ao solicitar acesso.");
+                btn.innerHTML = textoBotaoOrig;
+                btn.disabled = false;
+            }
+        };
+    </script>
+</body>
+</html>

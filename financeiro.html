@@ -33,6 +33,8 @@
 </head>
 <body class="flex h-screen overflow-hidden text-slate-800 bg-[#F8FAFC]">
 
+    <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
     <div id="interface-sistema" class="flex w-full h-full relative">
 
         <main class="flex-1 flex flex-col h-full overflow-hidden relative">
@@ -122,7 +124,7 @@
 
                                 <div class="grid grid-cols-2 gap-2 mb-6 border-b border-slate-100 pb-4">
                                     <button onclick="gerarReciboPDF()" id="btn-recibo-lateral" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center transition-colors"><span class="mr-1">📄</span> Baixar recibo</button>
-                                                                                        <button onclick="enviarWhatsApp()" class="bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] font-bold py-2.5 rounded-xl text-[11px] flex items-center justify-center transition-colors">
+                                    <button onclick="enviarWhatsApp()" class="bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] font-bold py-2.5 rounded-xl text-[11px] flex items-center justify-center transition-colors">
                                         <svg class="w-4 h-4 mr-1.5 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
                                         Enviar Cobrança
                                     </button>
@@ -370,6 +372,7 @@
 
         let uid = null;
         let equipeNomeGlobal = "PROJETO RESGATE";
+        let equipeLogoGlobal = null; 
         let equipeBaseConfig = { prazo: 70.0, atraso: 100.0 };
         let alunosCache = [];
         let financeiroMesCache = [];
@@ -381,6 +384,26 @@
         let chartOrigemMes = null;
         let chartEvolucaoAno = null;
         let chartAcumuladoAno = null;
+
+        // --- SISTEMA DE TOASTS ---
+        window.showToast = function(message, type = 'error') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : 'bg-slate-800');
+            const icon = type === 'success' ? '✅' : (type === 'error' ? '🚨' : 'ℹ️');
+            
+            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transform transition-all duration-300 translate-x-full opacity-0 flex items-center gap-3 font-bold text-sm z-50 pointer-events-auto max-w-sm`;
+            toast.innerHTML = `<span class="text-xl">${icon}</span> <span class="flex-1">${message}</span>`;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('translate-x-full', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 4500);
+        }
 
         const acaoVenc = document.getElementById('acao-venc');
         for(let i=1; i<=31; i++) { acaoVenc.appendChild(new Option(i, i)); }
@@ -498,25 +521,50 @@
             return resultado;
         }
 
-        // =====================================================================================
-        // 🔥 LÓGICA PADRÃO DE AUTENTICAÇÃO E CARREGAMENTO DE EQUIPE (Mestre e Colaboradores)
-        // =====================================================================================
+        // === AUTENTICAÇÃO PADRÃO COM MODO SUPORTE ===
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                uid = user.uid;
-                
-                // Configura as datas (específico do financeiro)
-                const hoje = new Date();
-                document.getElementById('filtro-mes').value = String(hoje.getMonth() + 1).padStart(2, '0');
-                document.getElementById('filtro-ano').value = hoje.getFullYear().toString();
+                // 1. Tenta verificar se é Super Admin (com escudo)
+                let isSuper = false;
+                try {
+                    const superSnap = await getDoc(doc(db, "super_admins", user.uid));
+                    if (superSnap.exists()) isSuper = true;
+                } catch(e) {
+                    isSuper = false;
+                }
 
-                await carregarInfoEquipe(user); 
-                
-                // Preenche os campos de configuração com os valores carregados
-                document.getElementById('config-prazo').value = floatToStr(equipeBaseConfig.prazo);
-                document.getElementById('config-atraso').value = floatToStr(equipeBaseConfig.atraso);
+                try {
+                    if (isSuper) {
+                        const equipeImpersonada = sessionStorage.getItem('admin_impersonate');
+                        if (equipeImpersonada) {
+                            uid = equipeImpersonada; // Assume a identidade da academia
+                        } else {
+                            window.location.href = "super_admin.html";
+                            return;
+                        }
+                    } else {
+                        // 2. Usuário Comum (Mestre ou Colaborador)
+                        uid = user.uid;
+                        const docMestre = await getDoc(doc(db, "equipes", uid));
+                        if (!docMestre.exists()) {
+                            const colabSnap = await getDoc(doc(db, "colaboradores", uid));
+                            if(colabSnap.exists()) {
+                                uid = colabSnap.data().equipe_id;
+                            }
+                        }
+                    }
+                    
+                    const hoje = new Date();
+                    document.getElementById('filtro-mes').value = String(hoje.getMonth() + 1).padStart(2, '0');
+                    document.getElementById('filtro-ano').value = hoje.getFullYear().toString();
 
-                carregarDados();
+                    await carregarInfoEquipe(user); 
+                    
+                    document.getElementById('config-prazo').value = floatToStr(equipeBaseConfig.prazo);
+                    document.getElementById('config-atraso').value = floatToStr(equipeBaseConfig.atraso);
+
+                    carregarDados();
+                } catch (error) { console.log(error); }
             } else {
                 window.location.href = "index.html";
             }
@@ -550,28 +598,27 @@
 
                 if (dadosEquipe) {
                     equipeNomeGlobal = dadosEquipe.nome_equipe;
+                    equipeLogoGlobal = dadosEquipe.url_logo; 
                     
                     const elNomeEquipe = document.getElementById('nome-equipe') || document.getElementById('lbl-equipe');
                     if(elNomeEquipe) elNomeEquipe.innerText = equipeNomeGlobal.toUpperCase();
 
                     const elLogo = document.getElementById('container-logo');
                     if (elLogo) {
-                        if (dadosEquipe.url_logo) {
+                        if (equipeLogoGlobal) {
                             elLogo.style.background = 'transparent';
-                            elLogo.innerHTML = `<img src="${dadosEquipe.url_logo}" class="w-full h-full object-cover" alt="Logo">`;
+                            elLogo.innerHTML = `<img src="${equipeLogoGlobal}" class="w-full h-full object-cover" alt="Logo">`;
                         } else {
                             elLogo.style.background = ''; 
                             elLogo.innerHTML = equipeNomeGlobal.charAt(0).toUpperCase();
                         }
                     }
 
-                    // Específico do Financeiro: Carrega as configs de atraso
                     if(dadosEquipe.valor_prazo) equipeBaseConfig.prazo = parseFloat(dadosEquipe.valor_prazo);
                     if(dadosEquipe.valor_atraso) equipeBaseConfig.atraso = parseFloat(dadosEquipe.valor_atraso);
                 }
             } catch (error) { console.log(error); }
         }
-        // =====================================================================================
 
         window.salvarConfiguracaoGeral = async function() {
             const p = strToFloat(document.getElementById('config-prazo').value);
@@ -579,14 +626,11 @@
             try {
                 await updateDoc(doc(db, "equipes", uid), { valor_prazo: p, valor_atraso: a });
                 equipeBaseConfig.prazo = p; equipeBaseConfig.atraso = a;
-                alert("Configuração de valores atualizada com sucesso!");
+                showToast("Configuração de valores atualizada com sucesso!", "success");
                 renderizarTabelas(); 
-            } catch (e) { alert("Erro ao salvar config."); }
+            } catch (e) { showToast("Erro ao salvar config.", "error"); }
         }
 
-        // ==========================================
-        // O BOTÃO DE GERAR FATURAS
-        // ==========================================
         window.gerarFaturas = async function() {
             const btn = document.getElementById('btn-gerar-faturas');
             if(!btn) return;
@@ -622,13 +666,13 @@
                 }
                 
                 if (geradas > 0) {
-                    alert(`✅ ${geradas} faturas geradas com sucesso para ${mes}/${ano}!`);
-                    await carregarDados(); // Recarrega para mostrar na tela
+                    showToast(`${geradas} faturas geradas com sucesso para ${mes}/${ano}!`, "success");
+                    await carregarDados(); 
                 } else {
-                    alert("ℹ️ Todas as faturas dos alunos ativos neste mês já estavam geradas.");
+                    showToast("Todas as faturas dos alunos ativos neste mês já estavam geradas.", "info");
                 }
             } catch (e) {
-                alert("Erro ao gerar faturas.");
+                showToast("Erro ao gerar faturas.", "error");
                 console.error(e);
             } finally {
                 btn.innerHTML = originalTxt;
@@ -684,15 +728,14 @@
                     const alB = alunosCache.find(x => x.id === b.aluno_id)?.nome || "";
                     return alA.localeCompare(alB);
                 }).forEach(f => {
-                    let status = f.status || 'PAGO'; // Legacy support (old records had no status)
+                    let status = f.status || 'PAGO'; 
                     const aluno = alunosCache.find(a => a.id === f.aluno_id);
-                    if (!aluno) return; // Se o aluno foi apagado do sistema, não mostra a fatura
+                    if (!aluno) return; 
 
                     if (termo && !aluno.nome.toLowerCase().includes(termo)) return;
 
                     let valorFinal = f.valor;
 
-                    // Recálculo dinâmico apenas se for PENDENTE ou ATRASADO
                     if (status === 'PENDENTE' || status === 'ATRASADO') {
                         const bolsa = aluno.bolsa_perc || 0;
                         if (bolsa === 100) {
@@ -741,7 +784,6 @@
             document.getElementById('lbl-resumo-pago').innerText = `Recebido: R$ ${floatToStr(rPagos)}`;
             document.getElementById('lbl-resumo-pendente').innerText = `A Receber: R$ ${floatToStr(rPendentes)}`;
 
-            // Tabela Fluxo (Mantem como estava: sem Mensalidades, apenas Extras)
             const fluxoFiltrado = financeiroMesCache.filter(f => f.tipo !== 'MENSALIDADE');
             if(fluxoFiltrado.length === 0) {
                 contFluxo.innerHTML = '<tr><td colspan="5" class="text-center py-10 text-slate-400">Nenhum registo neste mês.</td></tr>';
@@ -793,15 +835,15 @@
             const nv = parseInt(document.getElementById('acao-venc').value);
             try {
                 await updateDoc(doc(db, "alunos", alunoSelecionadoMens.id), { bolsa_perc: nb, dia_vencimento: nv });
-                alert("Configurações do atleta atualizadas!");
+                showToast("Configurações do atleta atualizadas!", "success");
                 carregarDados();
-            } catch(e) { alert("Erro ao salvar config."); }
+            } catch(e) { showToast("Erro ao salvar config.", "error"); }
         }
 
         window.registrarPagamento = async function() {
             if(!alunoSelecionadoMens) return;
             if(alunoSelecionadoMens._calc.status === 'PAGO' || alunoSelecionadoMens._calc.status === 'ISENTO') {
-                return alert("Esta fatura já está paga ou é isenta.");
+                return showToast("Esta fatura já está paga ou é isenta.", "info");
             }
             
             const dtPag = document.getElementById('acao-data-pag').value;
@@ -815,14 +857,14 @@
                     forma_pagamento: forma,
                     valor: valorCalculado 
                 });
-                alert("✅ Pagamento Registado!");
+                showToast("Pagamento Registado!", "success");
                 carregarDados();
-            } catch (e) { alert("Erro ao baixar mensalidade."); }
+            } catch (e) { showToast("Erro ao baixar mensalidade.", "error"); }
         }
 
         window.cancelarPagamento = async function() {
             if(!alunoSelecionadoMens) return;
-            if(alunoSelecionadoMens._calc.status !== 'PAGO') return alert("O aluno não possui pagamento registado nesta fatura.");
+            if(alunoSelecionadoMens._calc.status !== 'PAGO') return showToast("O aluno não possui pagamento registado nesta fatura.", "error");
             if(!confirm("Deseja ESTORNAR este pagamento?\nA fatura voltará a ficar Pendente.")) return;
 
             try {
@@ -831,9 +873,9 @@
                     data: null,
                     forma_pagamento: null
                 });
-                alert("Pagamento cancelado com sucesso.");
+                showToast("Pagamento cancelado com sucesso.", "success");
                 carregarDados();
-            } catch (e) { alert("Erro ao cancelar."); }
+            } catch (e) { showToast("Erro ao cancelar.", "error"); }
         }
 
         window.excluirPagamento = async function() {
@@ -842,15 +884,15 @@
 
             try {
                 await deleteDoc(doc(db, "financeiro", alunoSelecionadoMens._calc.fatura_id));
-                alert("Fatura excluída com sucesso.");
+                showToast("Fatura excluída com sucesso.", "success");
                 carregarDados();
-            } catch (e) { alert("Erro ao excluir."); }
+            } catch (e) { showToast("Erro ao excluir.", "error"); }
         } 
 
         window.enviarWhatsApp = function() {
             if(!alunoSelecionadoMens) return;
             const a = alunoSelecionadoMens;
-            if(!a.telefone) return alert("Este aluno não possui telefone cadastrado!");
+            if(!a.telefone) return showToast("Este aluno não possui telefone cadastrado!", "error");
             
             const numero = a.telefone.replace(/\D/g, '');
             let msg = "";
@@ -865,10 +907,12 @@
             window.open(`https://api.whatsapp.com/send?phone=55${numero}&text=${encodeURIComponent(msg)}`, '_blank');
         }
 
-        // === GERADOR DE RECIBO PDF (CORRIGIDO PARA CABER EM 1 PÁGINA) ===
+        // ==========================================
+        // GERADOR DE RECIBO (BLINDADO COM BASE64)
+        // ==========================================
         window.gerarReciboPDF = async function() {
             if(!alunoSelecionadoMens || alunoSelecionadoMens._calc.status !== 'PAGO') {
-                return alert("Registe o pagamento primeiro para gerar o recibo.");
+                return showToast("Registre o pagamento primeiro para gerar o recibo.", "error");
             }
             
             const pagData = alunoSelecionadoMens._calc.reg;
@@ -883,32 +927,57 @@
             let btnOriginalTxt = "📄 Baixar PDF";
             if (btnPainel) {
                 btnOriginalTxt = btnPainel.innerHTML;
-                btnPainel.innerHTML = "<span class='mr-1'>⏳</span> Gerando...";
+                btnPainel.innerHTML = "<span class='mr-1'>⏳</span> Processando...";
             }
 
-            let imgLogoSrc = "pr_logo.png";
-            try {
-                const resp = await fetch("pr_logo.png");
-                if (resp.ok) {
-                    const blob = await resp.blob();
-                    imgLogoSrc = await new Promise((resolve) => {
-                        const reader = new FileReader(); reader.onloadend = () => resolve(reader.result); reader.readAsDataURL(blob);
-                    });
-                } else {
-                    const resp2 = await fetch("logo_bjj_maneger.png");
-                    if (resp2.ok) {
-                         const blob2 = await resp2.blob();
-                         imgLogoSrc = await new Promise((resolve) => {
-                            const reader = new FileReader(); reader.onloadend = () => resolve(reader.result); reader.readAsDataURL(blob2);
-                        });
-                    }
-                }
-            } catch(e) {}
+            // FUNÇÃO PARA CONVERTER IMAGEM EM BASE64 COM TRATAMENTO DE CORS
+            const getBase64Image = (url) => {
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.crossOrigin = "Anonymous"; // Essencial para burlar bloqueios de PDF
+                    
+                    // Adiciona timestamp para forçar o navegador a ignorar o cache e baixar com CORS limpo
+                    const cacheBuster = url.includes('?') ? '&' : '?';
+                    img.src = url + cacheBuster + new Date().getTime();
+
+                    img.onload = () => {
+                        try {
+                            const canvas = document.createElement('canvas');
+                            canvas.width = img.width;
+                            canvas.height = img.height;
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0);
+                            resolve(canvas.toDataURL('image/png'));
+                        } catch (err) {
+                            console.error("Canvas bloqueado por CORS:", err);
+                            resolve(null);
+                        }
+                    };
+
+                    img.onerror = () => {
+                        console.warn("Falha ao carregar logo com CORS. Exibindo inicial.");
+                        resolve(null);
+                    };
+                });
+            };
+
+            let logoFinal = "";
+            if (equipeLogoGlobal) {
+                logoFinal = await getBase64Image(equipeLogoGlobal);
+            } 
+            
+            // LÓGICA ESPELHADA DO PERFIL: Exibe logo ou a primeira letra do nome da equipe
+            let logoHtml = "";
+            if (logoFinal) {
+                logoHtml = `<img src="${logoFinal}" style="height: 70px; max-width: 250px; object-fit: contain; margin: 0 auto 10px auto; display: block;">`;
+            } else {
+                logoHtml = `<div style="height: 70px; width: 70px; background-color: #0F172A; color: #FFFFFF; border-radius: 50%; text-align: center; line-height: 70px; font-size: 32px; font-weight: bold; margin: 0 auto 10px auto; font-family: Arial, sans-serif;">${equipeNomeGlobal.charAt(0).toUpperCase()}</div>`;
+            }
 
             const htmlFinal = `
                 <div style="font-family: Arial, sans-serif; padding: 25px; color: #1E293B; width: 100%; box-sizing: border-box;">
                     <div style="text-align: center; border-bottom: 2px solid #1E293B; padding-bottom: 15px; margin-bottom: 20px;">
-                        <img src="${imgLogoSrc}" alt="Logo" style="height: 65px; max-width: 250px; object-fit: contain; margin: 0 auto 10px auto; display: block;">
+                        ${logoHtml}
                         <h1 style="margin: 0; font-size: 22px; font-weight: 900; color: #1E293B;">RECIBO DE PAGAMENTO</h1>
                         <p style="margin: 5px 0 0 0; font-size: 12px; font-weight: bold; color: #64748B; letter-spacing: 2px;">${equipeNomeGlobal.toUpperCase()}</p>
                     </div>
@@ -923,7 +992,7 @@
                         <p style="font-size: 12px; margin-top:5px; font-weight: bold; color: #1E293B;">Assinatura do Responsável</p>
                         <p style="font-size: 10px; color: #64748B; margin: 2px 0 0 0;">${equipeNomeGlobal}</p>
                     </div>
-                    <div style="position: absolute; bottom: 15px; right: 25px; font-size: 8px; color: #94A3B8; text-align: right;">Código de Autenticação: ${pagData.id.toUpperCase()}</div>
+                    <div style="position: absolute; bottom: 15px; right: 25px; font-size: 8px; color: #94A3B8; text-align: right;">Código: ${pagData.id.toUpperCase()}</div>
                 </div>
             `;
 
@@ -934,60 +1003,25 @@
                 margin: 5, 
                 filename: `Recibo_${alunoData.nome.replace(/\s+/g, '_')}_${mesRef.replace('/','-')}.pdf`,
                 image: { type: 'jpeg', quality: 1.0 }, 
-                html2canvas: { scale: 2, useCORS: true }, 
+                html2canvas: { scale: 2, useCORS: true, logging: false }, 
                 jsPDF: { unit: 'mm', format: 'a5', orientation: 'landscape' } 
             };
 
             html2pdf().set(opt).from(tempDiv).save().then(() => {
                 if (btnPainel) btnPainel.innerHTML = btnOriginalTxt;
             }).catch(err => {
-                alert("Erro ao gerar PDF.");
+                console.error(err);
+                showToast("Erro ao gerar PDF.", "error");
                 if (btnPainel) btnPainel.innerHTML = btnOriginalTxt;
             });
         }
 
-        // === MÓDULOS DE EXTRAS E DESPESAS ===
-        window.salvarDespesa = async function() {
-            const desc = document.getElementById('desp-desc').value;
-            const valorNum = strToFloat(document.getElementById('desp-valor').value);
-            const data = document.getElementById('desp-data').value;
-            const fonte = document.getElementById('desp-fonte').value;
-            const mesAnoFiltro = `${document.getElementById('filtro-ano').value}-${document.getElementById('filtro-mes').value}`;
-
-            if(!desc || valorNum <= 0 || !data) return alert("Preencha a descrição, um valor válido e a data!");
-
-            try {
-                await addDoc(collection(db, "financeiro"), { equipe_id: uid, tipo: 'DESPESA', descricao: desc, valor: valorNum, data: data, fonte: fonte, mes_ano: mesAnoFiltro });
-                fecharModalDespesa(); carregarDados();
-            } catch (e) { alert("Erro ao salvar despesa."); }
-        }
-
-        window.salvarReceita = async function() {
-            const cat = document.getElementById('rec-categoria').value;
-            const desc = document.getElementById('rec-desc').value;
-            const valorNum = strToFloat(document.getElementById('rec-valor').value);
-            const data = document.getElementById('rec-data').value;
-            const fonte = document.getElementById('rec-fonte').value;
-            const mesAnoFiltro = `${document.getElementById('filtro-ano').value}-${document.getElementById('filtro-mes').value}`;
-
-            if(!cat || valorNum <= 0 || !data) return alert("Categoria, valor e data são obrigatórios!");
-
-            try {
-                await addDoc(collection(db, "financeiro"), { equipe_id: uid, tipo: 'RECEITA', descricao: `${cat}${desc ? ' - '+desc : ''}`, valor: valorNum, data: data, fonte: fonte, mes_ano: mesAnoFiltro });
-                fecharModalReceita(); carregarDados();
-            } catch (e) { alert("Erro ao salvar receita."); }
-        }
-
-        window.excluirLancamento = async function(id) {
-            if(!confirm("Deseja apagar este registo financeiro?")) return;
-            try { await deleteDoc(doc(db, "financeiro", id)); carregarDados(); } catch (e) { alert("Erro ao apagar."); }
-        }
-
-        // === DASHBOARDS E GRÁFICOS (CHART.JS) ===
+        // ==========================================
+        // GRÁFICOS E ANÁLISES (CHART.JS)
+        // ==========================================
         function atualizarDashboardMes() {
             let tMens = 0, tExt = 0, tDesp = 0;
             financeiroMesCache.forEach(f => {
-                // SÓ SOMA NO CAIXA AS MENSALIDADES QUE ESTÃO PAGAS OU AS ANTIGAS (LEGACY SEM STATUS)
                 if(f.tipo === 'MENSALIDADE' && (f.status === 'PAGO' || !f.status)) tMens += f.valor;
                 else if(f.tipo === 'RECEITA') tExt += f.valor;
                 else if(f.tipo === 'DESPESA') tDesp += f.valor;
@@ -1078,7 +1112,9 @@
             });
         }
 
-        // === RELATÓRIO PDF DE LUCRO REAL ===
+        // ==========================================
+        // RELATÓRIOS E MODAIS
+        // ==========================================
         window.gerarPDFRelatorio = async function() {
             const mIni = document.getElementById('rel-mes-ini').value;
             const aIni = document.getElementById('rel-ano-ini').value;
@@ -1087,7 +1123,7 @@
 
             const valIni = parseInt(aIni)*12 + parseInt(mIni);
             const valFim = parseInt(aFim)*12 + parseInt(mFim);
-            if(valIni > valFim) return alert("O mês inicial não pode ser maior que o final!");
+            if(valIni > valFim) return showToast("O mês inicial não pode ser maior que o final!", "error");
 
             const btn = document.getElementById('btn-gerar-relatorio');
             const originalTxt = btn.innerText;
@@ -1103,7 +1139,7 @@
 
                 todosDocs.forEach(f => {
                     if(!f.mes_ano) return;
-                    const p = f.mes_ano.split('-'); // YYYY-MM
+                    const p = f.mes_ano.split('-'); 
                     const valReg = parseInt(p[0])*12 + parseInt(p[1]);
                     
                     if(valReg >= valIni && valReg <= valFim) {
@@ -1120,7 +1156,7 @@
 
                 if(Object.keys(dadosAgrupados).length === 0) {
                     btn.innerText = originalTxt;
-                    return alert("Nenhum dado encontrado neste período.");
+                    return showToast("Nenhum dado encontrado neste período.", "info");
                 }
 
                 const chavesOrd = Object.keys(dadosAgrupados).sort((a,b) => {
@@ -1128,24 +1164,49 @@
                     return (parseInt(pa[1])*12 + parseInt(pa[0])) - (parseInt(pb[1])*12 + parseInt(pb[0]));
                 });
 
-                let imgLogoSrc = "pr_logo.png"; 
-                try {
-                    const resp = await fetch("pr_logo.png");
-                    if (resp.ok) {
-                        const blob = await resp.blob();
-                        imgLogoSrc = await new Promise((resolve) => {
-                            const reader = new FileReader(); reader.onloadend = () => resolve(reader.result); reader.readAsDataURL(blob);
-                        });
-                    } else {
-                        const resp2 = await fetch("logo_bjj_maneger.png");
-                        if (resp2.ok) {
-                            const blob2 = await resp2.blob();
-                            imgLogoSrc = await new Promise((resolve) => {
-                                const reader = new FileReader(); reader.onloadend = () => resolve(reader.result); reader.readAsDataURL(blob2);
-                            });
-                        }
-                    }
-                } catch(e) {}
+                // FUNÇÃO PARA CONVERTER IMAGEM EM BASE64 COM TRATAMENTO DE CORS
+                const getBase64Image = (url) => {
+                    return new Promise((resolve) => {
+                        const img = new Image();
+                        img.crossOrigin = "Anonymous"; // Essencial para burlar bloqueios de PDF
+                        
+                        // Adiciona timestamp para forçar o navegador a ignorar o cache e baixar com CORS limpo
+                        const cacheBuster = url.includes('?') ? '&' : '?';
+                        img.src = url + cacheBuster + new Date().getTime();
+
+                        img.onload = () => {
+                            try {
+                                const canvas = document.createElement('canvas');
+                                canvas.width = img.width;
+                                canvas.height = img.height;
+                                const ctx = canvas.getContext('2d');
+                                ctx.drawImage(img, 0, 0);
+                                resolve(canvas.toDataURL('image/png'));
+                            } catch (err) {
+                                console.error("Canvas bloqueado por CORS:", err);
+                                resolve(null);
+                            }
+                        };
+
+                        img.onerror = () => {
+                            console.warn("Falha ao carregar logo com CORS. Exibindo inicial.");
+                            resolve(null);
+                        };
+                    });
+                };
+
+                let imgLogoSrc = "";
+                if (equipeLogoGlobal) {
+                    imgLogoSrc = await getBase64Image(equipeLogoGlobal);
+                }
+
+                // LÓGICA ESPELHADA DO PERFIL: Relatório
+                let logoHtmlRelatorio = "";
+                if (imgLogoSrc) {
+                    logoHtmlRelatorio = `<img src="${imgLogoSrc}" style="height: 60px; width: auto; margin: 0 auto 10px auto; object-fit: contain; display: block;">`;
+                } else {
+                    logoHtmlRelatorio = `<div style="height: 60px; width: 60px; background-color: #0F172A; color: #FFFFFF; border-radius: 50%; text-align: center; line-height: 60px; font-size: 28px; font-weight: bold; margin: 0 auto 10px auto; font-family: Arial, sans-serif;">${equipeNomeGlobal.charAt(0).toUpperCase()}</div>`;
+                }
 
                 let linhasTabela = "";
                 chavesOrd.forEach(k => {
@@ -1166,12 +1227,11 @@
                 const htmlFinal = `
                     <div style="font-family: Arial, sans-serif; padding: 30px; color: #1E293B;">
                         <div style="text-align: center; border-bottom: 2px solid #1E293B; padding-bottom: 20px; margin-bottom: 20px;">
-                            <img src="${imgLogoSrc}" style="height: 60px; width: auto; margin-bottom: 10px; object-fit: contain;">
+                            ${logoHtmlRelatorio}
                             <h2 style="margin: 0; font-size: 22px;">${equipeNomeGlobal.toUpperCase()}</h2>
                             <h3 style="margin: 5px 0; color: #64748B;">RELATÓRIO DE LUCRO REAL</h3>
                             <p style="margin: 0; font-size: 14px;">Período: ${mIni}/${aIni} a ${mFim}/${aFim}</p>
                         </div>
-                        
                         <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px; text-align: left;">
                             <thead>
                                 <tr style="background-color: #F1F5F9; border-bottom: 2px solid #CBD5E1;">
@@ -1183,7 +1243,6 @@
                             </thead>
                             <tbody>${linhasTabela}</tbody>
                         </table>
-
                         <div style="border-top: 2px solid #1E293B; padding-top: 20px;">
                             <h3 style="margin: 0 0 10px 0;">RESUMO GERAL DO PERÍODO:</h3>
                             <p style="margin: 5px 0; font-size: 16px;">Total de Entradas: <b style="color: #16A34A;">R$ ${floatToStr(totRec)}</b></p>
@@ -1198,30 +1257,22 @@
 
                 html2pdf().set({
                     margin: 10, filename: `Relatorio_Financeiro_${mIni}-${aIni}_a_${mFim}-${aFim}.pdf`,
-                    image: { type: 'jpeg', quality: 1.0 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                    image: { type: 'jpeg', quality: 1.0 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
                 }).from(tempDiv).save().then(() => {
                     btn.innerText = originalTxt;
                     fecharModalRelatorio();
                 });
 
             } catch (e) {
-                alert("Erro ao gerar relatório.");
+                showToast("Erro ao gerar relatório.", "error");
                 btn.innerText = originalTxt;
             }
         }
 
-        // ==========================================
-        // HELPERS UI E MODAIS
-        // ==========================================
         window.mudarAba = function(id) {
             document.querySelectorAll('.aba-content').forEach(a => a.classList.add('hidden'));
-            if(id === 'tab-mensalidades') {
-                document.getElementById(id).classList.remove('hidden');
-                document.getElementById(id).classList.add('flex');
-            } else {
-                document.getElementById(id).classList.remove('hidden');
-                document.getElementById(id).classList.add('flex');
-            }
+            document.getElementById(id).classList.remove('hidden');
+            document.getElementById(id).classList.add('flex');
             document.querySelectorAll('.aba-item').forEach(b => b.classList.remove('tab-active', 'text-slate-400'));
             document.getElementById('btn-' + id).classList.add('tab-active');
         }
@@ -1243,6 +1294,48 @@
 
         window.abrirModalRelatorio = () => document.getElementById('modal-relatorio').classList.replace('hidden', 'flex');
         window.fecharModalRelatorio = () => document.getElementById('modal-relatorio').classList.replace('flex', 'hidden');
+
+        window.salvarDespesa = async function() {
+            const desc = document.getElementById('desp-desc').value;
+            const valorNum = strToFloat(document.getElementById('desp-valor').value);
+            const data = document.getElementById('desp-data').value;
+            const fonte = document.getElementById('desp-fonte').value;
+            const mesAnoFiltro = `${document.getElementById('filtro-ano').value}-${document.getElementById('filtro-mes').value}`;
+
+            if(!desc || valorNum <= 0 || !data) return showToast("Preencha a descrição, um valor válido e a data!", "error");
+
+            try {
+                await addDoc(collection(db, "financeiro"), { equipe_id: uid, tipo: 'DESPESA', descricao: desc, valor: valorNum, data: data, fonte: fonte, mes_ano: mesAnoFiltro });
+                fecharModalDespesa(); carregarDados();
+                showToast("Despesa salva com sucesso!", "success");
+            } catch (e) { showToast("Erro ao salvar despesa.", "error"); }
+        }
+
+        window.salvarReceita = async function() {
+            const cat = document.getElementById('rec-categoria').value;
+            const desc = document.getElementById('rec-desc').value;
+            const valorNum = strToFloat(document.getElementById('rec-valor').value);
+            const data = document.getElementById('rec-data').value;
+            const fonte = document.getElementById('rec-fonte').value;
+            const mesAnoFiltro = `${document.getElementById('filtro-ano').value}-${document.getElementById('filtro-mes').value}`;
+
+            if(!cat || valorNum <= 0 || !data) return showToast("Categoria, valor e data são obrigatórios!", "error");
+
+            try {
+                await addDoc(collection(db, "financeiro"), { equipe_id: uid, tipo: 'RECEITA', descricao: `${cat}${desc ? ' - '+desc : ''}`, valor: valorNum, data: data, fonte: fonte, mes_ano: mesAnoFiltro });
+                fecharModalReceita(); carregarDados();
+                showToast("Receita salva com sucesso!", "success");
+            } catch (e) { showToast("Erro ao salvar receita.", "error"); }
+        }
+
+        window.excluirLancamento = async function(id) {
+            if(!confirm("Deseja apagar este registo financeiro?")) return;
+            try { 
+                await deleteDoc(doc(db, "financeiro", id)); 
+                carregarDados(); 
+                showToast("Registo apagado com sucesso.", "success");
+            } catch (e) { showToast("Erro ao apagar.", "error"); }
+        }
 
         window.sairDoSistema = () => signOut(auth).then(() => window.location.href = "index.html");
     </script>

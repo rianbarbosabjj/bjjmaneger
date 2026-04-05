@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Histórico de Graduação | BJJ Maneger</title>
+    <title>Histórico de Graduação | BJJ Manager</title>
     
     <link rel="icon" type="image/png" href="logo_bjj_maneger.png">
     
@@ -34,6 +34,8 @@
     </style>
 </head>
 <body class="flex h-screen overflow-hidden text-slate-800 bg-[#F8FAFC]">
+
+    <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
     <div id="interface-sistema" class="flex w-full h-full relative">
 
@@ -77,7 +79,7 @@
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 flex-1 min-h-[400px]">
                         
                         <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-5 md:p-6 flex flex-col h-fit">
-                            <div class="flex items-center gap-2 mb-4 md:mb-6 border-b border-slate-100 pb-3 md:pb-4">
+                            <div class="flex items-center gap-2 mb-4 md:mb-6 border-b border-slate-100 pb-3 md:pb-4 shrink-0">
                                 <span class="text-xl">🎖️</span>
                                 <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Registrar Evolução</h3>
                             </div>
@@ -175,56 +177,119 @@
         let alunosCache = [];
         let alunoSelecionado = null;
 
+        // --- SISTEMA DE TOASTS ---
+        window.showToast = function(message, type = 'error') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : 'bg-slate-800');
+            const icon = type === 'success' ? '✅' : (type === 'error' ? '🚨' : 'ℹ️');
+            
+            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transform transition-all duration-300 translate-x-full opacity-0 flex items-center gap-3 font-bold text-sm z-50 pointer-events-auto max-w-sm`;
+            toast.innerHTML = `<span class="text-xl">${icon}</span> <span class="flex-1">${message}</span>`;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('translate-x-full', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 4500);
+        }
+
+        // =====================================================================================
+        // 🔥 LÓGICA DE AUTENTICAÇÃO BLINDADA COM MODO SUPORTE
+        // =====================================================================================
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                uid = user.uid;
-
-                // Preenche os dados do menu.js (Logado e Cargo)
-                const emailLogado = document.getElementById('email-logado');
-                if(emailLogado) emailLogado.innerText = user.email;
+                let isSuper = false;
+                try {
+                    const superSnap = await getDoc(doc(db, "super_admins", user.uid));
+                    if (superSnap.exists()) isSuper = true;
+                } catch(e) {
+                    isSuper = false;
+                }
 
                 try {
-                    const docSnap = await getDoc(doc(db, "equipes", uid));
-                    if (docSnap.exists()) {
-                        const lblCargo = document.getElementById('lbl-cargo');
-                        if(lblCargo) lblCargo.innerText = "Mestre / Administrador";
-                        
-                        const nomeEquipe = docSnap.data().nome_equipe;
-                        const elNome = document.getElementById('nome-equipe');
-                        const elLogo = document.getElementById('logo-equipe');
-                        if(elNome) elNome.innerText = nomeEquipe;
-                        if(elLogo) elLogo.innerText = nomeEquipe.charAt(0).toUpperCase();
+                    if (isSuper) {
+                        const equipeImpersonada = sessionStorage.getItem('admin_impersonate');
+                        if (equipeImpersonada) {
+                            uid = equipeImpersonada; 
+                        } else {
+                            window.location.href = "super_admin.html";
+                            return;
+                        }
                     } else {
-                        const colabSnap = await getDoc(doc(db, "colaboradores", uid));
-                        if(colabSnap.exists()) {
-                            uid = colabSnap.data().equipe_id;
-                            const lblCargo = document.getElementById('lbl-cargo');
-                            if(lblCargo) lblCargo.innerText = "Co-Administrador";
-                            
-                            const equipeMestreSnap = await getDoc(doc(db, "equipes", uid));
-                            if(equipeMestreSnap.exists()) {
-                                const nomeEquipe = equipeMestreSnap.data().nome_equipe;
-                                const elNome = document.getElementById('nome-equipe');
-                                const elLogo = document.getElementById('logo-equipe');
-                                if(elNome) elNome.innerText = nomeEquipe;
-                                if(elLogo) elLogo.innerText = nomeEquipe.charAt(0).toUpperCase();
+                        uid = user.uid;
+                        const docMestre = await getDoc(doc(db, "equipes", uid));
+                        if (!docMestre.exists()) {
+                            const colabSnap = await getDoc(doc(db, "colaboradores", uid));
+                            if(colabSnap.exists()) {
+                                uid = colabSnap.data().equipe_id;
                             }
                         }
                     }
+                    
+                    await carregarInfoEquipe(user); 
+                    carregarAlunos();
+                    document.getElementById('grad-data').valueAsDate = new Date();
+                    
                 } catch (error) { console.log(error); }
-
-                carregarAlunos();
-                document.getElementById('grad-data').valueAsDate = new Date();
             } else {
                 window.location.href = "index.html";
             }
         });
 
+        async function carregarInfoEquipe(user) {
+            const elEmailLogado = document.getElementById('email-logado');
+            if (elEmailLogado) elEmailLogado.innerText = user.email;
+
+            try {
+                const docSnap = await getDoc(doc(db, "equipes", uid));
+                let dadosEquipe = null;
+                
+                if (docSnap.exists()) {
+                    const lblCargo = document.getElementById('lbl-cargo');
+                    if(lblCargo) lblCargo.innerText = "Mestre / Administrador";
+                    dadosEquipe = docSnap.data();
+                } else {
+                    const colabSnap = await getDoc(doc(db, "colaboradores", uid));
+                    if(colabSnap.exists()) {
+                        uid = colabSnap.data().equipe_id; 
+                        const lblCargo = document.getElementById('lbl-cargo');
+                        if(lblCargo) lblCargo.innerText = "Co-Administrador";
+                        
+                        const equipeMestreSnap = await getDoc(doc(db, "equipes", uid));
+                        if(equipeMestreSnap.exists()) {
+                            dadosEquipe = equipeMestreSnap.data();
+                        }
+                    }
+                }
+
+                if (dadosEquipe) {
+                    const nomeEquipe = dadosEquipe.nome_equipe;
+                    
+                    const elNomeEquipe = document.getElementById('nome-equipe') || document.getElementById('lbl-equipe');
+                    if(elNomeEquipe) elNomeEquipe.innerText = nomeEquipe.toUpperCase();
+
+                    const elLogo = document.getElementById('container-logo');
+                    if (elLogo) {
+                        if (dadosEquipe.url_logo) {
+                            elLogo.style.background = 'transparent';
+                            elLogo.innerHTML = `<img src="${dadosEquipe.url_logo}" class="w-full h-full object-cover" alt="Logo">`;
+                        } else {
+                            elLogo.style.background = ''; 
+                            elLogo.innerHTML = nomeEquipe.charAt(0).toUpperCase();
+                        }
+                    }
+                }
+            } catch (error) { console.log(error); }
+        }
+        // =====================================================================================
+
         // === MAGIA DAS DUAS CORES ===
         function getCorFaixa(faixaTexto) {
             const f = faixaTexto ? faixaTexto.toLowerCase() : '';
-            
-            // FAIXAS DUPLAS (KIDS)
             if (f.includes('cinza e branca')) return 'bg-[linear-gradient(135deg,_#94A3B8_50%,_#FFFFFF_50%)] text-slate-800 border border-slate-300';
             if (f.includes('cinza e preta')) return 'bg-[linear-gradient(135deg,_#94A3B8_50%,_#0F172A_50%)] text-white border border-slate-500';
             if (f.includes('amarela e branca')) return 'bg-[linear-gradient(135deg,_#FACC15_50%,_#FFFFFF_50%)] text-slate-800 border border-yellow-500';
@@ -233,8 +298,6 @@
             if (f.includes('laranja e preta')) return 'bg-[linear-gradient(135deg,_#F97316_50%,_#0F172A_50%)] text-white border border-orange-500';
             if (f.includes('verde e branca')) return 'bg-[linear-gradient(135deg,_#16A34A_50%,_#FFFFFF_50%)] text-slate-800 border border-green-600';
             if (f.includes('verde e preta')) return 'bg-[linear-gradient(135deg,_#16A34A_50%,_#0F172A_50%)] text-white border border-green-600';
-
-            // FAIXAS LISAS
             if (f.includes('branca')) return 'bg-white text-slate-800 border border-slate-300';
             if (f.includes('cinza')) return 'bg-slate-400 text-white border border-slate-500';
             if (f.includes('amarela')) return 'bg-yellow-400 text-yellow-900 border border-yellow-500';
@@ -244,7 +307,6 @@
             if (f.includes('roxa')) return 'bg-purple-600 text-white border border-purple-700';
             if (f.includes('marrom')) return 'bg-amber-800 text-white border border-amber-900';
             if (f.includes('preta')) return 'bg-slate-900 text-white border border-slate-900';
-            
             return 'bg-slate-100 text-slate-600 border border-slate-200';
         }
 
@@ -260,8 +322,7 @@
                 alunosCache.sort((a, b) => a.nome.localeCompare(b.nome));
                 renderizarListaAlunos(alunosCache);
             } catch (err) {
-                console.error("Erro ao buscar alunos:", err);
-                document.getElementById('lista-alunos').innerHTML = `<p class='text-center p-5 text-red-500'>Erro ao carregar guerreiros.</p>`;
+                document.getElementById('lista-alunos').innerHTML = `<p class='text-center p-5 text-rose-500'>Erro ao carregar guerreiros.</p>`;
             }
         }
 
@@ -392,7 +453,8 @@
             container.innerHTML = `<div class="text-center text-slate-400 mt-5 text-sm">Carregando histórico...</div>`;
 
             try {
-                const q = query(collection(db, "graduacoes"), where("aluno_id", "==", alunoId));
+                // Filtro duplo: Garante a segurança do Firebase puxando apenas graduações desta equipe
+                const q = query(collection(db, "graduacoes"), where("equipe_id", "==", uid), where("aluno_id", "==", alunoId));
                 const snap = await getDocs(q);
                 
                 let historico = [];
@@ -400,7 +462,8 @@
                     historico.push({ id: doc.id, ...doc.data() });
                 });
 
-                historico.sort((a, b) => new Date(b.data) - new Date(a.data));
+                // Proteção contra dados corrompidos na ordenação
+                historico.sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0));
 
                 if(historico.length > 0) {
                     const ultimaGrad = historico[0];
@@ -412,8 +475,8 @@
                 renderizarTimeline(historico);
 
             } catch (error) {
-                console.error(error);
-                container.innerHTML = `<div class="text-center text-red-400 mt-5 text-sm">Erro ao buscar dados.</div>`;
+                console.error("Erro Firebase:", error);
+                container.innerHTML = `<div class="text-center text-rose-500 mt-5 text-sm font-bold">Acesso negado ou erro ao buscar dados.</div>`;
             }
         }
 
@@ -432,8 +495,8 @@
             }
 
             historico.forEach(grad => {
-                let dataBR = grad.data;
-                if(grad.data.includes('-')) {
+                let dataBR = grad.data || "--";
+                if(grad.data && grad.data.includes('-')) {
                     const p = grad.data.split('-');
                     dataBR = `${p[2]}/${p[1]}/${p[0]}`;
                 }
@@ -464,13 +527,13 @@
         }
 
         window.salvarGraduacao = async function() {
-            if (!alunoSelecionado) return alert("Selecione um aluno primeiro!");
+            if (!alunoSelecionado) return showToast("Selecione um aluno primeiro!", "error");
 
             const data = document.getElementById('grad-data').value;
             const faixa = document.getElementById('grad-faixa').value;
             const grau = document.getElementById('grad-grau').value;
 
-            if (!data) return alert("A data da graduação é obrigatória!");
+            if (!data) return showToast("A data da graduação é obrigatória!", "error");
 
             try {
                 await addDoc(collection(db, "graduacoes"), {
@@ -487,14 +550,14 @@
                     grau: grau
                 });
 
-                alert("🎉 Graduação registada com sucesso! Oss!");
+                showToast("Graduação registada com sucesso! Oss!", "success");
                 
                 await carregarAlunos(); 
                 selecionarAluno(alunoSelecionado.id); 
                 
             } catch (error) {
                 console.error(error);
-                alert("Erro ao registar graduação.");
+                showToast("Erro ao registar graduação.", "error");
             }
         }
 
@@ -503,9 +566,10 @@
 
             try {
                 await deleteDoc(doc(db, "graduacoes", gradId));
+                showToast("Registo apagado com sucesso.", "success");
                 carregarTimeline(alunoId);
             } catch (error) {
-                alert("Erro ao excluir registo.");
+                showToast("Erro ao excluir registo.", "error");
             }
         }
 

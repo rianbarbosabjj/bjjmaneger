@@ -27,7 +27,8 @@ function carregarMenu() {
     const menuDesktop = `
         <aside class="hidden md:flex w-64 bg-slate-900 text-white flex-col h-full shadow-2xl shrink-0 z-20">
             <div class="p-6 text-center border-b border-slate-800 flex flex-col items-center justify-center">
-                <div class="w-16 h-16 mb-3 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-500 flex items-center justify-center shadow-lg text-white font-black text-2xl" id="logo-equipe">B</div>
+                <div id="container-logo" class="w-16 h-16 mb-3 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-500 flex items-center justify-center shadow-lg text-white font-black text-2xl overflow-hidden">
+                    </div>
                 <h1 class="text-sm font-bold tracking-widest text-white uppercase" id="nome-equipe">Carregando...</h1>
                 <p class="text-[9px] text-cyan-400 font-bold uppercase tracking-widest mt-1">BJJ Manager</p>
             </div>

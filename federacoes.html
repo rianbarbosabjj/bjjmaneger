@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Federações | BJJ Maneger</title>
+    <title>Federações | BJJ Manager</title>
     
     <link rel="icon" type="image/png" href="logo_bjj_maneger.png">
     
@@ -22,6 +22,8 @@
     </style>
 </head>
 <body class="flex h-screen overflow-hidden text-slate-800 bg-[#F8FAFC]">
+
+    <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
     <div id="interface-sistema" class="flex w-full h-full relative">
 
@@ -140,7 +142,7 @@
 
             </div>
 
-            </main>
+        </main>
     </div>
 
     <script src="menu.js"></script>
@@ -169,49 +171,113 @@
         let alunoSelecionado = null;
         let federacaoEditandoId = null;
 
+        // --- SISTEMA DE TOASTS ---
+        window.showToast = function(message, type = 'error') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : 'bg-slate-800');
+            const icon = type === 'success' ? '✅' : (type === 'error' ? '🚨' : 'ℹ️');
+            
+            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transform transition-all duration-300 translate-x-full opacity-0 flex items-center gap-3 font-bold text-sm z-50 pointer-events-auto max-w-sm`;
+            toast.innerHTML = `<span class="text-xl">${icon}</span> <span class="flex-1">${message}</span>`;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('translate-x-full', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 4500);
+        }
+
+        // =====================================================================================
+        // 🔥 LÓGICA DE AUTENTICAÇÃO BLINDADA COM MODO SUPORTE
+        // =====================================================================================
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                uid = user.uid;
-
-                // Preenche os dados do menu.js (Logado e Cargo)
-                const emailLogado = document.getElementById('email-logado');
-                if(emailLogado) emailLogado.innerText = user.email;
+                let isSuper = false;
+                try {
+                    const superSnap = await getDoc(doc(db, "super_admins", user.uid));
+                    if (superSnap.exists()) isSuper = true;
+                } catch(e) {
+                    isSuper = false;
+                }
 
                 try {
-                    const docSnap = await getDoc(doc(db, "equipes", uid));
-                    if (docSnap.exists()) {
-                        const lblCargo = document.getElementById('lbl-cargo');
-                        if(lblCargo) lblCargo.innerText = "Mestre / Administrador";
-                        
-                        const dados = docSnap.data();
-                        const elNome = document.getElementById('nome-equipe');
-                        const elLogo = document.getElementById('logo-equipe');
-                        if(elNome) elNome.innerText = dados.nome_equipe;
-                        if(elLogo) elLogo.innerText = dados.nome_equipe.charAt(0).toUpperCase();
+                    if (isSuper) {
+                        const equipeImpersonada = sessionStorage.getItem('admin_impersonate');
+                        if (equipeImpersonada) {
+                            uid = equipeImpersonada; 
+                        } else {
+                            window.location.href = "super_admin.html";
+                            return;
+                        }
                     } else {
-                        const colabSnap = await getDoc(doc(db, "colaboradores", uid));
-                        if(colabSnap.exists()) {
-                            uid = colabSnap.data().equipe_id;
-                            const lblCargo = document.getElementById('lbl-cargo');
-                            if(lblCargo) lblCargo.innerText = "Co-Administrador";
-                            
-                            const equipeMestreSnap = await getDoc(doc(db, "equipes", uid));
-                            if(equipeMestreSnap.exists()) {
-                                const dados = equipeMestreSnap.data();
-                                const elNome = document.getElementById('nome-equipe');
-                                const elLogo = document.getElementById('logo-equipe');
-                                if(elNome) elNome.innerText = dados.nome_equipe;
-                                if(elLogo) elLogo.innerText = dados.nome_equipe.charAt(0).toUpperCase();
+                        uid = user.uid;
+                        const docMestre = await getDoc(doc(db, "equipes", uid));
+                        if (!docMestre.exists()) {
+                            const colabSnap = await getDoc(doc(db, "colaboradores", uid));
+                            if(colabSnap.exists()) {
+                                uid = colabSnap.data().equipe_id;
                             }
                         }
                     }
+                    
+                    await carregarInfoEquipe(user); 
+                    carregarAlunos(); 
+                    
                 } catch (error) { console.log(error); }
-
-                carregarAlunos(); 
             } else {
                 window.location.href = "index.html";
             }
         });
+
+        async function carregarInfoEquipe(user) {
+            const elEmailLogado = document.getElementById('email-logado');
+            if (elEmailLogado) elEmailLogado.innerText = user.email;
+
+            try {
+                const docSnap = await getDoc(doc(db, "equipes", uid));
+                let dadosEquipe = null;
+                
+                if (docSnap.exists()) {
+                    const lblCargo = document.getElementById('lbl-cargo');
+                    if(lblCargo) lblCargo.innerText = "Mestre / Administrador";
+                    dadosEquipe = docSnap.data();
+                } else {
+                    const colabSnap = await getDoc(doc(db, "colaboradores", uid));
+                    if(colabSnap.exists()) {
+                        uid = colabSnap.data().equipe_id; 
+                        const lblCargo = document.getElementById('lbl-cargo');
+                        if(lblCargo) lblCargo.innerText = "Co-Administrador";
+                        
+                        const equipeMestreSnap = await getDoc(doc(db, "equipes", uid));
+                        if(equipeMestreSnap.exists()) {
+                            dadosEquipe = equipeMestreSnap.data();
+                        }
+                    }
+                }
+
+                if (dadosEquipe) {
+                    const nomeEquipe = dadosEquipe.nome_equipe;
+                    
+                    const elNomeEquipe = document.getElementById('nome-equipe') || document.getElementById('lbl-equipe');
+                    if(elNomeEquipe) elNomeEquipe.innerText = nomeEquipe.toUpperCase();
+
+                    const elLogo = document.getElementById('container-logo');
+                    if (elLogo) {
+                        if (dadosEquipe.url_logo) {
+                            elLogo.style.background = 'transparent';
+                            elLogo.innerHTML = `<img src="${dadosEquipe.url_logo}" class="w-full h-full object-cover" alt="Logo">`;
+                        } else {
+                            elLogo.style.background = ''; 
+                            elLogo.innerHTML = nomeEquipe.charAt(0).toUpperCase();
+                        }
+                    }
+                }
+            } catch (error) { console.log(error); }
+        }
 
         // === MAGIA DAS DUAS CORES ===
         function getCorFaixa(faixaTexto) {
@@ -248,7 +314,7 @@
                 alunosCache.sort((a, b) => a.nome.localeCompare(b.nome));
                 renderizarListaAlunos(alunosCache);
             } catch (err) {
-                document.getElementById('lista-alunos').innerHTML = `<p class='text-center p-5 text-red-500'>Erro ao carregar guerreiros.</p>`;
+                document.getElementById('lista-alunos').innerHTML = `<p class='text-center p-5 text-rose-500 font-bold'>Erro ao carregar guerreiros.</p>`;
             }
         }
 
@@ -330,7 +396,8 @@
             document.getElementById('alerta-vencimento').classList.add('hidden');
 
             try {
-                const q = query(collection(db, "federacoes"), where("aluno_id", "==", alunoId));
+                // Filtro blindado: garante segurança no acesso do Firestore
+                const q = query(collection(db, "federacoes"), where("equipe_id", "==", uid), where("aluno_id", "==", alunoId));
                 const snap = await getDocs(q);
                 
                 federacoesCache = [];
@@ -343,7 +410,7 @@
 
             } catch (error) {
                 console.error(error);
-                container.innerHTML = `<div class="text-center text-red-400 mt-5 text-sm">Erro ao buscar dados.</div>`;
+                container.innerHTML = `<div class="text-center text-rose-500 font-bold mt-5 text-sm">Acesso negado ou erro ao buscar dados.</div>`;
             }
         }
 
@@ -448,7 +515,7 @@
 
             federacaoEditandoId = fedId;
             
-            document.getElementById('fed-nome').value = fed.nome_federacao || "CBJJ / IBJJF";
+            document.getElementById('fed-nome').value = fed.nome_federacao || "CBJJ/IBJJF";
             document.getElementById('fed-registro').value = fed.numero_registro || "";
             document.getElementById('fed-vencimento').value = fed.data_vencimento || "";
             document.getElementById('fed-status').value = fed.status || "Ativo";
@@ -472,14 +539,14 @@
 
         // === SALVAR (NOVO OU EDIÇÃO) ===
         window.salvarFederacao = async function() {
-            if (!alunoSelecionado) return alert("Selecione um aluno primeiro!");
+            if (!alunoSelecionado) return showToast("Selecione um aluno primeiro!", "error");
 
             const nome = document.getElementById('fed-nome').value;
             const reg = document.getElementById('fed-registro').value;
             const venc = document.getElementById('fed-vencimento').value;
             const stat = document.getElementById('fed-status').value;
 
-            if (!nome) return alert("A Federação é obrigatória!");
+            if (!nome) return showToast("A Federação é obrigatória!", "error");
 
             const dadosFed = {
                 equipe_id: uid,
@@ -494,8 +561,10 @@
             try {
                 if (federacaoEditandoId) {
                     await updateDoc(doc(db, "federacoes", federacaoEditandoId), dadosFed);
+                    showToast("Filiação atualizada com sucesso!", "success");
                 } else {
                     await addDoc(collection(db, "federacoes"), dadosFed);
+                    showToast("Filiação salva com sucesso!", "success");
                 }
 
                 cancelarEdicaoFed(); 
@@ -503,7 +572,7 @@
                 
             } catch (error) {
                 console.error(error);
-                alert("Erro ao registar filiação.");
+                showToast("Erro ao registar filiação.", "error");
             }
         }
 
@@ -511,10 +580,11 @@
             if(!confirm("Tem a certeza que deseja apagar este registo?")) return;
             try {
                 await deleteDoc(doc(db, "federacoes", fedId));
+                showToast("Registo apagado com sucesso.", "success");
                 if (federacaoEditandoId === fedId) cancelarEdicaoFed();
                 carregarFederacoes(alunoId);
             } catch (error) {
-                alert("Erro ao excluir registo.");
+                showToast("Erro ao excluir registo.", "error");
             }
         }
 

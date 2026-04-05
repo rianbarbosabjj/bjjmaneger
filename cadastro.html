@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nova Matrícula | BJJ Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
+        
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+    </style>
+</head>
+<body class="flex h-[100dvh] overflow-hidden text-slate-800 bg-[#F8FAFC]">
+
+    <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
+    <div class="w-full bg-slate-900 p-3 text-center relative z-50 shrink-0 shadow-md flex items-center justify-center h-14">
+        <a href="dashboard.html" class="absolute left-4 top-1.5 transition-opacity hover:opacity-80 flex items-center text-slate-400 hover:text-white text-xs font-bold uppercase tracking-widest h-10">
+            <span class="mr-2 text-lg leading-none">«</span> Voltar
+        </a>
+        <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest hidden sm:inline-block">Modo Receção / Autoatendimento</span>
+    </div>
+
+    <main class="flex-1 overflow-y-auto p-4 md:p-8 pb-10 hide-scrollbar" id="interface-sistema">
+        
+        <div class="max-w-3xl mx-auto" id="container-principal">
+            
+            <div class="flex justify-center mb-8 mt-4">
+                <img src="topo_curriculo.png" alt="Logo da Equipe" class="w-full max-w-lg object-contain drop-shadow-sm" onerror="this.style.display='none'">
+            </div>
+
+            <div class="mb-8 text-center">
+                <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Ficha de Matrícula</h2>
+                <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Preencha os dados oficiais para ingresso na equipa.</p>
+            </div>
+
+            <div class="space-y-6">
+                
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
+                    <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
+                        <span class="text-xl">🥋</span>
+                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Dados do Atleta</h3>
+                    </div>
+                    
+                    <div class="flex flex-col items-center justify-center mb-8 pb-6 border-b border-slate-50">
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-3">Foto de Rosto (Fundo Branco)</label>
+                        <div class="relative w-32 h-32 rounded-full border-4 border-dashed border-slate-300 bg-slate-50 flex items-center justify-center overflow-hidden cursor-pointer hover:border-cyan-500 hover:bg-cyan-50 transition-all shadow-sm" onclick="document.getElementById('cad-foto').click()">
+                            <img id="preview-foto" src="" class="w-full h-full object-cover hidden">
+                            <div id="placeholder-foto" class="text-center text-slate-400">
+                                <span class="text-3xl">📷</span>
+                                <p class="text-[9px] font-bold mt-1 uppercase">Enviar Foto</p>
+                            </div>
+                        </div>
+                        <input type="file" id="cad-foto" accept="image/*" class="hidden" onchange="mostrarPreviewFoto(event)">
+                        <p class="text-[9px] text-slate-400 mt-2 font-medium">Esta foto será utilizada na carteirinha oficial da equipa.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="md:col-span-2">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Nome Completo *</label>
+                            <input type="text" id="cad-nome" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all font-bold text-slate-700 uppercase" placeholder="Digite o nome completo...">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">CPF *</label>
+                            <input type="text" id="cad-cpf" maxlength="14" oninput="mascaraCPF(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="000.000.000-00">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Data de Nascimento *</label>
+                            <input type="date" id="cad-nasc" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Faixa Atual</label>
+                            <select id="cad-faixa" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">
+                                <option value="Branca">Branca</option>
+                                <option value="Cinza e Branca">Cinza e Branca</option>
+                                <option value="Cinza">Cinza</option>
+                                <option value="Cinza e Preta">Cinza e Preta</option>
+                                <option value="Amarela e Branca">Amarela e Branca</option>
+                                <option value="Amarela">Amarela</option>
+                                <option value="Amarela e Preta">Amarela e Preta</option>
+                                <option value="Laranja e Branca">Laranja e Branca</option>
+                                <option value="Laranja">Laranja</option>
+                                <option value="Laranja e Preta">Laranja e Preta</option>
+                                <option value="Verde e Branca">Verde e Branca</option>
+                                <option value="Verde">Verde</option>
+                                <option value="Verde e Preta">Verde e Preta</option>
+                                <option value="Azul">Azul</option>
+                                <option value="Roxa">Roxa</option>
+                                <option value="Marrom">Marrom</option>
+                                <option value="Preta">Preta</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Grau</label>
+                                <select id="cad-grau" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">
+                                    <option value="Sem grau">Sem grau</option>
+                                    <option value="1º">1º</option>
+                                    <option value="2º">2º</option>
+                                    <option value="3º">3º</option>
+                                    <option value="4º">4º</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Peso (Kg)</label>
+                                <input type="text" id="cad-peso" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="Ex: 80">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
+                    <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
+                        <span class="text-xl">📍</span>
+                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Contato e Endereço</h3>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">WhatsApp / Telefone *</label>
+                            <input type="text" id="cad-tel" maxlength="15" oninput="mascaraTelefone(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="(00) 00000-0000">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">E-mail</label>
+                            <input type="email" id="cad-email" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="email@exemplo.com">
+                        </div>
+                        <div class="grid grid-cols-3 gap-3 md:col-span-2">
+                            <div class="col-span-1">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">CEP</label>
+                                <input type="text" id="cad-cep" maxlength="9" onblur="buscarCEP(this.value)" oninput="mascaraCEP(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="00000-000">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Endereço Completo</label>
+                                <input type="text" id="cad-end" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="Rua, Avenida...">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-3 md:col-span-2">
+                            <div class="col-span-1">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Número</label>
+                                <input type="text" id="cad-num" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Bairro</label>
+                                <input type="text" id="cad-bairro" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
+                    <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
+                        <span class="text-xl">👪</span>
+                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Responsável Legal <span class="text-[10px] text-slate-400 normal-case">(Apenas para menores de idade)</span></h3>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="md:col-span-2">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Nome do Responsável</label>
+                            <input type="text" id="cad-resp-nome" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700 uppercase" placeholder="Nome da mãe, pai ou tutor...">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">CPF do Responsável</label>
+                            <input type="text" id="cad-resp-cpf" maxlength="14" oninput="mascaraCPF(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="000.000.000-00">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-amber-50 rounded-3xl shadow-sm border border-amber-200 p-6 md:p-8 space-y-6">
+                    <div class="flex items-center gap-2 border-b border-amber-200/50 pb-4">
+                        <span class="text-xl">⚖️</span>
+                        <h3 class="font-black text-amber-900 uppercase tracking-widest text-sm">Autorização do uso da imagem</h3>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <p class="text-sm text-amber-900">
+                            De acordo com a Lei de Garantia e Proteção de dados <a href="https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2019/lei/L13853.htm" target="_blank" class="text-cyan-600 underline font-bold hover:text-cyan-700">(Lei nº 13.853, de 2019)</a>. Assinale as opções a seguir.
+                        </p>
+                        
+                        <p class="text-sm font-bold text-amber-900">Autorizo a utilização de imagens deste aluno(a) com a finalidade de:</p>
+                        
+                        <div class="space-y-4 bg-white p-6 rounded-xl border border-amber-100 shadow-sm">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="cad-lgpd-redes" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500 cursor-pointer"> 
+                                <span>Publicações em redes sociais oficiais da Equipe / Projeto</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="cad-lgpd-site" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500 cursor-pointer"> 
+                                <span>Divulgação em site institucional</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="cad-lgpd-promo" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500 cursor-pointer"> 
+                                <span>Materiais informativos e promocionais</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="cad-lgpd-relatorio" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500 cursor-pointer"> 
+                                <span>Relatórios e prestação de contas</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl border border-amber-100 shadow-sm space-y-4 mt-6">
+                        <h4 class="font-bold text-slate-800 text-lg">Declaração de proteção de dados</h4>
+                        <p class="text-sm text-slate-700">A equipe declara que:</p>
+                        <ul class="list-disc pl-5 text-sm text-slate-700 space-y-2">
+                            <li>Não divulgará dados pessoais do(a) aluno(a) (como CPF, endereço, telefone ou informações sensíveis).</li>
+                            <li>Utilizará apenas nome e imagem, quando necessário.</li>
+                            <li>Não comercializará as imagens.</li>
+                            <li>Adotará medidas de segurança para proteção das informações coletadas.</li>
+                        </ul>
+                        <p class="text-sm text-slate-500 pt-4 font-bold italic">Ass: Diretoria da Equipe</p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl border border-amber-100 shadow-sm space-y-4 mt-6">
+                        <p class="text-sm text-slate-700">Declaro que li e estou ciente das informações acima, autorizando o uso da imagem do(a) aluno(a) conforme descrito. <span class="text-red-500 font-bold">*</span></p>
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" id="cad-lgpd-termos" class="w-6 h-6 rounded text-amber-600 border-slate-300 focus:ring-amber-500 cursor-pointer">
+                            <span class="text-sm font-black text-slate-800 uppercase tracking-widest">Concordo</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="pt-6 pb-8">
+                    <button onclick="salvarMatricula()" id="btn-salvar-matricula" class="w-full bg-[#10B981] hover:bg-emerald-600 text-white font-black py-5 rounded-2xl shadow-lg transition-transform transform hover:-translate-y-1 uppercase tracking-widest text-lg flex items-center justify-center">
+                        <span class="mr-2">✅</span> FINALIZAR MATRÍCULA
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
+            authDomain: "bjj-maneger.firebaseapp.com",
+            projectId: "bjj-maneger",
+            storageBucket: "bjj-maneger.firebasestorage.app",
+            messagingSenderId: "415548255893",
+            appId: "1:415548255893:web:61186696fe097be870759c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        let uid = null;
+        let quantidadeAlunosAtual = 0;
+        let ficheiroFotoSelecionado = null;
+
+        // --- SISTEMA DE TOASTS ---
+        window.showToast = function(message, type = 'error') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : 'bg-slate-800');
+            const icon = type === 'success' ? '✅' : (type === 'error' ? '🚨' : 'ℹ️');
+            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transform transition-all duration-300 translate-x-full opacity-0 flex items-center gap-3 font-bold text-sm z-50 pointer-events-auto max-w-sm`;
+            toast.innerHTML = `<span class="text-xl">${icon}</span> <span class="flex-1">${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('translate-x-full', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 4500);
+        }
+
+        // --- MÁSCARAS ---
+        window.mascaraCPF = (i) => {
+            let v = i.value.replace(/\D/g, "");
+            v = v.replace(/(\d{3})(\d)/, "$1.$2");
+            v = v.replace(/(\d{3})(\d)/, "$1.$2");
+            v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+            i.value = v;
+        };
+        window.mascaraTelefone = (i) => {
+            let v = i.value.replace(/\D/g, "");
+            v = v.replace(/^(\d{2})(\d)/g, "($1) $2");
+            v = v.replace(/(\d)(\d{4})$/, "$1-$2");
+            i.value = v;
+        };
+        window.mascaraCEP = (i) => {
+            let v = i.value.replace(/\D/g, "");
+            v = v.replace(/^(\d{5})(\d)/, "$1-$2");
+            i.value = v;
+        };
+        window.buscarCEP = async (cep) => {
+            const cleanCep = cep.replace(/\D/g, "");
+            if (cleanCep.length !== 8) return;
+            const r = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`).then(res => res.json());
+            if (!r.erro) {
+                document.getElementById('cad-end').value = r.logradouro || "";
+                document.getElementById('cad-bairro').value = r.bairro || "";
+                document.getElementById('cad-num').focus();
+            }
+        };
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                uid = user.uid;
+                contarAlunos(); 
+            } else {
+                window.location.href = "index.html";
+            }
+        });
+
+        async function contarAlunos() {
+            try {
+                const q = query(collection(db, "alunos"), where("equipe_id", "==", uid));
+                const snap = await getDocs(q);
+                quantidadeAlunosAtual = snap.size;
+            } catch(e) { console.log("Erro ao contar alunos."); }
+        }
+
+        // PRÉ-VISUALIZAÇÃO DA FOTO NA TELA
+        window.mostrarPreviewFoto = function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                ficheiroFotoSelecionado = file;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgPreview = document.getElementById('preview-foto');
+                    imgPreview.src = e.target.result;
+                    imgPreview.classList.remove('hidden');
+                    document.getElementById('placeholder-foto').classList.add('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        window.salvarMatricula = async function() {
+            const nome = document.getElementById('cad-nome').value.toUpperCase().trim();
+            const cpf = document.getElementById('cad-cpf').value.trim();
+            const nasc = document.getElementById('cad-nasc').value;
+            const tel = document.getElementById('cad-tel').value.trim();
+            const concordo = document.getElementById('cad-lgpd-termos').checked;
+
+            if (!nome || !cpf || !nasc || !tel) {
+                return showToast("Preencha Nome, CPF, Data de Nascimento e Telefone!", "error");
+            }
+
+            if (!concordo) {
+                return showToast("É obrigatório concordar com os termos no final do formulário.", "error");
+            }
+
+            const anoAtual = new Date().getFullYear();
+            const proximaMatriculaNum = quantidadeAlunosAtual + 1;
+            const novaMatriculaStr = anoAtual + proximaMatriculaNum.toString().padStart(4, '0');
+
+            const btn = document.getElementById('btn-salvar-matricula');
+            const textoBotaoOrig = btn.innerHTML;
+            btn.innerHTML = "<span class='mr-2 text-xl'>⏳</span> A SALVAR DADOS...";
+            btn.disabled = true;
+
+            const dadosAluno = {
+                equipe_id: uid,
+                matricula: novaMatriculaStr,
+                nome: nome,
+                cpf: cpf,
+                data_nascimento: nasc,
+                faixa: document.getElementById('cad-faixa').value,
+                grau: document.getElementById('cad-grau').value,
+                peso: document.getElementById('cad-peso').value.trim(),
+                telefone: tel,
+                email: document.getElementById('cad-email').value.trim(),
+                endereco: document.getElementById('cad-end').value.trim(),
+                numero: document.getElementById('cad-num').value.trim(),
+                bairro: document.getElementById('cad-bairro').value.trim(),
+                cep: document.getElementById('cad-cep').value.trim(),
+                nome_responsavel: document.getElementById('cad-resp-nome').value.toUpperCase().trim(),
+                cpf_responsavel: document.getElementById('cad-resp-cpf').value.trim(),
+                status: "ATIVO",
+                bolsa_perc: 0,
+                dia_vencimento: 10,
+                lgpd_concordo: concordo,
+                lgpd_redes: document.getElementById('cad-lgpd-redes').checked,
+                lgpd_site: document.getElementById('cad-lgpd-site').checked,
+                lgpd_promo: document.getElementById('cad-lgpd-promo').checked,
+                lgpd_relatorios: document.getElementById('cad-lgpd-relatorio').checked,
+                foto_url: "", 
+                data_cadastro: new Date().toISOString()
+            };
+
+            try {
+                // 1. Guarda os dados no banco
+                const docRef = await addDoc(collection(db, "alunos"), dadosAluno);
+                
+                // 2. Se o atleta selecionou uma fotografia, envia para a Nuvem
+                if (ficheiroFotoSelecionado) {
+                    btn.innerHTML = "<span class='mr-2 text-xl'>📷</span> A ENVIAR FOTO...";
+                    
+                    const fotoPath = `fotos_carteirinha/${uid}/${docRef.id}.jpg`;
+                    const storageRef = ref(storage, fotoPath);
+                    
+                    await uploadBytes(storageRef, ficheiroFotoSelecionado);
+                    const downloadUrl = await getDownloadURL(storageRef);
+                    
+                    await updateDoc(docRef, { foto_url: downloadUrl });
+                }
+
+                showToast(`Matrícula de ${nome} concluída!`, "success");
+                
+                // Exibe a tela de sucesso
+                document.getElementById('container-principal').innerHTML = `
+                    <div class="bg-emerald-50 border border-emerald-200 p-10 rounded-3xl text-center mt-10">
+                        <span class="text-6xl mb-4 block">✅</span>
+                        <h2 class="text-2xl font-black text-emerald-800 uppercase">Matrícula Concluída!</h2>
+                        <p class="text-emerald-600 font-medium mt-2">O atleta ${nome} foi adicionado à equipe.</p>
+                        <p class="text-xs text-emerald-500 font-bold mt-4 mb-8 text-lg">Matrícula Gerada: ${novaMatriculaStr}</p>
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                            <button onclick="window.location.reload()" class="px-6 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-black uppercase tracking-widest rounded-xl text-xs transition-colors shadow-sm">Nova Matrícula</button>
+                            <a href="dashboard.html" class="px-6 py-4 bg-slate-800 hover:bg-slate-700 text-white font-black uppercase tracking-widest rounded-xl text-xs transition-colors shadow-sm">Voltar ao Painel</a>
+                        </div>
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error(error);
+                showToast("Ocorreu um erro ao salvar o cadastro.", "error");
+                btn.innerHTML = textoBotaoOrig;
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

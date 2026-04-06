@@ -848,7 +848,7 @@
             
             // QUEBRADOR DE CACHE: Garante que o celular lê sempre a versão mais nova do QR Code
             const timeStamp = new Date().getTime();
-            const linkValidacao = `${baseUrl}/validar.html?mat=${codigoMatricula}&v=${timeStamp}`;
+            const linkValidacao = `${baseUrl}/validar.html?mat=${codigoMatricula}`;
             
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(linkValidacao)}`;
             document.getElementById('cart-qr-code').src = qrUrl;

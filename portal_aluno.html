@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Portal do Atleta | BJJ Manager</title>
+    
+    <link rel="icon" type="image/png" href="logo_bjj_maneger.png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0F172A; }
+        
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Efeito Premium na Carteirinha */
+        .carteirinha-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.18);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        
+        /* Textura de tecido para a faixa na carteirinha */
+        .belt-texture {
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px);
+        }
+    </style>
+</head>
+<body class="text-slate-200 overflow-x-hidden selection:bg-cyan-500 selection:text-white pb-safe">
+
+    <div class="fixed inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:20px_20px] opacity-20 pointer-events-none"></div>
+    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md h-64 bg-cyan-500/10 blur-[100px] rounded-full pointer-events-none z-0"></div>
+
+    <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
+    <header class="relative z-10 pt-8 pb-4 px-6 flex justify-between items-center max-w-3xl mx-auto">
+        <div class="flex items-center gap-3">
+            <img id="logo-equipe-topo" src="logo_bjj_maneger.png" alt="Logo" class="h-10 w-auto filter drop-shadow-lg">
+        </div>
+        <button onclick="sairDoPortal()" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-rose-400 transition-colors flex items-center gap-1 bg-slate-800/50 px-3 py-1.5 rounded-lg border border-slate-700/50">
+            Sair <span class="text-sm">🚪</span>
+        </button>
+    </header>
+
+    <main class="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 pb-20 space-y-8">
+        
+        <div class="pt-4">
+            <h1 class="text-3xl font-black text-white tracking-tight">Oss, <span id="nome-saudacao" class="text-cyan-400">Atleta</span>!</h1>
+            <p class="text-sm text-slate-400 font-medium mt-1">Bem-vindo(a) ao seu tatame digital.</p>
+        </div>
+
+        <section>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                    <span class="text-base">🪪</span> Identificação Oficial
+                </h2>
+                <button onclick="virarCarteirinha()" class="text-xs text-cyan-400 font-bold hover:underline">Ver Verso 🔄</button>
+            </div>
+
+            <div id="carteirinha-container" class="relative w-full aspect-[1.586/1] max-w-md mx-auto perspective-1000">
+                
+                <div id="cart-frente" class="absolute inset-0 carteirinha-card rounded-2xl overflow-hidden flex flex-col transition-all duration-500 transform-gpu backface-hidden">
+                    <div class="bg-rose-600 h-2 w-full shrink-0"></div>
+                    
+                    <div class="flex-1 p-5 flex flex-col justify-between">
+                        <div class="flex justify-between items-start">
+                            <img id="cart-logo" src="logo_bjj_maneger.png" class="h-12 w-auto object-contain filter drop-shadow-md">
+                            <div class="text-right">
+                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">ID Atleta</p>
+                                <p class="text-sm font-mono font-bold text-white tracking-wider" id="cart-id">BJJ-00000</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <p class="text-[9px] font-black text-cyan-500 uppercase tracking-widest mb-0.5">Nome</p>
+                            <h3 class="text-lg sm:text-xl font-black text-white uppercase leading-tight truncate" id="cart-nome">NOME DO ATLETA</h3>
+                            <p class="text-xs font-bold text-slate-400 mt-1 uppercase" id="cart-equipe">EQUIPE BJJ MANAGER</p>
+                        </div>
+                    </div>
+
+                    <div id="cart-faixa-bg" class="h-12 w-full bg-blue-600 relative flex items-center justify-between px-5 border-t border-white/10 shrink-0">
+                        <div class="absolute inset-0 belt-texture opacity-20"></div>
+                        <span class="relative z-10 text-white font-black uppercase tracking-widest text-xs shadow-black drop-shadow-md" id="cart-faixa-nome">FAIXA AZUL</span>
+                        
+                        <div class="relative z-10 h-full w-16 bg-slate-900 border-l-4 border-rose-600 flex flex-col justify-between py-1 px-2">
+                            <div id="cart-graus" class="flex flex-col gap-1 w-full mt-auto">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="cart-verso" class="absolute inset-0 carteirinha-card rounded-2xl overflow-hidden flex flex-col transition-all duration-500 transform-gpu rotate-y-180 opacity-0 pointer-events-none backface-hidden p-5">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Documento</p>
+                            <p class="text-xs font-bold text-white" id="cart-doc">000.000.000-00</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Nascimento</p>
+                            <p class="text-xs font-bold text-white" id="cart-nasc">--/--/----</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex-1 flex items-center justify-center bg-white rounded-xl p-2 w-32 mx-auto aspect-square" id="qrcode-box">
+                        </div>
+                    
+                    <div class="mt-4 text-center">
+                        <p class="text-[8px] font-bold text-slate-500 uppercase">Validade Oficial: <span class="text-cyan-400">DEZ / 2026</span></p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                    <span class="text-base">💰</span> Minhas Mensalidades
+                </h2>
+            </div>
+
+            <div class="bg-slate-800/40 rounded-3xl border border-slate-700/50 overflow-hidden backdrop-blur-sm">
+                <div class="p-4 border-b border-slate-700/50 bg-slate-800/80 flex justify-between items-center">
+                    <span class="text-xs font-bold text-slate-300">Ano: 2026</span>
+                    <span class="text-[10px] font-black uppercase text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded">Em dia</span>
+                </div>
+                
+                <div id="lista-faturas" class="divide-y divide-slate-700/30">
+                    <div class="text-center p-6 text-slate-500 text-xs italic">A carregar faturas...</div>
+                </div>
+            </div>
+        </section>
+        
+    </main>
+
+    <div id="modal-pix" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center z-50 p-4 transition-opacity">
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col">
+            <div class="bg-gradient-to-r from-emerald-500 to-teal-600 p-5 text-white flex justify-between items-center shadow-inner">
+                <h3 class="font-black uppercase tracking-widest text-sm flex items-center gap-2">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"><path d="M12 2L22 7.5L12 13L2 7.5L12 2Z" fill="currentColor"/><path d="M22 16.5L12 22L2 16.5V7.5L12 13L22 7.5V16.5Z" fill="currentColor" opacity="0.5"/></svg>
+                    Pagar com PIX
+                </h3>
+                <button onclick="fecharModalPix()" class="text-emerald-100 hover:text-white text-2xl leading-none">&times;</button>
+            </div>
+            
+            <div class="p-6 md:p-8 flex flex-col items-center text-center space-y-5">
+                <div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Referência</p>
+                    <p class="text-sm font-bold text-white" id="pix-ref">Mensalidade - Abril/2026</p>
+                    <h2 class="text-3xl font-black text-emerald-400 mt-2" id="pix-valor">R$ 0,00</h2>
+                </div>
+
+                <div class="bg-white p-3 rounded-2xl w-48 h-48 flex items-center justify-center shadow-lg" id="pix-qrcode-img">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ExemploPIX" alt="QR Code PIX">
+                </div>
+
+                <div class="w-full">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Pix Copia e Cola</p>
+                    <div class="flex items-center gap-2 bg-slate-800 p-2 rounded-xl border border-slate-700">
+                        <input type="text" id="pix-codigo" readonly value="0002012636br.gov.bcb.pix0114+5521999999999..." class="bg-transparent text-xs text-slate-400 font-mono w-full outline-none truncate">
+                        <button onclick="copiarPix()" class="bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white p-2 rounded-lg transition-colors shrink-0" title="Copiar">
+                            📋
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-4 bg-slate-800 border-t border-slate-700 text-center">
+                <p class="text-[10px] text-slate-400 font-medium">Após o pagamento, o seu mestre dará baixa no sistema e a fatura ficará verde.</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Lógica de UI (Simulação Inicial para o Portal do Aluno)
+        // Num cenário real de produção, aqui faríamos a query na coleção "alunos" onde id == user.uid
+        
+        let isVerso = false;
+        
+        window.virarCarteirinha = function() {
+            const frente = document.getElementById('cart-frente');
+            const verso = document.getElementById('cart-verso');
+            
+            if (!isVerso) {
+                frente.style.transform = 'rotateY(180deg)';
+                frente.style.opacity = '0';
+                frente.style.pointerEvents = 'none';
+                
+                verso.style.transform = 'rotateY(0deg)';
+                verso.style.opacity = '1';
+                verso.style.pointerEvents = 'auto';
+            } else {
+                frente.style.transform = 'rotateY(0deg)';
+                frente.style.opacity = '1';
+                frente.style.pointerEvents = 'auto';
+                
+                verso.style.transform = 'rotateY(180deg)';
+                verso.style.opacity = '0';
+                verso.style.pointerEvents = 'none';
+            }
+            isVerso = !isVerso;
+        }
+
+        // Mock de Dados do Aluno para Exemplo Visual
+        const alunoMock = {
+            id: "BJJ-84729",
+            nome: "Alan Jorge Passos da Cunha",
+            equipe: "EQUIPE BJJ MANAGER",
+            faixa: "Azul",
+            grau: "2º",
+            doc: "150.699.837-25",
+            nascimento: "15/04/1995"
+        };
+
+        const faturasMock = [
+            { mes: "Maio/2026", valor: 70.00, status: "PENDENTE", vencimento: "10/05/2026" },
+            { mes: "Abril/2026", valor: 70.00, status: "PAGO", vencimento: "10/04/2026" },
+            { mes: "Março/2026", valor: 70.00, status: "PAGO", vencimento: "10/03/2026" }
+        ];
+
+        function getCorFaixaCarteirinha(faixa) {
+            const f = faixa.toLowerCase();
+            if (f.includes('branca')) return 'bg-white text-slate-800';
+            if (f.includes('cinza')) return 'bg-slate-400 text-white';
+            if (f.includes('amarela')) return 'bg-yellow-400 text-yellow-900';
+            if (f.includes('laranja')) return 'bg-orange-500 text-white';
+            if (f.includes('verde')) return 'bg-green-600 text-white';
+            if (f.includes('azul')) return 'bg-blue-600 text-white';
+            if (f.includes('roxa')) return 'bg-purple-600 text-white';
+            if (f.includes('marrom')) return 'bg-amber-800 text-white';
+            if (f.includes('preta')) return 'bg-slate-900 text-white';
+            return 'bg-slate-800 text-white';
+        }
+
+        window.onload = function() {
+            // Preenche Header
+            document.getElementById('nome-saudacao').innerText = alunoMock.nome.split(' ')[0];
+            
+            // Preenche Carteirinha
+            document.getElementById('cart-nome').innerText = alunoMock.nome;
+            document.getElementById('cart-equipe').innerText = alunoMock.equipe;
+            document.getElementById('cart-id').innerText = alunoMock.id;
+            document.getElementById('cart-doc').innerText = alunoMock.doc;
+            document.getElementById('cart-nasc').innerText = alunoMock.nascimento;
+            
+            const faixaBg = document.getElementById('cart-faixa-bg');
+            const faixaNome = document.getElementById('cart-faixa-nome');
+            faixaBg.className = `h-12 w-full relative flex items-center justify-between px-5 border-t border-white/10 shrink-0 ${getCorFaixaCarteirinha(alunoMock.faixa)}`;
+            faixaNome.innerText = `FAIXA ${alunoMock.faixa.toUpperCase()}`;
+
+            // Renderiza Graus (Tiras brancas na ponta preta)
+            let qtdGraus = 0;
+            if(alunoMock.grau.includes('1')) qtdGraus = 1;
+            if(alunoMock.grau.includes('2')) qtdGraus = 2;
+            if(alunoMock.grau.includes('3')) qtdGraus = 3;
+            if(alunoMock.grau.includes('4')) qtdGraus = 4;
+            
+            let grausHtml = '';
+            for(let i=0; i<qtdGraus; i++) {
+                grausHtml += `<div class="w-full h-1.5 bg-white rounded-sm opacity-90"></div>`;
+            }
+            document.getElementById('cart-graus').innerHTML = grausHtml;
+
+            // Gera QR Code
+            new QRCode(document.getElementById("qrcode-box"), {
+                text: "https://maneger.bjjdigital.com.br/validar?id=" + alunoMock.id,
+                width: 100, height: 100,
+                colorDark : "#0F172A", colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.L
+            });
+
+            // Renderiza Faturas
+            const listaFaturas = document.getElementById('lista-faturas');
+            listaFaturas.innerHTML = '';
+            
+            faturasMock.forEach(fat => {
+                const isPago = fat.status === 'PAGO';
+                const icone = isPago ? '✅' : '⚠️';
+                const corBadge = isPago ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+                const btnHtml = isPago 
+                    ? `<span class="text-[10px] font-bold text-slate-500 uppercase">Efetuado</span>`
+                    : `<button onclick="abrirPix('${fat.mes}', ${fat.valor})" class="bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm transition-colors">Pagar</button>`;
+
+                listaFaturas.innerHTML += `
+                    <div class="p-4 flex items-center justify-between hover:bg-slate-800/50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="text-xl opacity-80">${icone}</div>
+                            <div>
+                                <p class="text-sm font-bold text-white">${fat.mes}</p>
+                                <p class="text-[10px] text-slate-400 uppercase mt-0.5">Venc: ${fat.vencimento}</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-end gap-1.5">
+                            <p class="text-sm font-black text-white">R$ ${fat.valor.toFixed(2).replace('.', ',')}</p>
+                            ${btnHtml}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        window.abrirPix = function(ref, valor) {
+            document.getElementById('pix-ref').innerText = `Mensalidade - ${ref}`;
+            document.getElementById('pix-valor').innerText = `R$ ${valor.toFixed(2).replace('.', ',')}`;
+            document.getElementById('modal-pix').classList.remove('hidden');
+            document.getElementById('modal-pix').classList.add('flex');
+        }
+
+        window.fecharModalPix = function() {
+            document.getElementById('modal-pix').classList.add('hidden');
+            document.getElementById('modal-pix').classList.remove('flex');
+        }
+
+        window.copiarPix = function() {
+            const input = document.getElementById('pix-codigo');
+            input.select();
+            input.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(input.value);
+            showToast("Chave PIX copiada!", "success");
+        }
+
+        window.sairDoPortal = function() {
+            window.location.href = "login.html";
+        }
+
+    </script>
+</body>
+</html>

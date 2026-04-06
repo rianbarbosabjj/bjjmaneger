@@ -262,10 +262,11 @@
 
     <script src="menu.js"></script>
 
-    <script type="module">
+<script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        // Adicionado o addDoc aqui nos imports para podermos salvar o certificado!
+        import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, query, where, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
@@ -491,7 +492,7 @@
             const meses = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];
             const dataExtenso = `BRASIL, ${String(dt.getDate()).padStart(2, '0')} DE ${meses[dt.getMonth()]} DE ${dt.getFullYear()}`;
 
-            // LÓGICA OPÇÃO 3: Mês (MM) + Ano Abrev (AA) + Sequencial (NNN)
+            // GERAÇÃO DO NÚMERO DE SÉRIE
             const mesStr = String(dt.getMonth() + 1).padStart(2, '0');
             const anoStr = dt.getFullYear().toString().slice(-2);
             const seqStr = String(serialEquipeAtual).padStart(3, '0');
@@ -504,7 +505,31 @@
             } catch(e) { console.log("Aviso: Não foi possível gravar o contador na nuvem.", e); }
 
             const idHash = Math.random().toString(36).substring(2, 10).toUpperCase();
-            const urlValidador = `https://bjjdigital.com.br/validar?id=${idHash}&sn=${numeroSerieStr}`;
+            
+            // =================================================================================
+            // 🚨 NOVO: URL APONTANDO PARA A MESMA PÁGINA DE VALIDAÇÃO COM PARÂMETRO ?cert=
+            // =================================================================================
+            const urlValidador = `${window.location.origin}/validar.html?cert=${numeroSerieStr}`;
+
+            // =================================================================================
+            // 🚨 NOVO: SALVANDO O CERTIFICADO NO BANCO DE DADOS PARA PODER SER VALIDADO DEPOIS
+            // =================================================================================
+            try {
+                await addDoc(collection(db, "certificados"), {
+                    equipe_id: uid,
+                    aluno_id: aluno.id,
+                    nome_aluno: aluno.nome.toUpperCase(),
+                    faixa: faixa.toUpperCase(),
+                    numero_serie: numeroSerieStr,
+                    hash_validador: idHash,
+                    data_cerimonia: dataRaw,
+                    prof_responsavel: respNome,
+                    prof_direto: profNome,
+                    data_emissao: new Date().toISOString()
+                });
+            } catch (e) {
+                console.error("Erro ao registrar certificado no banco de dados", e);
+            }
 
             document.getElementById('cert-nome').innerText = aluno.nome.toUpperCase();
             document.getElementById('cert-faixa').innerText = `FAIXA ${faixa.toUpperCase()}`;

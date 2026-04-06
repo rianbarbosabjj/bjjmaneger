@@ -25,7 +25,7 @@
         
         <div id="estado-loading" class="flex flex-col items-center justify-center py-10">
             <div class="w-12 h-12 border-4 border-slate-600 border-t-cyan-500 rounded-full animate-spin mb-6"></div>
-            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Consultando base de dados...</p>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Verificando registo...</p>
         </div>
 
         <div id="estado-sucesso" class="hidden flex-col items-center">
@@ -35,7 +35,7 @@
             <h2 class="text-xl font-black text-white uppercase tracking-tight mb-1">Documento Válido</h2>
             <p class="text-[9px] text-emerald-400 font-bold uppercase tracking-widest mb-8">Autenticidade Confirmada</p>
 
-            <div class="w-24 h-24 rounded-full border-4 border-slate-700 bg-slate-900 mb-4 overflow-hidden relative shadow-lg">
+            <div class="w-24 h-24 rounded-full border-4 border-slate-700 bg-slate-900 mb-4 overflow-hidden relative shadow-lg flex items-center justify-center">
                 <img id="val-foto" src="" class="w-full h-full object-cover hidden">
                 <div id="val-foto-fallback" class="w-full h-full flex items-center justify-center text-4xl font-black text-slate-600"></div>
             </div>
@@ -65,8 +65,8 @@
             <div class="w-20 h-20 bg-rose-500/20 text-rose-500 rounded-full flex items-center justify-center text-4xl mb-6 shadow-[0_0_30px_rgba(244,63,94,0.3)]">
                 ✗
             </div>
-            <h2 class="text-xl font-black text-white uppercase tracking-tight mb-2">Documento Inválido</h2>
-            <p class="text-xs text-slate-400 leading-relaxed px-4">Este registo não foi encontrado na base de dados oficial ou encontra-se revogado.</p>
+            <h2 class="text-xl font-black text-white uppercase tracking-tight mb-2">Registo Inválido</h2>
+            <p class="text-xs text-slate-400 leading-relaxed px-4">Este atleta não foi encontrado na base de dados oficial ou a matrícula encontra-se revogada.</p>
         </div>
     </div>
 
@@ -77,9 +77,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, query, where, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Cole aqui as suas credenciais do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
             authDomain: "bjj-maneger.firebaseapp.com",
@@ -92,64 +91,77 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Pega o ID do aluno na URL (ex: validar.html?id=ABC123XYZ)
+        // Pega a referência na URL (ex: validar.html?mat=20261234)
         const params = new URLSearchParams(window.location.search);
-        const alunoId = params.get('id');
+        const matriculaRef = params.get('mat');
 
         window.onload = async () => {
-            if(!alunoId) {
+            if(!matriculaRef) {
                 mostrarErro();
                 return;
             }
 
             try {
-                // Tenta procurar o aluno na base de dados
-                const docSnap = await getDoc(doc(db, "alunos", alunoId));
+                let alunoData = null;
+
+                // 1. TENTA BUSCAR POR MATRÍCULA (Alunos Novos)
+                const q = query(collection(db, "alunos"), where("matricula", "==", matriculaRef));
+                const querySnapshot = await getDocs(q);
                 
-                if(docSnap.exists()) {
-                    const aluno = docSnap.data();
+                if(!querySnapshot.empty) {
+                    alunoData = querySnapshot.docs[0].data();
+                } else {
+                    // 2. SE NÃO ACHAR, TENTA BUSCAR POR ID DIRETO (Alunos Antigos)
+                    const docSnap = await getDoc(doc(db, "alunos", matriculaRef));
+                    if(docSnap.exists()) {
+                        alunoData = docSnap.data();
+                    }
+                }
+                
+                // SE ENCONTROU O ALUNO...
+                if(alunoData) {
                     
-                    // Vai buscar o nome da Equipa para dar mais credibilidade
+                    // Busca o nome da Equipe
                     let nomeEquipe = "Equipe Não Informada";
-                    if(aluno.equipe_id) {
-                        const eqSnap = await getDoc(doc(db, "equipes", aluno.equipe_id));
+                    if(alunoData.equipe_id) {
+                        const eqSnap = await getDoc(doc(db, "equipes", alunoData.equipe_id));
                         if(eqSnap.exists()) nomeEquipe = eqSnap.data().nome_equipe;
                     }
 
-                    // Preenche os dados na tela
-                    document.getElementById('val-nome').innerText = aluno.nome;
+                    // Preenche a tela
+                    document.getElementById('val-nome').innerText = alunoData.nome;
                     
-                    const faixa = aluno.faixa || 'BRANCA';
-                    const grau = (aluno.grau && aluno.grau !== 'Sem grau') ? ` - ${aluno.grau}` : '';
+                    const faixa = alunoData.faixa || 'BRANCA';
+                    const grau = (alunoData.grau && alunoData.grau !== 'Sem grau') ? ` - ${alunoData.grau}` : '';
                     document.getElementById('val-faixa').innerText = (faixa + grau).toUpperCase();
                     
                     document.getElementById('val-equipe').innerText = nomeEquipe.toUpperCase();
-                    document.getElementById('val-matricula').innerText = aluno.matricula || 'Sem Matrícula';
+                    document.getElementById('val-matricula').innerText = alunoData.matricula || matriculaRef;
                     
                     const elStatus = document.getElementById('val-status');
-                    elStatus.innerText = aluno.status || 'ATIVO';
-                    if(aluno.status === 'INATIVO') {
+                    elStatus.innerText = alunoData.status || 'ATIVO';
+                    if(alunoData.status === 'INATIVO') {
                         elStatus.classList.replace('text-emerald-400', 'text-rose-500');
                     }
 
-                    if(aluno.foto_url) {
-                        document.getElementById('val-foto').src = aluno.foto_url;
+                    if(alunoData.foto_url) {
+                        document.getElementById('val-foto').src = alunoData.foto_url;
                         document.getElementById('val-foto').classList.remove('hidden');
                     } else {
-                        document.getElementById('val-foto-fallback').innerText = aluno.nome.charAt(0).toUpperCase();
+                        document.getElementById('val-foto-fallback').innerText = alunoData.nome.charAt(0).toUpperCase();
                     }
 
-                    // Esconde o Loading e mostra o Sucesso
+                    // Mostra sucesso
                     document.getElementById('estado-loading').classList.add('hidden');
                     document.getElementById('estado-sucesso').classList.remove('hidden');
                     document.getElementById('estado-sucesso').classList.add('flex');
 
                 } else {
+                    // Se não achou de jeito nenhum, é falso
                     mostrarErro();
                 }
             } catch(e) {
                 console.error("Erro na validação:", e);
-                // Se der erro de permissão no Firebase, vai cair aqui
                 mostrarErro();
             }
         };

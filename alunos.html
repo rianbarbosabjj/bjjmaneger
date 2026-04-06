@@ -8,7 +8,6 @@
     <link rel="icon" type="image/png" href="logo_bjj_maneger.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
@@ -94,7 +93,6 @@
                         </div>
                         <div class="flex items-center justify-between w-full md:w-auto gap-4">
                             <span id="lbl-total-ativos" class="text-xs md:text-sm font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100">Total Ativos: 0</span>
-                            <button onclick="fundirFichas()" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-colors shadow-sm items-center hidden" id="btn-fundir">🧬 Fundir (2)</button>
                         </div>
                     </div>
 
@@ -102,7 +100,7 @@
                         <div class="overflow-x-auto w-full">
                             <table class="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
                                 <thead>
-                                    <tr class="bg-slate-50 border-b border-slate-200 uppercase text-[10px] font-black text-slate-400 tracking-widest">
+                                    <tr class="bg-slate-50 border-b border-slate-200 uppercase text-[10px] font-black text-slate-400">
                                         <th class="px-4 md:px-6 py-4 w-10 text-center">Sel</th>
                                         <th class="px-4 md:px-6 py-4">Atleta</th>
                                         <th class="px-4 md:px-6 py-4 text-center">CPF</th>
@@ -142,7 +140,6 @@
             </div>
 
             <div class="p-5 md:p-8 overflow-y-auto space-y-6 flex-1 bg-white hide-scrollbar">
-                
                 <div id="aba-pessoal" class="aba-content space-y-5">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                         
@@ -400,13 +397,40 @@
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
-                if (mestreDoc.exists()) { 
-                    teamId = user.uid; 
+                let isSuper = false;
+                try {
+                    const superSnap = await getDoc(doc(db, "super_admins", user.uid));
+                    if (superSnap.exists()) isSuper = true;
+                } catch(e) { isSuper = false; }
+
+                if (isSuper) {
+                    const equipeImpersonada = sessionStorage.getItem('admin_impersonate');
+                    if (equipeImpersonada) {
+                        teamId = equipeImpersonada;
+                        
+                        // DOMADOR DE BANNERS: Transforma o quadrado vermelho gigante numa barra flutuante no rodapé
+                        setTimeout(() => {
+                            Array.from(document.body.children).forEach(child => {
+                                if (child.tagName === 'DIV' && child.innerText.includes('MODO SUPORTE ATIVADO')) {
+                                    child.className = 'fixed bottom-0 left-0 w-full bg-rose-600 text-white z-[9999] flex items-center justify-center p-3 shadow-2xl font-bold text-sm gap-4 tracking-widest uppercase';
+                                }
+                            });
+                        }, 1000);
+
+                    } else {
+                        window.location.href = "super_admin.html";
+                        return;
+                    }
                 } else {
-                    const colabDoc = await getDoc(doc(db, "colaboradores", user.uid));
-                    if (colabDoc.exists()) teamId = colabDoc.data().equipe_id;
+                    const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
+                    if (mestreDoc.exists()) { 
+                        teamId = user.uid; 
+                    } else {
+                        const colabDoc = await getDoc(doc(db, "colaboradores", user.uid));
+                        if (colabDoc.exists()) teamId = colabDoc.data().equipe_id;
+                    }
                 }
+
                 if (teamId) {
                     await carregarDadosEquipe();
                     buscarAlunosFirebase();
@@ -420,8 +444,21 @@
                 const d = eqSnap.data();
                 equipeDados.nome = d.nome_equipe || d.nome || "Sua Equipe";
                 equipeDados.logo = d.url_logo || "";
+                
+                // Atualiza o Título da Página
                 const elNome = document.getElementById('nome-equipe') || document.getElementById('lbl-equipe');
                 if(elNome) elNome.innerText = equipeDados.nome.toUpperCase();
+
+                // CAÇADOR DE LOGO: Procura o quadrado azul no menu e cola a foto da academia
+                const elLogoMenu = document.getElementById('logo-equipe-menu') || document.getElementById('container-logo') || document.querySelector('aside div[class*="bg-cyan-"], aside div[class*="bg-blue-"]');
+                if (elLogoMenu) {
+                    if (equipeDados.logo) {
+                        elLogoMenu.style.background = 'transparent';
+                        elLogoMenu.innerHTML = `<img src="${equipeDados.logo}" class="w-full h-full object-cover rounded-xl shadow-md" alt="Logo">`;
+                    } else {
+                        elLogoMenu.innerHTML = `<span class="text-white font-black text-2xl">${equipeDados.nome.charAt(0).toUpperCase()}</span>`;
+                    }
+                }
             }
         }
 
@@ -433,7 +470,7 @@
             renderizarTabela();
         }
 
-        // FUNÇÃO DE CORES DAS FAIXAS RESTAURADA
+        // Função de Cores para as Faixas na Tabela
         function getCorFaixa(faixaTexto) {
             const f = faixaTexto ? faixaTexto.toLowerCase() : '';
             if (f.includes('cinza e branca')) return 'bg-[linear-gradient(135deg,_#94A3B8_50%,_#FFFFFF_50%)] text-slate-800 border border-slate-300';
@@ -497,9 +534,6 @@
             });
         }
 
-        // ==========================================
-        // MÓDULO DE UPLOAD DE FOTO (MODAL ALUNO)
-        // ==========================================
         window.mostrarPreviewFoto = function(event) {
             const file = event.target.files[0];
             if (file) {
@@ -549,7 +583,6 @@
             document.getElementById('lgpd-promo').checked = a.lgpd_promo || false;
             document.getElementById('lgpd-relatorio').checked = a.lgpd_relatorios || false;
 
-            // CARREGA A FOTO
             const imgPreview = document.getElementById('preview-foto');
             const placeholder = document.getElementById('placeholder-foto');
             if (a.foto_url) {
@@ -614,7 +647,6 @@
                     docRefId = docRef.id;
                 }
 
-                // UPLOAD DE FOTO SE HOUVER
                 let fotoUrlFinal = null;
                 if (ficheiroFotoSelecionado) {
                     btnSalvar.innerHTML = "📷 ENVIANDO FOTO...";
@@ -629,9 +661,7 @@
                     await updateDoc(doc(db, "alunos", id), dados);
                     showToast("Ficha atualizada com sucesso!", "success");
                 } else {
-                    if (fotoUrlFinal) {
-                        await updateDoc(doc(db, "alunos", docRefId), { foto_url: fotoUrlFinal });
-                    }
+                    if (fotoUrlFinal) await updateDoc(doc(db, "alunos", docRefId), { foto_url: fotoUrlFinal });
                     showToast("Matrícula criada com sucesso!", "success");
                 }
                 
@@ -678,7 +708,6 @@
             if(f.includes('azul')) cB='#3b82f6'; else if(f.includes('roxa')) cB='#a855f7'; else if(f.includes('marrom')) cB='#78350f'; else if(f.includes('preta')) cB='#000000'; else if(f.includes('amarela')) cB='#eab308'; else if(f.includes('laranja')) cB='#f97316'; else if(f.includes('verde')) cB='#22c55e';
             document.getElementById('cart-faixa-border').style.borderLeftColor = cB;
 
-            // FOTO CARTEIRINHA
             if(a.foto_url) {
                 document.getElementById('cart-aluno-foto-modal').src = a.foto_url; 
                 document.getElementById('cart-aluno-foto-modal').classList.remove('hidden'); 

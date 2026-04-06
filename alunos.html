@@ -19,7 +19,7 @@
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+        
         .table-row-hover:hover td { background-color: #F1F5F9; }
         .chk-merge { accent-color: #06B6D4; cursor: pointer; width: 1.2rem; height: 1.2rem; }
 
@@ -57,7 +57,7 @@
 </head>
 <body class="flex h-[100dvh] overflow-hidden text-slate-800 bg-[#F8FAFC]">
 
-    <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+    <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-auto"></div>
 
     <div id="interface-sistema" class="flex w-full h-full relative">
         <main class="flex-1 flex flex-col h-full overflow-hidden relative">
@@ -67,52 +67,44 @@
                     <div class="mb-6 md:mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
                             <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Controle de Alunos</h2>
-                            <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Administre sua equipe</p>
+                            <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Gestão de Equipe e Carteirinhas</p>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                            <button onclick="corrigirTodosAlunos()" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 md:py-2.5 px-4 md:px-6 rounded-xl shadow-md transition-all flex items-center justify-center text-xs md:text-sm">
-                                <span class="mr-2 text-base">🔧</span> Corrigir IDs Antigos
+                            <button onclick="corrigirTodosAlunos()" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 md:py-2.5 px-4 md:px-6 rounded-xl shadow-md transition-all text-xs">
+                                🔧 Corrigir IDs Antigos
                             </button>
-                            <button onclick="abrirModal()" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 md:py-2.5 px-4 md:px-6 rounded-xl shadow-md transition-all flex items-center justify-center text-xs md:text-sm">
-                                <span class="mr-2 text-base">➕</span> Nova Matrícula
+                            <button onclick="abrirModal()" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 md:py-2.5 px-4 md:px-6 rounded-xl shadow-md transition-all text-xs">
+                                ➕ Nova Matrícula
                             </button>
                         </div>
                     </div>
 
-                    <div class="bg-white p-4 rounded-2xl md:rounded-3xl shadow-sm border border-slate-200 mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
-                        <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:flex-1">
-                            <select id="filtro-status" onchange="renderizarTabela()" class="w-full sm:w-auto bg-slate-50 border border-slate-200 text-slate-700 text-sm font-bold rounded-xl p-3 md:p-2.5 outline-none cursor-pointer">
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 mb-6 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
+                        <div class="flex flex-1 items-center gap-3 w-full">
+                            <select id="filtro-status" onchange="renderizarTabela()" class="bg-slate-50 border border-slate-200 text-sm font-bold rounded-xl p-2.5 outline-none cursor-pointer">
                                 <option value="ATIVO">Ativos</option>
                                 <option value="INATIVO">Inativos</option>
                                 <option value="TODOS">Todos</option>
                             </select>
-                            <div class="relative w-full">
-                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">🔍</div>
-                                <input type="text" id="input-busca" onkeyup="renderizarTabela()" class="bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl block w-full pl-10 p-3 md:p-2.5 outline-none" placeholder="Buscar por nome ou CPF...">
-                            </div>
-                            <button onclick="limparBusca()" class="w-full sm:w-auto bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold py-3 md:py-2.5 px-4 rounded-xl text-sm transition-colors">Limpar</button>
+                            <input type="text" id="input-busca" onkeyup="renderizarTabela()" class="bg-slate-50 border border-slate-200 text-sm rounded-xl block w-full p-2.5 outline-none" placeholder="Buscar por nome ou CPF...">
                         </div>
-                        <div class="flex items-center justify-between w-full md:w-auto gap-4">
-                            <span id="lbl-total-ativos" class="text-xs md:text-sm font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100">Total Ativos: 0</span>
-                            <button onclick="fundirFichas()" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-colors shadow-sm items-center hidden" id="btn-fundir">🧬 Fundir (2)</button>
-                        </div>
+                        <span id="lbl-total-ativos" class="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100">Ativos: 0</span>
                     </div>
 
-                    <div class="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
                         <div class="overflow-x-auto w-full">
-                            <table class="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
+                            <table class="w-full text-left border-collapse whitespace-nowrap">
                                 <thead>
-                                    <tr class="bg-slate-50 border-b border-slate-200">
-                                        <th class="px-4 md:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 w-10 text-center">Sel</th>
-                                        <th class="px-4 md:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Atleta</th>
-                                        <th class="px-4 md:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">CPF</th>
-                                        <th class="px-4 md:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Faixa</th>
-                                        <th class="px-4 md:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Status</th>
-                                        <th class="px-4 md:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Ações</th>
+                                    <tr class="bg-slate-50 border-b border-slate-200 uppercase text-[10px] font-black text-slate-400">
+                                        <th class="px-6 py-4 w-10 text-center">Sel</th>
+                                        <th class="px-6 py-4">Atleta</th>
+                                        <th class="px-6 py-4 text-center">Faixa</th>
+                                        <th class="px-6 py-4 text-center">Status</th>
+                                        <th class="px-6 py-4 text-center">Ações</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tabela-alunos" class="divide-y divide-slate-100">
-                                    <tr><td colspan="6" class="text-center py-12 text-slate-400 font-medium">Buscando dados...</td></tr>
+                                <tbody id="tabela-alunos" class="divide-y divide-slate-100 text-sm">
+                                    <tr><td colspan="5" class="text-center py-12 text-slate-400">Buscando dados...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -122,117 +114,97 @@
         </main>
     </div>
 
-    <div id="area-impressao" class="hidden bg-white text-black p-10"></div>
-
-    <div id="modal-aluno" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh] transform transition-transform">
-            <div class="bg-slate-900 p-4 md:p-5 flex justify-between items-center text-white shrink-0">
-                <div class="flex items-center space-x-3">
-                    <div class="w-8 h-8 md:w-10 md:h-10 bg-cyan-500 rounded-full flex items-center justify-center text-lg md:text-xl font-black shadow-inner">🥋</div>
-                    <h3 class="font-black text-base md:text-lg tracking-tight uppercase" id="modal-titulo">Ficha Cadastral</h3>
-                </div>
-                <button onclick="fecharModal()" class="text-slate-400 hover:text-white text-3xl leading-none">&times;</button>
+    <div id="modal-aluno" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-slate-900 p-4 md:p-5 flex justify-between items-center text-white">
+                <h3 class="font-black text-lg uppercase tracking-tight" id="modal-titulo">Ficha Cadastral</h3>
+                <button onclick="fecharModal()" class="text-3xl">&times;</button>
             </div>
 
-            <div class="flex border-b border-slate-200 bg-slate-50 px-2 overflow-x-auto hide-scrollbar shrink-0">
-                <button onclick="mudarAba('aba-pessoal')" id="btn-aba-pessoal" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest tab-active whitespace-nowrap transition-colors">👤 Pessoal</button>
-                <button onclick="mudarAba('aba-contato')" id="btn-aba-contato" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">📍 Contato</button>
-                <button onclick="mudarAba('aba-resp')" id="btn-aba-resp" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">👪 Responsável</button>
-                <button onclick="mudarAba('aba-lgpd')" id="btn-aba-lgpd" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚖️ LGPD</button>
+            <div class="flex border-b bg-slate-50 overflow-x-auto hide-scrollbar">
+                <button onclick="mudarAba('aba-pessoal')" id="btn-aba-pessoal" class="aba-item py-4 px-6 text-[10px] font-black uppercase tab-active whitespace-nowrap">👤 Pessoal</button>
+                <button onclick="mudarAba('aba-contato')" id="btn-aba-contato" class="aba-item py-4 px-6 text-[10px] font-black uppercase text-slate-400 whitespace-nowrap">📍 Contato</button>
+                <button onclick="mudarAba('aba-resp')" id="btn-aba-resp" class="aba-item py-4 px-6 text-[10px] font-black uppercase text-slate-400 whitespace-nowrap">👪 Responsável</button>
+                <button onclick="mudarAba('aba-lgpd')" id="btn-aba-lgpd" class="aba-item py-4 px-6 text-[10px] font-black uppercase text-slate-400 whitespace-nowrap">⚖️ LGPD</button>
             </div>
 
-            <div class="p-5 md:p-8 overflow-y-auto space-y-6 flex-1 bg-white hide-scrollbar">
-                <div id="aba-pessoal" class="aba-content space-y-5">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+            <div class="p-6 md:p-8 overflow-y-auto space-y-6 flex-1 bg-white">
+                <div id="aba-pessoal" class="aba-content">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div class="md:col-span-2">
-                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Matrícula</label>
-                            <input type="text" id="aluno-matricula" disabled class="w-full p-3 bg-slate-100 border border-slate-200 rounded-xl outline-none font-mono text-slate-500 font-bold" placeholder="Gerada Auto">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome Completo</label>
-                            <input type="text" id="aluno-nome" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100 outline-none uppercase font-bold text-slate-700 transition-all">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase">Nome Completo</label>
+                            <input type="text" id="aluno-nome" class="w-full p-3 bg-slate-50 border rounded-xl font-bold uppercase text-slate-700 outline-none focus:border-cyan-500">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CPF</label>
-                            <input type="text" id="aluno-cpf" placeholder="000.000.000-00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none transition-all">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase">Matrícula</label>
+                            <input type="text" id="aluno-matricula" disabled class="w-full p-3 bg-slate-100 border rounded-xl font-mono">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Data Nascimento</label>
-                            <input type="date" id="aluno-nasc" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none transition-all">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase">Data Nascimento</label>
+                            <input type="date" id="aluno-nasc" class="w-full p-3 bg-slate-50 border rounded-xl">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Faixa Atual</label>
-                            <select id="aluno-faixa" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:bg-white focus:border-cyan-500 outline-none transition-all cursor-pointer">
-                                <option>Branca</option><option>Cinza e Branca</option><option>Cinza</option><option>Cinza e Preta</option><option>Amarela e Branca</option><option>Amarela</option><option>Amarela e Preta</option><option>Laranja e Branca</option><option>Laranja</option><option>Laranja e Preta</option><option>Verde e Branca</option><option>Verde</option><option>Verde e Preta</option><option>Azul</option><option>Roxa</option><option>Marrom</option><option>Preta</option>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase">Faixa Atual</label>
+                            <select id="aluno-faixa" class="w-full p-3 bg-slate-50 border rounded-xl font-bold">
+                                <option>Branca</option><option>Cinza e Branca</option><option>Cinza</option><option>Cinza e Preta</option><option>Amarela</option><option>Laranja</option><option>Verde</option><option>Azul</option><option>Roxa</option><option>Marrom</option><option>Preta</option>
                             </select>
                         </div>
-                        <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Grau</label>
-                            <select id="aluno-grau" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 focus:bg-white focus:border-cyan-500 outline-none transition-all cursor-pointer">
-                                <option>Sem grau</option><option>1º</option><option>2º</option><option>3º</option><option>4º</option>
-                            </select>
-                        </div>
+                        <input type="hidden" id="aluno-id-oculto">
                     </div>
                 </div>
-
-                <div id="aba-contato" class="aba-content hidden space-y-5">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
-                        <input type="text" id="aluno-tel" placeholder="Telefone (WhatsApp)" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl">
-                        <input type="text" id="aluno-peso" placeholder="Peso (Kg)" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl">
-                        <input type="email" id="aluno-email" placeholder="E-mail" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl md:col-span-2">
-                        <input type="text" id="aluno-endereco" placeholder="Endereço Completo" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl md:col-span-2">
-                        <input type="text" id="aluno-bairro" placeholder="Bairro" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl">
-                        <input type="text" id="aluno-cep" placeholder="CEP" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl">
-                    </div>
-                </div>
-
-                <div id="aba-resp" class="aba-content hidden space-y-5">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
-                        <input type="text" id="aluno-resp-nome" placeholder="Nome do Responsável" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl uppercase font-bold md:col-span-2">
-                        <select id="aluno-status" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold">
+                <div id="aba-contato" class="aba-content hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <input type="text" id="aluno-tel" placeholder="Telefone (WhatsApp)" class="w-full p-3 bg-slate-50 border rounded-xl">
+                        <input type="email" id="aluno-email" placeholder="E-mail" class="w-full p-3 bg-slate-50 border rounded-xl">
+                        <select id="aluno-status" class="w-full p-3 bg-slate-50 border rounded-xl font-bold">
                             <option value="ATIVO">🟢 ATIVO</option><option value="INATIVO">🔴 INATIVO</option>
                         </select>
                     </div>
                 </div>
-
-                <div id="aba-lgpd" class="aba-content hidden space-y-5">
-                    <label class="flex items-start space-x-3 bg-amber-50 p-4 rounded-xl border border-amber-200 cursor-pointer">
-                        <input type="checkbox" id="lgpd-concordo" class="w-5 h-5 rounded mt-0.5"><span class="text-xs font-black text-amber-900 uppercase">Concordo com os Termos LGPD</span>
+                <div id="aba-resp" class="aba-content hidden">
+                    <input type="text" id="aluno-resp-nome" placeholder="Nome do Responsável" class="w-full p-3 bg-slate-50 border rounded-xl uppercase font-bold">
+                </div>
+                <div id="aba-lgpd" class="aba-content hidden">
+                    <label class="flex items-center space-x-3 bg-amber-50 p-4 rounded-xl border border-amber-200 cursor-pointer">
+                        <input type="checkbox" id="lgpd-concordo" class="w-5 h-5 rounded">
+                        <span class="text-xs font-black text-amber-900 uppercase">Li e Concordo com os Termos LGPD</span>
                     </label>
-                    <button onclick="gerarPDF_LGPD()" id="btn-gerar-pdf" class="w-full mt-4 bg-slate-800 text-white font-bold py-3 rounded-xl hidden">🖨️ Gerar PDF LGPD</button>
                 </div>
             </div>
 
-            <div class="p-4 md:p-6 bg-slate-50 border-t border-slate-200 flex flex-wrap justify-end gap-3 rounded-b-3xl shrink-0">
-                <button onclick="abrirModalCarteirinha()" id="btn-abrir-carteirinha" class="flex-1 md:flex-none bg-indigo-500 hover:bg-indigo-600 text-white font-black py-3 px-6 rounded-xl text-sm uppercase tracking-widest hidden">🪪 Carteirinha</button>
-                <button onclick="fecharModal()" class="flex-1 md:flex-none px-6 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-200 transition-colors text-sm">Cancelar</button>
-                <button onclick="salvarAluno()" class="flex-1 md:flex-none bg-cyan-500 hover:bg-cyan-600 text-white font-black py-3 px-8 rounded-xl shadow-md transition-all text-sm uppercase tracking-widest">💾 Salvar</button>
+            <div class="p-4 bg-slate-50 border-t flex flex-wrap justify-end gap-3 shrink-0">
+                <button onclick="abrirModalCarteirinha()" id="btn-abrir-carteirinha" class="bg-indigo-500 text-white font-black py-3 px-6 rounded-xl text-sm uppercase tracking-widest hidden shadow-md">🪪 Carteirinha</button>
+                <button onclick="fecharModal()" class="px-6 py-3 font-bold text-slate-500 hover:bg-slate-200 rounded-xl">Cancelar</button>
+                <button onclick="salvarAluno()" class="bg-cyan-500 text-white font-black py-3 px-8 rounded-xl text-sm uppercase shadow-md">💾 Salvar</button>
             </div>
         </div>
     </div>
 
-    <div id="modal-carteirinha" class="fixed inset-0 bg-slate-900/90 backdrop-blur-md hidden items-center justify-center z-[60] p-4 transition-opacity overflow-y-auto">
+    <div id="modal-carteirinha" class="fixed inset-0 bg-slate-900/90 backdrop-blur-md hidden items-center justify-center z-[60] p-4 overflow-y-auto">
         <div class="w-full max-w-2xl my-auto">
+            
             <div class="flex justify-between items-center mb-6 max-w-[600px] mx-auto">
                 <div class="text-white text-sm font-bold uppercase tracking-widest">Carteirinha Digital</div>
                 <div class="flex gap-2">
-                    <button onclick="window.print()" class="bg-cyan-500 text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg hover:bg-cyan-600">🖨️ Imprimir</button>
-                    <button onclick="fecharModalCarteirinha()" class="bg-slate-700 text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg hover:bg-slate-600">Voltar</button>
+                    <button onclick="window.print()" class="bg-cyan-500 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase shadow-lg">🖨️ Imprimir</button>
+                    <button onclick="fecharModalCarteirinha()" class="bg-slate-700 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase shadow-lg">Voltar</button>
                 </div>
             </div>
 
             <div class="print-carteirinha-wrapper relative mx-auto bg-white rounded-2xl overflow-hidden shadow-2xl border border-slate-200 flex text-slate-800 font-sans w-full max-w-[600px] aspect-[1.58/1] shrink-0" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
-                <div class="absolute top-0 right-0 w-64 h-full bg-slate-200/40 skew-x-[-20deg] translate-x-10 z-0"></div>
                 
+                <div class="absolute top-0 right-0 w-64 h-full bg-slate-200/40 skew-x-[-20deg] translate-x-10 z-0"></div>
+                <div class="absolute bottom-0 left-0 w-full h-1/3 bg-slate-300/30 skew-y-[-5deg] origin-bottom-right z-0"></div>
+
                 <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden">
                     <img id="cart-equipe-watermark" src="" class="w-[120%] h-[120%] object-contain opacity-[0.04] grayscale hidden" style="transform: scale(1.1);">
-                    <div id="cart-equipe-watermark-fallback" class="text-[30rem] font-black text-slate-800 opacity-[0.03] hidden">E</div>
+                    <div id="cart-equipe-watermark-fallback" class="text-[30rem] leading-none font-black text-slate-800 opacity-[0.03] hidden">E</div>
                 </div>
 
                 <div class="flex-1 p-5 md:p-6 flex flex-col z-10 w-[65%]">
                     <div class="flex items-center gap-4 mb-6">
                         <div class="h-16 md:h-20 w-16 md:w-20 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-sm shrink-0 overflow-hidden">
-                            <img id="cart-equipe-logo" src="" class="h-full w-full object-contain p-1.5 drop-shadow-sm hidden">
+                            <img id="cart-equipe-logo" src="" class="h-full w-full object-contain p-1.5 hidden">
                             <div id="cart-equipe-fallback" class="text-3xl font-black text-slate-700 hidden">E</div>
                         </div>
                         <div class="flex flex-col justify-center">
@@ -244,7 +216,7 @@
                     <div class="grid grid-cols-2 gap-y-2.5 gap-x-4 w-full mt-auto mb-4 md:mb-6">
                         <div class="col-span-2 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md border-l-4 border-cyan-500 shadow-sm">
                             <p class="text-[8px] md:text-[9px] text-slate-400 uppercase font-bold mb-0.5">Nome do Atleta</p>
-                            <p id="cart-aluno-nome" class="text-xs md:text-sm font-black uppercase text-slate-800 truncate">ALUNO NOME</p>
+                            <p id="cart-aluno-nome-txt" class="text-xs md:text-sm font-black uppercase text-slate-800 truncate">ALUNO NOME</p>
                         </div>
                         <div class="col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm" id="cart-faixa-border">
                             <p class="text-[8px] md:text-[9px] text-slate-400 uppercase font-bold mb-0.5">Faixa / Graduação</p>
@@ -252,15 +224,15 @@
                         </div>
                         <div class="col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm">
                             <p class="text-[8px] md:text-[9px] text-slate-400 uppercase font-bold mb-0.5">Nascimento</p>
-                            <p id="cart-aluno-nascimento" class="text-[10px] md:text-xs font-bold text-slate-800">00/00/0000</p>
+                            <p id="cart-aluno-nascimento-txt" class="text-[10px] md:text-xs font-bold text-slate-800">00/00/0000</p>
                         </div>
                         <div class="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm">
                             <p class="text-[8px] md:text-[9px] text-slate-400 uppercase font-bold mb-0.5">Matrícula</p>
-                            <p id="cart-aluno-matricula" class="text-[10px] md:text-xs font-mono font-bold text-slate-800 tracking-wider">00000</p>
+                            <p id="cart-aluno-matricula-txt" class="text-[10px] md:text-xs font-mono font-bold text-slate-800 tracking-wider">00000</p>
                         </div>
                         <div class="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm">
                             <p class="text-[8px] md:text-[9px] text-slate-400 uppercase font-bold mb-0.5">Validade</p>
-                            <p id="cart-aluno-validade" class="text-[10px] md:text-xs font-black text-slate-800 tracking-wider">2026</p>
+                            <p id="cart-aluno-validade-txt" class="text-[10px] md:text-xs font-black text-slate-800 tracking-wider">2026</p>
                         </div>
                     </div>
                 </div>
@@ -301,24 +273,19 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        let uid = null;
         let teamId = null;
         let todosAlunosCache = [];
-        let equipeNomeGlobal = "Equipe";
-        let equipeLogoGlobal = "";
+        let equipeDados = { nome: "Equipe", logo: "" };
+        let alunoEditandoId = null;
 
-        // AUTH E CARREGAMENTO
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                uid = user.uid;
                 const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
-                if (mestreDoc.exists()) { 
-                    teamId = user.uid; 
-                } else {
+                if (mestreDoc.exists()) { teamId = user.uid; } 
+                else {
                     const colabDoc = await getDoc(doc(db, "colaboradores", user.uid));
                     if (colabDoc.exists()) teamId = colabDoc.data().equipe_id;
                 }
-                
                 if (teamId) {
                     await carregarDadosEquipe();
                     buscarAlunosFirebase();
@@ -330,10 +297,10 @@
             const eqSnap = await getDoc(doc(db, "equipes", teamId));
             if (eqSnap.exists()) {
                 const d = eqSnap.data();
-                equipeNomeGlobal = d.nome_equipe || "Sua Equipe";
-                equipeLogoGlobal = d.url_logo || "";
+                equipeDados.nome = d.nome_equipe || d.nome || "Sua Equipe";
+                equipeDados.logo = d.url_logo || "";
                 const elNome = document.getElementById('nome-equipe') || document.getElementById('lbl-equipe');
-                if(elNome) elNome.innerText = equipeNomeGlobal.toUpperCase();
+                if(elNome) elNome.innerText = equipeDados.nome.toUpperCase();
             }
         }
 
@@ -352,36 +319,36 @@
             const filtrados = todosAlunosCache.filter(a => a.nome.toLowerCase().includes(busca) && (status === "TODOS" || a.status === status));
             
             document.getElementById('lbl-total-ativos').innerText = "Ativos: " + todosAlunosCache.filter(x => x.status === "ATIVO").length;
-            tab.innerHTML = filtrados.length ? '' : '<tr><td colspan="6" class="p-10 text-center">Nenhum atleta.</td></tr>';
+            tab.innerHTML = filtrados.length ? '' : '<tr><td colspan="5" class="p-10 text-center text-slate-400">Nenhum atleta encontrado.</td></tr>';
 
             filtrados.forEach(a => {
                 const tr = document.createElement('tr');
-                tr.className = "table-row-hover border-b border-slate-50 cursor-pointer";
+                tr.className = "table-row-hover border-b border-slate-50 cursor-pointer transition-colors";
                 tr.onclick = () => abrirFichaAluno(a.id);
                 tr.innerHTML = `
                     <td class="px-6 py-4 text-center" onclick="event.stopPropagation()"><input type="checkbox" class="chk-merge" value="${a.id}"></td>
                     <td class="px-6 py-4 font-bold text-slate-700">${a.nome}</td>
                     <td class="px-6 py-4 text-center"><span class="px-2 py-1 bg-slate-100 rounded text-[9px] font-black uppercase">${a.faixa || 'BRANCA'}</span></td>
                     <td class="px-6 py-4 text-center"><span class="px-2 py-1 rounded text-[9px] font-bold ${a.status === 'ATIVO' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${a.status}</span></td>
-                    <td class="px-6 py-4 text-center"><button onclick="event.stopPropagation(); excluirAluno('${a.id}')" class="text-rose-400 font-bold text-xs">Excluir</button></td>
+                    <td class="px-6 py-4 text-center"><button onclick="event.stopPropagation(); excluirAluno('${a.id}')" class="text-rose-400 hover:text-rose-600 font-bold text-xs">Excluir</button></td>
                 `;
                 tab.appendChild(tr);
             });
         }
 
-        // SALVAR E EDITAR
         window.abrirFichaAluno = (id) => {
             const a = todosAlunosCache.find(x => x.id === id);
             if(!a) return;
-            document.getElementById('aluno-id-oculto').value = a.id;
+            alunoEditandoId = id;
+            document.getElementById('aluno-id-oculto').value = id;
             document.getElementById('aluno-nome').value = a.nome || '';
             document.getElementById('aluno-matricula').value = a.matricula || 'S/N';
             document.getElementById('aluno-nasc').value = a.data_nascimento || '';
             document.getElementById('aluno-faixa').value = a.faixa || 'Branca';
+            document.getElementById('aluno-status').value = a.status || 'ATIVO';
             document.getElementById('aluno-tel').value = a.telefone || '';
             document.getElementById('aluno-email').value = a.email || '';
             document.getElementById('aluno-resp-nome').value = a.nome_responsavel || '';
-            document.getElementById('aluno-status').value = a.status || 'ATIVO';
             document.getElementById('lgpd-concordo').checked = a.lgpd_concordo || false;
             
             document.getElementById('btn-abrir-carteirinha').classList.remove('hidden');
@@ -404,40 +371,37 @@
                 if(id) await updateDoc(doc(db, "alunos", id), dados);
                 else { 
                     dados.matricula = new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000).toString();
+                    dados.data_cadastro = new Date().toISOString();
                     await addDoc(collection(db, "alunos"), dados); 
                 }
                 fecharModal(); buscarAlunosFirebase(); showToast("Sucesso!", "success");
             } catch(e) { showToast("Erro ao salvar"); }
         }
 
-        // CARTEIRINHA PREMIUM
         window.abrirModalCarteirinha = () => {
-            const id = document.getElementById('aluno-id-oculto').value;
-            const a = todosAlunosCache.find(x => x.id === id);
+            const a = todosAlunosCache.find(x => x.id === alunoEditandoId);
             if(!a) return;
 
-            document.getElementById('cart-equipe-nome').innerText = equipeNomeGlobal.toUpperCase();
-            if(equipeLogoGlobal) {
-                document.getElementById('cart-equipe-logo').src = equipeLogoGlobal;
+            document.getElementById('cart-equipe-nome').innerText = equipeDados.nome.toUpperCase();
+            if(equipeDados.logo) {
+                document.getElementById('cart-equipe-logo').src = equipeDados.logo;
                 document.getElementById('cart-equipe-logo').classList.remove('hidden');
-                document.getElementById('cart-equipe-watermark').src = equipeLogoGlobal;
+                document.getElementById('cart-equipe-watermark').src = equipeDados.logo;
                 document.getElementById('cart-equipe-watermark').classList.remove('hidden');
                 document.getElementById('cart-equipe-fallback').classList.add('hidden');
-                document.getElementById('cart-equipe-watermark-fallback').classList.add('hidden');
             } else {
-                const letra = equipeNomeGlobal.charAt(0).toUpperCase();
-                document.getElementById('cart-equipe-fallback').innerText = letra;
+                document.getElementById('cart-equipe-fallback').innerText = equipeDados.nome.charAt(0).toUpperCase();
                 document.getElementById('cart-equipe-fallback').classList.remove('hidden');
-                document.getElementById('cart-equipe-watermark-fallback').innerText = letra;
+                document.getElementById('cart-equipe-watermark-fallback').innerText = equipeDados.nome.charAt(0).toUpperCase();
                 document.getElementById('cart-equipe-watermark-fallback').classList.remove('hidden');
                 document.getElementById('cart-equipe-logo').classList.add('hidden');
                 document.getElementById('cart-equipe-watermark').classList.add('hidden');
             }
 
-            document.getElementById('cart-aluno-nome').innerText = a.nome;
-            document.getElementById('cart-aluno-faixa-texto').innerText = a.faixa.toUpperCase();
-            document.getElementById('cart-aluno-matricula').innerText = a.matricula || '0000';
-            document.getElementById('cart-aluno-nascimento').innerText = a.data_nascimento ? a.data_nascimento.split('-').reverse().join('/') : '--/--/----';
+            document.getElementById('cart-aluno-nome-txt').innerText = a.nome;
+            document.getElementById('cart-aluno-faixa-texto').innerText = (a.faixa || 'BRANCA').toUpperCase();
+            document.getElementById('cart-aluno-matricula-txt').innerText = a.matricula || '0000';
+            document.getElementById('cart-aluno-nascimento-txt').innerText = a.data_nascimento ? a.data_nascimento.split('-').reverse().join('/') : '--/--/----';
             document.getElementById('cart-faixa-border').style.borderLeftColor = getCorHex(a.faixa);
             
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.origin + '/validar.html?mat=' + a.matricula)}`;
@@ -447,37 +411,32 @@
             document.getElementById('modal-carteirinha').classList.replace('hidden', 'flex');
         }
 
-        // CORREÇÃO E RESGATE
         window.corrigirTodosAlunos = async function() {
-            if(!confirm("Resgatar alunos para sua equipe?")) return;
+            if(!confirm("Resgatar alunos antigos?")) return;
             showToast("Corrigindo...", "success");
             const snap = await getDocs(collection(db, "alunos"));
             for(let d of snap.docs) {
-                const data = d.data();
-                if(data.equipe_id === "tQdTmZ4w2JTYdSx9b2tJQbAUanC2" || !data.equipe_id) {
-                    await updateDoc(doc(db, "alunos", d.id), { equipe_id: teamId });
-                }
+                if(d.data().equipe_id !== teamId) await updateDoc(doc(db, "alunos", d.id), { equipe_id: teamId });
             }
             showToast("Concluído!", "success"); buscarAlunosFirebase();
         }
 
-        // AUXILIARES
         window.mudarAba = (id) => {
             document.querySelectorAll('.aba-content').forEach(x => x.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
             document.querySelectorAll('.aba-item').forEach(x => { x.classList.remove('tab-active'); x.classList.add('text-slate-400'); });
-            document.getElementById('btn-'+id).classList.add('tab-active');
+            document.getElementById('btn-'+id).classList.add('tab-active'); document.getElementById('btn-'+id).classList.remove('text-slate-400');
         }
         window.showToast = (msg, type) => {
+            const container = document.getElementById('toast-container');
             const div = document.createElement('div');
             div.className = `p-4 rounded-xl text-white font-bold shadow-xl ${type === 'success' ? 'bg-emerald-500' : 'bg-rose-500'} pointer-events-auto`;
-            div.innerText = msg; document.getElementById('toast-container').appendChild(div);
-            setTimeout(() => div.remove(), 4000);
+            div.innerText = msg; container.appendChild(div); setTimeout(() => div.remove(), 4000);
         }
         window.fecharModal = () => document.getElementById('modal-aluno').classList.replace('flex', 'hidden');
-        window.fecharModalCarteirinha = () => { document.getElementById('modal-carteirinha').classList.replace('flex', 'hidden'); abrirFichaAluno(document.getElementById('aluno-id-oculto').value); }
+        window.fecharModalCarteirinha = () => { document.getElementById('modal-carteirinha').classList.replace('flex', 'hidden'); abrirFichaAluno(alunoEditandoId); }
         window.excluirAluno = async (id) => { if(confirm("Excluir?")) { await deleteDoc(doc(db, "alunos", id)); buscarAlunosFirebase(); } }
-        window.abrirModal = () => { document.getElementById('aluno-id-oculto').value = ''; document.querySelectorAll('#modal-aluno input').forEach(i => i.value = ''); document.getElementById('modal-titulo').innerText = "Nova Matrícula"; document.getElementById('btn-abrir-carteirinha').classList.add('hidden'); document.getElementById('modal-aluno').classList.replace('hidden', 'flex'); mudarAba('aba-pessoal'); }
+        window.abrirModal = () => { alunoEditandoId = null; document.querySelectorAll('#modal-aluno input').forEach(i => i.value = ''); document.getElementById('modal-titulo').innerText = "Nova Matrícula"; document.getElementById('btn-abrir-carteirinha').classList.add('hidden'); document.getElementById('modal-aluno').classList.replace('hidden', 'flex'); mudarAba('aba-pessoal'); }
         function getCorHex(f) { f=f.toLowerCase(); if(f.includes('azul')) return '#3b82f6'; if(f.includes('roxa')) return '#a855f7'; if(f.includes('marrom')) return '#78350f'; if(f.includes('preta')) return '#000000'; return '#cbd5e1'; }
     </script>
 </body>

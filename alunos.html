@@ -142,8 +142,22 @@
             </div>
 
             <div class="p-5 md:p-8 overflow-y-auto space-y-6 flex-1 bg-white hide-scrollbar">
+                
                 <div id="aba-pessoal" class="aba-content space-y-5">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+                        
+                        <div class="flex flex-col items-center justify-center mb-2 pb-4 border-b border-slate-100 md:col-span-2">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-3">Foto do Atleta (Carteirinha)</label>
+                            <div class="relative w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-dashed border-slate-300 bg-slate-50 flex items-center justify-center overflow-hidden cursor-pointer hover:border-cyan-500 hover:bg-cyan-50 transition-all shadow-sm" onclick="document.getElementById('cad-foto').click()">
+                                <img id="preview-foto" src="" class="w-full h-full object-cover hidden">
+                                <div id="placeholder-foto" class="text-center text-slate-400 flex flex-col items-center">
+                                    <span class="text-2xl md:text-3xl">📷</span>
+                                    <p class="text-[8px] md:text-[9px] font-bold mt-1 uppercase text-center leading-tight">Enviar<br>Foto</p>
+                                </div>
+                            </div>
+                            <input type="file" id="cad-foto" accept="image/*" class="hidden" onchange="mostrarPreviewFoto(event)">
+                        </div>
+
                         <div class="md:col-span-2">
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Matrícula</label>
                             <input type="text" id="aluno-matricula" disabled class="w-full p-3 bg-slate-100 border border-slate-200 rounded-xl outline-none font-mono text-slate-500 font-bold" placeholder="Gerada Auto">
@@ -270,7 +284,7 @@
             <div class="p-4 md:p-6 bg-slate-50 border-t border-slate-200 flex flex-wrap justify-end gap-3 rounded-b-3xl shrink-0">
                 <button onclick="abrirModalCarteirinha()" id="btn-abrir-carteirinha" class="flex-1 md:flex-none bg-indigo-500 hover:bg-indigo-600 text-white font-black py-3 px-6 rounded-xl text-sm hidden uppercase tracking-widest shadow-md transition-all">🪪 Carteirinha</button>
                 <button onclick="fecharModal()" class="flex-1 md:flex-none px-6 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-200 transition-colors text-sm">Cancelar</button>
-                <button onclick="salvarAluno()" class="flex-1 md:flex-none bg-cyan-500 hover:bg-cyan-600 text-white font-black py-3 px-8 rounded-xl shadow-md transition-all text-sm uppercase tracking-widest">💾 Salvar</button>
+                <button onclick="salvarAluno()" id="btn-salvar-aluno" class="flex-1 md:flex-none bg-cyan-500 hover:bg-cyan-600 text-white font-black py-3 px-8 rounded-xl shadow-md transition-all text-sm uppercase tracking-widest">💾 Salvar</button>
             </div>
         </div>
     </div>
@@ -332,8 +346,8 @@
 
                 <div class="w-[35%] max-w-[200px] p-5 md:p-6 flex flex-col items-center justify-between z-10 bg-slate-100/50 border-l border-slate-200 backdrop-blur-sm">
                     <div class="w-full aspect-[3/4] bg-white rounded-lg border-2 border-white overflow-hidden shadow-md flex items-center justify-center relative">
-                        <img id="cart-aluno-foto" src="" class="w-full h-full object-cover hidden">
-                        <span id="cart-aluno-foto-fallback" class="text-5xl md:text-6xl font-black text-slate-300">?</span>
+                        <img id="cart-aluno-foto-modal" src="" class="w-full h-full object-cover hidden">
+                        <span id="cart-aluno-foto-fallback-modal" class="text-5xl md:text-6xl font-black text-slate-300">?</span>
                     </div>
                     <div class="w-16 h-16 md:w-20 md:h-20 bg-white p-1 rounded-lg mt-auto shadow-sm border border-slate-200">
                         <img id="cart-qr-code" src="" class="w-full h-full object-contain">
@@ -354,6 +368,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
@@ -367,11 +382,13 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        const storage = getStorage(app);
 
         let teamId = null;
         let todosAlunosCache = [];
         let equipeDados = { nome: "Sua Equipe", logo: "" };
         let alunoEditandoId = null;
+        let ficheiroFotoSelecionado = null;
 
         const selectVenc = document.getElementById('aluno-vencimento');
         if(selectVenc) {
@@ -405,18 +422,6 @@
                 equipeDados.logo = d.url_logo || "";
                 const elNome = document.getElementById('nome-equipe') || document.getElementById('lbl-equipe');
                 if(elNome) elNome.innerText = equipeDados.nome.toUpperCase();
-
-                // RESTAURA A LOGO NO MENU LATERAL
-                const elLogo = document.getElementById('container-logo');
-                if (elLogo) {
-                    if (equipeDados.logo) {
-                        elLogo.style.background = 'transparent';
-                        elLogo.innerHTML = `<img src="${equipeDados.logo}" class="w-full h-full object-cover rounded-xl" alt="Logo">`;
-                    } else {
-                        elLogo.style.background = ''; 
-                        elLogo.innerHTML = equipeDados.nome.charAt(0).toUpperCase();
-                    }
-                }
             }
         }
 
@@ -470,7 +475,6 @@
                     avatarHtml = `<img src='${a.foto_url}' class='hidden md:block h-8 w-8 rounded-full object-cover mr-3 shrink-0 border border-slate-200'>`;
                 }
 
-                // INJETA A COR DA FAIXA AQUI
                 const corBadgeFaixa = getCorFaixa(a.faixa);
 
                 tr.innerHTML = `
@@ -493,10 +497,31 @@
             });
         }
 
+        // ==========================================
+        // MÓDULO DE UPLOAD DE FOTO (MODAL ALUNO)
+        // ==========================================
+        window.mostrarPreviewFoto = function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                ficheiroFotoSelecionado = file;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgPreview = document.getElementById('preview-foto');
+                    imgPreview.src = e.target.result;
+                    imgPreview.classList.remove('hidden');
+                    document.getElementById('placeholder-foto').classList.add('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
         window.abrirFichaAluno = (id) => {
             const a = todosAlunosCache.find(x => x.id === id);
             if(!a) return;
             alunoEditandoId = id;
+            ficheiroFotoSelecionado = null;
+            document.getElementById('cad-foto').value = "";
+
             document.getElementById('modal-titulo').innerText = "Editar Ficha";
             document.getElementById('aluno-id-oculto').value = id;
             document.getElementById('aluno-nome').value = a.nome || '';
@@ -523,6 +548,19 @@
             document.getElementById('lgpd-site').checked = a.lgpd_site || false;
             document.getElementById('lgpd-promo').checked = a.lgpd_promo || false;
             document.getElementById('lgpd-relatorio').checked = a.lgpd_relatorios || false;
+
+            // CARREGA A FOTO
+            const imgPreview = document.getElementById('preview-foto');
+            const placeholder = document.getElementById('placeholder-foto');
+            if (a.foto_url) {
+                imgPreview.src = a.foto_url;
+                imgPreview.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+            } else {
+                imgPreview.src = "";
+                imgPreview.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+            }
             
             document.getElementById('btn-abrir-carteirinha').classList.remove('hidden');
             document.getElementById('btn-gerar-pdf').classList.remove('hidden');
@@ -535,6 +573,11 @@
             const id = alunoEditandoId;
             const nome = document.getElementById('aluno-nome').value.toUpperCase();
             if(!nome) return showToast("O Nome do(a) atleta é obrigatório!");
+
+            const btnSalvar = document.getElementById('btn-salvar-aluno');
+            const textoOriginal = btnSalvar.innerHTML;
+            btnSalvar.innerHTML = "⏳ SALVANDO...";
+            btnSalvar.disabled = true;
             
             const dados = {
                 equipe_id: teamId, 
@@ -563,18 +606,44 @@
             };
 
             try {
-                if(id) {
-                    await updateDoc(doc(db, "alunos", id), dados);
-                    showToast("Ficha atualizada com sucesso!", "success");
-                } else { 
+                let docRefId = id;
+                if (!id) {
                     dados.matricula = new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000).toString();
                     dados.data_cadastro = new Date().toISOString();
-                    await addDoc(collection(db, "alunos"), dados); 
+                    const docRef = await addDoc(collection(db, "alunos"), dados); 
+                    docRefId = docRef.id;
+                }
+
+                // UPLOAD DE FOTO SE HOUVER
+                let fotoUrlFinal = null;
+                if (ficheiroFotoSelecionado) {
+                    btnSalvar.innerHTML = "📷 ENVIANDO FOTO...";
+                    const fotoPath = `fotos_carteirinha/${teamId}/${docRefId}.jpg`;
+                    const storageRef = ref(storage, fotoPath);
+                    await uploadBytes(storageRef, ficheiroFotoSelecionado);
+                    fotoUrlFinal = await getDownloadURL(storageRef);
+                    dados.foto_url = fotoUrlFinal;
+                }
+
+                if (id) {
+                    await updateDoc(doc(db, "alunos", id), dados);
+                    showToast("Ficha atualizada com sucesso!", "success");
+                } else {
+                    if (fotoUrlFinal) {
+                        await updateDoc(doc(db, "alunos", docRefId), { foto_url: fotoUrlFinal });
+                    }
                     showToast("Matrícula criada com sucesso!", "success");
                 }
+                
                 fecharModal(); 
                 buscarAlunosFirebase(); 
-            } catch(e) { showToast("Erro ao salvar a ficha.", "error"); }
+            } catch(e) { 
+                showToast("Erro ao salvar a ficha.", "error"); 
+                console.error(e);
+            } finally {
+                btnSalvar.innerHTML = textoOriginal;
+                btnSalvar.disabled = false;
+            }
         }
 
         window.abrirModalCarteirinha = () => {
@@ -609,10 +678,15 @@
             if(f.includes('azul')) cB='#3b82f6'; else if(f.includes('roxa')) cB='#a855f7'; else if(f.includes('marrom')) cB='#78350f'; else if(f.includes('preta')) cB='#000000'; else if(f.includes('amarela')) cB='#eab308'; else if(f.includes('laranja')) cB='#f97316'; else if(f.includes('verde')) cB='#22c55e';
             document.getElementById('cart-faixa-border').style.borderLeftColor = cB;
 
+            // FOTO CARTEIRINHA
             if(a.foto_url) {
-                document.getElementById('cart-aluno-foto').src = a.foto_url; document.getElementById('cart-aluno-foto').classList.remove('hidden'); document.getElementById('cart-aluno-foto-fallback').classList.add('hidden');
+                document.getElementById('cart-aluno-foto-modal').src = a.foto_url; 
+                document.getElementById('cart-aluno-foto-modal').classList.remove('hidden'); 
+                document.getElementById('cart-aluno-foto-fallback-modal').classList.add('hidden');
             } else {
-                document.getElementById('cart-aluno-foto-fallback').innerText = a.nome.charAt(0).toUpperCase(); document.getElementById('cart-aluno-foto-fallback').classList.remove('hidden'); document.getElementById('cart-aluno-foto').classList.add('hidden');
+                document.getElementById('cart-aluno-foto-fallback-modal').innerText = a.nome.charAt(0).toUpperCase(); 
+                document.getElementById('cart-aluno-foto-fallback-modal').classList.remove('hidden'); 
+                document.getElementById('cart-aluno-foto-modal').classList.add('hidden');
             }
 
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.origin + '/validar.html?mat=' + a.matricula)}`;
@@ -761,8 +835,16 @@
         
         window.abrirModal = () => { 
             alunoEditandoId = null; 
+            ficheiroFotoSelecionado = null;
+            
             document.querySelectorAll('#modal-aluno input[type="text"], #modal-aluno input[type="email"], #modal-aluno input[type="date"]').forEach(i => i.value = ''); 
             document.querySelectorAll('#modal-aluno input[type="checkbox"]').forEach(i => i.checked = false);
+            
+            document.getElementById('cad-foto').value = "";
+            document.getElementById('preview-foto').src = "";
+            document.getElementById('preview-foto').classList.add('hidden');
+            document.getElementById('placeholder-foto').classList.remove('hidden');
+
             document.getElementById('modal-titulo').innerText = "Nova Matrícula"; 
             document.getElementById('aluno-matricula').value = "Gerada Auto";
             document.getElementById('aluno-faixa').value = "Branca";

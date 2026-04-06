@@ -75,61 +75,97 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-cyan-500 flex flex-col justify-center hover:-translate-y-1 transition-transform">
-                            <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">Alunos Ativos</h3>
-                            <p class="text-2xl md:text-3xl font-black text-slate-800" id="card-ativos">⏳</p>
-                        </div>
-                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-emerald-500 flex flex-col justify-center hover:-translate-y-1 transition-transform">
-                            <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1" id="lbl-receita">Caixa do Mês</h3>
-                            <p class="text-xl md:text-2xl font-black text-emerald-600 truncate" id="card-receitas">⏳</p>
-                        </div>
-                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-amber-500 flex flex-col justify-center hover:-translate-y-1 transition-transform">
-                            <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">A Receber</h3>
-                            <p class="text-xl md:text-2xl font-black text-amber-500 truncate" id="card-inadimplencia">⏳</p>
-                        </div>
-                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-rose-500 flex flex-col justify-center hover:-translate-y-1 transition-transform">
-                            <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">Despesas (Mês)</h3>
-                            <p class="text-xl md:text-2xl font-black text-rose-500 truncate" id="card-despesas">⏳</p>
+                    <div id="painel-onboarding" class="hidden">
+                        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                            <div class="bg-gradient-to-r from-cyan-500 to-blue-600 p-8 md:p-12 text-center relative overflow-hidden">
+                                <div class="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9IiNmZmYiLz48L3N2Zz4=')]"></div>
+                                <span class="text-6xl mb-4 block relative z-10">🥋</span>
+                                <h2 class="text-2xl md:text-4xl font-black text-white mb-2 relative z-10 tracking-tight">Bem-vindo ao BJJ Manager!</h2>
+                                <p class="text-cyan-100 md:text-lg font-medium max-w-2xl mx-auto relative z-10">O seu tatame digital está pronto. Não encontrei nenhum atleta matriculado na sua equipa ainda. Siga os 3 passos abaixo para começar a utilizar o sistema em pleno.</p>
+                            </div>
+                            
+                            <div class="p-6 md:p-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div class="bg-slate-50 border border-slate-100 rounded-2xl p-6 flex flex-col h-full hover:-translate-y-1 transition-transform">
+                                    <div class="w-12 h-12 bg-slate-800 text-white rounded-xl flex items-center justify-center text-xl font-black mb-4 shadow-md">1</div>
+                                    <h3 class="font-black text-slate-800 uppercase tracking-widest text-xs mb-2">Configure a Equipa</h3>
+                                    <p class="text-xs text-slate-500 leading-relaxed mb-6 flex-1">Adicione a sua logo oficial, configure os valores padrão da mensalidade e convide os seus professores (co-administradores).</p>
+                                    <button onclick="abrirModalConfig()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-widest transition-colors">⚙️ Configurações</button>
+                                </div>
+                                
+                                <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-6 flex flex-col h-full hover:-translate-y-1 transition-transform">
+                                    <div class="w-12 h-12 bg-indigo-500 text-white rounded-xl flex items-center justify-center text-xl font-black mb-4 shadow-md">2</div>
+                                    <h3 class="font-black text-indigo-900 uppercase tracking-widest text-xs mb-2">Crie as Turmas</h3>
+                                    <p class="text-xs text-indigo-700/80 leading-relaxed mb-6 flex-1">Registe os horários de treinos (ex: "Adulto Noite", "Kids") para poder organizar e separar os seus alunos de forma inteligente.</p>
+                                    <a href="turmas.html" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-widest transition-colors text-center block">🗓️ Criar Turmas</a>
+                                </div>
+
+                                <div class="bg-cyan-50 border border-cyan-100 rounded-2xl p-6 flex flex-col h-full hover:-translate-y-1 transition-transform">
+                                    <div class="w-12 h-12 bg-cyan-500 text-white rounded-xl flex items-center justify-center text-xl font-black mb-4 shadow-md">3</div>
+                                    <h3 class="font-black text-cyan-900 uppercase tracking-widest text-xs mb-2">Matricule Atletas</h3>
+                                    <p class="text-xs text-cyan-700/80 leading-relaxed mb-6 flex-1">Adicione os seus alunos. O sistema irá gerar imediatamente as mensalidades, as carteirinhas digitais e o raio-X da sua equipa.</p>
+                                    <a href="cadastro.html" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-widest transition-colors text-center block">➕ Novo Aluno</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-5 md:p-6 mb-6">
-                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-xs mb-4 border-b border-slate-100 pb-3">🥋 Raio-X da Equipe (Ativos)</h3>
-                        <div class="flex flex-wrap gap-3" id="grid-faixas">
-                            <span class="text-slate-400 text-sm">Calculando faixas...</span>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        
-                        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-80">
-                            <div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-3xl shrink-0">
-                                <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">🎂</span> Aniversariantes do Mês</h3>
+                    <div id="painel-metricas" class="hidden">
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-cyan-500 flex flex-col justify-center hover:-translate-y-1 transition-transform">
+                                <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">Alunos Ativos</h3>
+                                <p class="text-2xl md:text-3xl font-black text-slate-800" id="card-ativos">⏳</p>
                             </div>
-                            <div class="flex-1 overflow-y-auto p-4 hide-scrollbar space-y-2" id="lista-niver">
-                                <div class="text-center text-slate-400 text-sm mt-5">A procurar festas...</div>
+                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-emerald-500 flex flex-col justify-center hover:-translate-y-1 transition-transform">
+                                <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1" id="lbl-receita">Caixa do Mês</h3>
+                                <p class="text-xl md:text-2xl font-black text-emerald-600 truncate" id="card-receitas">⏳</p>
                             </div>
-                        </div>
-
-                        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-80">
-                            <div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-3xl shrink-0">
-                                <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">👥</span> Faixas por Turma</h3>
+                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-amber-500 flex flex-col justify-center hover:-translate-y-1 transition-transform">
+                                <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">A Receber</h3>
+                                <p class="text-xl md:text-2xl font-black text-amber-500 truncate" id="card-inadimplencia">⏳</p>
                             </div>
-                            <div class="flex-1 overflow-y-auto p-4 hide-scrollbar space-y-4" id="lista-turmas">
-                                <div class="text-center text-slate-400 text-sm mt-5">A mapear turmas...</div>
+                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-rose-500 flex flex-col justify-center hover:-translate-y-1 transition-transform">
+                                <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">Despesas (Mês)</h3>
+                                <p class="text-xl md:text-2xl font-black text-rose-500 truncate" id="card-despesas">⏳</p>
                             </div>
                         </div>
 
-                        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-80">
-                            <div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-3xl flex justify-between items-center shrink-0">
-                                <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">⚠️</span> Atenção Financeira</h3>
-                            </div>
-                            <div class="flex-1 overflow-y-auto p-4 hide-scrollbar space-y-2" id="lista-pendencias">
-                                <div class="text-center text-slate-400 text-sm mt-5">A calcular mensalidades...</div>
+                        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-5 md:p-6 mb-6">
+                            <h3 class="font-black text-slate-800 uppercase tracking-widest text-xs mb-4 border-b border-slate-100 pb-3">🥋 Raio-X da Equipe (Ativos)</h3>
+                            <div class="flex flex-wrap gap-3" id="grid-faixas">
+                                <span class="text-slate-400 text-sm">Calculando faixas...</span>
                             </div>
                         </div>
 
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            
+                            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-80">
+                                <div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-3xl shrink-0">
+                                    <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">🎂</span> Aniversariantes do Mês</h3>
+                                </div>
+                                <div class="flex-1 overflow-y-auto p-4 hide-scrollbar space-y-2" id="lista-niver">
+                                    <div class="text-center text-slate-400 text-sm mt-5">A procurar festas...</div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-80">
+                                <div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-3xl shrink-0">
+                                    <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">👥</span> Faixas por Turma</h3>
+                                </div>
+                                <div class="flex-1 overflow-y-auto p-4 hide-scrollbar space-y-4" id="lista-turmas">
+                                    <div class="text-center text-slate-400 text-sm mt-5">A mapear turmas...</div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-80">
+                                <div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-3xl flex justify-between items-center shrink-0">
+                                    <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">⚠️</span> Atenção Financeira</h3>
+                                </div>
+                                <div class="flex-1 overflow-y-auto p-4 hide-scrollbar space-y-2" id="lista-pendencias">
+                                    <div class="text-center text-slate-400 text-sm mt-5">A calcular mensalidades...</div>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
 
                 </div>
@@ -726,82 +762,98 @@
                     }
                 });
 
-                // ATUALIZANDO OS CARDS DO TOPO
-                document.getElementById('card-ativos').innerText = ativos;
-                document.getElementById('card-receitas').innerText = `R$ ${caixaDoMes.toFixed(2).replace('.', ',')}`;
-                document.getElementById('card-inadimplencia').innerText = `R$ ${valorAtrasado.toFixed(2).replace('.', ',')}`;
-                document.getElementById('card-despesas').innerText = `R$ ${despesasDoMes.toFixed(2).replace('.', ',')}`;
+                // ========================================================================
+                // 🚀 A MÁGICA DO ONBOARDING ("TAPETE VERMELHO") OCORRE AQUI!
+                // ========================================================================
+                const painelMetricas = document.getElementById('painel-metricas');
+                const painelOnboarding = document.getElementById('painel-onboarding');
 
-                const gridFaixas = document.getElementById('grid-faixas');
-                gridFaixas.innerHTML = ''; 
-                if (Object.keys(faixasCount).length === 0) {
-                    gridFaixas.innerHTML = '<span class="text-slate-400 text-sm font-medium">Nenhum aluno ativo mapeado.</span>';
+                if (ativos === 0) {
+                    // Esconde as métricas vazias e mostra as boas-vindas premium
+                    painelMetricas.classList.add('hidden');
+                    painelOnboarding.classList.remove('hidden');
                 } else {
-                    for (const [faixa, qtd] of Object.entries(faixasCount)) {
-                        const estiloCss = obterEstiloFaixa(faixa);
-                        gridFaixas.innerHTML += `
-                            <div class="bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-sm">
-                                <span class="w-3 h-3 rounded-full border border-slate-300 shadow-inner" style="${estiloCss}"></span>
-                                <span class="text-xs font-bold text-slate-700">${faixa}: <span class="text-slate-900">${qtd}</span></span>
-                            </div>
-                        `;
-                    }
-                }
+                    // A academia já tem alunos, mostra o dashboard normal
+                    painelMetricas.classList.remove('hidden');
+                    painelOnboarding.classList.add('hidden');
 
-                document.getElementById('lista-niver').innerHTML = aniversariantesHTML || `
-                    <div class="flex flex-col items-center justify-center h-full text-slate-400 mt-8">
-                        <span class="text-2xl mb-2">🎈</span><p class="text-sm font-medium">Nenhum aniversariante este mês</p>
-                    </div>
-                `;
+                    // ATUALIZANDO OS CARDS DO TOPO
+                    document.getElementById('card-ativos').innerText = ativos;
+                    document.getElementById('card-receitas').innerText = `R$ ${caixaDoMes.toFixed(2).replace('.', ',')}`;
+                    document.getElementById('card-inadimplencia').innerText = `R$ ${valorAtrasado.toFixed(2).replace('.', ',')}`;
+                    document.getElementById('card-despesas').innerText = `R$ ${despesasDoMes.toFixed(2).replace('.', ',')}`;
 
-                document.getElementById('lista-pendencias').innerHTML = pendenciasHTML || `
-                    <div class="flex flex-col items-center justify-center h-full text-slate-400 mt-8">
-                        <span class="text-2xl mb-2">✅</span><p class="text-sm font-medium">Nenhuma pendência financeira!</p>
-                    </div>
-                `;
-
-                let turmasHTML = '';
-                for (const [turmaNome, alunosDaTurma] of Object.entries(turmasMap)) {
-                    if (turmaNome === "SEM TURMA DEFINIDA" && alunosDaTurma.length === 0) continue;
-                    alunosDaTurma.sort((a, b) => a.nome.localeCompare(b.nome));
-
-                    let listaAlunosHTML = '';
-                    if (alunosDaTurma.length === 0) {
-                        listaAlunosHTML = `<p class="text-[10px] text-slate-400 text-center italic py-2">Turma Vazia</p>`;
+                    const gridFaixas = document.getElementById('grid-faixas');
+                    gridFaixas.innerHTML = ''; 
+                    if (Object.keys(faixasCount).length === 0) {
+                        gridFaixas.innerHTML = '<span class="text-slate-400 text-sm font-medium">Nenhum aluno ativo mapeado.</span>';
                     } else {
-                        for (const al of alunosDaTurma) {
-                            const estiloCss = obterEstiloFaixa(al.faixa);
-                            listaAlunosHTML += `
-                                <div class="flex justify-between items-center bg-white p-2.5 rounded-xl border border-slate-100 mb-1.5 shadow-sm">
-                                    <span class="text-[11px] font-bold text-slate-700 truncate pr-2 w-[65%]">${al.nome}</span>
-                                    <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-slate-50 border border-slate-200 text-[9px] font-bold text-slate-600 shadow-sm shrink-0">
-                                        <span class="w-2 h-2 rounded-full shadow-inner border border-slate-200" style="${estiloCss}"></span>${al.faixa}
-                                    </span>
+                        for (const [faixa, qtd] of Object.entries(faixasCount)) {
+                            const estiloCss = obterEstiloFaixa(faixa);
+                            gridFaixas.innerHTML += `
+                                <div class="bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-sm">
+                                    <span class="w-3 h-3 rounded-full border border-slate-300 shadow-inner" style="${estiloCss}"></span>
+                                    <span class="text-xs font-bold text-slate-700">${faixa}: <span class="text-slate-900">${qtd}</span></span>
                                 </div>
                             `;
                         }
                     }
 
-                    const bgHeaderTurma = turmaNome === "SEM TURMA DEFINIDA" ? "bg-amber-100/50 border-amber-200" : "bg-slate-50 border-slate-200";
-                    const iconeTurma = turmaNome === "SEM TURMA DEFINIDA" ? "⚠️" : "🥋";
-                    const corTextoTurma = turmaNome === "SEM TURMA DEFINIDA" ? "text-amber-800" : "text-slate-600";
+                    document.getElementById('lista-niver').innerHTML = aniversariantesHTML || `
+                        <div class="flex flex-col items-center justify-center h-full text-slate-400 mt-8">
+                            <span class="text-2xl mb-2">🎈</span><p class="text-sm font-medium">Nenhum aniversariante este mês</p>
+                        </div>
+                    `;
 
-                    turmasHTML += `
-                        <div class="p-3 ${bgHeaderTurma} rounded-2xl border mb-4 shadow-sm">
-                            <h4 class="text-[10px] font-black ${corTextoTurma} uppercase tracking-widest mb-3 flex items-center gap-2 border-b border-slate-200/60 pb-2">
-                                <span class="text-base">${iconeTurma}</span> ${turmaNome}
-                                <span class="ml-auto bg-slate-800 text-white px-1.5 py-0.5 rounded text-[9px]">${alunosDaTurma.length}</span>
-                            </h4>
-                            <div class="flex flex-col max-h-48 overflow-y-auto hide-scrollbar">${listaAlunosHTML}</div>
+                    document.getElementById('lista-pendencias').innerHTML = pendenciasHTML || `
+                        <div class="flex flex-col items-center justify-center h-full text-slate-400 mt-8">
+                            <span class="text-2xl mb-2">✅</span><p class="text-sm font-medium">Nenhuma pendência financeira!</p>
+                        </div>
+                    `;
+
+                    let turmasHTML = '';
+                    for (const [turmaNome, alunosDaTurma] of Object.entries(turmasMap)) {
+                        if (turmaNome === "SEM TURMA DEFINIDA" && alunosDaTurma.length === 0) continue;
+                        alunosDaTurma.sort((a, b) => a.nome.localeCompare(b.nome));
+
+                        let listaAlunosHTML = '';
+                        if (alunosDaTurma.length === 0) {
+                            listaAlunosHTML = `<p class="text-[10px] text-slate-400 text-center italic py-2">Turma Vazia</p>`;
+                        } else {
+                            for (const al of alunosDaTurma) {
+                                const estiloCss = obterEstiloFaixa(al.faixa);
+                                listaAlunosHTML += `
+                                    <div class="flex justify-between items-center bg-white p-2.5 rounded-xl border border-slate-100 mb-1.5 shadow-sm">
+                                        <span class="text-[11px] font-bold text-slate-700 truncate pr-2 w-[65%]">${al.nome}</span>
+                                        <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-slate-50 border border-slate-200 text-[9px] font-bold text-slate-600 shadow-sm shrink-0">
+                                            <span class="w-2 h-2 rounded-full shadow-inner border border-slate-200" style="${estiloCss}"></span>${al.faixa}
+                                        </span>
+                                    </div>
+                                `;
+                            }
+                        }
+
+                        const bgHeaderTurma = turmaNome === "SEM TURMA DEFINIDA" ? "bg-amber-100/50 border-amber-200" : "bg-slate-50 border-slate-200";
+                        const iconeTurma = turmaNome === "SEM TURMA DEFINIDA" ? "⚠️" : "🥋";
+                        const corTextoTurma = turmaNome === "SEM TURMA DEFINIDA" ? "text-amber-800" : "text-slate-600";
+
+                        turmasHTML += `
+                            <div class="p-3 ${bgHeaderTurma} rounded-2xl border mb-4 shadow-sm">
+                                <h4 class="text-[10px] font-black ${corTextoTurma} uppercase tracking-widest mb-3 flex items-center gap-2 border-b border-slate-200/60 pb-2">
+                                    <span class="text-base">${iconeTurma}</span> ${turmaNome}
+                                    <span class="ml-auto bg-slate-800 text-white px-1.5 py-0.5 rounded text-[9px]">${alunosDaTurma.length}</span>
+                                </h4>
+                                <div class="flex flex-col max-h-48 overflow-y-auto hide-scrollbar">${listaAlunosHTML}</div>
+                            </div>
+                        `;
+                    }
+                    
+                    document.getElementById('lista-turmas').innerHTML = turmasHTML || `
+                        <div class="flex flex-col items-center justify-center h-full text-slate-400 mt-8">
+                            <span class="text-2xl mb-2">🥋</span><p class="text-sm font-medium">Nenhuma turma mapeada</p>
                         </div>
                     `;
                 }
-                
-                document.getElementById('lista-turmas').innerHTML = turmasHTML || `
-                    <div class="flex flex-col items-center justify-center h-full text-slate-400 mt-8">
-                        <span class="text-2xl mb-2">🥋</span><p class="text-sm font-medium">Nenhuma turma mapeada</p>
-                    </div>
-                `;
 
             } catch (error) { console.error(error); }
         }

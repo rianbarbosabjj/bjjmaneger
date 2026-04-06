@@ -670,20 +670,21 @@
         }
 
         window.corrigirTodosAlunos = async function() {
-            if(!confirm("🤖 MODO ROBÔ\n\nIsso vai varrer todos os seus alunos e forçar a gravação do ID correto da Equipe na ficha deles.\n\nDeseja continuar?")) return;
+            if(!confirm("🤖 MODO ROBÔ\n\nIsso vai varrer todos os seus alunos e atualizar o ID da Equipe para a sua conta atual, corrigindo os erros de QR Code e Validação.\n\nDeseja continuar?")) return;
             
             showToast("O Robô iniciou a correção, por favor aguarde...", "success");
             let count = 0;
             
             for(let aluno of todosAlunosCache) {
-                // FORÇA ATUALIZAR TODOS, MESMO OS QUE ACHAM QUE ESTÃO CERTOS
-                try {
-                    await updateDoc(doc(db, "alunos", aluno.id), { equipe_id: uid });
-                    count++;
-                } catch(e) { console.error("Erro ao atualizar " + aluno.nome); }
+                if(aluno.equipe_id !== uid) {
+                    try {
+                        await updateDoc(doc(db, "alunos", aluno.id), { equipe_id: uid });
+                        count++;
+                    } catch(e) { console.error("Erro ao atualizar " + aluno.nome); }
+                }
             }
             
-            showToast(count + " alunos corrigidos com sucesso! Feche a janela no seu telemóvel e escaneie de novo.", "success");
+            showToast(count + " alunos corrigidos com sucesso!", "success");
             buscarAlunosFirebase();
         }
 
@@ -845,9 +846,6 @@
 
             const baseUrl = window.location.origin;
             const codigoMatricula = aluno.matricula || aluno.id; 
-            
-            // QUEBRADOR DE CACHE: Garante que o celular lê sempre a versão mais nova do QR Code
-            const timeStamp = new Date().getTime();
             const linkValidacao = `${baseUrl}/validar.html?mat=${codigoMatricula}`;
             
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(linkValidacao)}`;

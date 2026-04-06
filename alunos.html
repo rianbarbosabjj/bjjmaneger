@@ -26,7 +26,7 @@
         @media print {
             @page { size: landscape; margin: 0; }
             body * { visibility: hidden; }
-            #interface-sistema, #modal-aluno, nav, #modal-carteirinha .flex.justify-end { display: none !important; }
+            #toast-container, #interface-sistema, #modal-aluno, nav, #modal-carteirinha .flex.justify-end { display: none !important; }
             
             /* Lógica para imprimir LGPD */
             #area-impressao { 
@@ -59,8 +59,9 @@
 </head>
 <body class="flex h-[100dvh] overflow-hidden text-slate-800 bg-[#F8FAFC]">
 
+    <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
     <div id="interface-sistema" class="flex w-full h-full relative">
-        
         <main class="flex-1 flex flex-col h-full overflow-hidden relative">
             <div class="flex-1 overflow-y-auto p-4 md:p-10 pb-24 md:pb-10">
                 <div class="max-w-7xl mx-auto">
@@ -266,11 +267,9 @@
             </div>
 
             <div class="p-4 md:p-6 bg-slate-50 border-t border-slate-200 flex flex-wrap justify-end gap-3 rounded-b-3xl shrink-0">
-                
                 <button onclick="abrirModalCarteirinha()" id="btn-abrir-carteirinha" class="flex-1 md:flex-none bg-indigo-500 hover:bg-indigo-600 text-white font-black py-3 px-6 rounded-xl shadow-md transition-all text-sm uppercase tracking-widest hidden">
                     🪪 Carteirinha
                 </button>
-                
                 <button onclick="fecharModal()" class="flex-1 md:flex-none px-6 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-200 transition-colors text-sm">Cancelar</button>
                 <button onclick="salvarAluno()" class="flex-1 md:flex-none bg-cyan-500 hover:bg-cyan-600 text-white font-black py-3 px-8 rounded-xl shadow-md transition-all text-sm uppercase tracking-widest">
                     💾 Salvar
@@ -281,7 +280,6 @@
 
     <div id="modal-carteirinha" class="fixed inset-0 bg-slate-900/90 backdrop-blur-md hidden items-center justify-center z-[60] p-4 transition-opacity overflow-y-auto">
         <div class="w-full max-w-2xl my-auto">
-            
             <div class="flex justify-between items-center mb-6 max-w-[600px] mx-auto">
                 <div class="text-white text-sm font-bold uppercase tracking-widest">Carteirinha Digital</div>
                 <div class="flex gap-2">
@@ -291,7 +289,6 @@
             </div>
 
             <div class="print-carteirinha-wrapper relative mx-auto bg-white rounded-2xl overflow-hidden shadow-2xl border border-slate-200 flex text-slate-800 font-sans w-full max-w-[600px] aspect-[1.58/1] shrink-0" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
-                
                 <div class="absolute top-0 right-0 w-64 h-full bg-slate-200/40 skew-x-[-20deg] translate-x-10 pointer-events-none z-0"></div>
                 <div class="absolute bottom-0 left-0 w-full h-1/3 bg-slate-300/30 skew-y-[-5deg] origin-bottom-right pointer-events-none z-0"></div>
 
@@ -301,7 +298,6 @@
                 </div>
 
                 <div class="flex-1 p-5 md:p-6 flex flex-col z-10 w-[65%]">
-                    
                     <div class="flex items-center gap-4 mb-6">
                         <div class="h-16 md:h-20 w-16 md:w-20 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-sm shrink-0 overflow-hidden">
                             <img id="cart-equipe-logo" src="" class="h-full w-full object-contain p-1.5 drop-shadow-sm hidden">
@@ -318,22 +314,18 @@
                             <p class="text-[8px] md:text-[9px] text-slate-400 uppercase font-bold mb-0.5">Nome do Atleta</p>
                             <p id="cart-aluno-nome" class="text-xs md:text-sm font-black uppercase text-slate-800 truncate">ALUNO NOME</p>
                         </div>
-                        
                         <div class="col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm" id="cart-faixa-border">
                             <p class="text-[8px] md:text-[9px] text-slate-400 uppercase font-bold mb-0.5">Faixa / Graduação</p>
                             <p id="cart-aluno-faixa-texto" class="text-[10px] md:text-xs font-black uppercase text-slate-800 truncate">BRANCA</p>
                         </div>
-
                         <div class="col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm">
                             <p class="text-[8px] md:text-[9px] text-slate-400 uppercase font-bold mb-0.5">Nascimento</p>
                             <p id="cart-aluno-nascimento" class="text-[10px] md:text-xs font-bold text-slate-800">00/00/0000</p>
                         </div>
-
                         <div class="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm">
                             <p class="text-[8px] md:text-[9px] text-slate-400 uppercase font-bold mb-0.5">Matrícula</p>
                             <p id="cart-aluno-matricula" class="text-[10px] md:text-xs font-mono font-bold text-slate-800 tracking-wider">00000</p>
                         </div>
-
                         <div class="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm">
                             <p class="text-[8px] md:text-[9px] text-slate-400 uppercase font-bold mb-0.5">Validade</p>
                             <p id="cart-aluno-validade" class="text-[10px] md:text-xs font-black text-slate-800 tracking-wider">2026</p>
@@ -342,16 +334,13 @@
                 </div>
 
                 <div class="w-[35%] max-w-[200px] p-5 md:p-6 flex flex-col items-center justify-between z-10 bg-slate-100/50 border-l border-slate-200 backdrop-blur-sm">
-                    
                     <div class="w-full aspect-[3/4] bg-white rounded-lg border-2 border-white overflow-hidden shadow-md flex items-center justify-center relative">
                         <img id="cart-aluno-foto" src="" class="w-full h-full object-cover hidden">
                         <span id="cart-aluno-foto-fallback" class="text-5xl md:text-6xl font-black text-slate-300 hidden">?</span>
                     </div>
-                    
                     <div class="w-16 h-16 md:w-20 md:h-20 bg-white p-1 rounded-lg mt-auto shadow-sm border border-slate-200">
                         <img id="cart-qr-code" src="" class="w-full h-full object-contain" alt="QR Code de Validação">
                     </div>
-
                 </div>
 
                 <div class="absolute bottom-2 left-6 z-10 flex items-center gap-2 opacity-70 bg-white/50 px-2 py-0.5 rounded backdrop-blur-sm">
@@ -359,7 +348,6 @@
                     <span class="text-[7px] md:text-[8px] font-bold tracking-widest text-slate-600 uppercase">Emitido por BJJ Manager | maneger.bjjdigital.com.br</span>
                 </div>
             </div>
-            
         </div>
     </div>
 
@@ -389,18 +377,14 @@
         let todosAlunosCache = []; 
         let alunoEditandoId = null; 
 
-        // PREENCHE OS DIAS DE VENCIMENTO (1 a 31)
         const selectVenc = document.getElementById('aluno-vencimento');
         if(selectVenc) {
             let optionsHTML = '';
-            for(let i = 1; i <= 31; i++) {
-                optionsHTML += `<option value="${i}">${i}</option>`;
-            }
+            for(let i = 1; i <= 31; i++) optionsHTML += `<option value="${i}">${i}</option>`;
             selectVenc.innerHTML = optionsHTML;
             selectVenc.value = "10";
         }
 
-        // === AUTENTICAÇÃO PADRÃO COM MODO SUPORTE ===
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 let isSuper = false;
@@ -412,12 +396,8 @@
                 try {
                     if (isSuper) {
                         const equipeImpersonada = sessionStorage.getItem('admin_impersonate');
-                        if (equipeImpersonada) {
-                            uid = equipeImpersonada; 
-                        } else {
-                            window.location.href = "super_admin.html";
-                            return;
-                        }
+                        if (equipeImpersonada) uid = equipeImpersonada; 
+                        else { window.location.href = "super_admin.html"; return; }
                     } else {
                         uid = user.uid;
                         const docMestre = await getDoc(doc(db, "equipes", uid));
@@ -426,10 +406,8 @@
                             if(colabSnap.exists()) uid = colabSnap.data().equipe_id;
                         }
                     }
-                    
                     await carregarInfoEquipe(user); 
                     buscarAlunosFirebase();
-                    
                 } catch (error) { console.log(error); }
             } else {
                 window.location.href = "index.html";
@@ -455,9 +433,7 @@
                         if(lblCargo) lblCargo.innerText = "Co-Administrador";
                         
                         const equipeMestreSnap = await getDoc(doc(db, "equipes", uid));
-                        if(equipeMestreSnap.exists()) {
-                            dadosEquipe = equipeMestreSnap.data();
-                        }
+                        if(equipeMestreSnap.exists()) dadosEquipe = equipeMestreSnap.data();
                     }
                 }
 
@@ -482,9 +458,9 @@
             } catch (error) { console.log(error); }
         }
 
-        // --- SISTEMA DE TOASTS ---
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
+            if(!container) return alert(message);
             const toast = document.createElement('div');
             const bgColor = type === 'success' ? 'bg-emerald-500' : 'bg-rose-500';
             toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transition-all duration-300 font-bold text-sm z-50 pointer-events-auto max-w-sm`;
@@ -493,7 +469,6 @@
             setTimeout(() => toast.remove(), 4500);
         }
 
-        // === ESTILO DAS FAIXAS (BADGE DA TABELA) ===
         function getCorFaixa(faixaTexto) {
             const f = faixaTexto ? faixaTexto.toLowerCase() : '';
             if (f.includes('cinza e branca')) return 'bg-[linear-gradient(135deg,_#94A3B8_50%,_#FFFFFF_50%)] text-slate-800 border border-slate-300';
@@ -516,7 +491,6 @@
             return 'bg-slate-100 text-slate-600 border border-slate-200';
         }
 
-        // === ESTILO DA BORDA DA CARTEIRINHA (HEX) ===
         function getCorHexFaixa(faixa) {
             const f = faixa ? faixa.toLowerCase() : '';
             if (f.includes('branca')) return '#cbd5e1'; 
@@ -533,7 +507,6 @@
             return '#cbd5e1';
         }
 
-        // === CONTROLES DO MODAL DA FICHA ===
         window.mudarAba = function(idAba) {
             document.querySelectorAll('.aba-content').forEach(a => a.classList.add('hidden'));
             document.getElementById(idAba).classList.remove('hidden');
@@ -563,8 +536,6 @@
         
         window.fecharModal = () => document.getElementById('modal-aluno').classList.replace('flex', 'hidden');
 
-
-        // === BUSCAR E RENDERIZAR ALUNOS ===
         async function buscarAlunosFirebase() {
             const q = query(collection(db, "alunos"), where("equipe_id", "==", uid));
             try {
@@ -796,22 +767,17 @@
             } catch(err) { showToast("Erro ao fundir fichas.", "error"); }
         }
 
-        // ==============================================================
-        // MÓDULO: CARTEIRINHA DIGITAL (TEMA CLARO E NEUTRO)
-        // ==============================================================
         window.abrirModalCarteirinha = function() {
             if(!alunoEditandoId) return;
             const aluno = todosAlunosCache.find(a => a.id === alunoEditandoId);
             if(!aluno) return;
 
-            // 1. Logo e Nome da Academia
             document.getElementById('cart-equipe-nome').innerText = equipeNomeGlobal.toUpperCase();
             if(equipeLogoGlobal) {
                 document.getElementById('cart-equipe-logo').src = equipeLogoGlobal;
                 document.getElementById('cart-equipe-logo').classList.remove('hidden');
                 document.getElementById('cart-equipe-fallback').classList.add('hidden');
                 
-                // Marca d'água da Equipe
                 document.getElementById('cart-equipe-watermark').src = equipeLogoGlobal;
                 document.getElementById('cart-equipe-watermark').classList.remove('hidden');
                 document.getElementById('cart-equipe-watermark-fallback').classList.add('hidden');
@@ -821,13 +787,11 @@
                 document.getElementById('cart-equipe-fallback').classList.remove('hidden');
                 document.getElementById('cart-equipe-logo').classList.add('hidden');
 
-                // Marca d'água fallback
                 document.getElementById('cart-equipe-watermark-fallback').innerText = letra;
                 document.getElementById('cart-equipe-watermark-fallback').classList.remove('hidden');
                 document.getElementById('cart-equipe-watermark').classList.add('hidden');
             }
 
-            // 2. Dados do Aluno
             document.getElementById('cart-aluno-nome').innerText = aluno.nome;
             document.getElementById('cart-aluno-matricula').innerText = (aluno.matricula || "000000");
 
@@ -838,7 +802,6 @@
             }
             document.getElementById('cart-aluno-nascimento').innerText = dataNascFormatada;
 
-            // 3. Faixa e Grau (Cor e Texto)
             const faixa = aluno.faixa || "BRANCA";
             const grau = aluno.grau && aluno.grau !== "Sem grau" ? ` - ${aluno.grau}` : "";
             document.getElementById('cart-aluno-faixa-texto').innerText = (faixa + grau).toUpperCase();
@@ -846,7 +809,6 @@
             const corBorda = getCorHexFaixa(faixa);
             document.getElementById('cart-faixa-border').style.borderLeftColor = corBorda;
 
-            // 4. Foto do Aluno
             if(aluno.foto_url) {
                 document.getElementById('cart-aluno-foto').src = aluno.foto_url;
                 document.getElementById('cart-aluno-foto').classList.remove('hidden');
@@ -857,11 +819,9 @@
                 document.getElementById('cart-aluno-foto').classList.add('hidden');
             }
 
-            // 5. Validade e QR Code
             const anoVigente = new Date().getFullYear();
             document.getElementById('cart-aluno-validade').innerText = `31/12/${anoVigente}`;
 
-            // API para gerar QR Code (AGORA COM MATRICULA NO LINK)
             const baseUrl = window.location.origin;
             const codigoMatricula = aluno.matricula || aluno.id; 
             const linkValidacao = `${baseUrl}/validar.html?mat=${codigoMatricula}`;
@@ -869,7 +829,6 @@
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(linkValidacao)}`;
             document.getElementById('cart-qr-code').src = qrUrl;
 
-            // Abre o modal
             fecharModal();
             document.getElementById('modal-carteirinha').classList.remove('hidden');
             document.getElementById('modal-carteirinha').classList.add('flex');
@@ -878,16 +837,13 @@
         window.fecharModalCarteirinha = function() {
             document.getElementById('modal-carteirinha').classList.add('hidden');
             document.getElementById('modal-carteirinha').classList.remove('flex');
-            abrirFichaAluno(alunoEditandoId); // Reabre a ficha por trás
+            abrirFichaAluno(alunoEditandoId); 
         }
 
         window.imprimirCarteirinha = function() {
             window.print();
         }
 
-        // ==============================================================
-        // MÓDULO: GERAÇÃO DO TERMO LGPD
-        // ==============================================================
         window.gerarPDF_LGPD = function() {
             if(!document.getElementById('lgpd-concordo').checked) {
                 return showToast("Atenção: A caixa de 'Li e Concordo com os Termos' precisa estar marcada.");

@@ -13,6 +13,8 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
         body { font-family: 'Inter', sans-serif; }
         .bg-pattern { background-image: radial-gradient(#1e293b 1px, transparent 1px); background-size: 20px 20px; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-200 overflow-x-hidden selection:bg-cyan-500 selection:text-white">
@@ -25,7 +27,7 @@
                     <span class="font-black text-white tracking-widest uppercase text-sm">Manager</span>
                 </div>
                 <div class="hidden md:flex items-center space-x-8 text-sm font-bold text-slate-400">
-                    <a href="#recursos" class="hover:text-cyan-400 transition-colors">Recursos</a>
+                    <a href="#recursos" class="hover:text-cyan-400 transition-colors">Funcionalidades</a>
                     <a href="#precos" class="hover:text-cyan-400 transition-colors">Planos</a>
                     <a href="#faq" class="hover:text-cyan-400 transition-colors">Dúvidas</a>
                 </div>
@@ -53,7 +55,7 @@
             </h1>
             
             <p class="mt-4 text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-10 font-medium leading-relaxed">
-                Abandone as planilhas e a papelada. Faça a gestão dos seus alunos, controle mensalidades de forma inteligente e emita diplomas com QR Code Oficial de autenticidade.
+                Abandone as planilhas e a papelada. Faça a gestão completa dos seus alunos, controle mensalidades e emita diplomas de graduação com QR Code de autenticidade.
             </p>
             
             <div class="flex flex-col sm:flex-row justify-center gap-4">
@@ -73,45 +75,83 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-4xl font-black text-white mb-4">Tudo o que um <span class="text-cyan-500">Faixa Preta</span> precisa</h2>
-                <p class="text-slate-400 font-medium">Gestão desenhada por quem entende de Jiu-Jitsu, para quem vive de Jiu-Jitsu.</p>
+                <p class="text-slate-400 font-medium">O ecossistema mais completo do mercado, desenhado para quem vive de Jiu-Jitsu.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div class="bg-slate-800/50 p-8 rounded-3xl border border-slate-700/50 hover:border-cyan-500/50 transition-colors">
-                    <div class="w-14 h-14 bg-cyan-500/20 text-cyan-400 rounded-2xl flex items-center justify-center text-2xl mb-6">💰</div>
-                    <h3 class="text-xl font-black text-white mb-3">Controle Financeiro</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">Saiba exatamente quem pagou e quem está em atraso. Envie cobranças e recibos pelo WhatsApp com um clique.</p>
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 
-                <div class="bg-slate-800/50 p-8 rounded-3xl border border-slate-700/50 hover:border-amber-500/50 transition-colors">
-                    <div class="w-14 h-14 bg-amber-500/20 text-amber-400 rounded-2xl flex items-center justify-center text-2xl mb-6">📜</div>
-                    <h3 class="text-xl font-black text-white mb-3">Diplomas com QR Code</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">Gere certificados de graduação em PDF com um QR Code que comprova a autenticidade do seu aluno perante federações.</p>
+                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-emerald-500/50 hover:bg-slate-800/80 transition-all group">
+                    <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">💰</div>
+                    <h3 class="text-lg font-black text-white mb-2">Caixa Blindado</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">Controle de mensalidades, registo de receitas extras (exames, seminários) e despesas. Saiba quem deve e quem pagou.</p>
                 </div>
 
-                <div class="bg-slate-800/50 p-8 rounded-3xl border border-slate-700/50 hover:border-emerald-500/50 transition-colors">
-                    <div class="w-14 h-14 bg-emerald-500/20 text-emerald-400 rounded-2xl flex items-center justify-center text-2xl mb-6">📊</div>
-                    <h3 class="text-xl font-black text-white mb-3">Raio-X da Equipe</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">Dashboard inteligente que mostra lucros, despesas e gráficos exatos de quantos alunos tem em cada faixa e turma.</p>
+                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-cyan-500/50 hover:bg-slate-800/80 transition-all group">
+                    <div class="w-12 h-12 bg-cyan-500/20 text-cyan-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">📊</div>
+                    <h3 class="text-lg font-black text-white mb-2">Visão Geral (Raio-X)</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">Gráficos de lucro e inadimplência. Saiba instantaneamente quantos alunos tem em cada faixa e os aniversariantes do mês.</p>
                 </div>
 
-                <div class="bg-slate-800/50 p-8 rounded-3xl border border-slate-700/50 hover:border-purple-500/50 transition-colors">
-                    <div class="w-14 h-14 bg-purple-500/20 text-purple-400 rounded-2xl flex items-center justify-center text-2xl mb-6">📱</div>
-                    <h3 class="text-xl font-black text-white mb-3">100% no Celular</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">O sistema foi desenhado para ser usado no tatame. Faça tudo pelo seu telemóvel de forma rápida e intuitiva, sem precisar de computador.</p>
+                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-[#25D366]/50 hover:bg-slate-800/80 transition-all group">
+                    <div class="w-12 h-12 bg-[#25D366]/20 text-[#25D366] rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">💬</div>
+                    <h3 class="text-lg font-black text-white mb-2">Cobrança no Zap</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">Com 1 clique, o sistema abre o seu WhatsApp com uma mensagem de cobrança (ou recibo) amigável e pronta para enviar ao atleta.</p>
                 </div>
 
-                <div class="bg-slate-800/50 p-8 rounded-3xl border border-slate-700/50 hover:border-rose-500/50 transition-colors">
-                    <div class="w-14 h-14 bg-rose-500/20 text-rose-400 rounded-2xl flex items-center justify-center text-2xl mb-6">🎓</div>
-                    <h3 class="text-xl font-black text-white mb-3">Histórico de Graduação</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">Guarde a linha do tempo de cada atleta. Saiba há quanto tempo ele está numa faixa e não perca mais nenhuma data de exame.</p>
+                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-amber-500/50 hover:bg-slate-800/80 transition-all group">
+                    <div class="w-12 h-12 bg-amber-500/20 text-amber-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">📜</div>
+                    <h3 class="text-lg font-black text-white mb-2">Diplomas Oficiais</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">Gere certificados em PDF com a sua logo e um QR Code rastreável que comprova a autenticidade da graduação.</p>
                 </div>
 
-                <div class="bg-slate-800/50 p-8 rounded-3xl border border-slate-700/50 hover:border-blue-500/50 transition-colors">
-                    <div class="w-14 h-14 bg-blue-500/20 text-blue-400 rounded-2xl flex items-center justify-center text-2xl mb-6">👥</div>
-                    <h3 class="text-xl font-black text-white mb-3">Multi-Professores</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">Adicione os professores da sua academia como co-administradores para o ajudarem a gerir a equipa.</p>
+                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-purple-500/50 hover:bg-slate-800/80 transition-all group">
+                    <div class="w-12 h-12 bg-purple-500/20 text-purple-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">🎓</div>
+                    <h3 class="text-lg font-black text-white mb-2">Linha do Tempo</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">Registe todos os graus e faixas. O sistema calcula automaticamente o "Tempo de Faixa" e mantém o histórico intocável.</p>
                 </div>
+
+                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-blue-500/50 hover:bg-slate-800/80 transition-all group">
+                    <div class="w-12 h-12 bg-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">📱</div>
+                    <h3 class="text-lg font-black text-white mb-2">App de Tatame</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">Design "Mobile First" com menu fluido tipo aplicação. Faça matrículas e dê baixas financeiras diretamente pelo celular no meio do treino.</p>
+                </div>
+
+                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-rose-500/50 hover:bg-slate-800/80 transition-all group">
+                    <div class="w-12 h-12 bg-rose-500/20 text-rose-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">🗓️</div>
+                    <h3 class="text-lg font-black text-white mb-2">Turmas e Horários</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">Crie as suas grelhas de horários (Ex: Kids, Adultos Noite) e separe os alunos para saber exatamente quem treina onde.</p>
+                </div>
+
+                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-indigo-500/50 hover:bg-slate-800/80 transition-all group">
+                    <div class="w-12 h-12 bg-indigo-500/20 text-indigo-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">🔗</div>
+                    <h3 class="text-lg font-black text-white mb-2">Link de Auto-Cadastro</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">Não perca tempo a digitar dados. Envie o link da equipa e o aluno preenche a própria ficha no telemóvel dele.</p>
+                </div>
+
+                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-teal-500/50 hover:bg-slate-800/80 transition-all group">
+                    <div class="w-12 h-12 bg-teal-500/20 text-teal-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">👥</div>
+                    <h3 class="text-lg font-black text-white mb-2">Co-Administradores</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">Dê acesso ao sistema aos seus professores auxiliares para o ajudarem a gerir a academia e lançar presenças/pagamentos.</p>
+                </div>
+
+                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-orange-500/50 hover:bg-slate-800/80 transition-all group">
+                    <div class="w-12 h-12 bg-orange-500/20 text-orange-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">📑</div>
+                    <h3 class="text-lg font-black text-white mb-2">Documentos em PDF</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">Gere faturas e recibos de pagamento para os alunos, e baixe o Relatório Anual de Lucro Real para a sua contabilidade.</p>
+                </div>
+
+                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-yellow-500/50 hover:bg-slate-800/80 transition-all group">
+                    <div class="w-12 h-12 bg-yellow-500/20 text-yellow-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">🏆</div>
+                    <h3 class="text-lg font-black text-white mb-2">Área Desportiva</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">Controle as carteirinhas das federações, registe medalhas e crie o currículo competitivo de cada um dos seus atletas.</p>
+                </div>
+
+                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-pink-500/50 hover:bg-slate-800/80 transition-all group">
+                    <div class="w-12 h-12 bg-pink-500/20 text-pink-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">🎨</div>
+                    <h3 class="text-lg font-black text-white mb-2">A Sua Marca</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">O sistema adapta-se à sua academia. Faça o upload da sua logo e ela aparecerá nos dashboards, recibos e certificados.</p>
+                </div>
+
             </div>
         </div>
     </section>
@@ -160,10 +200,10 @@
                     
                     <ul class="space-y-4 mb-8 flex-1 text-sm text-slate-200">
                         <li class="flex items-center gap-3"><span class="text-cyan-400">✓</span> <b>Alunos Ilimitados</b></li>
-                        <li class="flex items-center gap-3"><span class="text-cyan-400">✓</span> Gestão Financeira Completa</li>
+                        <li class="flex items-center gap-3"><span class="text-cyan-400">✓</span> Todas as 12 funcionalidades</li>
                         <li class="flex items-center gap-3"><span class="text-cyan-400">✓</span> Certificados com QR Code</li>
                         <li class="flex items-center gap-3"><span class="text-cyan-400">✓</span> Emissão de Recibos em PDF</li>
-                        <li class="flex items-center gap-3"><span class="text-cyan-400">✓</span> Relatórios de Lucro Real</li>
+                        <li class="flex items-center gap-3"><span class="text-cyan-400">✓</span> Co-Administradores incluídos</li>
                     </ul>
                     <a href="cadastro_equipe.html" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-all shadow-lg transform hover:-translate-y-0.5">
                         Assinar Black Belt

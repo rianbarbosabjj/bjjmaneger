@@ -60,7 +60,10 @@
         </div>
 
         <div id="estado-sucesso-cert" class="hidden flex-col items-center">
-            <div class="w-16 h-16 bg-amber-500/20 text-amber-400 rounded-full flex items-center justify-center text-3xl mb-4 shadow-[0_0_30px_rgba(245,158,11,0.2)]">🏅</div>
+            
+            <div id="cert-medalha-icon" class="w-16 h-16 bg-amber-500/20 text-amber-400 rounded-full flex items-center justify-center text-3xl mb-4 shadow-[0_0_30px_rgba(245,158,11,0.2)]">🏅</div>
+            <img id="cert-equipe-logo" src="" class="h-20 w-auto object-contain mb-4 drop-shadow-md hidden">
+
             <h2 class="text-xl font-black text-white uppercase tracking-tight mb-1">Diploma Válido</h2>
             <p class="text-[9px] text-amber-400 font-bold uppercase tracking-widest mb-8">Graduação Autêntica do Sistema</p>
 
@@ -156,7 +159,6 @@
                     document.getElementById('cert-mestre').innerText = certData.prof_responsavel || "Não inf.";
                     document.getElementById('cert-prof').innerText = certData.prof_direto || "Não inf.";
                     
-                    // Formata a data se existir
                     if (certData.data_cerimonia) {
                         const p = certData.data_cerimonia.split('-');
                         if(p.length === 3) {
@@ -166,11 +168,19 @@
                         }
                     }
 
-                    // Busca a equipe
+                    // Busca a equipe e verifica se há logo
                     if (certData.equipe_id) {
                         const eqSnap = await getDoc(doc(db, "equipes", certData.equipe_id));
                         if (eqSnap.exists()) {
-                            document.getElementById('cert-equipe').innerText = (eqSnap.data().nome_equipe || "Academia").toUpperCase();
+                            const eqData = eqSnap.data();
+                            document.getElementById('cert-equipe').innerText = (eqData.nome_equipe || "Academia").toUpperCase();
+                            
+                            // Se a equipe tem logo, esconde a medalha e mostra a logo
+                            if(eqData.url_logo) {
+                                document.getElementById('cert-medalha-icon').classList.add('hidden');
+                                document.getElementById('cert-equipe-logo').src = eqData.url_logo;
+                                document.getElementById('cert-equipe-logo').classList.remove('hidden');
+                            }
                         } else {
                             document.getElementById('cert-equipe').innerText = "EQUIPE NÃO ENCONTRADA";
                         }
@@ -192,14 +202,12 @@
 
                     let alunoData = null;
                     
-                    // 1. Tenta por Matrícula exata
                     const q = query(collection(db, "alunos"), where("matricula", "==", matriculaQuery));
                     const snap = await getDocs(q);
                     
                     if(!snap.empty) {
                         alunoData = snap.docs[0].data();
                     } else {
-                        // 2. Tenta por ID antigo
                         const d = await getDoc(doc(db, "alunos", matriculaQuery));
                         if(d.exists()) alunoData = d.data();
                     }

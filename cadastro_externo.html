@@ -159,12 +159,16 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:col-span-2">
+                        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 md:col-span-2">
                             <div class="col-span-1">
                                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Número</label>
                                 <input type="text" id="cad-num" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700">
                             </div>
-                            <div class="col-span-1 md:col-span-3">
+                            <div class="col-span-1 md:col-span-2">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Complemento</label>
+                                <input type="text" id="cad-comp" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="Apto, Sala...">
+                            </div>
+                            <div class="col-span-2 md:col-span-2">
                                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Bairro</label>
                                 <input type="text" id="cad-bairro" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700">
                             </div>
@@ -299,12 +303,16 @@
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:col-span-2">
+                            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 md:col-span-2">
                                 <div class="col-span-1">
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Número</label>
                                     <input type="text" id="prof-num" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700">
                                 </div>
-                                <div class="col-span-1 md:col-span-3">
+                                <div class="col-span-1 md:col-span-2">
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Complemento</label>
+                                    <input type="text" id="prof-comp" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700" placeholder="Apto, Sala...">
+                                </div>
+                                <div class="col-span-2 md:col-span-2">
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Bairro</label>
                                     <input type="text" id="prof-bairro" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700">
                                 </div>
@@ -462,6 +470,7 @@
             v = v.replace(/^(\d{5})(\d)/, "$1-$2");
             i.value = v;
         };
+        
         window.buscarCEP = async (cep) => {
             const cleanCep = cep.replace(/\D/g, "");
             if (cleanCep.length !== 8) return;
@@ -522,10 +531,6 @@
                     document.getElementById('form-prof').classList.remove('hidden');
                 } else {
                     document.getElementById('form-aluno').classList.remove('hidden');
-                    
-                    const qAlunos = query(collection(db, "alunos"), where("equipe_id", "==", equipeId));
-                    const snapAlunos = await getDocs(qAlunos);
-                    quantidadeAlunosAtual = snapAlunos.size;
                 }
 
             } catch (e) {
@@ -598,12 +603,13 @@
                 telefone: tel,
                 email: email,
                 senha_portal: senhaPortal,
+                cep: document.getElementById('cad-cep').value.trim(),
                 endereco: document.getElementById('cad-end').value.trim(),
                 numero: document.getElementById('cad-num').value.trim(),
+                complemento: document.getElementById('cad-comp').value.trim(),
                 bairro: document.getElementById('cad-bairro').value.trim(),
                 cidade: document.getElementById('cad-cidade').value.trim(),
                 uf: document.getElementById('cad-uf').value,
-                cep: document.getElementById('cad-cep').value.trim(),
                 nome_responsavel: document.getElementById('cad-resp-nome').value.toUpperCase().trim(),
                 cpf_responsavel: document.getElementById('cad-resp-cpf').value.trim(),
                 status: "ATIVO",
@@ -683,6 +689,7 @@
                     cep: document.getElementById('prof-cep').value.trim(),
                     endereco: document.getElementById('prof-end').value.trim(),
                     numero: document.getElementById('prof-num').value.trim(),
+                    complemento: document.getElementById('prof-comp').value.trim(),
                     bairro: document.getElementById('prof-bairro').value.trim(),
                     cidade: document.getElementById('prof-cidade').value.trim(),
                     uf: document.getElementById('prof-uf').value,

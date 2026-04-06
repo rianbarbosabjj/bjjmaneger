@@ -292,8 +292,13 @@
 
             <div class="print-carteirinha-wrapper relative mx-auto bg-white rounded-2xl overflow-hidden shadow-2xl border border-slate-200 flex text-slate-800 font-sans w-full max-w-[600px] aspect-[1.58/1] shrink-0" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
                 
-                <div class="absolute top-0 right-0 w-64 h-full bg-slate-200/40 skew-x-[-20deg] translate-x-10 pointer-events-none"></div>
-                <div class="absolute bottom-0 left-0 w-full h-1/3 bg-slate-300/30 skew-y-[-5deg] origin-bottom-right pointer-events-none"></div>
+                <div class="absolute top-0 right-0 w-64 h-full bg-slate-200/40 skew-x-[-20deg] translate-x-10 pointer-events-none z-0"></div>
+                <div class="absolute bottom-0 left-0 w-full h-1/3 bg-slate-300/30 skew-y-[-5deg] origin-bottom-right pointer-events-none z-0"></div>
+
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden">
+                    <img id="cart-equipe-watermark" src="" class="w-[120%] h-[120%] object-contain opacity-[0.04] grayscale hidden" style="transform: scale(1.1);">
+                    <div id="cart-equipe-watermark-fallback" class="text-[30rem] leading-none font-black text-slate-800 opacity-[0.03] hidden">E</div>
+                </div>
 
                 <div class="flex-1 p-5 md:p-6 flex flex-col z-10 w-[65%]">
                     
@@ -309,27 +314,27 @@
                     </div>
 
                     <div class="grid grid-cols-2 gap-y-2.5 gap-x-4 w-full mt-auto mb-4 md:mb-6">
-                        <div class="col-span-2 bg-white/80 px-3 py-1.5 rounded-md border-l-4 border-cyan-500 shadow-sm">
+                        <div class="col-span-2 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md border-l-4 border-cyan-500 shadow-sm">
                             <p class="text-[8px] md:text-[9px] text-slate-400 uppercase font-bold mb-0.5">Nome do Atleta</p>
                             <p id="cart-aluno-nome" class="text-xs md:text-sm font-black uppercase text-slate-800 truncate">ALUNO NOME</p>
                         </div>
                         
-                        <div class="col-span-2 md:col-span-1 bg-white/80 px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm" id="cart-faixa-border">
+                        <div class="col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm" id="cart-faixa-border">
                             <p class="text-[8px] md:text-[9px] text-slate-400 uppercase font-bold mb-0.5">Faixa / Graduação</p>
                             <p id="cart-aluno-faixa-texto" class="text-[10px] md:text-xs font-black uppercase text-slate-800 truncate">BRANCA</p>
                         </div>
 
-                        <div class="col-span-2 md:col-span-1 bg-white/80 px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm">
+                        <div class="col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm">
                             <p class="text-[8px] md:text-[9px] text-slate-400 uppercase font-bold mb-0.5">Nascimento</p>
                             <p id="cart-aluno-nascimento" class="text-[10px] md:text-xs font-bold text-slate-800">00/00/0000</p>
                         </div>
 
-                        <div class="bg-white/80 px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm">
+                        <div class="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm">
                             <p class="text-[8px] md:text-[9px] text-slate-400 uppercase font-bold mb-0.5">Matrícula</p>
                             <p id="cart-aluno-matricula" class="text-[10px] md:text-xs font-mono font-bold text-slate-800 tracking-wider">00000</p>
                         </div>
 
-                        <div class="bg-white/80 px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm">
+                        <div class="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm">
                             <p class="text-[8px] md:text-[9px] text-slate-400 uppercase font-bold mb-0.5">Validade</p>
                             <p id="cart-aluno-validade" class="text-[10px] md:text-xs font-black text-slate-800 tracking-wider">2026</p>
                         </div>
@@ -349,9 +354,9 @@
 
                 </div>
 
-                <div class="absolute bottom-2 left-6 z-10 flex items-center gap-2 opacity-70">
+                <div class="absolute bottom-2 left-6 z-10 flex items-center gap-2 opacity-70 bg-white/50 px-2 py-0.5 rounded backdrop-blur-sm">
                     <img src="logo_bjj_maneger.png" class="h-4 w-auto grayscale">
-                    <span class="text-[7px] md:text-[8px] font-bold tracking-widest text-slate-500 uppercase">Emitido por BJJ Manager | maneger.bjjdigital.com.br</span>
+                    <span class="text-[7px] md:text-[8px] font-bold tracking-widest text-slate-600 uppercase">Emitido por BJJ Manager | maneger.bjjdigital.com.br</span>
                 </div>
             </div>
             
@@ -805,10 +810,21 @@
                 document.getElementById('cart-equipe-logo').src = equipeLogoGlobal;
                 document.getElementById('cart-equipe-logo').classList.remove('hidden');
                 document.getElementById('cart-equipe-fallback').classList.add('hidden');
+                
+                // Marca d'água da Equipe
+                document.getElementById('cart-equipe-watermark').src = equipeLogoGlobal;
+                document.getElementById('cart-equipe-watermark').classList.remove('hidden');
+                document.getElementById('cart-equipe-watermark-fallback').classList.add('hidden');
             } else {
-                document.getElementById('cart-equipe-fallback').innerText = equipeNomeGlobal.charAt(0).toUpperCase();
+                const letra = equipeNomeGlobal.charAt(0).toUpperCase();
+                document.getElementById('cart-equipe-fallback').innerText = letra;
                 document.getElementById('cart-equipe-fallback').classList.remove('hidden');
                 document.getElementById('cart-equipe-logo').classList.add('hidden');
+
+                // Marca d'água fallback
+                document.getElementById('cart-equipe-watermark-fallback').innerText = letra;
+                document.getElementById('cart-equipe-watermark-fallback').classList.remove('hidden');
+                document.getElementById('cart-equipe-watermark').classList.add('hidden');
             }
 
             // 2. Dados do Aluno

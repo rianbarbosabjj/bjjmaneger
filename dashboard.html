@@ -836,11 +836,12 @@
     </script>
     
     <script>
-        // Oculta a div gigante do menu.js silenciosamente
+        // Oculta a div gigante do menu.js silenciosamente (Corrigido para não esconder o sistema!)
         const radarSuporte = setInterval(() => {
             Array.from(document.body.children).forEach(el => {
-                if (el.tagName === 'DIV' && (el.textContent || '').toUpperCase().includes('MODO SUPORTE')) {
-                    el.style.display = 'none'; // Esconde o monstro vermelho
+                // Procura a div do menu.js, mas IGNORA a interface do sistema
+                if (el.tagName === 'DIV' && el.id !== 'interface-sistema' && (el.textContent || '').toUpperCase().includes('MODO SUPORTE ATIVADO')) {
+                    el.style.display = 'none'; // Esconde apenas o monstro vermelho
                     clearInterval(radarSuporte);
                 }
             });

@@ -298,17 +298,17 @@
                 <div class="flex-1 p-5 md:p-6 flex flex-col z-10 w-[65%]">
                     
                     <div class="flex items-center gap-4 mb-6">
-                        <div class="h-12 md:h-14 w-12 md:w-14 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-sm shrink-0">
-                            <img id="cart-equipe-logo" src="" class="h-full w-full object-contain p-1 drop-shadow-sm hidden">
-                            <div id="cart-equipe-fallback" class="text-2xl font-black text-slate-700 hidden">E</div>
+                        <div class="h-16 md:h-20 w-16 md:w-20 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-sm shrink-0 overflow-hidden">
+                            <img id="cart-equipe-logo" src="" class="h-full w-full object-contain p-1.5 drop-shadow-sm hidden">
+                            <div id="cart-equipe-fallback" class="text-3xl font-black text-slate-700 hidden">E</div>
                         </div>
                         <div class="flex flex-col justify-center">
-                            <h2 id="cart-equipe-nome" class="text-base md:text-xl font-black uppercase tracking-tight text-slate-800 leading-none truncate max-w-[200px] md:max-w-[250px]">NOME DA EQUIPE</h2>
-                            <p class="text-[8px] md:text-[9px] text-slate-500 uppercase tracking-widest font-bold mt-1">Identificação Oficial</p>
+                            <h2 id="cart-equipe-nome" class="text-lg md:text-2xl font-black uppercase tracking-tight text-slate-800 leading-none truncate max-w-[180px] md:max-w-[220px]">NOME DA EQUIPE</h2>
+                            <p class="text-[9px] md:text-[10px] text-slate-500 uppercase tracking-widest font-bold mt-1">Identificação Oficial</p>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-y-2.5 gap-x-4 w-full mt-auto mb-6">
+                    <div class="grid grid-cols-2 gap-y-2.5 gap-x-4 w-full mt-auto mb-4 md:mb-6">
                         <div class="col-span-2 bg-white/80 px-3 py-1.5 rounded-md border-l-4 border-cyan-500 shadow-sm">
                             <p class="text-[8px] md:text-[9px] text-slate-400 uppercase font-bold mb-0.5">Nome do Atleta</p>
                             <p id="cart-aluno-nome" class="text-xs md:text-sm font-black uppercase text-slate-800 truncate">ALUNO NOME</p>
@@ -349,9 +349,9 @@
 
                 </div>
 
-                <div class="absolute bottom-2 left-6 z-10 flex items-center gap-2 opacity-40">
-                    <img src="logo_bjj_maneger.png" class="h-2.5 w-auto grayscale">
-                    <span class="text-[6px] md:text-[7px] font-bold tracking-widest text-slate-500 uppercase">Powered by BJJ Manager | maneger.bjjdigital.com.br</span>
+                <div class="absolute bottom-2 left-6 z-10 flex items-center gap-2 opacity-70">
+                    <img src="logo_bjj_maneger.png" class="h-4 w-auto grayscale">
+                    <span class="text-[7px] md:text-[8px] font-bold tracking-widest text-slate-500 uppercase">Emitido por BJJ Manager | maneger.bjjdigital.com.br</span>
                 </div>
             </div>
             
@@ -514,7 +514,7 @@
         // === ESTILO DA BORDA DA CARTEIRINHA (HEX) ===
         function getCorHexFaixa(faixa) {
             const f = faixa ? faixa.toLowerCase() : '';
-            if (f.includes('branca')) return '#cbd5e1'; // Cinza claro para não sumir no fundo branco
+            if (f.includes('branca')) return '#cbd5e1'; 
             if (f.includes('azul')) return '#3b82f6';
             if (f.includes('roxa')) return '#a855f7';
             if (f.includes('marrom')) return '#78350f';
@@ -541,7 +541,7 @@
             alunoEditandoId = null;
             document.getElementById('modal-titulo').innerText = "Nova Matrícula";
             document.getElementById('btn-gerar-pdf').classList.add('hidden');
-            document.getElementById('btn-abrir-carteirinha').classList.add('hidden'); // Esconde na matrícula nova
+            document.getElementById('btn-abrir-carteirinha').classList.add('hidden'); 
             
             document.querySelectorAll('input[type="text"], input[type="date"], input[type="email"]').forEach(i => i.value = '');
             document.querySelectorAll('input[type="checkbox"]').forEach(i => i.checked = false);
@@ -657,7 +657,7 @@
             alunoEditandoId = id;
             document.getElementById('modal-titulo').innerText = "Editar Ficha Cadastral";
             document.getElementById('btn-gerar-pdf').classList.remove('hidden');
-            document.getElementById('btn-abrir-carteirinha').classList.remove('hidden'); // Libera o botão de carteirinha
+            document.getElementById('btn-abrir-carteirinha').classList.remove('hidden');
 
             document.getElementById('aluno-matricula').value = aluno.matricula || 'S/N';
             document.getElementById('aluno-nome').value = aluno.nome || '';

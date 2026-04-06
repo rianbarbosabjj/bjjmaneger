@@ -8,6 +8,9 @@
     <link rel="icon" type="image/png" href="logo_bjj_maneger.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
@@ -28,18 +31,6 @@
             body * { visibility: hidden; }
             #interface-sistema, #modal-aluno, nav, #modal-carteirinha .flex.justify-end, #toast-container { display: none !important; }
             
-            #area-impressao { 
-                display: block !important; 
-                visibility: visible !important; 
-                position: absolute !important; 
-                left: 0 !important; 
-                top: 0 !important; 
-                width: 100% !important; 
-                background: white !important; 
-                color: black !important; 
-            }
-            #area-impressao * { visibility: visible !important; }
-
             .print-carteirinha-wrapper {
                 visibility: visible !important;
                 position: absolute !important;
@@ -70,11 +61,8 @@
                             <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Administre sua equipe</p>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                            <button onclick="limparDuplicados()" class="w-full sm:w-auto bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 md:py-2.5 px-4 md:px-6 rounded-xl shadow-md transition-all flex items-center justify-center text-xs md:text-sm">
-                                <span class="mr-2 text-base">🧹</span> Limpar Duplicatas
-                            </button>
-                            <button onclick="corrigirTodosAlunos()" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 md:py-2.5 px-4 md:px-6 rounded-xl shadow-md transition-all flex items-center justify-center text-xs md:text-sm hidden" id="btn-rob-resgate">
-                                <span class="mr-2 text-base">🔧</span> Corrigir IDs
+                            <button onclick="corrigirTodosAlunos()" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 md:py-2.5 px-4 md:px-6 rounded-xl shadow-md transition-all flex items-center justify-center text-xs md:text-sm">
+                                <span class="mr-2 text-base">🔧</span> Corrigir IDs Antigos
                             </button>
                             <button onclick="abrirModal()" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 md:py-2.5 px-4 md:px-6 rounded-xl shadow-md transition-all flex items-center justify-center text-xs md:text-sm">
                                 <span class="mr-2 text-base">➕</span> Nova Matrícula
@@ -97,9 +85,7 @@
                         </div>
                         <div class="flex items-center justify-between w-full md:w-auto gap-4">
                             <span id="lbl-total-ativos" class="text-xs md:text-sm font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100">Total Ativos: 0</span>
-                            <button onclick="fundirFichas()" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-colors shadow-sm flex items-center hidden" id="btn-fundir">
-                                🧬 Fundir (2)
-                            </button>
+                            <button onclick="fundirFichas()" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-colors shadow-sm items-center hidden" id="btn-fundir">🧬 Fundir (2)</button>
                         </div>
                     </div>
 
@@ -126,8 +112,6 @@
             </div>
         </main>
     </div>
-
-    <div id="area-impressao" class="hidden bg-white text-black p-10"></div>
 
     <div id="modal-aluno" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh] transform transition-transform">
@@ -266,7 +250,7 @@
                         </div>
                         
                         <button onclick="gerarPDF_LGPD()" id="btn-gerar-pdf" class="w-full mt-4 bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-4 rounded-xl shadow-sm transition-all text-xs md:text-sm hidden">
-                            🖨️ Gerar Assinatura Digital (PDF)
+                            📥 Baixar Assinatura Digital (PDF)
                         </button>
                     </div>
                 </div>
@@ -378,6 +362,14 @@
         let equipeDados = { nome: "Sua Equipe", logo: "" };
         let alunoEditandoId = null;
 
+        const selectVenc = document.getElementById('aluno-vencimento');
+        if(selectVenc) {
+            let optionsHTML = '';
+            for(let i = 1; i <= 31; i++) optionsHTML += `<option value="${i}">${i}</option>`;
+            selectVenc.innerHTML = optionsHTML;
+            selectVenc.value = "10";
+        }
+
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
@@ -417,23 +409,23 @@
             const tab = document.getElementById('tabela-alunos');
             const busca = document.getElementById('input-busca').value.toLowerCase();
             const status = document.getElementById('filtro-status').value;
-            const filtrados = todosAlunosCache.filter(a => (a.nome.toLowerCase().includes(busca) || (a.cpf && a.cpf.includes(busca))) && (status === "TODOS" || a.status === status));
+            const filtrados = todosAlunosCache.filter(a => (a.nome.toLowerCase().includes(busca)) && (status === "TODOS" || a.status === status));
             
             document.getElementById('lbl-total-ativos').innerText = "Total Ativos: " + todosAlunosCache.filter(x => x.status === "ATIVO").length;
             tab.innerHTML = filtrados.length ? '' : '<tr><td colspan="6" class="p-10 text-center text-slate-400">Nenhum atleta encontrado.</td></tr>';
 
             filtrados.forEach(a => {
                 const tr = document.createElement('tr');
-                tr.className = "table-row-hover border-b border-slate-50 cursor-pointer transition-colors group";
+                tr.className = "table-row-hover border-b border-slate-50 cursor-pointer transition-colors";
                 tr.onclick = () => abrirFichaAluno(a.id);
                 
                 let avatarHtml = `<div class='hidden md:flex h-8 w-8 rounded-full bg-slate-200 items-center justify-center text-slate-500 font-bold text-xs mr-3 shrink-0'>${a.nome.charAt(0)}</div>`;
                 if(a.foto_url) {
                     avatarHtml = `<img src='${a.foto_url}' class='hidden md:block h-8 w-8 rounded-full object-cover mr-3 shrink-0 border border-slate-200'>`;
                 }
-
+                
                 tr.innerHTML = `
-                    <td class="px-6 py-4 text-center" onclick="event.stopPropagation()"><input type="checkbox" class="chk-merge" value="${a.id}" onchange="verificarCheckboxFusao()"></td>
+                    <td class="px-6 py-4 text-center" onclick="event.stopPropagation()"><input type="checkbox" class="chk-merge" value="${a.id}"></td>
                     <td class="px-6 py-4 whitespace-nowrap min-w-[200px]">
                         <div class="flex items-center">
                             ${avatarHtml}
@@ -443,10 +435,10 @@
                             </div>
                         </div>
                     </td>
-                    <td class="px-6 py-4 text-center text-xs font-mono text-slate-500">${a.cpf || '-'}</td>
-                    <td class="px-6 py-4 text-center"><span class="px-2 py-1 bg-slate-100 rounded text-[9px] font-black uppercase shadow-sm">${a.faixa || 'BRANCA'}</span></td>
-                    <td class="px-6 py-4 text-center"><span class="px-2 py-1 rounded text-[9px] font-bold shadow-sm border ${a.status === 'ATIVO' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'}">${a.status}</span></td>
-                    <td class="px-6 py-4 text-center"><button onclick="event.stopPropagation(); excluirAluno('${a.id}')" class="text-rose-400 hover:text-rose-600 font-bold text-xs transition-colors p-2">Excluir</button></td>
+                    <td class="px-6 py-4 text-center text-xs font-mono">${a.cpf || '-'}</td>
+                    <td class="px-6 py-4 text-center"><span class="px-2 py-1 bg-slate-100 rounded text-[9px] font-black uppercase">${a.faixa || 'BRANCA'}</span></td>
+                    <td class="px-6 py-4 text-center"><span class="px-2 py-1 rounded text-[9px] font-bold ${a.status === 'ATIVO' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${a.status}</span></td>
+                    <td class="px-6 py-4 text-center"><button onclick="event.stopPropagation(); excluirAluno('${a.id}')" class="text-rose-400 hover:text-rose-600 font-bold text-xs">Excluir</button></td>
                 `;
                 tab.appendChild(tr);
             });
@@ -493,7 +485,7 @@
         window.salvarAluno = async function() {
             const id = alunoEditandoId;
             const nome = document.getElementById('aluno-nome').value.toUpperCase();
-            if(!nome) return showToast("O Nome do(a) atleta é obrigatório!");
+            if(!nome) return showToast("Nome obrigatório");
             
             const dados = {
                 equipe_id: teamId, 
@@ -581,45 +573,6 @@
             document.getElementById('modal-carteirinha').classList.replace('hidden', 'flex');
         }
 
-        // ROBÔ DE LIMPEZA DE DUPLICADOS (NOVO)
-        window.limparDuplicados = async function() {
-            if(!confirm("🧹 MODO FAXINA\n\nEste robô vai procurar todos os alunos com o mesmo NOME exato na base de dados e vai apagar as cópias repetidas, mantendo sempre a ficha mais recente.\n\nTem certeza que deseja limpar os duplicados agora?")) return;
-
-            showToast("Iniciando a faxina... aguarde.", "success");
-            let deletados = 0;
-            let agrupados = {};
-
-            todosAlunosCache.forEach(a => {
-                let nomeChave = a.nome.trim().toUpperCase();
-                if(!agrupados[nomeChave]) agrupados[nomeChave] = [];
-                agrupados[nomeChave].push(a);
-            });
-
-            for(let nomeChave in agrupados) {
-                let fichas = agrupados[nomeChave];
-                if(fichas.length > 1) {
-                    // Ordena da mais recente para a mais antiga
-                    fichas.sort((a, b) => (b.data_cadastro || "").localeCompare(a.data_cadastro || ""));
-                    
-                    // Mantém a fichas[0] (a mais nova) e deleta as outras
-                    for(let i = 1; i < fichas.length; i++) {
-                        try {
-                            await deleteDoc(doc(db, "alunos", fichas[i].id));
-                            deletados++;
-                        } catch(e) { console.error("Erro ao deletar duplicata", e); }
-                    }
-                }
-            }
-
-            if(deletados > 0) {
-                showToast(deletados + " fichas duplicadas foram apagadas!", "success");
-                buscarAlunosFirebase();
-            } else {
-                showToast("Sua base já está limpa! Nenhuma cópia encontrada.", "success");
-            }
-        }
-
-        // ROBÔ DE CORREÇÃO DE IDS
         window.corrigirTodosAlunos = async function() {
             if(!confirm("🤖 MODO ROBÔ\n\nIsso vai varrer todos os alunos e forçar a gravação do ID correto da Equipe na ficha deles para que as validações funcionem.\n\nDeseja continuar?")) return;
             showToast("O Robô iniciou a correção, por favor aguarde...", "success");
@@ -636,46 +589,9 @@
             buscarAlunosFirebase();
         }
 
-        window.verificarCheckboxFusao = function() {
-            const chks = document.querySelectorAll('.chk-merge:checked');
-            const btn = document.getElementById('btn-fundir');
-            if(chks.length === 2) btn.classList.remove('hidden');
-            else btn.classList.add('hidden');
-        }
-
-        window.fundirFichas = async function() {
-            const chks = document.querySelectorAll('.chk-merge:checked');
-            if(chks.length !== 2) return;
-            
-            if(!confirm("Deseja unir estas duas fichas?\nOs dados serão mesclados e a duplicata será apagada.")) return;
-
-            const a1 = todosAlunosCache.find(a => a.id === chks[0].value);
-            const a2 = todosAlunosCache.find(a => a.id === chks[1].value);
-
-            let base = a1, novo = a2;
-            if(a2.data_cadastro && a1.data_cadastro && a2.data_cadastro < a1.data_cadastro) { base = a2; novo = a1; }
-
-            let dadosFundidos = {};
-            Object.keys(base).forEach(key => {
-                if (key === 'id' || key === 'equipe_id') return;
-                if (key.startsWith('lgpd_')) {
-                    dadosFundidos[key] = base[key] || novo[key] || false;
-                } else if (key === 'faixa' || key === 'grau') {
-                    dadosFundidos[key] = (base[key] && base[key] !== 'Branca' && base[key] !== 'Sem grau') ? base[key] : (novo[key] || base[key]);
-                } else {
-                    dadosFundidos[key] = (base[key] && String(base[key]).trim() !== "") ? base[key] : novo[key];
-                }
-            });
-
-            try {
-                await updateDoc(doc(db, "alunos", base.id), dadosFundidos);
-                await deleteDoc(doc(db, "alunos", novo.id));
-                showToast("Fichas unidas com sucesso! 🧬", "success");
-                document.getElementById('btn-fundir').classList.add('hidden');
-                buscarAlunosFirebase();
-            } catch(err) { showToast("Erro ao fundir fichas.", "error"); }
-        }
-
+        // ==============================================================
+        // MÓDULO: DOWNLOAD PDF DO TERMO LGPD A4
+        // ==============================================================
         window.gerarPDF_LGPD = function() {
             if(!document.getElementById('lgpd-concordo').checked) {
                 return showToast("Atenção: A caixa de 'Li e Concordo' precisa estar marcada.", "error");
@@ -705,26 +621,56 @@
             }
 
             const assinante = (resp || nome).toUpperCase();
-            const area = document.getElementById('area-impressao');
             
-            area.innerHTML = 
-                "<div style='font-family: Arial, Helvetica, sans-serif; max-width: 800px; margin: 0 auto; color: #000; line-height: 1.5;'>" +
-                    "<h1 style='text-align: center; font-size: 16px; margin-bottom: 40px; font-weight: bold;'>TERMO DE AUTORIZAÇÃO DE USO DE IMAGEM E DADOS (LGPD)</h1>" +
-                    "<p style='text-align: justify; margin-bottom: 30px;'>Pelo presente instrumento, em conformidade com a Lei Geral de Proteção de Dados Pessoais (Lei n&deg; 13.853/2019), o(a) aluno(a) " + nome.toUpperCase() + repTexto + "declara estar ciente e de acordo com as pol&iacute;ticas da Equipe.</p>" +
-                    "<p style='font-weight: bold; margin-bottom: 10px;'>Autoriza&ccedil;&atilde;o de Uso de Imagem:</p>" +
-                    "<div style='margin-left: 20px; margin-bottom: 30px;'>" + listaUsosHtml + "</div>" +
-                    "<p style='font-weight: bold; margin-bottom: 10px;'>Declara&ccedil;&atilde;o de Privacidade:</p>" +
-                    "<p style='text-align: justify; margin-bottom: 60px;'>A Equipe declara que n&atilde;o divulgar&aacute; dados pessoais sens&iacute;veis, n&atilde;o comercializar&aacute; imagens e adotar&aacute; medidas de seguran&ccedil;a para prote&ccedil;&atilde;o das informa&ccedil;&otilde;es coletadas.</p>" +
-                    "<p style='text-align: center; font-weight: bold; margin-bottom: 20px;'>ACEITE ELETR&Ocirc;NICO / ASSINATURA DIGITAL</p>" +
-                    "<p style='text-align: justify; margin-bottom: 30px;'>Este documento foi validado eletronicamente atrav&eacute;s dos dados submetidos pelo formul&aacute;rio oficial de matr&iacute;cula e integrados na base de dados.</p>" +
-                    "<p style='margin-bottom: 10px;'>Aceite Registado por: " + assinante + "</p>" +
-                    "<p style='margin-bottom: 10px;'>Data e Hora do Registo Oficial: " + dataAtual + "</p>" +
-                    "<p style='margin-bottom: 10px;'>C&oacute;digo de Autentica&ccedil;&atilde;o (Hash): " + hash + "</p>" +
-                "</div>";
+            // CRIA UM ELEMENTO OCULTO PARA GERAR O PDF A4
+            const element = document.createElement('div');
+            element.innerHTML = `
+                <div style="font-family: Arial, sans-serif; padding: 40px; color: #333; line-height: 1.6;">
+                    <h1 style="text-align: center; font-size: 20px; font-weight: bold; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 10px;">
+                        TERMO DE AUTORIZAÇÃO E CONSENTIMENTO (LGPD)
+                    </h1>
+                    <p style="text-align: justify; margin-bottom: 20px;">
+                        Pelo presente instrumento, em conformidade com a <strong>Lei Geral de Proteção de Dados Pessoais (Lei n° 13.853/2019)</strong>, 
+                        o(a) atleta <strong>${nome.toUpperCase()}</strong>${repTexto}declara estar ciente e de expresso acordo com as políticas da equipe.
+                    </p>
+                    <h2 style="font-size: 16px; font-weight: bold; margin-bottom: 10px;">Finalidade do Uso de Imagem e Dados:</h2>
+                    <div style="margin-left: 20px; margin-bottom: 30px; font-size: 14px;">
+                        ${listaUsosHtml}
+                    </div>
+                    <p style="text-align: justify; margin-bottom: 40px;">
+                        A Equipe declara que não divulgará dados pessoais sensíveis de forma indevida, não comercializará imagens e adotará medidas de segurança 
+                        para a proteção das informações coletadas, limitando seu uso exclusivamente às atividades inerentes à prática esportiva e sua respectiva divulgação oficial.
+                    </p>
 
-            area.classList.remove('hidden');
-            window.print();
-            setTimeout(() => { area.classList.add('hidden'); }, 1000);
+                    <div style="margin-top: 50px; border: 2px dashed #94a3b8; padding: 25px; border-radius: 10px; background-color: #f8fafc; font-family: 'Courier New', Courier, monospace;">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <span style="background-color: #0ea5e9; color: white; padding: 5px 15px; font-family: Arial, sans-serif; font-weight: bold; font-size: 12px; border-radius: 20px; text-transform: uppercase;">
+                                Validação de Assinatura Digital
+                            </span>
+                        </div>
+                        <p style="margin: 8px 0; font-size: 14px;"><strong>ASSINANTE:</strong> ${assinante}</p>
+                        <p style="margin: 8px 0; font-size: 14px;"><strong>REGISTRO TEMPORAL:</strong> ${dataAtual}</p>
+                        <p style="margin: 8px 0; font-size: 14px;"><strong>CHAVE HASH (AUTENTICIDADE):</strong> <br><span style="word-break: break-all; color: #0369a1;">${hash}</span></p>
+                        <p style="margin-top: 20px; font-size: 11px; color: #64748b; text-align: center;">
+                            * Documento assinado eletronicamente via plataforma BJJ Manager, possuindo validade legal mediante concordância explícita no ato da matrícula.
+                        </p>
+                    </div>
+                </div>
+            `;
+
+            // CONFIGURAÇÕES DO HTML2PDF PARA TAMANHO A4
+            const opt = {
+                margin:       10,
+                filename:     `Termo_LGPD_${nome.replace(/\s+/g, '_')}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            showToast("Gerando Download do PDF...", "success");
+            
+            // GERA E BAIXA O ARQUIVO AUTOMATICAMENTE
+            html2pdf().set(opt).from(element).save();
         }
 
         window.mudarAba = (id) => {

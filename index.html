@@ -418,20 +418,21 @@
         }
 
         // --- NOVO: SISTEMA DE LOGIN COM GOOGLE ---
-        window.loginComGoogle = async function() {
+window.loginComGoogle = async function() {
             const btn = document.getElementById('btn-google');
             btn.disabled = true;
-            btn.innerHTML = `<span class="text-slate-500">Conectando...</span>`;
+            btn.innerHTML = `<span class="text-slate-500 font-bold">Conectando...</span>`;
 
             try {
+                const googleProvider = new GoogleAuthProvider();
                 const result = await signInWithPopup(auth, googleProvider);
                 const user = result.user;
 
-                // Anti-Bug: Verifica se o usuário do Google já está cadastrado no sistema
+                // Verifica se a conta já existe na base de dados
                 const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
                 const colabDoc = await getDoc(doc(db, "colaboradores", user.uid));
 
-                // Se não existir em nenhum lugar, cadastra automaticamente como Mestre de uma Nova Equipe
+                // Se não existir, criamos a "Equipa" nova automaticamente com os dados do Google
                 if (!mestreDoc.exists() && !colabDoc.exists()) {
                     await setDoc(doc(db, "equipes", user.uid), {
                         nome_equipe: user.displayName || "Nova Equipe",
@@ -444,6 +445,10 @@
                 window.location.href = "dashboard.html";
             } catch (error) {
                 console.error(error);
+                
+                // 🚨 ALERTA COM O ERRO REAL DO GOOGLE 🚨
+                alert("O GOOGLE RECUSOU PELO SEGUINTE MOTIVO:\n\n" + error.message);
+                
                 showToast("Erro ao conectar com o Google.", "error");
                 btn.disabled = false;
                 btn.innerHTML = `

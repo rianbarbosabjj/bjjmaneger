@@ -403,14 +403,27 @@
                             uid = equipeImpersonada; 
                             isImpersonating = true;
                             
-                            // Cria a faixa de suporte no topo
-                            const faixaSuporte = document.createElement('div');
-                            faixaSuporte.className = "bg-rose-600 text-white text-center py-1.5 text-[10px] font-black uppercase tracking-widest z-[100] relative w-full flex justify-center items-center gap-4 shadow-md";
-                            faixaSuporte.innerHTML = `
-                                <span>🚨 Modo Suporte Ativado</span>
-                                <button onclick="sairModoSuporte()" class="bg-white text-rose-600 px-2 py-0.5 rounded hover:bg-rose-100 transition-colors pointer-events-auto">Sair do Modo Suporte</button>
-                            `;
-                            document.body.prepend(faixaSuporte);
+                            // INJEÇÃO DO BOTÃO DE SUPORTE DISCRETO NO MENU LATERAL
+                            setTimeout(() => {
+                                const aside = document.querySelector('aside');
+                                if (aside) {
+                                    const btnSairSuporte = document.createElement('button');
+                                    btnSairSuporte.onclick = sairModoSuporte;
+                                    btnSairSuporte.className = "mx-4 mb-2 bg-rose-500/10 border border-rose-500/20 text-rose-500 hover:bg-rose-500 hover:text-white font-black text-[9px] uppercase tracking-widest py-2.5 rounded-xl transition-all flex items-center justify-center gap-2";
+                                    btnSairSuporte.innerHTML = "<span>🚨 MODO SUPORTE (SAIR)</span>";
+                                    
+                                    // Tenta colocar o botão logo acima do botão "Sair" do menu.js
+                                    // Se não encontrar, joga no final da sidebar
+                                    const botoesNoMenu = Array.from(aside.querySelectorAll('button, a'));
+                                    const btnSairOriginal = botoesNoMenu.find(el => el.textContent.toUpperCase().includes('SAIR'));
+                                    
+                                    if (btnSairOriginal && btnSairOriginal.parentNode) {
+                                        btnSairOriginal.parentNode.insertBefore(btnSairSuporte, btnSairOriginal);
+                                    } else {
+                                        aside.appendChild(btnSairSuporte);
+                                    }
+                                }
+                            }, 800);
                         }
                     }
 
@@ -435,6 +448,7 @@
                     
                     if (docSnap.exists()) {
                         const lblCargo = document.getElementById('lbl-cargo');
+                        // Já exibe que é o Super Admin no cargo se estiver a usar impersonate
                         if(lblCargo) lblCargo.innerText = (isSuper && isImpersonating) ? "SUPER ADMIN (SUPORTE)" : "Mestre / Administrador";
                         document.getElementById('btn-config-equipe').classList.remove('hidden');
                         dadosEquipe = docSnap.data();
@@ -820,26 +834,17 @@
 
         window.sairDoSistema = () => signOut(auth).then(() => window.location.href = "index.html");
     </script>
-<script>
+    
+    <script>
+        // Oculta a div gigante do menu.js silenciosamente
         const radarSuporte = setInterval(() => {
-            // Procura entre os elementos diretos da página
-            const elementos = Array.from(document.body.children);
-            
-            elementos.forEach(elemento => {
-                // Se for uma DIV e o texto contiver "MODO SUPORTE"
-                if (elemento.tagName === 'DIV' && (elemento.textContent || '').toUpperCase().includes('MODO SUPORTE')) {
-                    
-                    // 1. Remove qualquer classe que esteja estragando o layout
-                    elemento.className = "font-black text-sm tracking-widest uppercase gap-4";
-                    
-                    // 2. Injeta um estilo CSS blindado (Força a ser uma barra flutuante no rodapé)
-                    elemento.style.cssText = "position: fixed !important; bottom: 0 !important; left: 0 !important; width: 100% !important; height: auto !important; min-height: 50px !important; background-color: #e11d48 !important; color: white !important; z-index: 999999 !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 10px !important; box-shadow: 0 -10px 25px rgba(0,0,0,0.3) !important;";
-                    
-                    // 3. Desliga o radar pois o trabalho já foi feito
+            Array.from(document.body.children).forEach(el => {
+                if (el.tagName === 'DIV' && (el.textContent || '').toUpperCase().includes('MODO SUPORTE')) {
+                    el.style.display = 'none'; // Esconde o monstro vermelho
                     clearInterval(radarSuporte);
                 }
             });
-        }, 500); // Fica a procurar a cada meio segundo
+        }, 200);
     </script>
 </body>
 </html>

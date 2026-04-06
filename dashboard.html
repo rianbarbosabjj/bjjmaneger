@@ -820,5 +820,18 @@
 
         window.sairDoSistema = () => signOut(auth).then(() => window.location.href = "index.html");
     </script>
+<script>
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                // Procura a div vermelha do Modo Suporte e transforma numa barra no rodapé
+                Array.from(document.body.children).forEach(child => {
+                    if (child.tagName === 'DIV' && child.innerHTML.includes('MODO SUPORTE')) {
+                        child.style = ''; // Remove as larguras e alturas que estão estragando o ecrã
+                        child.className = 'fixed bottom-0 left-0 w-full bg-rose-600 text-white z-[99999] flex items-center justify-center p-3 shadow-[0_-10px_20px_rgba(0,0,0,0.2)] font-bold text-sm gap-4 tracking-widest uppercase';
+                    }
+                });
+            }, 800); // Aguarda o menu.js carregar a barra
+        });
+    </script>
 </body>
 </html>

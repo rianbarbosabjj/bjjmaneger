@@ -80,17 +80,17 @@
                             <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">Alunos Ativos</h3>
                             <p class="text-2xl md:text-3xl font-black text-slate-800" id="card-ativos">⏳</p>
                         </div>
-                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-slate-800 flex flex-col justify-center hover:-translate-y-1 transition-transform">
-                            <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">Inativos (Resgatar)</h3>
-                            <p class="text-2xl md:text-3xl font-black text-slate-600" id="card-inativos">⏳</p>
-                        </div>
                         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-emerald-500 flex flex-col justify-center hover:-translate-y-1 transition-transform">
                             <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1" id="lbl-receita">Caixa do Mês</h3>
                             <p class="text-xl md:text-2xl font-black text-emerald-600 truncate" id="card-receitas">⏳</p>
                         </div>
-                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-rose-500 flex flex-col justify-center hover:-translate-y-1 transition-transform">
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-amber-500 flex flex-col justify-center hover:-translate-y-1 transition-transform">
                             <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">A Receber</h3>
-                            <p class="text-xl md:text-2xl font-black text-rose-500 truncate" id="card-inadimplencia">⏳</p>
+                            <p class="text-xl md:text-2xl font-black text-amber-500 truncate" id="card-inadimplencia">⏳</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-rose-500 flex flex-col justify-center hover:-translate-y-1 transition-transform">
+                            <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">Despesas (Mês)</h3>
+                            <p class="text-xl md:text-2xl font-black text-rose-500 truncate" id="card-despesas">⏳</p>
                         </div>
                     </div>
 
@@ -312,7 +312,6 @@
 
         window.gerarLinksConvite = function() {
             if(!uid) return;
-            // Usa a raiz do site, não importa se tem .html no navegador ou não
             let baseUrl = window.location.origin; 
             document.getElementById('link-convite-prof').value = `${baseUrl}/cadastro_externo.html?tipo=prof&equipe=${uid}`;
             document.getElementById('link-convite-aluno').value = `${baseUrl}/cadastro_externo.html?tipo=aluno&equipe=${uid}`;
@@ -572,10 +571,9 @@
                 'Vermelha': 'background-color: #dc2626'
             };
             
-            // Garante que o nome da faixa seja normalizado antes de buscar no objeto
             const faixaNormalizada = faixa ? faixa.charAt(0).toUpperCase() + faixa.slice(1).toLowerCase().trim() : 'Branca';
             
-            return faixasInfo[faixaNormalizada] || 'background-color: #cbd5e1'; // Padrão se não encontrar
+            return faixasInfo[faixaNormalizada] || 'background-color: #cbd5e1'; 
         }
 
         // --- CARREGAMENTO PRINCIPAL DO DASHBOARD ---
@@ -606,6 +604,7 @@
                 const mesAnoFiltro = `${anoAtual}-${String(mesAtual).padStart(2, '0')}`;
 
                 let caixaDoMes = 0;
+                let despesasDoMes = 0;
                 let faturasDoMes = {}; 
 
                 try {
@@ -618,14 +617,16 @@
                             if (mov.status === 'PAGO') caixaDoMes += parseFloat(mov.valor || 0);
                         } else if (mov.tipo === 'RECEITA') {
                             caixaDoMes += parseFloat(mov.valor || 0);
+                        } else if (mov.tipo === 'DESPESA') {
+                            despesasDoMes += parseFloat(mov.valor || 0);
                         }
                     });
-                } catch(err) {}
+                } catch(err) { console.error("Erro ao buscar financeiro do dashboard", err); }
 
                 const alunosQuery = query(collection(db, "alunos"), where("equipe_id", "==", uid));
                 const alunosSnap = await getDocs(alunosQuery);
                 
-                let ativos = 0, inativos = 0, valorAtrasado = 0;
+                let ativos = 0, valorAtrasado = 0;
                 let faixasCount = {}, aniversariantesHTML = '', pendenciasHTML = '';
 
                 alunosSnap.forEach((doc) => {
@@ -685,7 +686,7 @@
                         if (isAlerta) {
                             const bolsa = aluno.bolsa_perc || 0;
                             let valorDaDivida = (tema === 'rose' ? valAtraso : valPrazo) * (1 - bolsa/100);
-                            if (tema === 'rose') valorAtrasado += valorDaDivida;
+                            valorAtrasado += valorDaDivida; 
 
                             const cssBg = tema === 'rose' ? 'bg-rose-50' : 'bg-amber-50';
                             const cssBorder = tema === 'rose' ? 'border-rose-100' : 'border-amber-100';
@@ -708,14 +709,14 @@
                                 </div>
                             `;
                         }
-
-                    } else if (statusAluno === 'inativo') { inativos++; }
+                    }
                 });
 
+                // ATUALIZANDO OS CARDS DO TOPO
                 document.getElementById('card-ativos').innerText = ativos;
-                document.getElementById('card-inativos').innerText = inativos;
                 document.getElementById('card-receitas').innerText = `R$ ${caixaDoMes.toFixed(2).replace('.', ',')}`;
                 document.getElementById('card-inadimplencia').innerText = `R$ ${valorAtrasado.toFixed(2).replace('.', ',')}`;
+                document.getElementById('card-despesas').innerText = `R$ ${despesasDoMes.toFixed(2).replace('.', ',')}`;
 
                 const gridFaixas = document.getElementById('grid-faixas');
                 gridFaixas.innerHTML = ''; 
@@ -723,7 +724,6 @@
                     gridFaixas.innerHTML = '<span class="text-slate-400 text-sm font-medium">Nenhum aluno ativo mapeado.</span>';
                 } else {
                     for (const [faixa, qtd] of Object.entries(faixasCount)) {
-                        // USANDO A NOVA FUNÇÃO DE ESTILO
                         const estiloCss = obterEstiloFaixa(faixa);
                         gridFaixas.innerHTML += `
                             <div class="bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-sm">
@@ -756,7 +756,6 @@
                         listaAlunosHTML = `<p class="text-[10px] text-slate-400 text-center italic py-2">Turma Vazia</p>`;
                     } else {
                         for (const al of alunosDaTurma) {
-                            // USANDO A NOVA FUNÇÃO DE ESTILO
                             const estiloCss = obterEstiloFaixa(al.faixa);
                             listaAlunosHTML += `
                                 <div class="flex justify-between items-center bg-white p-2.5 rounded-xl border border-slate-100 mb-1.5 shadow-sm">

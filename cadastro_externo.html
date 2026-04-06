@@ -17,7 +17,7 @@
     <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
     <div class="w-full bg-slate-900 p-3 text-center relative z-50 shrink-0 shadow-md flex items-center justify-center h-14">
-        <a href="https://www.bjjsystems.com.br" target="_blank" class="absolute left-4 top-1.5 transition-opacity hover:opacity-80" title="Conheça a BJJ Systems">
+        <a href="https://maneger.bjjdigital.com.br" target="_blank" class="absolute left-4 top-1.5 transition-opacity hover:opacity-80" title="Conheça a BJJ Systems">
             <img src="logo_bjj_maneger.png" alt="BJJ Systems" class="h-10 w-auto object-contain">
         </a>
         <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest hidden sm:inline-block">Autoatendimento</span>
@@ -113,7 +113,7 @@
                 <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
                     <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
                         <span class="text-xl">📍</span>
-                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Contato e Endereço</h3>
+                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Contato e Acesso</h3>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -122,9 +122,21 @@
                             <input type="text" id="cad-tel" maxlength="15" oninput="mascaraTelefone(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="(00) 00000-0000">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">E-mail</label>
-                            <input type="email" id="cad-email" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="email@exemplo.com">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">E-mail de Acesso *</label>
+                            <input type="email" id="cad-email" required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="email@exemplo.com">
                         </div>
+
+                        <div class="md:col-span-2 bg-cyan-50/50 p-4 sm:p-5 rounded-2xl border border-cyan-100 shadow-sm mb-2 mt-2">
+                            <label class="block text-[10px] font-black text-cyan-600 uppercase mb-1.5">Criar Senha (Portal do Aluno) *</label>
+                            <div class="relative">
+                                <input type="password" id="cad-senha-portal" required class="w-full p-3.5 bg-white border border-cyan-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-cyan-800 pr-12" placeholder="Defina uma senha (mín. 6 caracteres)">
+                                <button type="button" onclick="toggleSenha('cad-senha-portal', this)" class="absolute inset-y-0 right-4 flex items-center text-cyan-600 hover:text-cyan-800 transition-colors outline-none focus:outline-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>
+                                </button>
+                            </div>
+                            <p class="text-[9px] sm:text-[10px] text-slate-500 mt-2 font-medium">* Você usará o seu e-mail e esta senha para acessar a sua carteirinha digital no celular.</p>
+                        </div>
+
                         <div class="grid grid-cols-3 gap-3 md:col-span-2">
                             <div class="col-span-1">
                                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">CEP</label>
@@ -242,9 +254,12 @@
                                 <input type="email" id="prof-email" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700" placeholder="email@exemplo.com">
                             </div>
 
-                            <div>
+                            <div class="relative">
                                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Criar Senha *</label>
-                                <input type="password" id="prof-senha" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700" placeholder="Mínimo 8 caracteres">
+                                <input type="password" id="prof-senha" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700 pr-12" placeholder="Mínimo 8 caracteres">
+                                <button type="button" onclick="toggleSenha('prof-senha', this)" class="absolute bottom-3.5 right-4 text-slate-400 hover:text-indigo-500 transition-colors outline-none focus:outline-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -311,7 +326,6 @@
         let quantidadeAlunosAtual = 0;
         let ficheiroFotoSelecionado = null;
 
-        // --- SISTEMA DE TOASTS ---
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -327,7 +341,17 @@
             }, 4500);
         }
 
-        // --- MÁSCARAS ---
+        window.toggleSenha = function(inputId, btnElement) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                btnElement.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>`;
+            } else {
+                input.type = "password";
+                btnElement.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>`;
+            }
+        }
+
         window.mascaraCPF = (i) => {
             let v = i.value.replace(/\D/g, "");
             v = v.replace(/(\d{3})(\d)/, "$1.$2");
@@ -357,7 +381,6 @@
             }
         };
 
-        // INICIA A PÁGINA
         window.onload = async () => {
             if(!equipeId) {
                 document.getElementById('cabecalho-form').innerHTML = `<h2 class="text-rose-500 font-black text-2xl">Link Inválido</h2><p class="text-slate-500 mt-2">Peça um novo link de convite ao administrador da equipe.</p>`;
@@ -393,7 +416,6 @@
                 } else {
                     document.getElementById('form-aluno').classList.remove('hidden');
                     
-                    // Conta quantos alunos já tem para gerar a matrícula sequencial
                     const qAlunos = query(collection(db, "alunos"), where("equipe_id", "==", equipeId));
                     const snapAlunos = await getDocs(qAlunos);
                     quantidadeAlunosAtual = snapAlunos.size;
@@ -405,7 +427,6 @@
             }
         };
 
-        // --- PREVIEW DA FOTO ---
         window.mostrarPreviewFoto = function(event) {
             const file = event.target.files[0];
             if (file) {
@@ -421,25 +442,29 @@
             }
         }
 
-        // --- SALVAR MATRÍCULA DE ALUNO ---
         window.salvarMatricula = async function() {
             const nome = document.getElementById('cad-nome').value.toUpperCase().trim();
             const cpf = document.getElementById('cad-cpf').value.trim();
             const nasc = document.getElementById('cad-nasc').value;
             const tel = document.getElementById('cad-tel').value.trim();
+            const email = document.getElementById('cad-email').value.trim().toLowerCase();
+            const senhaPortal = document.getElementById('cad-senha-portal').value;
             const concordo = document.getElementById('cad-lgpd-termos').checked;
 
-            if (!nome || !cpf || !nasc || !tel) {
-                return showToast("Preencha Nome, CPF, Nascimento e Telefone!", "error");
+            if (!nome || !cpf || !nasc || !tel || !email || !senhaPortal) {
+                return showToast("Preencha todos os campos obrigatórios (*)", "error");
+            }
+            
+            if (senhaPortal.length < 6) {
+                return showToast("A senha do portal deve ter no mínimo 6 caracteres.", "error");
             }
 
             if (!concordo) {
                 return showToast("É obrigatório concordar com os termos no final.", "error");
             }
 
-            // GERA UMA MATRÍCULA SEGURA SEM LER O BANCO DE DADOS (Evita erro de permissão externa)
             const anoAtual = new Date().getFullYear();
-            const numeroAleatorio = Math.floor(Math.random() * 9000) + 1000; // Gera 4 dígitos ex: 4521
+            const numeroAleatorio = Math.floor(Math.random() * 9000) + 1000;
             const novaMatriculaStr = anoAtual.toString() + numeroAleatorio.toString();
 
             const btn = document.getElementById('btn-salvar');
@@ -456,7 +481,8 @@
                 grau: document.getElementById('cad-grau').value,
                 peso: document.getElementById('cad-peso').value.trim(),
                 telefone: tel,
-                email: document.getElementById('cad-email').value.trim(),
+                email: email,
+                senha_portal: senhaPortal,
                 endereco: document.getElementById('cad-end').value.trim(),
                 numero: document.getElementById('cad-num').value.trim(),
                 bairro: document.getElementById('cad-bairro').value.trim(),
@@ -502,7 +528,6 @@
             }
         }
 
-        // --- CRIAR ACESSO DO CO-ADMINISTRADOR (COM SENHA E DADOS COMPLETOS) ---
         window.salvarProfessor = async function() {
             const nome = document.getElementById('prof-nome').value.toUpperCase().trim();
             const cpf = document.getElementById('prof-cpf').value.trim();
@@ -521,11 +546,9 @@
             btn.disabled = true;
 
             try {
-                // 1. Cria a conta oficial no Firebase Authentication
                 const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
                 const uidProfessor = userCredential.user.uid;
 
-                // 2. Salva o documento no Firestore associando ele à Equipe
                 await setDoc(doc(db, "colaboradores", uidProfessor), {
                     nome: nome,
                     cpf: cpf,
@@ -536,7 +559,6 @@
                     data_cadastro: new Date().toISOString()
                 });
                 
-                // Faz logout por segurança (para ele entrar pela tela inicial depois)
                 await signOut(auth);
 
                 document.getElementById('form-prof').innerHTML = `

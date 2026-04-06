@@ -60,7 +60,7 @@
                         <input type="text" id="config-prazo" oninput="mascaraMoeda(this)" class="w-14 sm:w-16 bg-slate-900 border border-slate-600 rounded-lg text-white text-center text-xs sm:text-sm font-bold p-1 outline-none focus:border-cyan-500" value="70,00">
                         <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase px-2 sm:ml-2">Atraso (R$)</span>
                         <input type="text" id="config-atraso" oninput="mascaraMoeda(this)" class="w-14 sm:w-16 bg-slate-900 border border-slate-600 rounded-lg text-rose-400 text-center text-xs sm:text-sm font-bold p-1 outline-none focus:border-rose-500" value="100,00">
-                        <button onclick="salvarConfiguracaoGeral()" class="ml-1 sm:ml-2 bg-slate-700 hover:bg-slate-600 text-white p-1 sm:p-1.5 rounded-lg text-xs" title="Salvar Valores">💾</button>
+                        <button id="btn-salvar-valores" onclick="salvarConfiguracaoGeral()" class="ml-1 sm:ml-2 bg-slate-700 hover:bg-slate-600 text-white p-1 sm:p-1.5 rounded-lg text-xs transition-colors" title="Salvar Valores">💾</button>
                     </div>
 
                     <button onclick="abrirModalRelatorio()" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-colors shrink-0 flex items-center justify-center shadow-sm">
@@ -85,7 +85,7 @@
                             <div class="flex flex-col sm:flex-row gap-3">
                                 <div class="relative flex-1">
                                     <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">🔍</div>
-                                    <input type="text" id="input-busca-mens" onkeyup="filtrarMensalidades()" class="bg-white border border-slate-200 text-slate-900 text-sm rounded-xl w-full pl-9 p-3 outline-none focus:border-cyan-500" placeholder="Buscar fatura gerada...">
+                                    <input type="text" id="input-busca-mens" onkeyup="filtrarMensalidades()" class="bg-white border border-slate-200 text-slate-900 text-sm rounded-xl w-full pl-9 p-3 outline-none focus:border-cyan-500 transition-all" placeholder="Buscar atleta ou fatura...">
                                 </div>
                                 <button id="btn-gerar-faturas" onclick="gerarFaturas()" class="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 p-3 sm:px-6 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest flex items-center justify-center shrink-0">
                                     <span class="mr-2 text-base">⚡</span> Gerar Faturas do Mês
@@ -124,9 +124,9 @@
 
                                 <div class="grid grid-cols-2 gap-2 mb-6 border-b border-slate-100 pb-4">
                                     <button onclick="gerarReciboPDF()" id="btn-recibo-lateral" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center transition-colors"><span class="mr-1">📄</span> Baixar recibo</button>
-                                    <button onclick="enviarWhatsApp()" class="bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] font-bold py-2.5 rounded-xl text-[11px] flex items-center justify-center transition-colors">
-                                        <svg class="w-4 h-4 mr-1.5 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
-                                        Enviar Cobrança
+                                    
+                                    <button id="btn-whats-lateral" onclick="enviarWhatsApp()" class="bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold py-2.5 rounded-xl text-[11px] flex items-center justify-center transition-colors">
+                                        <span class="mr-1">💬</span> Cobrar
                                     </button>
                                 </div>
 
@@ -136,11 +136,11 @@
                                     <select id="acao-forma-pag" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold text-slate-700 outline-none cursor-pointer">
                                         <option value="PIX">PIX</option><option value="Dinheiro">Dinheiro</option><option value="Cartão">Cartão</option>
                                     </select>
-                                    <button onclick="registrarPagamento()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest mt-2">✅ Confirmar Pagamento</button>
+                                    <button id="btn-reg-pagamento" onclick="registrarPagamento()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest mt-2">✅ Confirmar Pagamento</button>
                                     
                                     <div class="flex gap-2 mt-2">
-                                        <button onclick="cancelarPagamento()" class="flex-1 bg-amber-100 hover:bg-amber-200 text-amber-700 font-bold py-2.5 rounded-lg text-[10px] uppercase tracking-widest transition-colors">Desfazer</button>
-                                        <button onclick="excluirPagamento()" class="flex-1 bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold py-2.5 rounded-lg text-[10px] uppercase tracking-widest transition-colors">Excluir</button>
+                                        <button id="btn-desfazer-pag" onclick="cancelarPagamento()" class="flex-1 bg-amber-100 hover:bg-amber-200 text-amber-700 font-bold py-2.5 rounded-lg text-[10px] uppercase tracking-widest transition-colors">Desfazer</button>
+                                        <button id="btn-excluir-pag" onclick="excluirPagamento()" class="flex-1 bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold py-2.5 rounded-lg text-[10px] uppercase tracking-widest transition-colors">Excluir</button>
                                     </div>
                                 </div>
 
@@ -156,7 +156,7 @@
                                         <span class="text-xs font-bold text-slate-600">Vencimento (Dia)</span>
                                         <select id="acao-venc" class="p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 w-24 outline-none"></select>
                                     </div>
-                                    <button onclick="salvarConfigAluno()" class="w-full bg-purple-100 hover:bg-purple-200 text-purple-700 font-bold py-2.5 rounded-lg text-[10px] uppercase tracking-widest transition-colors mt-2">💾 Salvar Regras</button>
+                                    <button id="btn-salvar-regras" onclick="salvarConfigAluno()" class="w-full bg-purple-100 hover:bg-purple-200 text-purple-700 font-bold py-2.5 rounded-lg text-[10px] uppercase tracking-widest transition-colors mt-2">💾 Salvar Regras</button>
                                 </div>
                             </div>
                         </div>
@@ -276,7 +276,7 @@
             </div>
             <div class="p-5 bg-slate-50 border-t border-slate-100 flex gap-3">
                 <button onclick="fecharModalDespesa()" class="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-200 rounded-xl">Cancelar</button>
-                <button onclick="salvarDespesa()" class="flex-1 py-3 text-sm font-black text-white bg-rose-500 hover:bg-rose-600 rounded-xl shadow-lg uppercase">Salvar Saída</button>
+                <button id="btn-salvar-despesa" onclick="salvarDespesa()" class="flex-1 py-3 text-sm font-black text-white bg-rose-500 hover:bg-rose-600 rounded-xl shadow-lg uppercase transition-all">Salvar Saída</button>
             </div>
         </div>
     </div>
@@ -320,7 +320,7 @@
             </div>
             <div class="p-5 bg-slate-50 border-t border-slate-100 flex gap-3">
                 <button onclick="fecharModalReceita()" class="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-200 rounded-xl">Cancelar</button>
-                <button onclick="salvarReceita()" class="flex-1 py-3 text-sm font-black text-white bg-emerald-500 hover:bg-emerald-600 rounded-xl shadow-lg uppercase">Salvar Entrada</button>
+                <button id="btn-salvar-receita" onclick="salvarReceita()" class="flex-1 py-3 text-sm font-black text-white bg-emerald-500 hover:bg-emerald-600 rounded-xl shadow-lg uppercase transition-all">Salvar Entrada</button>
             </div>
         </div>
     </div>
@@ -524,7 +524,6 @@
         // === AUTENTICAÇÃO PADRÃO COM MODO SUPORTE ===
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // 1. Tenta verificar se é Super Admin (com escudo)
                 let isSuper = false;
                 try {
                     const superSnap = await getDoc(doc(db, "super_admins", user.uid));
@@ -537,13 +536,12 @@
                     if (isSuper) {
                         const equipeImpersonada = sessionStorage.getItem('admin_impersonate');
                         if (equipeImpersonada) {
-                            uid = equipeImpersonada; // Assume a identidade da academia
+                            uid = equipeImpersonada; 
                         } else {
                             window.location.href = "super_admin.html";
                             return;
                         }
                     } else {
-                        // 2. Usuário Comum (Mestre ou Colaborador)
                         uid = user.uid;
                         const docMestre = await getDoc(doc(db, "equipes", uid));
                         if (!docMestre.exists()) {
@@ -623,12 +621,20 @@
         window.salvarConfiguracaoGeral = async function() {
             const p = strToFloat(document.getElementById('config-prazo').value);
             const a = strToFloat(document.getElementById('config-atraso').value);
+            const btn = document.getElementById('btn-salvar-valores');
+            const origHTML = btn.innerHTML;
+            btn.innerHTML = "⏳"; btn.disabled = true;
+
             try {
                 await updateDoc(doc(db, "equipes", uid), { valor_prazo: p, valor_atraso: a });
                 equipeBaseConfig.prazo = p; equipeBaseConfig.atraso = a;
-                showToast("Configuração de valores atualizada com sucesso!", "success");
+                showToast("Configuração de valores atualizada!", "success");
                 renderizarTabelas(); 
-            } catch (e) { showToast("Erro ao salvar config.", "error"); }
+            } catch (e) { 
+                showToast("Erro ao salvar config.", "error"); 
+            } finally {
+                btn.innerHTML = origHTML; btn.disabled = false;
+            }
         }
 
         window.gerarFaturas = async function() {
@@ -707,6 +713,10 @@
             document.getElementById('acao-alerta-divida').innerText = "";
         }
 
+        window.filtrarMensalidades = function() {
+            renderizarTabelas();
+        }
+
         function renderizarTabelas() {
             const mes = document.getElementById('filtro-mes').value;
             const ano = document.getElementById('filtro-ano').value;
@@ -720,8 +730,19 @@
 
             const faturasMes = financeiroMesCache.filter(f => f.tipo === 'MENSALIDADE');
 
+            // --- EMPTY STATE MELHORADO ---
             if (faturasMes.length === 0) {
-                contMens.innerHTML = `<tr><td colspan="6" class="text-center py-12 text-slate-500 font-medium">As faturas deste mês ainda não foram geradas no sistema.<br>Clique no botão <b>⚡ Gerar Faturas do Mês</b> acima para começar.</td></tr>`;
+                contMens.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="p-0">
+                            <div class="flex flex-col items-center justify-center py-16 text-center w-full">
+                                <span class="text-5xl mb-4 opacity-50">📋</span>
+                                <h3 class="text-lg font-black text-slate-700 mb-2">Nenhuma fatura gerada para este mês</h3>
+                                <p class="text-xs text-slate-500 max-w-md">O sistema ainda não criou as cobranças de ${mes}/${ano}. Clique no botão <b class="text-indigo-500">"Gerar Faturas do Mês"</b> lá em cima para listar todos os seus alunos ativos automaticamente.</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
             } else {
                 faturasMes.sort((a,b) => {
                     const alA = alunosCache.find(x => x.id === a.aluno_id)?.nome || "";
@@ -758,10 +779,24 @@
                     else if (status === 'PENDENTE' || status === 'ATRASADO') rPendentes += valorFinal;
 
                     const dataPagTxt = (status === 'PAGO' && f.data) ? new Date(f.data).toLocaleDateString('pt-BR') : '--';
-                    const corStatus = status === 'PAGO' ? 'bg-emerald-100 text-emerald-700' : (status === 'ATRASADO' ? 'bg-rose-100 text-rose-700' : (status === 'ISENTO' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'));
+                    
+                    // Cores mais vivas para facilitar a leitura
+                    let corBg = "hover:bg-cyan-50";
+                    let corStatus = "";
+                    if (status === 'PAGO') {
+                        corBg = "bg-emerald-50/30 hover:bg-emerald-50";
+                        corStatus = 'bg-emerald-100 text-emerald-700 border border-emerald-200';
+                    } else if (status === 'ATRASADO') {
+                        corBg = "bg-rose-50/30 hover:bg-rose-50";
+                        corStatus = 'bg-rose-100 text-rose-700 border border-rose-200';
+                    } else if (status === 'ISENTO') {
+                        corStatus = 'bg-blue-100 text-blue-700 border border-blue-200';
+                    } else {
+                        corStatus = 'bg-amber-100 text-amber-700 border border-amber-200';
+                    }
 
                     const tr = document.createElement('tr');
-                    tr.className = "hover:bg-cyan-50 cursor-pointer transition-colors border-b border-slate-100";
+                    tr.className = `cursor-pointer transition-colors border-b border-slate-100 ${corBg}`;
                     
                     const calcData = { fatura_id: f.id, status: status, valor: valorFinal, reg: f };
                     tr.onclick = () => carregarAcoesAluno(aluno.id, calcData);
@@ -773,7 +808,7 @@
                         </td>
                         <td class="px-4 py-3 text-center text-[10px] font-bold text-slate-500">Dia ${aluno.dia_vencimento || 10}</td>
                         <td class="px-4 py-3 text-center text-[10px] font-bold text-slate-500">${aluno.bolsa_perc || 0}%</td>
-                        <td class="px-4 py-3 text-center"><span class="px-2 py-1 rounded text-[9px] font-black ${corStatus}">${status}</span></td>
+                        <td class="px-4 py-3 text-center"><span class="px-2 py-1 rounded-md text-[9px] font-black shadow-sm ${corStatus}">${status}</span></td>
                         <td class="px-4 py-3 text-center text-xs font-black text-slate-600">R$ ${floatToStr(valorFinal)}</td>
                         <td class="px-4 py-3 text-center text-[10px] font-bold text-slate-400">${dataPagTxt}</td>
                     `;
@@ -786,7 +821,7 @@
 
             const fluxoFiltrado = financeiroMesCache.filter(f => f.tipo !== 'MENSALIDADE');
             if(fluxoFiltrado.length === 0) {
-                contFluxo.innerHTML = '<tr><td colspan="5" class="text-center py-10 text-slate-400">Nenhum registo neste mês.</td></tr>';
+                contFluxo.innerHTML = '<tr><td colspan="5" class="text-center py-10 text-slate-400">Nenhum registo extra neste mês.</td></tr>';
             } else {
                 fluxoFiltrado.sort((a,b) => new Date(b.data) - new Date(a.data)).forEach(f => {
                     const isEntrada = f.tipo === 'RECEITA';
@@ -818,7 +853,18 @@
             painel.classList.remove('opacity-50', 'pointer-events-none');
 
             document.getElementById('acao-aluno-nome').innerText = aluno.nome;
-            document.getElementById('acao-alerta-divida').innerText = "";
+            
+            // Botão dinâmico de Cobrança / Recibo
+            const btnWhats = document.getElementById('btn-whats-lateral');
+            if(calcData.status === 'PAGO' || calcData.status === 'ISENTO') {
+                document.getElementById('acao-alerta-divida').innerText = "";
+                btnWhats.innerHTML = `<span class="mr-1">💬</span> Enviar Recibo`;
+                btnWhats.className = "bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] font-bold py-2.5 rounded-xl text-[11px] flex items-center justify-center transition-colors";
+            } else {
+                document.getElementById('acao-alerta-divida').innerText = calcData.status === 'ATRASADO' ? "⚠️ MENSALIDADE EM ATRASO" : "PENDENTE DE PAGAMENTO";
+                btnWhats.innerHTML = `<span class="mr-1">💬</span> Cobrar no WhatsApp`;
+                btnWhats.className = "bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold py-2.5 rounded-xl text-[11px] flex items-center justify-center transition-colors shadow-sm";
+            }
 
             document.getElementById('acao-bolsa').value = aluno.bolsa_perc || "0";
             document.getElementById('acao-venc').value = aluno.dia_vencimento || "10";
@@ -833,11 +879,20 @@
             if(!alunoSelecionadoMens) return;
             const nb = parseInt(document.getElementById('acao-bolsa').value);
             const nv = parseInt(document.getElementById('acao-venc').value);
+            
+            const btn = document.getElementById('btn-salvar-regras');
+            const origTxt = btn.innerText;
+            btn.innerText = "Salvando..."; btn.disabled = true;
+            
             try {
                 await updateDoc(doc(db, "alunos", alunoSelecionadoMens.id), { bolsa_perc: nb, dia_vencimento: nv });
-                showToast("Configurações do atleta atualizadas!", "success");
+                showToast("Regras do atleta atualizadas!", "success");
                 carregarDados();
-            } catch(e) { showToast("Erro ao salvar config.", "error"); }
+            } catch(e) { 
+                showToast("Erro ao salvar regras.", "error"); 
+            } finally {
+                btn.innerText = origTxt; btn.disabled = false;
+            }
         }
 
         window.registrarPagamento = async function() {
@@ -850,6 +905,10 @@
             const forma = document.getElementById('acao-forma-pag').value;
             const valorCalculado = alunoSelecionadoMens._calc.valor;
 
+            const btn = document.getElementById('btn-reg-pagamento');
+            const origTxt = btn.innerHTML;
+            btn.innerHTML = "⏳ Processando..."; btn.disabled = true;
+
             try {
                 await updateDoc(doc(db, "financeiro", alunoSelecionadoMens._calc.fatura_id), {
                     status: 'PAGO',
@@ -859,13 +918,21 @@
                 });
                 showToast("Pagamento Registado!", "success");
                 carregarDados();
-            } catch (e) { showToast("Erro ao baixar mensalidade.", "error"); }
+            } catch (e) { 
+                showToast("Erro ao dar baixa na mensalidade.", "error"); 
+            } finally {
+                btn.innerHTML = origTxt; btn.disabled = false;
+            }
         }
 
         window.cancelarPagamento = async function() {
             if(!alunoSelecionadoMens) return;
             if(alunoSelecionadoMens._calc.status !== 'PAGO') return showToast("O aluno não possui pagamento registado nesta fatura.", "error");
             if(!confirm("Deseja ESTORNAR este pagamento?\nA fatura voltará a ficar Pendente.")) return;
+
+            const btn = document.getElementById('btn-desfazer-pag');
+            const origTxt = btn.innerText;
+            btn.innerText = "..."; btn.disabled = true;
 
             try {
                 await updateDoc(doc(db, "financeiro", alunoSelecionadoMens._calc.fatura_id), {
@@ -875,18 +942,30 @@
                 });
                 showToast("Pagamento cancelado com sucesso.", "success");
                 carregarDados();
-            } catch (e) { showToast("Erro ao cancelar.", "error"); }
+            } catch (e) { 
+                showToast("Erro ao cancelar.", "error"); 
+            } finally {
+                btn.innerText = origTxt; btn.disabled = false;
+            }
         }
 
         window.excluirPagamento = async function() {
             if(!alunoSelecionadoMens) return;
             if(!confirm("Deseja EXCLUIR completamente esta fatura do sistema?")) return;
 
+            const btn = document.getElementById('btn-excluir-pag');
+            const origTxt = btn.innerText;
+            btn.innerText = "..."; btn.disabled = true;
+
             try {
                 await deleteDoc(doc(db, "financeiro", alunoSelecionadoMens._calc.fatura_id));
                 showToast("Fatura excluída com sucesso.", "success");
                 carregarDados();
-            } catch (e) { showToast("Erro ao excluir.", "error"); }
+            } catch (e) { 
+                showToast("Erro ao excluir.", "error"); 
+            } finally {
+                btn.innerText = origTxt; btn.disabled = false;
+            }
         } 
 
         window.enviarWhatsApp = function() {
@@ -928,45 +1007,31 @@
             if (btnPainel) {
                 btnOriginalTxt = btnPainel.innerHTML;
                 btnPainel.innerHTML = "<span class='mr-1'>⏳</span> Processando...";
+                btnPainel.disabled = true;
             }
 
-            // FUNÇÃO PARA CONVERTER IMAGEM EM BASE64 COM TRATAMENTO DE CORS
             const getBase64Image = (url) => {
                 return new Promise((resolve) => {
                     const img = new Image();
-                    img.crossOrigin = "Anonymous"; // Essencial para burlar bloqueios de PDF
-                    
-                    // Adiciona timestamp para forçar o navegador a ignorar o cache e baixar com CORS limpo
+                    img.crossOrigin = "Anonymous"; 
                     const cacheBuster = url.includes('?') ? '&' : '?';
                     img.src = url + cacheBuster + new Date().getTime();
-
                     img.onload = () => {
                         try {
                             const canvas = document.createElement('canvas');
-                            canvas.width = img.width;
-                            canvas.height = img.height;
+                            canvas.width = img.width; canvas.height = img.height;
                             const ctx = canvas.getContext('2d');
                             ctx.drawImage(img, 0, 0);
                             resolve(canvas.toDataURL('image/png'));
-                        } catch (err) {
-                            console.error("Canvas bloqueado por CORS:", err);
-                            resolve(null);
-                        }
+                        } catch (err) { resolve(null); }
                     };
-
-                    img.onerror = () => {
-                        console.warn("Falha ao carregar logo com CORS. Exibindo inicial.");
-                        resolve(null);
-                    };
+                    img.onerror = () => { resolve(null); };
                 });
             };
 
             let logoFinal = "";
-            if (equipeLogoGlobal) {
-                logoFinal = await getBase64Image(equipeLogoGlobal);
-            } 
+            if (equipeLogoGlobal) logoFinal = await getBase64Image(equipeLogoGlobal);
             
-            // LÓGICA ESPELHADA DO PERFIL: Exibe logo ou a primeira letra do nome da equipe
             let logoHtml = "";
             if (logoFinal) {
                 logoHtml = `<img src="${logoFinal}" style="height: 70px; max-width: 250px; object-fit: contain; margin: 0 auto 10px auto; display: block;">`;
@@ -1000,19 +1065,15 @@
             tempDiv.innerHTML = htmlFinal;
 
             const opt = {
-                margin: 5, 
-                filename: `Recibo_${alunoData.nome.replace(/\s+/g, '_')}_${mesRef.replace('/','-')}.pdf`,
-                image: { type: 'jpeg', quality: 1.0 }, 
-                html2canvas: { scale: 2, useCORS: true, logging: false }, 
-                jsPDF: { unit: 'mm', format: 'a5', orientation: 'landscape' } 
+                margin: 5, filename: `Recibo_${alunoData.nome.replace(/\s+/g, '_')}_${mesRef.replace('/','-')}.pdf`,
+                image: { type: 'jpeg', quality: 1.0 }, html2canvas: { scale: 2, useCORS: true, logging: false }, jsPDF: { unit: 'mm', format: 'a5', orientation: 'landscape' } 
             };
 
             html2pdf().set(opt).from(tempDiv).save().then(() => {
-                if (btnPainel) btnPainel.innerHTML = btnOriginalTxt;
+                if (btnPainel) { btnPainel.innerHTML = btnOriginalTxt; btnPainel.disabled = false; }
             }).catch(err => {
-                console.error(err);
                 showToast("Erro ao gerar PDF.", "error");
-                if (btnPainel) btnPainel.innerHTML = btnOriginalTxt;
+                if (btnPainel) { btnPainel.innerHTML = btnOriginalTxt; btnPainel.disabled = false; }
             });
         }
 
@@ -1128,6 +1189,7 @@
             const btn = document.getElementById('btn-gerar-relatorio');
             const originalTxt = btn.innerText;
             btn.innerText = "Calculando e Gerando...";
+            btn.disabled = true;
 
             try {
                 const qTodos = query(collection(db, "financeiro"), where("equipe_id", "==", uid));
@@ -1155,7 +1217,7 @@
                 });
 
                 if(Object.keys(dadosAgrupados).length === 0) {
-                    btn.innerText = originalTxt;
+                    btn.innerText = originalTxt; btn.disabled = false;
                     return showToast("Nenhum dado encontrado neste período.", "info");
                 }
 
@@ -1164,43 +1226,28 @@
                     return (parseInt(pa[1])*12 + parseInt(pa[0])) - (parseInt(pb[1])*12 + parseInt(pb[0]));
                 });
 
-                // FUNÇÃO PARA CONVERTER IMAGEM EM BASE64 COM TRATAMENTO DE CORS
                 const getBase64Image = (url) => {
                     return new Promise((resolve) => {
                         const img = new Image();
-                        img.crossOrigin = "Anonymous"; // Essencial para burlar bloqueios de PDF
-                        
-                        // Adiciona timestamp para forçar o navegador a ignorar o cache e baixar com CORS limpo
+                        img.crossOrigin = "Anonymous"; 
                         const cacheBuster = url.includes('?') ? '&' : '?';
                         img.src = url + cacheBuster + new Date().getTime();
-
                         img.onload = () => {
                             try {
                                 const canvas = document.createElement('canvas');
-                                canvas.width = img.width;
-                                canvas.height = img.height;
+                                canvas.width = img.width; canvas.height = img.height;
                                 const ctx = canvas.getContext('2d');
                                 ctx.drawImage(img, 0, 0);
                                 resolve(canvas.toDataURL('image/png'));
-                            } catch (err) {
-                                console.error("Canvas bloqueado por CORS:", err);
-                                resolve(null);
-                            }
+                            } catch (err) { resolve(null); }
                         };
-
-                        img.onerror = () => {
-                            console.warn("Falha ao carregar logo com CORS. Exibindo inicial.");
-                            resolve(null);
-                        };
+                        img.onerror = () => { resolve(null); };
                     });
                 };
 
                 let imgLogoSrc = "";
-                if (equipeLogoGlobal) {
-                    imgLogoSrc = await getBase64Image(equipeLogoGlobal);
-                }
+                if (equipeLogoGlobal) imgLogoSrc = await getBase64Image(equipeLogoGlobal);
 
-                // LÓGICA ESPELHADA DO PERFIL: Relatório
                 let logoHtmlRelatorio = "";
                 if (imgLogoSrc) {
                     logoHtmlRelatorio = `<img src="${imgLogoSrc}" style="height: 60px; width: auto; margin: 0 auto 10px auto; object-fit: contain; display: block;">`;
@@ -1259,13 +1306,13 @@
                     margin: 10, filename: `Relatorio_Financeiro_${mIni}-${aIni}_a_${mFim}-${aFim}.pdf`,
                     image: { type: 'jpeg', quality: 1.0 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
                 }).from(tempDiv).save().then(() => {
-                    btn.innerText = originalTxt;
+                    btn.innerText = originalTxt; btn.disabled = false;
                     fecharModalRelatorio();
                 });
 
             } catch (e) {
                 showToast("Erro ao gerar relatório.", "error");
-                btn.innerText = originalTxt;
+                btn.innerText = originalTxt; btn.disabled = false;
             }
         }
 
@@ -1292,9 +1339,6 @@
         }
         window.fecharModalReceita = () => document.getElementById('modal-receita').classList.replace('flex', 'hidden');
 
-        window.abrirModalRelatorio = () => document.getElementById('modal-relatorio').classList.replace('hidden', 'flex');
-        window.fecharModalRelatorio = () => document.getElementById('modal-relatorio').classList.replace('flex', 'hidden');
-
         window.salvarDespesa = async function() {
             const desc = document.getElementById('desp-desc').value;
             const valorNum = strToFloat(document.getElementById('desp-valor').value);
@@ -1304,11 +1348,19 @@
 
             if(!desc || valorNum <= 0 || !data) return showToast("Preencha a descrição, um valor válido e a data!", "error");
 
+            const btn = document.getElementById('btn-salvar-despesa');
+            const origTxt = btn.innerText;
+            btn.innerText = "Processando..."; btn.disabled = true;
+
             try {
                 await addDoc(collection(db, "financeiro"), { equipe_id: uid, tipo: 'DESPESA', descricao: desc, valor: valorNum, data: data, fonte: fonte, mes_ano: mesAnoFiltro });
                 fecharModalDespesa(); carregarDados();
                 showToast("Despesa salva com sucesso!", "success");
-            } catch (e) { showToast("Erro ao salvar despesa.", "error"); }
+            } catch (e) { 
+                showToast("Erro ao salvar despesa.", "error"); 
+            } finally {
+                btn.innerText = origTxt; btn.disabled = false;
+            }
         }
 
         window.salvarReceita = async function() {
@@ -1321,11 +1373,19 @@
 
             if(!cat || valorNum <= 0 || !data) return showToast("Categoria, valor e data são obrigatórios!", "error");
 
+            const btn = document.getElementById('btn-salvar-receita');
+            const origTxt = btn.innerText;
+            btn.innerText = "Processando..."; btn.disabled = true;
+
             try {
                 await addDoc(collection(db, "financeiro"), { equipe_id: uid, tipo: 'RECEITA', descricao: `${cat}${desc ? ' - '+desc : ''}`, valor: valorNum, data: data, fonte: fonte, mes_ano: mesAnoFiltro });
                 fecharModalReceita(); carregarDados();
                 showToast("Receita salva com sucesso!", "success");
-            } catch (e) { showToast("Erro ao salvar receita.", "error"); }
+            } catch (e) { 
+                showToast("Erro ao salvar receita.", "error"); 
+            } finally {
+                btn.innerText = origTxt; btn.disabled = false;
+            }
         }
 
         window.excluirLancamento = async function(id) {

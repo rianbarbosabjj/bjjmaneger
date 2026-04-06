@@ -25,7 +25,7 @@
         
         <div id="estado-loading" class="flex flex-col items-center justify-center py-10">
             <div class="w-12 h-12 border-4 border-slate-600 border-t-cyan-500 rounded-full animate-spin mb-6"></div>
-            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Verificando registo...</p>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest" id="loading-text">Conectando...</p>
         </div>
 
         <div id="estado-sucesso" class="hidden flex-col items-center">
@@ -62,7 +62,7 @@
         <div id="estado-erro" class="hidden flex-col items-center py-8">
             <div class="w-20 h-20 bg-rose-500/20 text-rose-500 rounded-full flex items-center justify-center text-4xl mb-6 shadow-[0_0_30px_rgba(244,63,94,0.3)]">✗</div>
             <h2 class="text-xl font-black text-white uppercase tracking-tight mb-2">Registo Inválido</h2>
-            <p class="text-xs text-slate-400 leading-relaxed px-4">Este atleta não foi encontrado na base de dados oficial ou a matrícula encontra-se revogada.</p>
+            <p class="text-xs text-slate-400 leading-relaxed px-4" id="erro-motivo">Este atleta não foi encontrado na base de dados oficial.</p>
         </div>
     </div>
 
@@ -82,82 +82,84 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const params = new URLSearchParams(window.location.search);
-        const matriculaRef = params.get('mat');
+        // Bloco try-catch logo no início para garantir que qualquer erro chame a função mostrarErro() e não deixe a tela preta
+        try {
+            const params = new URLSearchParams(window.location.search);
+            const matriculaRef = params.get('mat');
 
-        window.onload = async () => {
-            if(!matriculaRef) return mostrarErro();
+            window.onload = async () => {
+                if(!matriculaRef) {
+                    mostrarErro("Nenhum código de validação fornecido no QR Code.");
+                    return;
+                }
 
-            try {
+                document.getElementById('loading-text').innerText = "Procurando: " + matriculaRef;
+
                 let alunoData = null;
-                // 1. Busca por Matrícula
+                
+                // 1. Tenta por Matrícula
                 const q = query(collection(db, "alunos"), where("matricula", "==", matriculaRef));
                 const snap = await getDocs(q);
                 
                 if(!snap.empty) {
                     alunoData = snap.docs[0].data();
                 } else {
-                    // 2. Busca por ID (Alunos antigos)
+                    // 2. Tenta por ID antigo
                     const d = await getDoc(doc(db, "alunos", matriculaRef));
                     if(d.exists()) alunoData = d.data();
                 }
                 
                 if(alunoData) {
-                    // Pega o ID da Equipe de forma blindada
                     const idDaEquipe = String(alunoData.equipe_id || alunoData.equipeId || "").trim();
                     const elEquipe = document.getElementById('val-equipe');
                     
                     if(idDaEquipe && idDaEquipe !== "undefined" && idDaEquipe !== "null") {
-                        try {
-                            const eqSnap = await getDoc(doc(db, "equipes", idDaEquipe));
-                            if(eqSnap.exists()) {
-                                const eqData = eqSnap.data();
-                                // Tenta 'nome_equipe', se não achar tenta 'nome', se não achar põe fallback
-                                const nome = eqData.nome_equipe || eqData.nome || "Academia Sem Nome Registado";
-                                elEquipe.innerText = nome.toUpperCase();
-                            } else {
-                                // MODO DETETIVE: Mostra qual ID ele tentou procurar
-                                elEquipe.innerText = "FALHA: ID " + idDaEquipe.substring(0, 8) + "... NÃO EXISTE";
-                                elEquipe.classList.add("text-rose-400");
-                            }
-                        } catch(e) {
-                            elEquipe.innerText = "BLOQUEADO PELO FIREBASE: " + e.message;
-                            elEquipe.classList.add("text-rose-400");
+                        const eqSnap = await getDoc(doc(db, "equipes", idDaEquipe));
+                        if(eqSnap.exists()) {
+                            const eqData = eqSnap.data();
+                            elEquipe.innerText = (eqData.nome_equipe || eqData.nome || "Academia Sem Nome").toUpperCase();
+                        } else {
+                            elEquipe.innerText = "EQUIPE NÃO LOCALIZADA";
                         }
                     } else {
-                        elEquipe.innerText = "ID DA EQUIPE VAZIO NA FICHA";
-                        elEquipe.classList.add("text-amber-400");
+                        elEquipe.innerText = "EQUIPE NÃO VINCULADA";
                     }
 
-                    // Resto dos dados
-                    document.getElementById('val-nome').innerText = alunoData.nome;
+                    document.getElementById('val-nome').innerText = alunoData.nome || "Atleta";
+                    
                     const faixa = alunoData.faixa || 'BRANCA';
                     const grau = (alunoData.grau && alunoData.grau !== 'Sem grau') ? ` - ${alunoData.grau}` : '';
                     document.getElementById('val-faixa').innerText = (faixa + grau).toUpperCase();
+                    
                     document.getElementById('val-matricula').innerText = alunoData.matricula || matriculaRef;
                     
                     const elStatus = document.getElementById('val-status');
                     elStatus.innerText = alunoData.status || 'ATIVO';
-                    if(alunoData.status === 'INATIVO') elStatus.classList.replace('text-emerald-400', 'text-rose-500');
+                    if(alunoData.status === 'INATIVO') {
+                        elStatus.classList.replace('text-emerald-400', 'text-rose-500');
+                    }
 
                     if(alunoData.foto_url) {
                         document.getElementById('val-foto').src = alunoData.foto_url;
                         document.getElementById('val-foto').classList.remove('hidden');
                     } else {
-                        document.getElementById('val-foto-fallback').innerText = alunoData.nome.charAt(0).toUpperCase();
+                        document.getElementById('val-foto-fallback').innerText = (alunoData.nome ? alunoData.nome.charAt(0).toUpperCase() : "?");
                     }
 
                     document.getElementById('estado-loading').classList.add('hidden');
                     document.getElementById('estado-sucesso').classList.remove('hidden');
                     document.getElementById('estado-sucesso').classList.add('flex');
                 } else {
-                    mostrarErro();
+                    mostrarErro("O atleta com o código " + matriculaRef + " não foi encontrado no sistema.");
                 }
-            } catch(e) { mostrarErro(); }
-        };
+            };
+        } catch(e) {
+            mostrarErro("Erro no sistema: " + e.message);
+        }
 
-        function mostrarErro() {
+        function mostrarErro(motivo = "Este atleta não foi encontrado na base de dados oficial ou a matrícula encontra-se revogada.") {
             document.getElementById('estado-loading').classList.add('hidden');
+            document.getElementById('erro-motivo').innerText = motivo;
             document.getElementById('estado-erro').classList.remove('hidden');
             document.getElementById('estado-erro').classList.add('flex');
         }

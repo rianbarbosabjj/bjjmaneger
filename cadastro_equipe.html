@@ -18,16 +18,16 @@
         .form-scroll::-webkit-scrollbar-thumb { background: #06b6d4; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-slate-900 min-h-screen flex items-center justify-center p-4 relative overflow-x-hidden selection:bg-cyan-500 selection:text-white">
+<body class="bg-slate-900 min-h-screen flex items-center justify-center p-4 relative overflow-x-hidden selection:bg-cyan-500 selection:text-white py-8">
 
     <div class="absolute inset-0 bg-pattern opacity-30"></div>
     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-2xl h-64 bg-cyan-500/20 blur-[100px] rounded-full pointer-events-none"></div>
 
     <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
-    <div class="bg-slate-800/80 backdrop-blur-xl border border-slate-700 w-full max-w-5xl rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative z-10 h-[90vh] md:h-auto max-h-[850px]">
+    <div class="bg-slate-800/80 backdrop-blur-xl border border-slate-700 w-full max-w-5xl rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative z-10 h-[95vh] md:h-[90vh] max-h-[850px]">
         
-        <div class="w-full md:w-5/12 bg-gradient-to-br from-cyan-600 to-blue-700 p-8 md:p-12 flex flex-col justify-between text-white relative overflow-hidden shrink-0">
+        <div class="w-full md:w-5/12 bg-gradient-to-br from-cyan-600 to-blue-700 p-8 md:p-12 flex flex-col justify-between text-white relative overflow-hidden shrink-0 hidden md:flex">
             <div class="absolute -bottom-10 -right-10 text-[150px] opacity-10 leading-none">🥋</div>
             
             <div>
@@ -40,7 +40,7 @@
                 <p class="text-cyan-100 text-sm leading-relaxed font-medium">Junte-se à revolução da gestão para equipas de Jiu-Jitsu. Preencha os dados oficiais da sua instituição para configurar o seu painel.</p>
             </div>
             
-            <div class="mt-8 hidden md:block">
+            <div class="mt-8">
                 <div class="flex items-center gap-3 text-sm font-bold text-cyan-100 mb-3">
                     <span class="bg-white/20 p-1.5 rounded-full text-white text-xs">✅</span> Gestão de Alunos e Turmas
                 </div>
@@ -53,7 +53,7 @@
             </div>
         </div>
 
-        <div class="w-full md:w-7/12 bg-slate-900 flex flex-col h-full">
+        <div class="w-full md:w-7/12 bg-slate-900 flex flex-col h-full overflow-hidden">
             <div class="p-6 md:p-8 border-b border-slate-800 shrink-0">
                 <h3 class="text-2xl font-black text-white mb-1">Nova Equipa</h3>
                 <p class="text-slate-400 text-xs font-medium">Cadastro Oficial de Instituição e Responsável.</p>
@@ -68,7 +68,7 @@
                         <div class="grid grid-cols-1 gap-4">
                             <div>
                                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Nome da Equipa *</label>
-                                <input type="text" id="cad-equipe" required placeholder="Ex: GFTeam Matriz" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all uppercase placeholder:text-slate-600">
+                                <input type="text" id="cad-equipe" required placeholder="Digite o nome de sua equipe" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all uppercase placeholder:text-slate-600">
                             </div>
                             <div>
                                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Logo da Equipe (Opcional)</label>
@@ -83,7 +83,7 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="sm:col-span-2">
                                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Nome Completo *</label>
-                                <input type="text" id="cad-nome-resp" required placeholder="Seu nome oficial" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
+                                <input type="text" id="cad-nome-resp" required placeholder="Digite seu nome completo" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
                             </div>
                             <div>
                                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">CPF ou CNPJ *</label>
@@ -239,7 +239,7 @@
             }
         }
 
-        // --- MÁSCARAS E CEP (DO SEU CÓDIGO ORIGINAL) ---
+        // --- MÁSCARAS E CEP ---
         window.mascaraDoc = (i) => {
             let v = i.value.replace(/\D/g, "");
             if (v.length <= 11) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
@@ -339,7 +339,7 @@
                     valor_atraso: 120.0
                 });
 
-                // 4. Envia e-mail de verificação de segurança (Do seu código original)
+                // 4. Envia e-mail de verificação de segurança
                 await sendEmailVerification(user);
                 await signOut(auth);
 

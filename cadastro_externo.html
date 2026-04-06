@@ -402,7 +402,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
         const firebaseConfig = {
@@ -423,6 +423,7 @@
         const tipoAcesso = paramsUrl.get('tipo'); 
         const equipeId = paramsUrl.get('equipe');
 
+        let quantidadeAlunosAtual = 0;
         let ficheiroFotoSelecionado = null;
 
         window.showToast = function(message, type = 'error') {
@@ -634,7 +635,13 @@
                     try {
                         const fotoPath = `fotos_carteirinha/${equipeId}/${docRef.id}.jpg`;
                         const storageRef = ref(storage, fotoPath);
-                        await uploadBytes(storageRef, ficheiroFotoSelecionado);
+                        
+                        // 🔥 A MÁGICA ESTÁ AQUI: Avisar ao Firebase que é uma imagem
+                        const metadata = {
+                            contentType: ficheiroFotoSelecionado.type || 'image/jpeg'
+                        };
+                        
+                        await uploadBytes(storageRef, ficheiroFotoSelecionado, metadata);
                         const downloadUrl = await getDownloadURL(storageRef);
                         await updateDoc(docRef, { foto_url: downloadUrl });
                     } catch (imgError) {

@@ -303,7 +303,7 @@
                             <div id="cart-equipe-fallback" class="text-3xl font-black text-slate-700 hidden">E</div>
                         </div>
                         <div class="flex flex-col justify-center">
-                            <h2 id="cart-equipe-nome" class="text-lg md:text-2xl font-black uppercase tracking-tight text-slate-800 leading-none truncate max-w-[180px] md:max-w-[220px]">NOME DA EQUIPE</h2>
+                            <h2 id="cart-equipe-nome" class="text-base md:text-xl font-black uppercase tracking-tight text-slate-800 leading-tight break-words max-w-[200px] md:max-w-[280px] line-clamp-2">NOME DA EQUIPE</h2>
                             <p class="text-[9px] md:text-[10px] text-slate-500 uppercase tracking-widest font-bold mt-1">Identificação Oficial</p>
                         </div>
                     </div>
@@ -657,7 +657,7 @@
             alunoEditandoId = id;
             document.getElementById('modal-titulo').innerText = "Editar Ficha Cadastral";
             document.getElementById('btn-gerar-pdf').classList.remove('hidden');
-            document.getElementById('btn-abrir-carteirinha').classList.remove('hidden');
+            document.getElementById('btn-abrir-carteirinha').classList.remove('hidden'); 
 
             document.getElementById('aluno-matricula').value = aluno.matricula || 'S/N';
             document.getElementById('aluno-nome').value = aluno.nome || '';

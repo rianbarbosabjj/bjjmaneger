@@ -12,6 +12,10 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
         body { font-family: 'Inter', sans-serif; }
         .bg-pattern { background-image: radial-gradient(#334155 1px, transparent 1px); background-size: 20px 20px; }
+        
+        .form-scroll::-webkit-scrollbar { width: 6px; }
+        .form-scroll::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); border-radius: 10px; }
+        .form-scroll::-webkit-scrollbar-thumb { background: #06b6d4; border-radius: 10px; }
     </style>
 </head>
 <body class="bg-slate-900 min-h-screen flex items-center justify-center p-4 relative overflow-x-hidden selection:bg-cyan-500 selection:text-white">
@@ -21,10 +25,10 @@
 
     <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
-    <div class="bg-slate-800/80 backdrop-blur-xl border border-slate-700 w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative z-10">
+    <div class="bg-slate-800/80 backdrop-blur-xl border border-slate-700 w-full max-w-5xl rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative z-10 h-[90vh] md:h-auto max-h-[850px]">
         
-        <div class="w-full md:w-5/12 bg-gradient-to-br from-cyan-600 to-blue-700 p-8 md:p-12 flex flex-col justify-between text-white relative overflow-hidden">
-            <div class="absolute -bottom-24 -right-24 text-[200px] opacity-10 leading-none">🥋</div>
+        <div class="w-full md:w-5/12 bg-gradient-to-br from-cyan-600 to-blue-700 p-8 md:p-12 flex flex-col justify-between text-white relative overflow-hidden shrink-0">
+            <div class="absolute -bottom-10 -right-10 text-[150px] opacity-10 leading-none">🥋</div>
             
             <div>
                 <div class="flex items-center gap-3 mb-8">
@@ -32,75 +36,165 @@
                     <span class="font-black tracking-widest uppercase text-sm">Manager</span>
                 </div>
                 
-                <h2 class="text-3xl font-black mb-4 leading-tight">Digitalize o seu tatame hoje.</h2>
-                <p class="text-cyan-100 text-sm leading-relaxed font-medium">Junte-se à revolução da gestão para academias de Jiu-Jitsu. Crie a sua conta e teste o sistema sem compromisso.</p>
+                <h2 class="text-3xl lg:text-4xl font-black mb-4 leading-tight">A sua academia de nível mundial.</h2>
+                <p class="text-cyan-100 text-sm leading-relaxed font-medium">Junte-se à revolução da gestão para equipas de Jiu-Jitsu. Preencha os dados oficiais da sua instituição para configurar o seu painel.</p>
             </div>
             
-            <div class="mt-12 hidden md:block">
+            <div class="mt-8 hidden md:block">
                 <div class="flex items-center gap-3 text-sm font-bold text-cyan-100 mb-3">
-                    <span class="bg-white/20 p-1 rounded-full text-white">✅</span> Gestão de Alunos
+                    <span class="bg-white/20 p-1.5 rounded-full text-white text-xs">✅</span> Gestão de Alunos e Turmas
                 </div>
                 <div class="flex items-center gap-3 text-sm font-bold text-cyan-100 mb-3">
-                    <span class="bg-white/20 p-1 rounded-full text-white">✅</span> Controlo de Mensalidades
+                    <span class="bg-white/20 p-1.5 rounded-full text-white text-xs">✅</span> Controlo Financeiro Blindado
                 </div>
                 <div class="flex items-center gap-3 text-sm font-bold text-cyan-100">
-                    <span class="bg-white/20 p-1 rounded-full text-white">✅</span> Certificados QR Code
+                    <span class="bg-white/20 p-1.5 rounded-full text-white text-xs">✅</span> Diplomas Oficiais QR Code
                 </div>
             </div>
         </div>
 
-        <div class="w-full md:w-7/12 p-8 md:p-12 bg-slate-900">
-            <h3 class="text-2xl font-black text-white mb-2">Criar nova conta</h3>
-            <p class="text-slate-400 text-xs font-medium mb-8">Preencha os dados da sua equipa para começar.</p>
+        <div class="w-full md:w-7/12 bg-slate-900 flex flex-col h-full">
+            <div class="p-6 md:p-8 border-b border-slate-800 shrink-0">
+                <h3 class="text-2xl font-black text-white mb-1">Nova Equipa</h3>
+                <p class="text-slate-400 text-xs font-medium">Cadastro Oficial de Instituição e Responsável.</p>
+            </div>
 
-            <form id="form-cadastro" class="space-y-4">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="col-span-1 sm:col-span-2">
-                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Nome da Equipe / Academia *</label>
-                        <input type="text" id="cad-nome-equipe" required placeholder="Ex: GFTeam Matriz" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all placeholder:text-slate-600">
-                    </div>
+            <div class="p-6 md:p-8 overflow-y-auto form-scroll flex-1">
+                <form id="form-cadastro" class="space-y-6">
                     
-                    <div class="col-span-1 sm:col-span-2">
-                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Mestre / Responsável *</label>
-                        <input type="text" id="cad-responsavel" required placeholder="O seu nome completo" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all placeholder:text-slate-600">
+                    <div class="space-y-4">
+                        <h4 class="text-[10px] font-black text-cyan-500 uppercase tracking-widest border-b border-slate-800 pb-2">1. Dados da Instituição</h4>
+                        
+                        <div class="grid grid-cols-1 gap-4">
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Nome da Equipa *</label>
+                                <input type="text" id="cad-equipe" required placeholder="Ex: GFTeam Matriz" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all uppercase placeholder:text-slate-600">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Logo da Equipe (Opcional)</label>
+                                <input type="file" id="cad-logo" accept="image/png, image/jpeg" class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-slate-400 file:mr-4 file:py-1.5 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-cyan-500/20 file:text-cyan-400 hover:file:bg-cyan-500/30 cursor-pointer transition-all">
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="col-span-1 sm:col-span-2">
-                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">WhatsApp (Com DDD) *</label>
-                        <input type="tel" id="cad-telefone" required placeholder="(00) 00000-0000" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all placeholder:text-slate-600">
+                    <div class="space-y-4 pt-2">
+                        <h4 class="text-[10px] font-black text-cyan-500 uppercase tracking-widest border-b border-slate-800 pb-2">2. Responsável Legal</h4>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="sm:col-span-2">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Nome Completo *</label>
+                                <input type="text" id="cad-nome-resp" required placeholder="Seu nome oficial" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">CPF ou CNPJ *</label>
+                                <input type="text" id="cad-doc" required maxlength="18" oninput="mascaraDoc(this)" placeholder="000.000.000-00" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">WhatsApp *</label>
+                                <input type="tel" id="cad-tel" required maxlength="15" oninput="mascaraTelefone(this)" placeholder="(00) 00000-0000" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="col-span-1 sm:col-span-2 mt-2">
-                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">E-mail de Acesso *</label>
-                        <input type="email" id="cad-email" required placeholder="mestre@equipe.com" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all placeholder:text-slate-600">
+                    <div class="space-y-4 pt-2">
+                        <h4 class="text-[10px] font-black text-cyan-500 uppercase tracking-widest border-b border-slate-800 pb-2">3. Localização do Tatame</h4>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div class="sm:col-span-1">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">CEP</label>
+                                <input type="text" id="cad-cep" maxlength="9" onblur="buscarCEP(this.value)" oninput="mascaraCEP(this)" placeholder="00000-000" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Rua / Avenida</label>
+                                <input type="text" id="cad-rua" placeholder="Logradouro" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                            <div class="sm:col-span-1">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Número</label>
+                                <input type="text" id="cad-num" placeholder="Nº" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
+                            </div>
+                            <div class="sm:col-span-3">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Complemento</label>
+                                <input type="text" id="cad-comp" placeholder="Sala, Andar..." class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div class="sm:col-span-1">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Bairro</label>
+                                <input type="text" id="cad-bairro" placeholder="Bairro" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
+                            </div>
+                            <div class="sm:col-span-1">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Cidade</label>
+                                <input type="text" id="cad-cidade" placeholder="Cidade" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
+                            </div>
+                            <div class="sm:col-span-1">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">UF</label>
+                                <select id="cad-uf" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all cursor-pointer appearance-none">
+                                    <option value="" disabled selected>UF</option>
+                                    <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option>
+                                    <option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option>
+                                    <option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option>
+                                    <option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option>
+                                    <option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option>
+                                    <option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option>
+                                    <option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option>
+                                    <option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
+                                    <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Criar Senha *</label>
-                        <input type="password" id="cad-senha" required minlength="6" placeholder="Mínimo 6 caracteres" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all placeholder:text-slate-600">
+                    <div class="space-y-4 pt-2">
+                        <h4 class="text-[10px] font-black text-cyan-500 uppercase tracking-widest border-b border-slate-800 pb-2">4. Credenciais de Acesso</h4>
+                        
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">E-mail *</label>
+                            <input type="email" id="cad-email" required placeholder="mestre@equipe.com" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="relative">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Criar Senha *</label>
+                                <input type="password" id="cad-senha" required minlength="6" placeholder="Mínimo 6 caracteres" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all pr-12 placeholder:text-slate-600">
+                                <button type="button" onclick="toggleSenha('cad-senha', this)" class="absolute bottom-3.5 right-4 text-slate-400 hover:text-cyan-400 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>
+                                </button>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Confirmar Senha *</label>
+                                <input type="password" id="cad-senha-confirma" required minlength="6" placeholder="Repita a senha" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-rose-500 transition-all placeholder:text-slate-600">
+                            </div>
+                        </div>
                     </div>
 
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Confirmar Senha *</label>
-                        <input type="password" id="cad-senha-confirma" required minlength="6" placeholder="Repita a senha" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-rose-500 transition-all placeholder:text-slate-600">
+                    <div class="flex items-start gap-3 mt-6 p-4 bg-slate-800/50 rounded-xl border border-slate-700">
+                        <input type="checkbox" id="cad-termos" required class="mt-1 w-4 h-4 rounded bg-slate-900 border-slate-600 text-cyan-500 focus:ring-cyan-500 focus:ring-offset-slate-900 cursor-pointer shrink-0">
+                        <label for="cad-termos" class="text-xs text-slate-400 leading-relaxed cursor-pointer">
+                            Declaro que li e concordo com os <a href="#" class="text-cyan-400 hover:underline font-bold">Termos de Uso</a> e <a href="#" class="text-cyan-400 hover:underline font-bold">Política de Privacidade</a>, autorizando o tratamento dos dados conforme a LGPD.
+                        </label>
                     </div>
-                </div>
 
-                <button type="submit" id="btn-cadastrar" class="w-full mt-8 bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.3)] transition-all transform hover:-translate-y-0.5 uppercase tracking-widest text-xs flex items-center justify-center">
-                    Criar Conta e Acessar Sistema
-                </button>
-            </form>
-
-            <div class="mt-6 text-center">
-                <p class="text-sm text-slate-400">Já tem uma conta? <a href="login.html" class="text-cyan-400 hover:text-cyan-300 font-bold ml-1 transition-colors">Faça Login</a></p>
+                    <button type="submit" id="btn-cadastrar" class="w-full mt-4 bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.3)] transition-all transform hover:-translate-y-0.5 uppercase tracking-widest text-xs flex items-center justify-center">
+                        Finalizar e Criar Conta
+                    </button>
+                    
+                    <div class="text-center pt-2 pb-6">
+                        <p class="text-sm text-slate-400">Já tem uma conta? <a href="login.html" class="text-cyan-400 hover:text-cyan-300 font-bold ml-1 transition-colors">Faça Login</a></p>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
         // Configuração do Firebase
         const firebaseConfig = {
@@ -115,20 +209,17 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        const storage = getStorage(app);
 
-        // Sistema de Toasts
+        // --- SISTEMA DE TOASTS ---
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            
             const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : 'bg-slate-800');
             const icon = type === 'success' ? '✅' : (type === 'error' ? '🚨' : 'ℹ️');
-            
             toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transform transition-all duration-300 translate-x-full opacity-0 flex items-center gap-3 font-bold text-sm z-50 pointer-events-auto max-w-sm`;
             toast.innerHTML = `<span class="text-xl">${icon}</span> <span class="flex-1">${message}</span>`;
-            
             container.appendChild(toast);
-            
             setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 10);
             setTimeout(() => {
                 toast.classList.add('translate-x-full', 'opacity-0');
@@ -136,13 +227,67 @@
             }, 4500);
         }
 
-        // Lógica de Submissão do Formulário
+        // --- OLHINHO DA SENHA ---
+        window.toggleSenha = function(inputId, btnElement) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                btnElement.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>`;
+            } else {
+                input.type = "password";
+                btnElement.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>`;
+            }
+        }
+
+        // --- MÁSCARAS E CEP (DO SEU CÓDIGO ORIGINAL) ---
+        window.mascaraDoc = (i) => {
+            let v = i.value.replace(/\D/g, "");
+            if (v.length <= 11) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+            else v = v.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
+            i.value = v;
+        };
+        window.mascaraTelefone = (i) => {
+            let v = i.value.replace(/\D/g, "");
+            v = v.replace(/^(\d{2})(\d)/g, "($1) $2");
+            v = v.replace(/(\d)(\d{4})$/, "$1-$2");
+            i.value = v;
+        };
+        window.mascaraCEP = (i) => {
+            let v = i.value.replace(/\D/g, "");
+            v = v.replace(/^(\d{5})(\d)/, "$1-$2");
+            i.value = v;
+        };
+        window.buscarCEP = async (cep) => {
+            const cleanCep = cep.replace(/\D/g, "");
+            if (cleanCep.length !== 8) return;
+            const r = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`).then(res => res.json());
+            if (!r.erro) {
+                document.getElementById('cad-rua').value = r.logradouro || "";
+                document.getElementById('cad-bairro').value = r.bairro || "";
+                document.getElementById('cad-cidade').value = r.localidade || "";
+                document.getElementById('cad-uf').value = r.uf || "";
+            }
+        };
+
+        // --- LÓGICA DE SUBMISSÃO E INTEGRAÇÃO FIREBASE ---
         document.getElementById('form-cadastro').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const nomeEquipe = document.getElementById('cad-nome-equipe').value.trim();
-            const responsavel = document.getElementById('cad-responsavel').value.trim();
-            const telefone = document.getElementById('cad-telefone').value.trim();
+            // Pega todos os dados do formulário
+            const nomeEquipe = document.getElementById('cad-equipe').value.trim();
+            const arquivoLogo = document.getElementById('cad-logo').files[0];
+            const nomeResp = document.getElementById('cad-nome-resp').value.trim();
+            const docCpfCnpj = document.getElementById('cad-doc').value.trim();
+            const telefone = document.getElementById('cad-tel').value.trim();
+            
+            const cep = document.getElementById('cad-cep').value.trim();
+            const rua = document.getElementById('cad-rua').value.trim();
+            const num = document.getElementById('cad-num').value.trim();
+            const comp = document.getElementById('cad-comp').value.trim();
+            const bairro = document.getElementById('cad-bairro').value.trim();
+            const cidade = document.getElementById('cad-cidade').value.trim();
+            const uf = document.getElementById('cad-uf').value;
+
             const email = document.getElementById('cad-email').value.trim().toLowerCase();
             const senha = document.getElementById('cad-senha').value;
             const senhaConfirma = document.getElementById('cad-senha-confirma').value;
@@ -153,52 +298,68 @@
                 return showToast("As senhas não coincidem!", "error");
             }
 
-            // Bloqueia botão
+            // Bloqueia botão para evitar duplo clique
             const btn = document.getElementById('btn-cadastrar');
             const btnOriginal = btn.innerHTML;
-            btn.innerHTML = "<span class='mr-2 text-lg'>⏳</span> Criando o seu tatame...";
+            btn.innerHTML = "<span class='mr-2 text-lg'>⏳</span> Construindo a sua base...";
             btn.disabled = true;
             btn.classList.add('opacity-70', 'cursor-not-allowed');
 
             try {
-                // 1. Cria o utilizador no Firebase Auth
+                // 1. Cria utilizador no Firebase Auth
                 const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
                 const user = userCredential.user;
 
-                // 2. Cria o documento da Equipa no Firestore usando o UID do utilizador
+                // 2. Faz Upload da Logo (se existir)
+                let urlLogo = "";
+                if (arquivoLogo) {
+                    const caminhoRef = ref(storage, `equipes_logos/${user.uid}_${arquivoLogo.name}`);
+                    await uploadBytes(caminhoRef, arquivoLogo);
+                    urlLogo = await getDownloadURL(caminhoRef);
+                }
+
+                // 3. Salva TODOS os dados da Equipa no Firestore
                 await setDoc(doc(db, "equipes", user.uid), {
                     nome_equipe: nomeEquipe.toUpperCase(),
-                    responsavel: responsavel,
+                    responsavel_nome: nomeResp,
+                    responsavel_documento: docCpfCnpj,
                     telefone: telefone,
-                    email: email,
+                    endereco_cep: cep,
+                    endereco_rua: rua,
+                    endereco_num: num,
+                    endereco_comp: comp,
+                    endereco_bairro: bairro,
+                    endereco_cidade: cidade,
+                    endereco_uf: uf,
+                    email_responsavel: email,
+                    url_logo: urlLogo,
                     data_cadastro: new Date().toISOString(),
-                    status_plano: 'TESTE', // Pode ser TESTE, ATIVO ou BLOQUEADO
-                    valor_prazo: 100.0, // Valores padrão para o financeiro não quebrar
+                    status_plano: 'TESTE',
+                    valor_prazo: 100.0, 
                     valor_atraso: 120.0
                 });
 
-                showToast("Conta criada com sucesso! A preparar painel...", "success");
+                // 4. Envia e-mail de verificação de segurança (Do seu código original)
+                await sendEmailVerification(user);
+                await signOut(auth);
+
+                showToast("Conta criada! Verifique a sua caixa de e-mail para validar o acesso.", "success");
                 
-                // 3. Redireciona para o Dashboard após 1.5 segundos
+                // 5. Redireciona para o Login após o sucesso
                 setTimeout(() => {
-                    window.location.href = "dashboard.html";
-                }, 1500);
+                    window.location.href = "login.html";
+                }, 3500);
 
             } catch (error) {
                 console.error("Erro no cadastro:", error);
                 
                 let msgErro = "Ocorreu um erro ao criar a conta.";
-                if (error.code === 'auth/email-already-in-use') {
-                    msgErro = "Este e-mail já está cadastrado no sistema!";
-                } else if (error.code === 'auth/weak-password') {
-                    msgErro = "A senha é muito fraca. Use pelo menos 6 caracteres.";
-                } else if (error.code === 'auth/invalid-email') {
-                    msgErro = "O formato do e-mail é inválido.";
-                }
+                if (error.code === 'auth/email-already-in-use') msgErro = "Este e-mail já está cadastrado no sistema!";
+                else if (error.code === 'auth/weak-password') msgErro = "A senha é muito fraca. Use pelo menos 6 caracteres.";
+                else if (error.code === 'auth/invalid-email') msgErro = "O formato do e-mail é inválido.";
                 
                 showToast(msgErro, "error");
                 
-                // Desbloqueia botão
                 btn.innerHTML = btnOriginal;
                 btn.disabled = false;
                 btn.classList.remove('opacity-70', 'cursor-not-allowed');

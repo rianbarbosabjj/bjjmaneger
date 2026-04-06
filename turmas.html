@@ -150,7 +150,7 @@
     </div>
 
     <script src="menu.js"></script>
-    <script type="module">
+<script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where, updateDoc, deleteDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -169,11 +169,13 @@
         const db = getFirestore(app);
 
         let uid = null;
+        let teamId = null; // ID real da equipe para carregar os dados
         let alunosCache = [];
         let turmasCache = [];
         let turmaSelecionada = null;
         let turmaEditandoId = null;
         let alunoParaTrocaId = null;
+        let equipeDados = { nome: "Sua Equipe", logo: "" };
 
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
@@ -183,6 +185,53 @@
             toast.innerText = message;
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 4500);
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // --- ATUALIZA O PERFIL NO MENU LATERAL (Tira o "carregando...") ---
+                const elEmail = document.getElementById('email-logado') || document.querySelector('aside p[class*="text-[10px]"]');
+                const elNome = document.getElementById('nome-logado') || document.querySelector('aside h4');
+                if(elEmail) elEmail.innerText = user.email;
+                if(elNome) elNome.innerText = "Administrador";
+
+                // Identifica se é Mestre ou Co-Administrador
+                const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
+                if (mestreDoc.exists()) { 
+                    teamId = user.uid; 
+                } else {
+                    const colabDoc = await getDoc(doc(db, "colaboradores", user.uid));
+                    if (colabDoc.exists()) teamId = colabDoc.data().equipe_id;
+                }
+
+                if (teamId) {
+                    await carregarDadosEquipe();
+                    await carregarAlunos(); 
+                    await carregarTurmas();
+                    limparInativosDasTurmas(); 
+                }
+            } else { window.location.href = "index.html"; }
+        });
+
+        async function carregarDadosEquipe() {
+            const eqSnap = await getDoc(doc(db, "equipes", teamId));
+            if (eqSnap.exists()) {
+                const d = eqSnap.data();
+                equipeDados.nome = d.nome_equipe || d.nome || "Sua Equipe";
+                equipeDados.logo = d.url_logo || "";
+                
+                // CAÇADOR DE LOGO: Atualiza a imagem no menu lateral
+                const elLogoMenu = document.getElementById('logo-equipe-menu') || document.getElementById('container-logo') || document.querySelector('aside div[class*="bg-cyan-"], aside div[class*="bg-blue-"]');
+                if (elLogoMenu) {
+                    if (equipeDados.logo) {
+                        elLogoMenu.style.background = 'transparent';
+                        elLogoMenu.innerHTML = `<img src="${equipeDados.logo}" class="w-full h-full object-cover rounded-xl shadow-md" alt="Logo">`;
+                    } else {
+                        elLogoMenu.style.background = '';
+                        elLogoMenu.innerHTML = `<span class="text-white font-black text-2xl">${equipeDados.nome.charAt(0).toUpperCase()}</span>`;
+                    }
+                }
+            }
         }
 
         function getEstiloFaixa(faixa) {

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Conta | BJJ Manager</title>
+    
+    <link rel="icon" type="image/png" href="logo_bjj_maneger.png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .bg-pattern { background-image: radial-gradient(#334155 1px, transparent 1px); background-size: 20px 20px; }
+    </style>
+</head>
+<body class="bg-slate-900 min-h-screen flex items-center justify-center p-4 relative overflow-x-hidden selection:bg-cyan-500 selection:text-white">
+
+    <div class="absolute inset-0 bg-pattern opacity-30"></div>
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-2xl h-64 bg-cyan-500/20 blur-[100px] rounded-full pointer-events-none"></div>
+
+    <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
+    <div class="bg-slate-800/80 backdrop-blur-xl border border-slate-700 w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative z-10">
+        
+        <div class="w-full md:w-5/12 bg-gradient-to-br from-cyan-600 to-blue-700 p-8 md:p-12 flex flex-col justify-between text-white relative overflow-hidden">
+            <div class="absolute -bottom-24 -right-24 text-[200px] opacity-10 leading-none">🥋</div>
+            
+            <div>
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center font-black text-white shadow-inner border border-white/30">BJJ</div>
+                    <span class="font-black tracking-widest uppercase text-sm">Manager</span>
+                </div>
+                
+                <h2 class="text-3xl font-black mb-4 leading-tight">Digitalize o seu tatame hoje.</h2>
+                <p class="text-cyan-100 text-sm leading-relaxed font-medium">Junte-se à revolução da gestão para academias de Jiu-Jitsu. Crie a sua conta e teste o sistema sem compromisso.</p>
+            </div>
+            
+            <div class="mt-12 hidden md:block">
+                <div class="flex items-center gap-3 text-sm font-bold text-cyan-100 mb-3">
+                    <span class="bg-white/20 p-1 rounded-full text-white">✅</span> Gestão de Alunos
+                </div>
+                <div class="flex items-center gap-3 text-sm font-bold text-cyan-100 mb-3">
+                    <span class="bg-white/20 p-1 rounded-full text-white">✅</span> Controlo de Mensalidades
+                </div>
+                <div class="flex items-center gap-3 text-sm font-bold text-cyan-100">
+                    <span class="bg-white/20 p-1 rounded-full text-white">✅</span> Certificados QR Code
+                </div>
+            </div>
+        </div>
+
+        <div class="w-full md:w-7/12 p-8 md:p-12 bg-slate-900">
+            <h3 class="text-2xl font-black text-white mb-2">Criar nova conta</h3>
+            <p class="text-slate-400 text-xs font-medium mb-8">Preencha os dados da sua equipa para começar.</p>
+
+            <form id="form-cadastro" class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="col-span-1 sm:col-span-2">
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Nome da Equipe / Academia *</label>
+                        <input type="text" id="cad-nome-equipe" required placeholder="Ex: GFTeam Matriz" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all placeholder:text-slate-600">
+                    </div>
+                    
+                    <div class="col-span-1 sm:col-span-2">
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Mestre / Responsável *</label>
+                        <input type="text" id="cad-responsavel" required placeholder="O seu nome completo" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all placeholder:text-slate-600">
+                    </div>
+
+                    <div class="col-span-1 sm:col-span-2">
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">WhatsApp (Com DDD) *</label>
+                        <input type="tel" id="cad-telefone" required placeholder="(00) 00000-0000" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all placeholder:text-slate-600">
+                    </div>
+
+                    <div class="col-span-1 sm:col-span-2 mt-2">
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">E-mail de Acesso *</label>
+                        <input type="email" id="cad-email" required placeholder="mestre@equipe.com" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all placeholder:text-slate-600">
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Criar Senha *</label>
+                        <input type="password" id="cad-senha" required minlength="6" placeholder="Mínimo 6 caracteres" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all placeholder:text-slate-600">
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Confirmar Senha *</label>
+                        <input type="password" id="cad-senha-confirma" required minlength="6" placeholder="Repita a senha" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-rose-500 transition-all placeholder:text-slate-600">
+                    </div>
+                </div>
+
+                <button type="submit" id="btn-cadastrar" class="w-full mt-8 bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.3)] transition-all transform hover:-translate-y-0.5 uppercase tracking-widest text-xs flex items-center justify-center">
+                    Criar Conta e Acessar Sistema
+                </button>
+            </form>
+
+            <div class="mt-6 text-center">
+                <p class="text-sm text-slate-400">Já tem uma conta? <a href="login.html" class="text-cyan-400 hover:text-cyan-300 font-bold ml-1 transition-colors">Faça Login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
+            authDomain: "bjj-maneger.firebaseapp.com",
+            projectId: "bjj-maneger",
+            storageBucket: "bjj-maneger.firebasestorage.app",
+            messagingSenderId: "415548255893",
+            appId: "1:415548255893:web:61186696fe097be870759c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Sistema de Toasts
+        window.showToast = function(message, type = 'error') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : 'bg-slate-800');
+            const icon = type === 'success' ? '✅' : (type === 'error' ? '🚨' : 'ℹ️');
+            
+            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transform transition-all duration-300 translate-x-full opacity-0 flex items-center gap-3 font-bold text-sm z-50 pointer-events-auto max-w-sm`;
+            toast.innerHTML = `<span class="text-xl">${icon}</span> <span class="flex-1">${message}</span>`;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('translate-x-full', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 4500);
+        }
+
+        // Lógica de Submissão do Formulário
+        document.getElementById('form-cadastro').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const nomeEquipe = document.getElementById('cad-nome-equipe').value.trim();
+            const responsavel = document.getElementById('cad-responsavel').value.trim();
+            const telefone = document.getElementById('cad-telefone').value.trim();
+            const email = document.getElementById('cad-email').value.trim().toLowerCase();
+            const senha = document.getElementById('cad-senha').value;
+            const senhaConfirma = document.getElementById('cad-senha-confirma').value;
+
+            // Validações
+            if (senha !== senhaConfirma) {
+                document.getElementById('cad-senha-confirma').classList.add('border-rose-500');
+                return showToast("As senhas não coincidem!", "error");
+            }
+
+            // Bloqueia botão
+            const btn = document.getElementById('btn-cadastrar');
+            const btnOriginal = btn.innerHTML;
+            btn.innerHTML = "<span class='mr-2 text-lg'>⏳</span> Criando o seu tatame...";
+            btn.disabled = true;
+            btn.classList.add('opacity-70', 'cursor-not-allowed');
+
+            try {
+                // 1. Cria o utilizador no Firebase Auth
+                const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+                const user = userCredential.user;
+
+                // 2. Cria o documento da Equipa no Firestore usando o UID do utilizador
+                await setDoc(doc(db, "equipes", user.uid), {
+                    nome_equipe: nomeEquipe.toUpperCase(),
+                    responsavel: responsavel,
+                    telefone: telefone,
+                    email: email,
+                    data_cadastro: new Date().toISOString(),
+                    status_plano: 'TESTE', // Pode ser TESTE, ATIVO ou BLOQUEADO
+                    valor_prazo: 100.0, // Valores padrão para o financeiro não quebrar
+                    valor_atraso: 120.0
+                });
+
+                showToast("Conta criada com sucesso! A preparar painel...", "success");
+                
+                // 3. Redireciona para o Dashboard após 1.5 segundos
+                setTimeout(() => {
+                    window.location.href = "dashboard.html";
+                }, 1500);
+
+            } catch (error) {
+                console.error("Erro no cadastro:", error);
+                
+                let msgErro = "Ocorreu um erro ao criar a conta.";
+                if (error.code === 'auth/email-already-in-use') {
+                    msgErro = "Este e-mail já está cadastrado no sistema!";
+                } else if (error.code === 'auth/weak-password') {
+                    msgErro = "A senha é muito fraca. Use pelo menos 6 caracteres.";
+                } else if (error.code === 'auth/invalid-email') {
+                    msgErro = "O formato do e-mail é inválido.";
+                }
+                
+                showToast(msgErro, "error");
+                
+                // Desbloqueia botão
+                btn.innerHTML = btnOriginal;
+                btn.disabled = false;
+                btn.classList.remove('opacity-70', 'cursor-not-allowed');
+            }
+        });
+    </script>
+</body>
+</html>

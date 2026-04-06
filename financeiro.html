@@ -118,45 +118,50 @@
                                 <p class="text-xs md:text-sm font-black text-rose-400" id="lbl-resumo-pendente">A Receber: R$ 0,00</p>
                             </div>
 
-                            <div id="painel-acoes-mensalidade" class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm opacity-50 pointer-events-none transition-opacity">
-                                <h3 class="font-black text-slate-800 truncate mb-1 text-lg" id="acao-aluno-nome">Selecione uma fatura</h3>
-                                <p class="text-[10px] font-bold text-rose-500 uppercase mb-4 h-4" id="acao-alerta-divida"></p>
-
-                                <div class="grid grid-cols-2 gap-2 mb-6 border-b border-slate-100 pb-4">
-                                    <button onclick="gerarReciboPDF()" id="btn-recibo-lateral" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center transition-colors"><span class="mr-1">📄</span> Baixar recibo</button>
+                            <div id="modal-acoes-wrapper" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden lg:block lg:static lg:bg-transparent lg:backdrop-blur-none lg:p-0 items-center justify-center p-4">
+                                <div id="painel-acoes-mensalidade" class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm opacity-50 pointer-events-none transition-opacity w-full max-w-md lg:max-w-full relative max-h-[90vh] overflow-y-auto hide-scrollbar mx-auto">
                                     
-                                    <button id="btn-whats-lateral" onclick="enviarWhatsApp()" class="bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold py-2.5 rounded-xl text-[11px] flex items-center justify-center transition-colors">
-                                        <span class="mr-1">💬</span> Cobrar
-                                    </button>
-                                </div>
+                                    <button onclick="fecharPainelAcoesMobile()" class="absolute top-4 right-4 lg:hidden text-slate-400 hover:text-slate-600 text-3xl leading-none">&times;</button>
 
-                                <div class="space-y-3 border-b border-slate-100 pb-4 mb-4">
-                                    <h4 class="text-[10px] font-black text-slate-400 uppercase">💸 Registrar Pagamento</h4>
-                                    <input type="date" id="acao-data-pag" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold text-slate-700 outline-none">
-                                    <select id="acao-forma-pag" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold text-slate-700 outline-none cursor-pointer">
-                                        <option value="PIX">PIX</option><option value="Dinheiro">Dinheiro</option><option value="Cartão">Cartão</option>
-                                    </select>
-                                    <button id="btn-reg-pagamento" onclick="registrarPagamento()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest mt-2">✅ Confirmar Pagamento</button>
-                                    
-                                    <div class="flex gap-2 mt-2">
-                                        <button id="btn-desfazer-pag" onclick="cancelarPagamento()" class="flex-1 bg-amber-100 hover:bg-amber-200 text-amber-700 font-bold py-2.5 rounded-lg text-[10px] uppercase tracking-widest transition-colors">Desfazer</button>
-                                        <button id="btn-excluir-pag" onclick="excluirPagamento()" class="flex-1 bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold py-2.5 rounded-lg text-[10px] uppercase tracking-widest transition-colors">Excluir</button>
+                                    <h3 class="font-black text-slate-800 truncate mb-1 text-lg pr-8" id="acao-aluno-nome">Selecione uma fatura</h3>
+                                    <p class="text-[10px] font-bold text-rose-500 uppercase mb-4 h-4" id="acao-alerta-divida"></p>
+
+                                    <div class="grid grid-cols-2 gap-2 mb-6 border-b border-slate-100 pb-4">
+                                        <button onclick="gerarReciboPDF()" id="btn-recibo-lateral" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center transition-colors"><span class="mr-1">📄</span> Baixar recibo</button>
+                                        
+                                        <button id="btn-whats-lateral" onclick="enviarWhatsApp()" class="bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold py-2.5 rounded-xl text-[11px] flex items-center justify-center transition-colors">
+                                            <span class="mr-1">💬</span> Cobrar
+                                        </button>
                                     </div>
-                                </div>
 
-                                <div class="space-y-3">
-                                    <h4 class="text-[10px] font-black text-purple-500 uppercase">⚙️ Regras do Atleta</h4>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-xs font-bold text-slate-600">Bolsa (%)</span>
-                                        <select id="acao-bolsa" class="p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 w-24 outline-none">
-                                            <option value="0">0</option><option value="10">10</option><option value="20">20</option><option value="25">25</option><option value="50">50</option><option value="75">75</option><option value="100">100</option>
+                                    <div class="space-y-3 border-b border-slate-100 pb-4 mb-4">
+                                        <h4 class="text-[10px] font-black text-slate-400 uppercase">💸 Registrar Pagamento</h4>
+                                        <input type="date" id="acao-data-pag" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold text-slate-700 outline-none">
+                                        <select id="acao-forma-pag" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold text-slate-700 outline-none cursor-pointer">
+                                            <option value="PIX">PIX</option><option value="Dinheiro">Dinheiro</option><option value="Cartão">Cartão</option>
                                         </select>
+                                        <button id="btn-reg-pagamento" onclick="registrarPagamento()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest mt-2">✅ Confirmar Pagamento</button>
+                                        
+                                        <div class="flex gap-2 mt-2">
+                                            <button id="btn-desfazer-pag" onclick="cancelarPagamento()" class="flex-1 bg-amber-100 hover:bg-amber-200 text-amber-700 font-bold py-2.5 rounded-lg text-[10px] uppercase tracking-widest transition-colors">Desfazer</button>
+                                            <button id="btn-excluir-pag" onclick="excluirPagamento()" class="flex-1 bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold py-2.5 rounded-lg text-[10px] uppercase tracking-widest transition-colors">Excluir</button>
+                                        </div>
                                     </div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-xs font-bold text-slate-600">Vencimento (Dia)</span>
-                                        <select id="acao-venc" class="p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 w-24 outline-none"></select>
+
+                                    <div class="space-y-3">
+                                        <h4 class="text-[10px] font-black text-purple-500 uppercase">⚙️ Regras do Atleta</h4>
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-xs font-bold text-slate-600">Bolsa (%)</span>
+                                            <select id="acao-bolsa" class="p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 w-24 outline-none">
+                                                <option value="0">0</option><option value="10">10</option><option value="20">20</option><option value="25">25</option><option value="50">50</option><option value="75">75</option><option value="100">100</option>
+                                            </select>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-xs font-bold text-slate-600">Vencimento (Dia)</span>
+                                            <select id="acao-venc" class="p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 w-24 outline-none"></select>
+                                        </div>
+                                        <button id="btn-salvar-regras" onclick="salvarConfigAluno()" class="w-full bg-purple-100 hover:bg-purple-200 text-purple-700 font-bold py-2.5 rounded-lg text-[10px] uppercase tracking-widest transition-colors mt-2">💾 Salvar Regras</button>
                                     </div>
-                                    <button id="btn-salvar-regras" onclick="salvarConfigAluno()" class="w-full bg-purple-100 hover:bg-purple-200 text-purple-700 font-bold py-2.5 rounded-lg text-[10px] uppercase tracking-widest transition-colors mt-2">💾 Salvar Regras</button>
                                 </div>
                             </div>
                         </div>
@@ -707,10 +712,8 @@
             atualizarDashboardMes();
             atualizarAnaliseAnual();
             
-            alunoSelecionadoMens = null;
-            document.getElementById('painel-acoes-mensalidade').classList.add('opacity-50', 'pointer-events-none');
-            document.getElementById('acao-aluno-nome').innerText = "Selecione uma fatura";
-            document.getElementById('acao-alerta-divida').innerText = "";
+            // Fecha qualquer painel aberto (especialmente no mobile)
+            fecharPainelAcoesMobile();
         }
 
         window.filtrarMensalidades = function() {
@@ -738,7 +741,7 @@
                             <div class="flex flex-col items-center justify-center py-16 text-center w-full">
                                 <span class="text-5xl mb-4 opacity-50">📋</span>
                                 <h3 class="text-lg font-black text-slate-700 mb-2">Nenhuma fatura gerada para este mês</h3>
-                                <p class="text-xs text-slate-500 max-w-md">O sistema ainda não criou as cobranças de ${mes}/${ano}. Clique no botão <b class="text-indigo-500">"Gerar Faturas do Mês"</b> lá em cima para listar todos os seus alunos ativos automaticamente.</p>
+                                <p class="text-xs text-slate-500 max-w-md">O sistema ainda não criou as cobranças de ${mes}/${ano}. Clique no botão <b class="text-indigo-500">"⚡ Gerar Faturas do Mês"</b> lá em cima para listar todos os seus alunos ativos automaticamente.</p>
                             </div>
                         </td>
                     </tr>
@@ -780,7 +783,6 @@
 
                     const dataPagTxt = (status === 'PAGO' && f.data) ? new Date(f.data).toLocaleDateString('pt-BR') : '--';
                     
-                    // Cores mais vivas para facilitar a leitura
                     let corBg = "hover:bg-cyan-50";
                     let corStatus = "";
                     if (status === 'PAGO') {
@@ -845,6 +847,9 @@
             }
         }
 
+        // =========================================================
+        // CONTROLO DO PAINEL DE AÇÕES (MODAL MOBILE / SIDE DESKTOP)
+        // =========================================================
         window.carregarAcoesAluno = function(alunoId, calcData) {
             const aluno = alunosCache.find(a => a.id === alunoId);
             alunoSelecionadoMens = { ...aluno, _calc: calcData };
@@ -870,10 +875,34 @@
             document.getElementById('acao-venc').value = aluno.dia_vencimento || "10";
             document.getElementById('acao-data-pag').valueAsDate = new Date();
 
+            // A MÁGICA DO MOBILE (TRANSFORMA O PAINEL NUM MODAL/POPUP)
             if (window.innerWidth < 1024) {
-                document.getElementById('ancora-acoes-mobile').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                const wrapper = document.getElementById('modal-acoes-wrapper');
+                wrapper.classList.remove('hidden');
+                wrapper.classList.add('flex');
             }
         }
+
+        window.fecharPainelAcoesMobile = function() {
+            const wrapper = document.getElementById('modal-acoes-wrapper');
+            wrapper.classList.remove('flex');
+            wrapper.classList.add('hidden');
+            
+            // Reseta visualmente o painel para o estado inativo
+            const painel = document.getElementById('painel-acoes-mensalidade');
+            painel.classList.add('opacity-50', 'pointer-events-none');
+            alunoSelecionadoMens = null;
+            document.getElementById('acao-aluno-nome').innerText = "Selecione uma fatura";
+            document.getElementById('acao-alerta-divida').innerText = "";
+        }
+
+        // Função auxiliar para fechar automaticamente no celular após salvar algo
+        function autoFecharPainelMobile() {
+            if (window.innerWidth < 1024) {
+                fecharPainelAcoesMobile();
+            }
+        }
+        // =========================================================
 
         window.salvarConfigAluno = async function() {
             if(!alunoSelecionadoMens) return;
@@ -888,6 +917,7 @@
                 await updateDoc(doc(db, "alunos", alunoSelecionadoMens.id), { bolsa_perc: nb, dia_vencimento: nv });
                 showToast("Regras do atleta atualizadas!", "success");
                 carregarDados();
+                autoFecharPainelMobile();
             } catch(e) { 
                 showToast("Erro ao salvar regras.", "error"); 
             } finally {
@@ -918,6 +948,7 @@
                 });
                 showToast("Pagamento Registado!", "success");
                 carregarDados();
+                autoFecharPainelMobile();
             } catch (e) { 
                 showToast("Erro ao dar baixa na mensalidade.", "error"); 
             } finally {
@@ -942,6 +973,7 @@
                 });
                 showToast("Pagamento cancelado com sucesso.", "success");
                 carregarDados();
+                autoFecharPainelMobile();
             } catch (e) { 
                 showToast("Erro ao cancelar.", "error"); 
             } finally {
@@ -961,6 +993,7 @@
                 await deleteDoc(doc(db, "financeiro", alunoSelecionadoMens._calc.fatura_id));
                 showToast("Fatura excluída com sucesso.", "success");
                 carregarDados();
+                autoFecharPainelMobile();
             } catch (e) { 
                 showToast("Erro ao excluir.", "error"); 
             } finally {

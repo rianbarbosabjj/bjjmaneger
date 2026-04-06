@@ -57,7 +57,7 @@
 </head>
 <body class="flex h-[100dvh] overflow-hidden text-slate-800 bg-[#F8FAFC]">
 
-    <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+    <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-auto"></div>
 
     <div id="interface-sistema" class="flex w-full h-full relative">
         <main class="flex-1 flex flex-col h-full overflow-hidden relative">
@@ -70,8 +70,11 @@
                             <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Administre sua equipe</p>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                            <button onclick="corrigirTodosAlunos()" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 md:py-2.5 px-4 md:px-6 rounded-xl shadow-md transition-all flex items-center justify-center text-xs md:text-sm">
-                                <span class="mr-2 text-base">🔧</span> Corrigir IDs Antigos
+                            <button onclick="limparDuplicados()" class="w-full sm:w-auto bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 md:py-2.5 px-4 md:px-6 rounded-xl shadow-md transition-all flex items-center justify-center text-xs md:text-sm">
+                                <span class="mr-2 text-base">🧹</span> Limpar Duplicatas
+                            </button>
+                            <button onclick="corrigirTodosAlunos()" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 md:py-2.5 px-4 md:px-6 rounded-xl shadow-md transition-all flex items-center justify-center text-xs md:text-sm hidden" id="btn-rob-resgate">
+                                <span class="mr-2 text-base">🔧</span> Corrigir IDs
                             </button>
                             <button onclick="abrirModal()" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 md:py-2.5 px-4 md:px-6 rounded-xl shadow-md transition-all flex items-center justify-center text-xs md:text-sm">
                                 <span class="mr-2 text-base">➕</span> Nova Matrícula
@@ -94,7 +97,9 @@
                         </div>
                         <div class="flex items-center justify-between w-full md:w-auto gap-4">
                             <span id="lbl-total-ativos" class="text-xs md:text-sm font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100">Total Ativos: 0</span>
-                            <button onclick="fundirFichas()" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-colors shadow-sm items-center hidden" id="btn-fundir">🧬 Fundir (2)</button>
+                            <button onclick="fundirFichas()" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-colors shadow-sm flex items-center hidden" id="btn-fundir">
+                                🧬 Fundir (2)
+                            </button>
                         </div>
                     </div>
 
@@ -163,7 +168,7 @@
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Faixa Atual</label>
                             <select id="aluno-faixa" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:bg-white focus:border-cyan-500 outline-none transition-all cursor-pointer">
-                                <option>Branca</option><option>Cinza e Branca</option><option>Cinza</option><option>Cinza e Preta</option><option>Amarela e Branca</option><option>Amarela</option><option>Amarela e Preta</option><option>Laranja e Branca</option><option>Laranja</option><option>Laranja e Preta</option><option>Verde e Branca</option><option>Verde</option><option>Verde e Preta</option><option>Azul</option><option>Roxa</option><option>Marrom</option><option>Preta</option>
+                                <option>Branca</option><option>Cinza e Branca</option><option>Cinza</option><option>Cinza e Preta</option><option>Amarela</option><option>Laranja</option><option>Verde</option><option>Azul</option><option>Roxa</option><option>Marrom</option><option>Preta</option>
                             </select>
                         </div>
                         <div>
@@ -236,7 +241,9 @@
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Dia de Vencimento</label>
-                            <select id="aluno-vencimento" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none text-slate-700"></select>
+                            <select id="aluno-vencimento" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none text-slate-700">
+                                <option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -266,7 +273,7 @@
             </div>
 
             <div class="p-4 md:p-6 bg-slate-50 border-t border-slate-200 flex flex-wrap justify-end gap-3 rounded-b-3xl shrink-0">
-                <button onclick="abrirModalCarteirinha()" id="btn-abrir-carteirinha" class="flex-1 md:flex-none bg-indigo-500 hover:bg-indigo-600 text-white font-black py-3 px-6 rounded-xl text-sm uppercase tracking-widest hidden shadow-md transition-all">🪪 Carteirinha</button>
+                <button onclick="abrirModalCarteirinha()" id="btn-abrir-carteirinha" class="flex-1 md:flex-none bg-indigo-500 hover:bg-indigo-600 text-white font-black py-3 px-6 rounded-xl text-sm hidden uppercase tracking-widest shadow-md transition-all">🪪 Carteirinha</button>
                 <button onclick="fecharModal()" class="flex-1 md:flex-none px-6 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-200 transition-colors text-sm">Cancelar</button>
                 <button onclick="salvarAluno()" class="flex-1 md:flex-none bg-cyan-500 hover:bg-cyan-600 text-white font-black py-3 px-8 rounded-xl shadow-md transition-all text-sm uppercase tracking-widest">💾 Salvar</button>
             </div>
@@ -295,7 +302,7 @@
                 <div class="flex-1 p-5 md:p-6 flex flex-col z-10 w-[65%]">
                     <div class="flex items-center gap-4 mb-6">
                         <div class="h-16 md:h-20 w-16 md:w-20 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-sm shrink-0 overflow-hidden">
-                            <img id="cart-equipe-logo" src="" class="h-full w-full object-contain p-1.5 drop-shadow-sm hidden">
+                            <img id="cart-equipe-logo" src="" class="h-full w-full object-contain p-1.5 hidden">
                             <div id="cart-equipe-fallback" class="text-3xl font-black text-slate-700 hidden">E</div>
                         </div>
                         <div class="flex flex-col justify-center">
@@ -371,14 +378,6 @@
         let equipeDados = { nome: "Sua Equipe", logo: "" };
         let alunoEditandoId = null;
 
-        const selectVenc = document.getElementById('aluno-vencimento');
-        if(selectVenc) {
-            let optionsHTML = '';
-            for(let i = 1; i <= 31; i++) optionsHTML += `<option value="${i}">${i}</option>`;
-            selectVenc.innerHTML = optionsHTML;
-            selectVenc.value = "10";
-        }
-
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
@@ -418,22 +417,36 @@
             const tab = document.getElementById('tabela-alunos');
             const busca = document.getElementById('input-busca').value.toLowerCase();
             const status = document.getElementById('filtro-status').value;
-            const filtrados = todosAlunosCache.filter(a => (a.nome.toLowerCase().includes(busca)) && (status === "TODOS" || a.status === status));
+            const filtrados = todosAlunosCache.filter(a => (a.nome.toLowerCase().includes(busca) || (a.cpf && a.cpf.includes(busca))) && (status === "TODOS" || a.status === status));
             
             document.getElementById('lbl-total-ativos').innerText = "Total Ativos: " + todosAlunosCache.filter(x => x.status === "ATIVO").length;
             tab.innerHTML = filtrados.length ? '' : '<tr><td colspan="6" class="p-10 text-center text-slate-400">Nenhum atleta encontrado.</td></tr>';
 
             filtrados.forEach(a => {
                 const tr = document.createElement('tr');
-                tr.className = "table-row-hover border-b border-slate-50 cursor-pointer transition-colors";
+                tr.className = "table-row-hover border-b border-slate-50 cursor-pointer transition-colors group";
                 tr.onclick = () => abrirFichaAluno(a.id);
+                
+                let avatarHtml = `<div class='hidden md:flex h-8 w-8 rounded-full bg-slate-200 items-center justify-center text-slate-500 font-bold text-xs mr-3 shrink-0'>${a.nome.charAt(0)}</div>`;
+                if(a.foto_url) {
+                    avatarHtml = `<img src='${a.foto_url}' class='hidden md:block h-8 w-8 rounded-full object-cover mr-3 shrink-0 border border-slate-200'>`;
+                }
+
                 tr.innerHTML = `
-                    <td class="px-6 py-4 text-center" onclick="event.stopPropagation()"><input type="checkbox" class="chk-merge" value="${a.id}"></td>
-                    <td class="px-6 py-4 font-bold text-slate-700">${a.nome}</td>
-                    <td class="px-6 py-4 text-center text-xs font-mono">${a.cpf || '-'}</td>
-                    <td class="px-6 py-4 text-center"><span class="px-2 py-1 bg-slate-100 rounded text-[9px] font-black uppercase">${a.faixa || 'BRANCA'}</span></td>
-                    <td class="px-6 py-4 text-center"><span class="px-2 py-1 rounded text-[9px] font-bold ${a.status === 'ATIVO' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${a.status}</span></td>
-                    <td class="px-6 py-4 text-center"><button onclick="event.stopPropagation(); excluirAluno('${a.id}')" class="text-rose-400 hover:text-rose-600 font-bold text-xs">Excluir</button></td>
+                    <td class="px-6 py-4 text-center" onclick="event.stopPropagation()"><input type="checkbox" class="chk-merge" value="${a.id}" onchange="verificarCheckboxFusao()"></td>
+                    <td class="px-6 py-4 whitespace-nowrap min-w-[200px]">
+                        <div class="flex items-center">
+                            ${avatarHtml}
+                            <div>
+                                <div class="font-bold text-slate-700 text-sm group-hover:text-cyan-600 transition-colors">${a.nome}</div>
+                                <div class="text-[10px] text-slate-400 uppercase tracking-wider">${a.matricula || 'SEM MAT.'} | ${a.telefone || 'Sem contato'}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-center text-xs font-mono text-slate-500">${a.cpf || '-'}</td>
+                    <td class="px-6 py-4 text-center"><span class="px-2 py-1 bg-slate-100 rounded text-[9px] font-black uppercase shadow-sm">${a.faixa || 'BRANCA'}</span></td>
+                    <td class="px-6 py-4 text-center"><span class="px-2 py-1 rounded text-[9px] font-bold shadow-sm border ${a.status === 'ATIVO' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'}">${a.status}</span></td>
+                    <td class="px-6 py-4 text-center"><button onclick="event.stopPropagation(); excluirAluno('${a.id}')" class="text-rose-400 hover:text-rose-600 font-bold text-xs transition-colors p-2">Excluir</button></td>
                 `;
                 tab.appendChild(tr);
             });
@@ -480,7 +493,7 @@
         window.salvarAluno = async function() {
             const id = alunoEditandoId;
             const nome = document.getElementById('aluno-nome').value.toUpperCase();
-            if(!nome) return showToast("Nome obrigatório");
+            if(!nome) return showToast("O Nome do(a) atleta é obrigatório!");
             
             const dados = {
                 equipe_id: teamId, 
@@ -520,7 +533,7 @@
                 }
                 fecharModal(); 
                 buscarAlunosFirebase(); 
-            } catch(e) { showToast("Erro ao salvar"); }
+            } catch(e) { showToast("Erro ao salvar a ficha.", "error"); }
         }
 
         window.abrirModalCarteirinha = () => {
@@ -552,7 +565,7 @@
             
             const f = a.faixa.toLowerCase();
             let cB = '#cbd5e1';
-            if(f.includes('azul')) cB='#3b82f6'; else if(f.includes('roxa')) cB='#a855f7'; else if(f.includes('marrom')) cB='#78350f'; else if(f.includes('preta')) cB='#000000'; else if(f.includes('amarela')) cB='#eab308';
+            if(f.includes('azul')) cB='#3b82f6'; else if(f.includes('roxa')) cB='#a855f7'; else if(f.includes('marrom')) cB='#78350f'; else if(f.includes('preta')) cB='#000000'; else if(f.includes('amarela')) cB='#eab308'; else if(f.includes('laranja')) cB='#f97316'; else if(f.includes('verde')) cB='#22c55e';
             document.getElementById('cart-faixa-border').style.borderLeftColor = cB;
 
             if(a.foto_url) {
@@ -568,6 +581,45 @@
             document.getElementById('modal-carteirinha').classList.replace('hidden', 'flex');
         }
 
+        // ROBÔ DE LIMPEZA DE DUPLICADOS (NOVO)
+        window.limparDuplicados = async function() {
+            if(!confirm("🧹 MODO FAXINA\n\nEste robô vai procurar todos os alunos com o mesmo NOME exato na base de dados e vai apagar as cópias repetidas, mantendo sempre a ficha mais recente.\n\nTem certeza que deseja limpar os duplicados agora?")) return;
+
+            showToast("Iniciando a faxina... aguarde.", "success");
+            let deletados = 0;
+            let agrupados = {};
+
+            todosAlunosCache.forEach(a => {
+                let nomeChave = a.nome.trim().toUpperCase();
+                if(!agrupados[nomeChave]) agrupados[nomeChave] = [];
+                agrupados[nomeChave].push(a);
+            });
+
+            for(let nomeChave in agrupados) {
+                let fichas = agrupados[nomeChave];
+                if(fichas.length > 1) {
+                    // Ordena da mais recente para a mais antiga
+                    fichas.sort((a, b) => (b.data_cadastro || "").localeCompare(a.data_cadastro || ""));
+                    
+                    // Mantém a fichas[0] (a mais nova) e deleta as outras
+                    for(let i = 1; i < fichas.length; i++) {
+                        try {
+                            await deleteDoc(doc(db, "alunos", fichas[i].id));
+                            deletados++;
+                        } catch(e) { console.error("Erro ao deletar duplicata", e); }
+                    }
+                }
+            }
+
+            if(deletados > 0) {
+                showToast(deletados + " fichas duplicadas foram apagadas!", "success");
+                buscarAlunosFirebase();
+            } else {
+                showToast("Sua base já está limpa! Nenhuma cópia encontrada.", "success");
+            }
+        }
+
+        // ROBÔ DE CORREÇÃO DE IDS
         window.corrigirTodosAlunos = async function() {
             if(!confirm("🤖 MODO ROBÔ\n\nIsso vai varrer todos os alunos e forçar a gravação do ID correto da Equipe na ficha deles para que as validações funcionem.\n\nDeseja continuar?")) return;
             showToast("O Robô iniciou a correção, por favor aguarde...", "success");
@@ -582,6 +634,46 @@
             }
             showToast(count + " alunos corrigidos com sucesso!", "success"); 
             buscarAlunosFirebase();
+        }
+
+        window.verificarCheckboxFusao = function() {
+            const chks = document.querySelectorAll('.chk-merge:checked');
+            const btn = document.getElementById('btn-fundir');
+            if(chks.length === 2) btn.classList.remove('hidden');
+            else btn.classList.add('hidden');
+        }
+
+        window.fundirFichas = async function() {
+            const chks = document.querySelectorAll('.chk-merge:checked');
+            if(chks.length !== 2) return;
+            
+            if(!confirm("Deseja unir estas duas fichas?\nOs dados serão mesclados e a duplicata será apagada.")) return;
+
+            const a1 = todosAlunosCache.find(a => a.id === chks[0].value);
+            const a2 = todosAlunosCache.find(a => a.id === chks[1].value);
+
+            let base = a1, novo = a2;
+            if(a2.data_cadastro && a1.data_cadastro && a2.data_cadastro < a1.data_cadastro) { base = a2; novo = a1; }
+
+            let dadosFundidos = {};
+            Object.keys(base).forEach(key => {
+                if (key === 'id' || key === 'equipe_id') return;
+                if (key.startsWith('lgpd_')) {
+                    dadosFundidos[key] = base[key] || novo[key] || false;
+                } else if (key === 'faixa' || key === 'grau') {
+                    dadosFundidos[key] = (base[key] && base[key] !== 'Branca' && base[key] !== 'Sem grau') ? base[key] : (novo[key] || base[key]);
+                } else {
+                    dadosFundidos[key] = (base[key] && String(base[key]).trim() !== "") ? base[key] : novo[key];
+                }
+            });
+
+            try {
+                await updateDoc(doc(db, "alunos", base.id), dadosFundidos);
+                await deleteDoc(doc(db, "alunos", novo.id));
+                showToast("Fichas unidas com sucesso! 🧬", "success");
+                document.getElementById('btn-fundir').classList.add('hidden');
+                buscarAlunosFirebase();
+            } catch(err) { showToast("Erro ao fundir fichas.", "error"); }
         }
 
         window.gerarPDF_LGPD = function() {

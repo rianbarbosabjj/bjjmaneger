@@ -82,7 +82,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Bloco try-catch logo no início para garantir que qualquer erro chame a função mostrarErro() e não deixe a tela preta
         try {
             const params = new URLSearchParams(window.location.search);
             const matriculaRef = params.get('mat');
@@ -92,8 +91,6 @@
                     mostrarErro("Nenhum código de validação fornecido no QR Code.");
                     return;
                 }
-
-                document.getElementById('loading-text').innerText = "Procurando: " + matriculaRef;
 
                 let alunoData = null;
                 
@@ -110,7 +107,11 @@
                 }
                 
                 if(alunoData) {
-                    const idDaEquipe = String(alunoData.equipe_id || alunoData.equipeId || "").trim();
+                    // Limpa o ID e trata se ele for um [object Object] acidental
+                    let idDaEquipe = alunoData.equipe_id || alunoData.equipeId;
+                    if (typeof idDaEquipe === 'object') idDaEquipe = String(idDaEquipe);
+                    idDaEquipe = String(idDaEquipe || "").trim();
+                    
                     const elEquipe = document.getElementById('val-equipe');
                     
                     if(idDaEquipe && idDaEquipe !== "undefined" && idDaEquipe !== "null") {
@@ -119,10 +120,13 @@
                             const eqData = eqSnap.data();
                             elEquipe.innerText = (eqData.nome_equipe || eqData.nome || "Academia Sem Nome").toUpperCase();
                         } else {
-                            elEquipe.innerText = "EQUIPE NÃO LOCALIZADA";
+                            // MODO RAIO-X: Imprime o ID errado que está guardado no aluno
+                            elEquipe.innerText = `NÃO ENCONTRADA (ID: ${idDaEquipe})`;
+                            elEquipe.classList.add("text-rose-400");
                         }
                     } else {
-                        elEquipe.innerText = "EQUIPE NÃO VINCULADA";
+                        elEquipe.innerText = "ALUNO SEM EQUIPA REGISTADA";
+                        elEquipe.classList.add("text-amber-400");
                     }
 
                     document.getElementById('val-nome').innerText = alunoData.nome || "Atleta";
@@ -150,7 +154,7 @@
                     document.getElementById('estado-sucesso').classList.remove('hidden');
                     document.getElementById('estado-sucesso').classList.add('flex');
                 } else {
-                    mostrarErro("O atleta com o código " + matriculaRef + " não foi encontrado no sistema.");
+                    mostrarErro("O atleta com a matrícula " + matriculaRef + " não foi encontrado no sistema.");
                 }
             };
         } catch(e) {

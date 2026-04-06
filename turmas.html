@@ -187,13 +187,18 @@
             setTimeout(() => toast.remove(), 4500);
         }
 
-        onAuthStateChanged(auth, async (user) => {
+onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // --- ATUALIZA O PERFIL NO MENU LATERAL (Tira o "carregando...") ---
-                const elEmail = document.getElementById('email-logado') || document.querySelector('aside p[class*="text-[10px]"]');
-                const elNome = document.getElementById('nome-logado') || document.querySelector('aside h4');
+                // --- ATUALIZAÇÃO DO PERFIL (Canto Inferior Esquerdo) ---
+                const elEmail = document.getElementById('email-logado') || document.querySelector('aside p[class*="rianbarbosa"]');
+                const elCargo = document.querySelector('aside span[class*="ACESSANDO"]') || document.querySelector('aside span[class*="text-slate-500"]');
+                
+                // Força a exibição do email e troca "ACESSANDO..." por "ADMINISTRADOR"
                 if(elEmail) elEmail.innerText = user.email;
-                if(elNome) elNome.innerText = "Administrador";
+                if(elCargo) {
+                    elCargo.innerText = "ADMINISTRADOR";
+                    elCargo.classList.remove('animate-pulse'); // Remove qualquer efeito de carregamento se houver
+                }
 
                 // Identifica se é Mestre ou Co-Administrador
                 const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
@@ -220,6 +225,11 @@
                 equipeDados.nome = d.nome_equipe || d.nome || "Sua Equipe";
                 equipeDados.logo = d.url_logo || "";
                 
+                // --- ATUALIZA O NOME DA EQUIPE NO TOPO DO MENU ---
+                // Procura o elemento que diz "CARREGANDO..." no topo
+                const elNomeEquipeMenu = document.querySelector('aside h2') || document.getElementById('nome-equipe');
+                if(elNomeEquipeMenu) elNomeEquipeMenu.innerText = equipeDados.nome.toUpperCase();
+
                 // CAÇADOR DE LOGO: Atualiza a imagem no menu lateral
                 const elLogoMenu = document.getElementById('logo-equipe-menu') || document.getElementById('container-logo') || document.querySelector('aside div[class*="bg-cyan-"], aside div[class*="bg-blue-"]');
                 if (elLogoMenu) {

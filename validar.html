@@ -29,9 +29,7 @@
         </div>
 
         <div id="estado-sucesso" class="hidden flex-col items-center">
-            <div class="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center text-3xl mb-4 shadow-[0_0_30px_rgba(16,185,129,0.2)]">
-                ✓
-            </div>
+            <div class="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center text-3xl mb-4 shadow-[0_0_30px_rgba(16,185,129,0.2)]">✓</div>
             <h2 class="text-xl font-black text-white uppercase tracking-tight mb-1">Documento Válido</h2>
             <p class="text-[9px] text-emerald-400 font-bold uppercase tracking-widest mb-8">Autenticidade Confirmada</p>
 
@@ -46,7 +44,7 @@
             <div class="w-full bg-slate-900/80 rounded-2xl p-5 border border-slate-700/50 text-left space-y-4">
                 <div>
                     <p class="text-[8px] text-slate-500 font-bold uppercase tracking-widest mb-0.5">Equipe / Academia</p>
-                    <p id="val-equipe" class="text-sm font-black text-white truncate">Carregando...</p>
+                    <p id="val-equipe" class="text-sm font-black text-white truncate">Buscando equipe...</p>
                 </div>
                 <div class="flex justify-between items-end border-t border-slate-800 pt-3">
                     <div>
@@ -62,17 +60,10 @@
         </div>
 
         <div id="estado-erro" class="hidden flex-col items-center py-8">
-            <div class="w-20 h-20 bg-rose-500/20 text-rose-500 rounded-full flex items-center justify-center text-4xl mb-6 shadow-[0_0_30px_rgba(244,63,94,0.3)]">
-                ✗
-            </div>
+            <div class="w-20 h-20 bg-rose-500/20 text-rose-500 rounded-full flex items-center justify-center text-4xl mb-6 shadow-[0_0_30px_rgba(244,63,94,0.3)]">✗</div>
             <h2 class="text-xl font-black text-white uppercase tracking-tight mb-2">Registo Inválido</h2>
             <p class="text-xs text-slate-400 leading-relaxed px-4">Este atleta não foi encontrado na base de dados oficial ou a matrícula encontra-se revogada.</p>
         </div>
-    </div>
-
-    <div class="mt-8 text-center relative z-10 opacity-50">
-        <p class="text-[8px] text-slate-400 font-bold tracking-widest uppercase mb-1">Tecnologia Oficial</p>
-        <p class="text-[10px] text-white font-black tracking-[0.2em] uppercase">BJJ Manager</p>
     </div>
 
     <script type="module">
@@ -91,58 +82,54 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Pega a referência na URL (ex: validar.html?mat=20261234)
         const params = new URLSearchParams(window.location.search);
         const matriculaRef = params.get('mat');
 
         window.onload = async () => {
-            if(!matriculaRef) {
-                mostrarErro();
-                return;
-            }
+            if(!matriculaRef) return mostrarErro();
 
             try {
                 let alunoData = null;
-
-                // 1. TENTA BUSCAR POR MATRÍCULA (Alunos Novos)
+                // 1. Busca por Matrícula
                 const q = query(collection(db, "alunos"), where("matricula", "==", matriculaRef));
-                const querySnapshot = await getDocs(q);
+                const snap = await getDocs(q);
                 
-                if(!querySnapshot.empty) {
-                    alunoData = querySnapshot.docs[0].data();
+                if(!snap.empty) {
+                    alunoData = snap.docs[0].data();
                 } else {
-                    // 2. SE NÃO ACHAR, TENTA BUSCAR POR ID DIRETO (Alunos Antigos)
-                    const docSnap = await getDoc(doc(db, "alunos", matriculaRef));
-                    if(docSnap.exists()) {
-                        alunoData = docSnap.data();
-                    }
+                    // 2. Busca por ID (Alunos antigos)
+                    const d = await getDoc(doc(db, "alunos", matriculaRef));
+                    if(d.exists()) alunoData = d.data();
                 }
                 
-                // SE ENCONTROU O ALUNO...
                 if(alunoData) {
+                    // Tenta obter o ID da equipe de forma resiliente
+                    const idDaEquipe = (alunoData.equipe_id || alunoData.equipeId || "").trim();
                     
-                    // Busca o nome da Equipe
-                    let nomeEquipe = "Equipe Não Informada";
-                    if(alunoData.equipe_id) {
-                        const eqSnap = await getDoc(doc(db, "equipes", alunoData.equipe_id));
-                        if(eqSnap.exists()) nomeEquipe = eqSnap.data().nome_equipe;
+                    if(idDaEquipe) {
+                        try {
+                            const eqSnap = await getDoc(doc(db, "equipes", idDaEquipe));
+                            if(eqSnap.exists()) {
+                                document.getElementById('val-equipe').innerText = eqSnap.data().nome_equipe.toUpperCase();
+                            } else {
+                                document.getElementById('val-equipe').innerText = "EQUIPE NÃO ENCONTRADA";
+                            }
+                        } catch(e) {
+                            document.getElementById('val-equipe').innerText = "ERRO AO CARREGAR EQUIPE";
+                        }
+                    } else {
+                        document.getElementById('val-equipe').innerText = "ID DA EQUIPE AUSENTE";
                     }
 
-                    // Preenche a tela
                     document.getElementById('val-nome').innerText = alunoData.nome;
-                    
                     const faixa = alunoData.faixa || 'BRANCA';
                     const grau = (alunoData.grau && alunoData.grau !== 'Sem grau') ? ` - ${alunoData.grau}` : '';
                     document.getElementById('val-faixa').innerText = (faixa + grau).toUpperCase();
-                    
-                    document.getElementById('val-equipe').innerText = nomeEquipe.toUpperCase();
                     document.getElementById('val-matricula').innerText = alunoData.matricula || matriculaRef;
                     
                     const elStatus = document.getElementById('val-status');
                     elStatus.innerText = alunoData.status || 'ATIVO';
-                    if(alunoData.status === 'INATIVO') {
-                        elStatus.classList.replace('text-emerald-400', 'text-rose-500');
-                    }
+                    if(alunoData.status === 'INATIVO') elStatus.classList.replace('text-emerald-400', 'text-rose-500');
 
                     if(alunoData.foto_url) {
                         document.getElementById('val-foto').src = alunoData.foto_url;
@@ -151,19 +138,13 @@
                         document.getElementById('val-foto-fallback').innerText = alunoData.nome.charAt(0).toUpperCase();
                     }
 
-                    // Mostra sucesso
                     document.getElementById('estado-loading').classList.add('hidden');
                     document.getElementById('estado-sucesso').classList.remove('hidden');
                     document.getElementById('estado-sucesso').classList.add('flex');
-
                 } else {
-                    // Se não achou de jeito nenhum, é falso
                     mostrarErro();
                 }
-            } catch(e) {
-                console.error("Erro na validação:", e);
-                mostrarErro();
-            }
+            } catch(e) { mostrarErro(); }
         };
 
         function mostrarErro() {

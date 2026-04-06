@@ -44,7 +44,7 @@
             <div class="w-full bg-slate-900/80 rounded-2xl p-5 border border-slate-700/50 text-left space-y-4">
                 <div>
                     <p class="text-[8px] text-slate-500 font-bold uppercase tracking-widest mb-0.5">Equipe / Academia</p>
-                    <p id="val-equipe" class="text-sm font-black text-white truncate">Buscando equipe...</p>
+                    <p id="val-equipe" class="text-xs font-black text-white break-words">Buscando equipe...</p>
                 </div>
                 <div class="flex justify-between items-end border-t border-slate-800 pt-3">
                     <div>
@@ -103,24 +103,33 @@
                 }
                 
                 if(alunoData) {
-                    // Tenta obter o ID da equipe de forma resiliente
-                    const idDaEquipe = (alunoData.equipe_id || alunoData.equipeId || "").trim();
+                    // Pega o ID da Equipe de forma blindada
+                    const idDaEquipe = String(alunoData.equipe_id || alunoData.equipeId || "").trim();
+                    const elEquipe = document.getElementById('val-equipe');
                     
-                    if(idDaEquipe) {
+                    if(idDaEquipe && idDaEquipe !== "undefined" && idDaEquipe !== "null") {
                         try {
                             const eqSnap = await getDoc(doc(db, "equipes", idDaEquipe));
                             if(eqSnap.exists()) {
-                                document.getElementById('val-equipe').innerText = eqSnap.data().nome_equipe.toUpperCase();
+                                const eqData = eqSnap.data();
+                                // Tenta 'nome_equipe', se não achar tenta 'nome', se não achar põe fallback
+                                const nome = eqData.nome_equipe || eqData.nome || "Academia Sem Nome Registado";
+                                elEquipe.innerText = nome.toUpperCase();
                             } else {
-                                document.getElementById('val-equipe').innerText = "EQUIPE NÃO ENCONTRADA";
+                                // MODO DETETIVE: Mostra qual ID ele tentou procurar
+                                elEquipe.innerText = "FALHA: ID " + idDaEquipe.substring(0, 8) + "... NÃO EXISTE";
+                                elEquipe.classList.add("text-rose-400");
                             }
                         } catch(e) {
-                            document.getElementById('val-equipe').innerText = "ERRO AO CARREGAR EQUIPE";
+                            elEquipe.innerText = "BLOQUEADO PELO FIREBASE: " + e.message;
+                            elEquipe.classList.add("text-rose-400");
                         }
                     } else {
-                        document.getElementById('val-equipe').innerText = "ID DA EQUIPE AUSENTE";
+                        elEquipe.innerText = "ID DA EQUIPE VAZIO NA FICHA";
+                        elEquipe.classList.add("text-amber-400");
                     }
 
+                    // Resto dos dados
                     document.getElementById('val-nome').innerText = alunoData.nome;
                     const faixa = alunoData.faixa || 'BRANCA';
                     const grau = (alunoData.grau && alunoData.grau !== 'Sem grau') ? ` - ${alunoData.grau}` : '';

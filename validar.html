@@ -61,14 +61,14 @@
 
         <div id="estado-sucesso-cert" class="hidden flex-col items-center">
             
-            <div id="cert-medalha-icon" class="w-16 h-16 bg-amber-500/20 text-amber-400 rounded-full flex items-center justify-center text-3xl mb-4 shadow-[0_0_30px_rgba(245,158,11,0.2)]">🏅</div>
+            <div id="cert-medalha-icon" class="w-16 h-16 bg-blue-500/20 text-blue-400 rounded-full flex items-center justify-center text-3xl mb-4 shadow-[0_0_30px_rgba(59,130,246,0.2)]">🏅</div>
             <img id="cert-equipe-logo" src="" class="h-20 w-auto object-contain mb-4 drop-shadow-md hidden">
 
             <h2 class="text-xl font-black text-white uppercase tracking-tight mb-1">Diploma Válido</h2>
-            <p class="text-[9px] text-amber-400 font-bold uppercase tracking-widest mb-8">Graduação Autêntica do Sistema</p>
+            <p class="text-[9px] text-blue-400 font-bold uppercase tracking-widest mb-8">Graduação Autêntica do Sistema</p>
 
             <h3 id="cert-nome-atleta" class="text-lg font-black text-white uppercase mb-1 leading-tight">NOME DO ATLETA</h3>
-            <p id="cert-faixa-concedida" class="text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-6">FAIXA</p>
+            <p id="cert-faixa-concedida" class="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-6">FAIXA</p>
 
             <div class="w-full bg-slate-900/80 rounded-2xl p-5 border border-slate-700/50 text-left space-y-4">
                 <div>
@@ -138,10 +138,10 @@
                 // ==========================================
                 if (certificadoQuery) {
                     document.getElementById('loading-text').innerText = "Validando Diploma...";
-                    document.getElementById('spinner').classList.replace('border-t-cyan-500', 'border-t-amber-500');
-                    document.getElementById('glow-bg').classList.replace('bg-slate-500/10', 'bg-amber-500/10');
-                    document.getElementById('txt-central-val').style.color = '#f59e0b';
-                    document.getElementById('card-validacao').classList.add('border-amber-500/30');
+                    document.getElementById('spinner').classList.replace('border-t-cyan-500', 'border-t-blue-500');
+                    document.getElementById('glow-bg').classList.replace('bg-slate-500/10', 'bg-blue-500/10');
+                    document.getElementById('txt-central-val').style.color = '#3b82f6'; // Azul Oficial
+                    document.getElementById('card-validacao').classList.add('border-blue-500/30');
 
                     const q = query(collection(db, "certificados"), where("numero_serie", "==", certificadoQuery));
                     const snap = await getDocs(q);
@@ -269,10 +269,10 @@
             document.getElementById('estado-erro').classList.remove('hidden');
             document.getElementById('estado-erro').classList.add('flex');
             
-            document.getElementById('glow-bg').classList.remove('bg-cyan-500/10', 'bg-amber-500/10');
-            document.getElementById('glow-bg').classList.add('bg-rose-500/10');
+            // Limpa as cores de sucesso para forçar o vermelho
+            document.getElementById('card-validacao').className = "w-full max-w-sm bg-slate-800/80 backdrop-blur-xl rounded-3xl shadow-2xl border p-8 text-center relative z-10 transition-all border-rose-500/30";
+            document.getElementById('glow-bg').className = "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] rounded-full blur-[100px] pointer-events-none transition-colors duration-1000 bg-rose-500/10";
             document.getElementById('txt-central-val').style.color = '#f43f5e';
-            document.getElementById('card-validacao').classList.add('border-rose-500/30');
         }
     </script>
 </body>

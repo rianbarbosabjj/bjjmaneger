@@ -98,11 +98,11 @@
                         </div>
                     </div>
 
-                    <div class="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-slate-200 overflow-hidden text-sm">
+                    <div class="bg-white rounded-2xl md:rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
                         <div class="overflow-x-auto w-full">
                             <table class="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
                                 <thead>
-                                    <tr class="bg-slate-50 border-b border-slate-200 uppercase text-[10px] font-black text-slate-400">
+                                    <tr class="bg-slate-50 border-b border-slate-200 uppercase text-[10px] font-black text-slate-400 tracking-widest">
                                         <th class="px-4 md:px-6 py-4 w-10 text-center">Sel</th>
                                         <th class="px-4 md:px-6 py-4">Atleta</th>
                                         <th class="px-4 md:px-6 py-4 text-center">CPF</th>
@@ -112,7 +112,7 @@
                                     </tr>
                                 </thead>
                                 <tbody id="tabela-alunos" class="divide-y divide-slate-100">
-                                    <tr><td colspan="6" class="text-center py-12 text-slate-400 font-medium italic">Buscando dados...</td></tr>
+                                    <tr><td colspan="6" class="text-center py-12 text-slate-400 font-medium">Buscando dados...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -144,50 +144,130 @@
             <div class="p-5 md:p-8 overflow-y-auto space-y-6 flex-1 bg-white hide-scrollbar">
                 <div id="aba-pessoal" class="aba-content space-y-5">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
-                        <div class="md:col-span-2"><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Matrícula</label><input type="text" id="aluno-matricula" disabled class="w-full p-3 bg-slate-100 border border-slate-200 rounded-xl font-mono text-slate-500 font-bold"></div>
-                        <div class="md:col-span-2"><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome Completo</label><input type="text" id="aluno-nome" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 uppercase font-bold text-slate-700 outline-none"></div>
-                        <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CPF</label><input type="text" id="aluno-cpf" placeholder="000.000.000-00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none"></div>
-                        <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Data Nascimento</label><input type="date" id="aluno-nasc" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none"></div>
-                        <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Faixa Atual</label><select id="aluno-faixa" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold"><option>Branca</option><option>Cinza e Branca</option><option>Cinza</option><option>Cinza e Preta</option><option>Amarela</option><option>Laranja</option><option>Verde</option><option>Azul</option><option>Roxa</option><option>Marrom</option><option>Preta</option></select></div>
-                        <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Grau</label><select id="aluno-grau" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl"><option>Sem grau</option><option>1º</option><option>2º</option><option>3º</option><option>4º</option></select></div>
+                        <div class="md:col-span-2">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Matrícula</label>
+                            <input type="text" id="aluno-matricula" disabled class="w-full p-3 bg-slate-100 border border-slate-200 rounded-xl outline-none font-mono text-slate-500 font-bold" placeholder="Gerada Auto">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome Completo</label>
+                            <input type="text" id="aluno-nome" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100 outline-none uppercase font-bold text-slate-700 transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CPF</label>
+                            <input type="text" id="aluno-cpf" placeholder="000.000.000-00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Data Nascimento</label>
+                            <input type="date" id="aluno-nasc" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Faixa Atual</label>
+                            <select id="aluno-faixa" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:bg-white focus:border-cyan-500 outline-none transition-all cursor-pointer">
+                                <option>Branca</option><option>Cinza e Branca</option><option>Cinza</option><option>Cinza e Preta</option><option>Amarela e Branca</option><option>Amarela</option><option>Amarela e Preta</option><option>Laranja e Branca</option><option>Laranja</option><option>Laranja e Preta</option><option>Verde e Branca</option><option>Verde</option><option>Verde e Preta</option><option>Azul</option><option>Roxa</option><option>Marrom</option><option>Preta</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Grau</label>
+                            <select id="aluno-grau" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 focus:bg-white focus:border-cyan-500 outline-none transition-all cursor-pointer">
+                                <option>Sem grau</option><option>1º</option><option>2º</option><option>3º</option><option>4º</option>
+                            </select>
+                        </div>
                         <input type="hidden" id="aluno-id-oculto">
                     </div>
                 </div>
+
                 <div id="aba-contato" class="aba-content hidden space-y-5">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input type="text" id="aluno-tel" placeholder="Telefone (WhatsApp)" class="w-full p-3 bg-slate-50 border rounded-xl">
-                        <input type="text" id="aluno-peso" placeholder="Peso (Kg)" class="w-full p-3 bg-slate-50 border rounded-xl">
-                        <input type="email" id="aluno-email" placeholder="E-mail" class="w-full p-3 bg-slate-50 border rounded-xl md:col-span-2">
-                        <input type="text" id="aluno-endereco" placeholder="Endereço Completo" class="w-full p-3 bg-slate-50 border rounded-xl md:col-span-2">
-                        <input type="text" id="aluno-bairro" placeholder="Bairro" class="w-full p-3 bg-slate-50 border rounded-xl">
-                        <input type="text" id="aluno-cep" placeholder="CEP" class="w-full p-3 bg-slate-50 border rounded-xl">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Telefone (WhatsApp)</label>
+                            <input type="text" id="aluno-tel" placeholder="(00) 00000-0000" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Peso (Kg)</label>
+                            <input type="text" id="aluno-peso" placeholder="Ex: 80" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">E-mail</label>
+                            <input type="email" id="aluno-email" placeholder="aluno@email.com" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Endereço Completo</label>
+                            <input type="text" id="aluno-endereco" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Bairro</label>
+                            <input type="text" id="aluno-bairro" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nº</label>
+                                <input type="text" id="aluno-numero" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CEP</label>
+                                <input type="text" id="aluno-cep" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none">
+                            </div>
+                        </div>
                     </div>
                 </div>
+
                 <div id="aba-resp" class="aba-content hidden space-y-5">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input type="text" id="aluno-resp-nome" placeholder="Nome do Responsável" class="w-full p-3 bg-slate-50 border rounded-xl uppercase font-bold md:col-span-2">
-                        <select id="aluno-bolsa" class="w-full p-3 bg-slate-50 border rounded-xl font-bold"><option value="0">Sem Desconto</option><option value="10">10%</option><option value="50">50%</option><option value="100">100%</option></select>
-                        <select id="aluno-status" class="w-full p-3 bg-slate-50 border rounded-xl font-bold"><option value="ATIVO">🟢 ATIVO</option><option value="INATIVO">🔴 INATIVO</option></select>
-                        <select id="aluno-vencimento" class="w-full p-3 bg-slate-50 border rounded-xl font-bold"></select>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+                        <div class="md:col-span-2">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome do Responsável (se menor)</label>
+                            <input type="text" id="aluno-resp-nome" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl uppercase font-bold text-slate-700 outline-none focus:border-cyan-500">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CPF do Responsável</label>
+                            <input type="text" id="aluno-resp-cpf" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500">
+                        </div>
+                        <div class="border-t border-slate-100 pt-4 md:col-span-2"></div>
+                        <div>
+                            <label class="block text-[10px] font-black text-cyan-600 uppercase mb-1">Bolsa / Desconto (%)</label>
+                            <select id="aluno-bolsa" class="w-full p-3 bg-cyan-50 border border-cyan-200 rounded-xl font-bold outline-none text-cyan-700 focus:ring-2 focus:ring-cyan-200">
+                                <option value="0">0% (Integral)</option><option value="10">10%</option><option value="20">20%</option><option value="25">25%</option><option value="50">50%</option><option value="75">75%</option><option value="100">100% (Isento)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Status do Aluno</label>
+                            <select id="aluno-status" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none text-slate-700">
+                                <option value="ATIVO">🟢 ATIVO</option><option value="INATIVO">🔴 INATIVO</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Dia de Vencimento</label>
+                            <select id="aluno-vencimento" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none text-slate-700"></select>
+                        </div>
                     </div>
                 </div>
+
                 <div id="aba-lgpd" class="aba-content hidden space-y-5">
-                    <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200">
-                        <label class="flex items-center space-x-3 cursor-pointer">
-                            <input type="checkbox" id="lgpd-concordo" class="w-5 h-5 rounded mt-0.5"><span class="text-xs font-black text-amber-900 uppercase tracking-tight">Li e Concordo com os Termos LGPD (Lei 13.853/19)</span>
+                    <div class="bg-amber-50 p-4 md:p-5 rounded-2xl border border-amber-200 transition-all">
+                        <label class="flex items-start space-x-3 cursor-pointer">
+                            <input type="checkbox" id="lgpd-concordo" class="w-5 h-5 md:w-6 md:h-6 rounded text-amber-600 focus:ring-amber-500 mt-0.5">
+                            <span class="text-[10px] md:text-xs font-black text-amber-900 uppercase tracking-tight">Li e Concordo com os Termos de Proteção de Dados (Lei 13.853/19)</span>
                         </label>
                     </div>
-                    <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
-                        <label class="flex items-center space-x-3 text-xs font-bold text-slate-600"><input type="checkbox" id="lgpd-redes" class="w-4 h-4"><span>Redes Sociais Oficiais</span></label>
-                        <label class="flex items-center space-x-3 text-xs font-bold text-slate-600"><input type="checkbox" id="lgpd-site" class="w-4 h-4"><span>Site Institucional</span></label>
-                        <button onclick="gerarPDF_LGPD()" id="btn-gerar-pdf" class="w-full mt-4 bg-slate-800 text-white font-bold py-3 rounded-xl hidden">🖨️ Gerar PDF LGPD</button>
+                    
+                    <div class="space-y-4 bg-slate-50 p-4 md:p-5 rounded-2xl border border-slate-200">
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 border-b border-slate-200 pb-2">Autorizo o uso de imagem para:</p>
+                        <div class="space-y-3">
+                            <label class="flex items-center space-x-3 text-xs md:text-sm font-bold text-slate-600 cursor-pointer"><input type="checkbox" id="lgpd-redes" class="w-5 h-5 rounded text-cyan-600"> <span>Redes Sociais Oficiais</span></label>
+                            <label class="flex items-center space-x-3 text-xs md:text-sm font-bold text-slate-600 cursor-pointer"><input type="checkbox" id="lgpd-site" class="w-5 h-5 rounded text-cyan-600"> <span>Site Institucional</span></label>
+                            <label class="flex items-center space-x-3 text-xs md:text-sm font-bold text-slate-600 cursor-pointer"><input type="checkbox" id="lgpd-promo" class="w-5 h-5 rounded text-cyan-600"> <span>Materiais Promocionais</span></label>
+                            <label class="flex items-center space-x-3 text-xs md:text-sm font-bold text-slate-600 cursor-pointer"><input type="checkbox" id="lgpd-relatorio" class="w-5 h-5 rounded text-cyan-600"> <span>Relatórios / Prestação de Contas</span></label>
+                        </div>
+                        
+                        <button onclick="gerarPDF_LGPD()" id="btn-gerar-pdf" class="w-full mt-4 bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-4 rounded-xl shadow-sm transition-all text-xs md:text-sm hidden">
+                            🖨️ Gerar Assinatura Digital (PDF)
+                        </button>
                     </div>
                 </div>
             </div>
 
             <div class="p-4 md:p-6 bg-slate-50 border-t border-slate-200 flex flex-wrap justify-end gap-3 rounded-b-3xl shrink-0">
-                <button onclick="abrirModalCarteirinha()" id="btn-abrir-carteirinha" class="flex-1 md:flex-none bg-indigo-500 hover:bg-indigo-600 text-white font-black py-3 px-6 rounded-xl text-sm hidden uppercase tracking-widest shadow-md">🪪 Carteirinha</button>
-                <button onclick="fecharModal()" class="flex-1 md:flex-none px-6 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-200 transition-colors">Cancelar</button>
+                <button onclick="abrirModalCarteirinha()" id="btn-abrir-carteirinha" class="flex-1 md:flex-none bg-indigo-500 hover:bg-indigo-600 text-white font-black py-3 px-6 rounded-xl text-sm uppercase tracking-widest hidden shadow-md transition-all">🪪 Carteirinha</button>
+                <button onclick="fecharModal()" class="flex-1 md:flex-none px-6 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-200 transition-colors text-sm">Cancelar</button>
                 <button onclick="salvarAluno()" class="flex-1 md:flex-none bg-cyan-500 hover:bg-cyan-600 text-white font-black py-3 px-8 rounded-xl shadow-md transition-all text-sm uppercase tracking-widest">💾 Salvar</button>
             </div>
         </div>
@@ -198,13 +278,15 @@
             <div class="flex justify-between items-center mb-6 max-w-[600px] mx-auto">
                 <div class="text-white text-sm font-bold uppercase tracking-widest">Carteirinha Digital</div>
                 <div class="flex gap-2">
-                    <button onclick="window.print()" class="bg-cyan-500 text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase shadow-lg">🖨️ Imprimir</button>
-                    <button onclick="fecharModalCarteirinha()" class="bg-slate-700 text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase shadow-lg">Voltar</button>
+                    <button onclick="window.print()" class="bg-cyan-500 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase shadow-lg hover:bg-cyan-600">🖨️ Imprimir</button>
+                    <button onclick="fecharModalCarteirinha()" class="bg-slate-700 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase shadow-lg hover:bg-slate-600">Voltar</button>
                 </div>
             </div>
 
             <div class="print-carteirinha-wrapper relative mx-auto bg-white rounded-2xl overflow-hidden shadow-2xl border border-slate-200 flex text-slate-800 font-sans w-full max-w-[600px] aspect-[1.58/1] shrink-0" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
-                <div class="absolute top-0 right-0 w-64 h-full bg-slate-200/40 skew-x-[-20deg] translate-x-10 z-0"></div>
+                <div class="absolute top-0 right-0 w-64 h-full bg-slate-200/40 skew-x-[-20deg] translate-x-10 z-0 pointer-events-none"></div>
+                <div class="absolute bottom-0 left-0 w-full h-1/3 bg-slate-300/30 skew-y-[-5deg] origin-bottom-right z-0 pointer-events-none"></div>
+
                 <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden">
                     <img id="cart-equipe-watermark" src="" class="w-[120%] h-[120%] object-contain opacity-[0.04] grayscale hidden" style="transform: scale(1.1);">
                     <div id="cart-equipe-watermark-fallback" class="text-[30rem] leading-none font-black text-slate-800 opacity-[0.03] hidden">E</div>
@@ -213,7 +295,7 @@
                 <div class="flex-1 p-5 md:p-6 flex flex-col z-10 w-[65%]">
                     <div class="flex items-center gap-4 mb-6">
                         <div class="h-16 md:h-20 w-16 md:w-20 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-sm shrink-0 overflow-hidden">
-                            <img id="cart-equipe-logo" src="" class="h-full w-full object-contain p-1.5 hidden">
+                            <img id="cart-equipe-logo" src="" class="h-full w-full object-contain p-1.5 drop-shadow-sm hidden">
                             <div id="cart-equipe-fallback" class="text-3xl font-black text-slate-700 hidden">E</div>
                         </div>
                         <div class="flex flex-col justify-center">
@@ -284,7 +366,6 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        let uid = null;
         let teamId = null;
         let todosAlunosCache = [];
         let equipeDados = { nome: "Sua Equipe", logo: "" };
@@ -300,7 +381,6 @@
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                uid = user.uid;
                 const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
                 if (mestreDoc.exists()) { 
                     teamId = user.uid; 
@@ -319,7 +399,7 @@
             const eqSnap = await getDoc(doc(db, "equipes", teamId));
             if (eqSnap.exists()) {
                 const d = eqSnap.data();
-                equipeDados.nome = d.nome_equipe || "Sua Equipe";
+                equipeDados.nome = d.nome_equipe || d.nome || "Sua Equipe";
                 equipeDados.logo = d.url_logo || "";
                 const elNome = document.getElementById('nome-equipe') || document.getElementById('lbl-equipe');
                 if(elNome) elNome.innerText = equipeDados.nome.toUpperCase();
@@ -368,16 +448,31 @@
             document.getElementById('aluno-nome').value = a.nome || '';
             document.getElementById('aluno-matricula').value = a.matricula || 'S/N';
             document.getElementById('aluno-nasc').value = a.data_nascimento || '';
+            document.getElementById('aluno-cpf').value = a.cpf || '';
             document.getElementById('aluno-faixa').value = a.faixa || 'Branca';
             document.getElementById('aluno-grau').value = a.grau || 'Sem grau';
             document.getElementById('aluno-tel').value = a.telefone || '';
             document.getElementById('aluno-peso').value = a.peso || '';
             document.getElementById('aluno-email').value = a.email || '';
+            document.getElementById('aluno-endereco').value = a.endereco || '';
+            document.getElementById('aluno-bairro').value = a.bairro || '';
+            document.getElementById('aluno-numero').value = a.numero || '';
+            document.getElementById('aluno-cep').value = a.cep || '';
             document.getElementById('aluno-resp-nome').value = a.nome_responsavel || '';
+            document.getElementById('aluno-resp-cpf').value = a.cpf_responsavel || '';
+            document.getElementById('aluno-bolsa').value = a.bolsa_perc || '0';
+            document.getElementById('aluno-vencimento').value = a.dia_vencimento || '10';
             document.getElementById('aluno-status').value = a.status || 'ATIVO';
+            
             document.getElementById('lgpd-concordo').checked = a.lgpd_concordo || false;
+            document.getElementById('lgpd-redes').checked = a.lgpd_redes || false;
+            document.getElementById('lgpd-site').checked = a.lgpd_site || false;
+            document.getElementById('lgpd-promo').checked = a.lgpd_promo || false;
+            document.getElementById('lgpd-relatorio').checked = a.lgpd_relatorios || false;
             
             document.getElementById('btn-abrir-carteirinha').classList.remove('hidden');
+            document.getElementById('btn-gerar-pdf').classList.remove('hidden');
+
             mudarAba('aba-pessoal');
             document.getElementById('modal-aluno').classList.replace('hidden', 'flex');
         }
@@ -386,22 +481,45 @@
             const id = alunoEditandoId;
             const nome = document.getElementById('aluno-nome').value.toUpperCase();
             if(!nome) return showToast("Nome obrigatório");
+            
             const dados = {
-                equipe_id: teamId, nome: nome, faixa: document.getElementById('aluno-faixa').value,
-                grau: document.getElementById('aluno-grau').value, status: document.getElementById('aluno-status').value, 
-                data_nascimento: document.getElementById('aluno-nasc').value, telefone: document.getElementById('aluno-tel').value, 
-                peso: document.getElementById('aluno-peso').value, email: document.getElementById('aluno-email').value,
+                equipe_id: teamId, 
+                nome: nome, 
+                cpf: document.getElementById('aluno-cpf').value,
+                data_nascimento: document.getElementById('aluno-nasc').value,
+                faixa: document.getElementById('aluno-faixa').value,
+                grau: document.getElementById('aluno-grau').value,
+                telefone: document.getElementById('aluno-tel').value, 
+                peso: document.getElementById('aluno-peso').value,
+                email: document.getElementById('aluno-email').value,
+                endereco: document.getElementById('aluno-endereco').value,
+                bairro: document.getElementById('aluno-bairro').value,
+                numero: document.getElementById('aluno-numero').value,
+                cep: document.getElementById('aluno-cep').value,
                 nome_responsavel: document.getElementById('aluno-resp-nome').value.toUpperCase(),
-                lgpd_concordo: document.getElementById('lgpd-concordo').checked
+                cpf_responsavel: document.getElementById('aluno-resp-cpf').value,
+                bolsa_perc: parseInt(document.getElementById('aluno-bolsa').value),
+                dia_vencimento: parseInt(document.getElementById('aluno-vencimento').value),
+                status: document.getElementById('aluno-status').value, 
+                lgpd_concordo: document.getElementById('lgpd-concordo').checked,
+                lgpd_redes: document.getElementById('lgpd-redes').checked,
+                lgpd_site: document.getElementById('lgpd-site').checked,
+                lgpd_promo: document.getElementById('lgpd-promo').checked,
+                lgpd_relatorios: document.getElementById('lgpd-relatorio').checked
             };
+
             try {
-                if(id) await updateDoc(doc(db, "alunos", id), dados);
-                else { 
+                if(id) {
+                    await updateDoc(doc(db, "alunos", id), dados);
+                    showToast("Ficha atualizada com sucesso!", "success");
+                } else { 
                     dados.matricula = new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000).toString();
                     dados.data_cadastro = new Date().toISOString();
                     await addDoc(collection(db, "alunos"), dados); 
+                    showToast("Matrícula criada com sucesso!", "success");
                 }
-                fecharModal(); buscarAlunosFirebase(); showToast("Sucesso!", "success");
+                fecharModal(); 
+                buscarAlunosFirebase(); 
             } catch(e) { showToast("Erro ao salvar"); }
         }
 
@@ -425,11 +543,13 @@
             }
 
             document.getElementById('cart-aluno-nome-txt').innerText = a.nome;
-            document.getElementById('cart-aluno-faixa-texto').innerText = (a.faixa || 'BRANCA').toUpperCase();
+            
+            const grau = a.grau && a.grau !== "Sem grau" ? ` - ${a.grau}` : "";
+            document.getElementById('cart-aluno-faixa-texto').innerText = ((a.faixa || 'BRANCA') + grau).toUpperCase();
+            
             document.getElementById('cart-aluno-matricula-txt').innerText = a.matricula || '0000';
             document.getElementById('cart-aluno-nascimento-txt').innerText = a.data_nascimento ? a.data_nascimento.split('-').reverse().join('/') : '--/--/----';
             
-            // Cor da borda
             const f = a.faixa.toLowerCase();
             let cB = '#cbd5e1';
             if(f.includes('azul')) cB='#3b82f6'; else if(f.includes('roxa')) cB='#a855f7'; else if(f.includes('marrom')) cB='#78350f'; else if(f.includes('preta')) cB='#000000'; else if(f.includes('amarela')) cB='#eab308';
@@ -449,14 +569,70 @@
         }
 
         window.corrigirTodosAlunos = async function() {
-            if(!confirm("Resgatar alunos antigos?")) return;
-            showToast("Corrigindo...", "success");
+            if(!confirm("🤖 MODO ROBÔ\n\nIsso vai varrer todos os alunos e forçar a gravação do ID correto da Equipe na ficha deles para que as validações funcionem.\n\nDeseja continuar?")) return;
+            showToast("O Robô iniciou a correção, por favor aguarde...", "success");
+            let count = 0;
             const snap = await getDocs(collection(db, "alunos"));
             for(let d of snap.docs) {
                 const data = d.data();
-                if(data.equipe_id !== teamId) await updateDoc(doc(db, "alunos", d.id), { equipe_id: teamId });
+                if(data.equipe_id !== teamId) {
+                    await updateDoc(doc(db, "alunos", d.id), { equipe_id: teamId });
+                    count++;
+                }
             }
-            showToast("Concluído!", "success"); buscarAlunosFirebase();
+            showToast(count + " alunos corrigidos com sucesso!", "success"); 
+            buscarAlunosFirebase();
+        }
+
+        window.gerarPDF_LGPD = function() {
+            if(!document.getElementById('lgpd-concordo').checked) {
+                return showToast("Atenção: A caixa de 'Li e Concordo' precisa estar marcada.", "error");
+            }
+
+            const nome = document.getElementById('aluno-nome').value || '[NOME DO ALUNO]';
+            const resp = document.getElementById('aluno-resp-nome').value;
+            const repTexto = resp ? " neste ato representado(a) por seu responsável legal " + resp + ", " : " ";
+            
+            let usos = [];
+            if(document.getElementById('lgpd-redes').checked) usos.push("Publicações em redes sociais oficiais da Equipe.");
+            if(document.getElementById('lgpd-site').checked) usos.push("Divulgação em site institucional.");
+            if(document.getElementById('lgpd-promo').checked) usos.push("Materiais informativos e promocionais.");
+            if(document.getElementById('lgpd-relatorio').checked) usos.push("Relatórios e prestação de contas.");
+
+            let listaUsosHtml = usos.length > 0 ? usos.map(u => `<p style='margin: 10px 0;'>&bull; ${u}</p>`).join('') : "<p style='margin: 10px 0;'><i>Nenhuma autorização específica.</i></p>";
+            
+            let dataAtual = new Date().toLocaleString('pt-BR');
+            let hash = "GERADO-" + Math.random().toString(36).substring(2, 10).toUpperCase() + "-" + Math.random().toString(36).substring(2, 10).toUpperCase();
+            
+            const alunoCache = todosAlunosCache.find(a => a.id === alunoEditandoId);
+            if (alunoCache && alunoCache.data_cadastro) {
+                let dtStr = alunoCache.data_cadastro;
+                if (dtStr.includes('T')) dataAtual = new Date(dtStr).toLocaleString('pt-BR');
+                else dataAtual = dtStr;
+                hash = alunoCache.id.toUpperCase() + "-" + Math.random().toString(36).substring(2, 10).toUpperCase();
+            }
+
+            const assinante = (resp || nome).toUpperCase();
+            const area = document.getElementById('area-impressao');
+            
+            area.innerHTML = 
+                "<div style='font-family: Arial, Helvetica, sans-serif; max-width: 800px; margin: 0 auto; color: #000; line-height: 1.5;'>" +
+                    "<h1 style='text-align: center; font-size: 16px; margin-bottom: 40px; font-weight: bold;'>TERMO DE AUTORIZAÇÃO DE USO DE IMAGEM E DADOS (LGPD)</h1>" +
+                    "<p style='text-align: justify; margin-bottom: 30px;'>Pelo presente instrumento, em conformidade com a Lei Geral de Proteção de Dados Pessoais (Lei n&deg; 13.853/2019), o(a) aluno(a) " + nome.toUpperCase() + repTexto + "declara estar ciente e de acordo com as pol&iacute;ticas da Equipe.</p>" +
+                    "<p style='font-weight: bold; margin-bottom: 10px;'>Autoriza&ccedil;&atilde;o de Uso de Imagem:</p>" +
+                    "<div style='margin-left: 20px; margin-bottom: 30px;'>" + listaUsosHtml + "</div>" +
+                    "<p style='font-weight: bold; margin-bottom: 10px;'>Declara&ccedil;&atilde;o de Privacidade:</p>" +
+                    "<p style='text-align: justify; margin-bottom: 60px;'>A Equipe declara que n&atilde;o divulgar&aacute; dados pessoais sens&iacute;veis, n&atilde;o comercializar&aacute; imagens e adotar&aacute; medidas de seguran&ccedil;a para prote&ccedil;&atilde;o das informa&ccedil;&otilde;es coletadas.</p>" +
+                    "<p style='text-align: center; font-weight: bold; margin-bottom: 20px;'>ACEITE ELETR&Ocirc;NICO / ASSINATURA DIGITAL</p>" +
+                    "<p style='text-align: justify; margin-bottom: 30px;'>Este documento foi validado eletronicamente atrav&eacute;s dos dados submetidos pelo formul&aacute;rio oficial de matr&iacute;cula e integrados na base de dados.</p>" +
+                    "<p style='margin-bottom: 10px;'>Aceite Registado por: " + assinante + "</p>" +
+                    "<p style='margin-bottom: 10px;'>Data e Hora do Registo Oficial: " + dataAtual + "</p>" +
+                    "<p style='margin-bottom: 10px;'>C&oacute;digo de Autentica&ccedil;&atilde;o (Hash): " + hash + "</p>" +
+                "</div>";
+
+            area.classList.remove('hidden');
+            window.print();
+            setTimeout(() => { area.classList.add('hidden'); }, 1000);
         }
 
         window.mudarAba = (id) => {
@@ -465,18 +641,35 @@
             document.querySelectorAll('.aba-item').forEach(x => { x.classList.remove('tab-active'); x.classList.add('text-slate-400'); });
             document.getElementById('btn-'+id).classList.add('tab-active'); document.getElementById('btn-'+id).classList.remove('text-slate-400');
         }
-        window.showToast = (msg, type) => {
+
+        window.showToast = (msg, type = 'error') => {
             const container = document.getElementById('toast-container');
+            if(!container) return alert(msg);
             const div = document.createElement('div');
-            div.className = `p-4 rounded-xl text-white font-bold shadow-xl ${type === 'success' ? 'bg-emerald-500' : 'bg-rose-500'} pointer-events-auto`;
+            const bgColor = type === 'success' ? 'bg-emerald-500' : 'bg-rose-500';
+            div.className = `p-4 rounded-xl text-white font-bold shadow-xl ${bgColor} pointer-events-auto transition-all`;
             div.innerText = msg; container.appendChild(div); setTimeout(() => div.remove(), 4000);
         }
+
         window.fecharModal = () => document.getElementById('modal-aluno').classList.replace('flex', 'hidden');
         window.fecharModalCarteirinha = () => { document.getElementById('modal-carteirinha').classList.replace('flex', 'hidden'); abrirFichaAluno(alunoEditandoId); }
-        window.excluirAluno = async (id) => { if(confirm("Excluir?")) { await deleteDoc(doc(db, "alunos", id)); buscarAlunosFirebase(); } }
-        window.abrirModal = () => { alunoEditandoId = null; document.querySelectorAll('#modal-aluno input').forEach(i => i.value = ''); document.getElementById('modal-titulo').innerText = "Nova Matrícula"; document.getElementById('btn-abrir-carteirinha').classList.add('hidden'); document.getElementById('modal-aluno').classList.replace('hidden', 'flex'); mudarAba('aba-pessoal'); }
+        window.excluirAluno = async (id) => { if(confirm("Deseja excluir este atleta da sua equipe?")) { await deleteDoc(doc(db, "alunos", id)); buscarAlunosFirebase(); } }
+        
+        window.abrirModal = () => { 
+            alunoEditandoId = null; 
+            document.querySelectorAll('#modal-aluno input[type="text"], #modal-aluno input[type="email"], #modal-aluno input[type="date"]').forEach(i => i.value = ''); 
+            document.querySelectorAll('#modal-aluno input[type="checkbox"]').forEach(i => i.checked = false);
+            document.getElementById('modal-titulo').innerText = "Nova Matrícula"; 
+            document.getElementById('aluno-matricula').value = "Gerada Auto";
+            document.getElementById('aluno-faixa').value = "Branca";
+            document.getElementById('aluno-grau').value = "Sem grau";
+            document.getElementById('btn-abrir-carteirinha').classList.add('hidden'); 
+            document.getElementById('btn-gerar-pdf').classList.add('hidden');
+            mudarAba('aba-pessoal'); 
+            document.getElementById('modal-aluno').classList.replace('hidden', 'flex'); 
+        }
+
         window.limparBusca = () => { document.getElementById('input-busca').value = ''; renderizarTabela(); }
-        window.gerarPDF_LGPD = function() { window.print(); }
     </script>
 </body>
 </html>

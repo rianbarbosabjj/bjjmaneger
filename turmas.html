@@ -182,16 +182,29 @@
 
 onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // --- ATUALIZAÇÃO DO PERFIL (Canto Inferior Esquerdo) ---
-                const elEmail = document.getElementById('email-logado') || document.querySelector('aside p[class*="rianbarbosa"]');
-                const elCargo = document.querySelector('aside span[class*="ACESSANDO"]') || document.querySelector('aside span[class*="text-slate-500"]');
-                
-                // Força a exibição do email e troca "ACESSANDO..." por "ADMINISTRADOR"
-                if(elEmail) elEmail.innerText = user.email;
-                if(elCargo) {
-                    elCargo.innerText = "ADMINISTRADOR";
-                    elCargo.classList.remove('animate-pulse'); // Remove qualquer efeito de carregamento se houver
-                }
+                // --- FAXINA NO PERFIL (FORÇA A SAÍDA DO "ACESSANDO...") ---
+                const limparAcessando = () => {
+                    const aside = document.querySelector('aside');
+                    if (aside) {
+                        // 1. Procura o parágrafo do email
+                        const elementos = aside.querySelectorAll('p, span, h4');
+                        elementos.forEach(el => {
+                            // Se encontrar o texto de carregamento ou acessando, limpa na hora
+                            if (el.innerText.includes('carregando') || el.innerText.includes('rianbarbosa')) {
+                                el.innerText = user.email;
+                            }
+                            if (el.innerText.includes('ACESSANDO')) {
+                                el.innerText = 'ADMINISTRADOR';
+                                el.classList.remove('animate-pulse'); // Mata a animação de brilho
+                                el.style.opacity = "1";
+                            }
+                        });
+                    }
+                };
+
+                // Executa imediatamente e garante uma segunda passada após meio segundo
+                limparAcessando();
+                setTimeout(limparAcessando, 600);
 
                 // Identifica se é Mestre ou Co-Administrador
                 const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
@@ -206,7 +219,6 @@ onAuthStateChanged(auth, async (user) => {
                     await carregarDadosEquipe();
                     await carregarAlunos(); 
                     await carregarTurmas();
-                    limparInativosDasTurmas(); 
                 }
             } else { window.location.href = "index.html"; }
         });

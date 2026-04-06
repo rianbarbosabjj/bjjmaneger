@@ -63,7 +63,6 @@
     <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-auto"></div>
 
     <div id="interface-sistema" class="flex w-full h-full relative">
-        
         <main class="flex-1 flex flex-col h-full overflow-hidden relative">
             <div class="flex-1 overflow-y-auto p-4 md:p-10 pb-24 md:pb-10">
                 <div class="max-w-7xl mx-auto">
@@ -74,9 +73,6 @@
                             <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Administre sua equipe</p>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                            <button onclick="limparDuplicados()" class="w-full sm:w-auto bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 md:py-2.5 px-4 md:px-6 rounded-xl shadow-md transition-all flex items-center justify-center text-xs md:text-sm">
-                                <span class="mr-2 text-base">🧹</span> Limpar Duplicatas
-                            </button>
                             <button onclick="abrirModal()" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 md:py-2.5 px-4 md:px-6 rounded-xl shadow-md transition-all flex items-center justify-center text-xs md:text-sm">
                                 <span class="mr-2 text-base">➕</span> Nova Matrícula
                             </button>
@@ -98,9 +94,7 @@
                         </div>
                         <div class="flex items-center justify-between w-full md:w-auto gap-4">
                             <span id="lbl-total-ativos" class="text-xs md:text-sm font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100">Total Ativos: 0</span>
-                            <button onclick="fundirFichas()" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-colors shadow-sm items-center hidden" id="btn-fundir">
-                                🧬 Fundir (2)
-                            </button>
+                            <button onclick="fundirFichas()" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-colors shadow-sm items-center hidden" id="btn-fundir">🧬 Fundir (2)</button>
                         </div>
                     </div>
 
@@ -108,18 +102,17 @@
                         <div class="overflow-x-auto w-full">
                             <table class="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
                                 <thead>
-                                    <tr class="bg-slate-50 border-b border-slate-200">
-                                        <th class="px-4 md:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 w-10 text-center">Sel</th>
-                                        <th class="px-4 md:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Atleta</th>
-                                        <th class="px-4 md:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">CPF</th>
-                                        <th class="px-4 md:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Faixa</th>
-                                        <th class="px-4 md:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Idade</th>
-                                        <th class="px-4 md:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Status</th>
-                                        <th class="px-4 md:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Ações</th>
+                                    <tr class="bg-slate-50 border-b border-slate-200 uppercase text-[10px] font-black text-slate-400 tracking-widest">
+                                        <th class="px-4 md:px-6 py-4 w-10 text-center">Sel</th>
+                                        <th class="px-4 md:px-6 py-4">Atleta</th>
+                                        <th class="px-4 md:px-6 py-4 text-center">CPF</th>
+                                        <th class="px-4 md:px-6 py-4 text-center">Faixa</th>
+                                        <th class="px-4 md:px-6 py-4 text-center">Status</th>
+                                        <th class="px-4 md:px-6 py-4 text-center">Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tabela-alunos" class="divide-y divide-slate-100">
-                                    <tr><td colspan="7" class="text-center py-12 text-slate-400 font-medium">Buscando dados...</td></tr>
+                                    <tr><td colspan="6" class="text-center py-12 text-slate-400 font-medium">Buscando dados...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -412,6 +405,18 @@
                 equipeDados.logo = d.url_logo || "";
                 const elNome = document.getElementById('nome-equipe') || document.getElementById('lbl-equipe');
                 if(elNome) elNome.innerText = equipeDados.nome.toUpperCase();
+
+                // RESTAURA A LOGO NO MENU LATERAL
+                const elLogo = document.getElementById('container-logo');
+                if (elLogo) {
+                    if (equipeDados.logo) {
+                        elLogo.style.background = 'transparent';
+                        elLogo.innerHTML = `<img src="${equipeDados.logo}" class="w-full h-full object-cover rounded-xl" alt="Logo">`;
+                    } else {
+                        elLogo.style.background = ''; 
+                        elLogo.innerHTML = equipeDados.nome.charAt(0).toUpperCase();
+                    }
+                }
             }
         }
 
@@ -423,7 +428,7 @@
             renderizarTabela();
         }
 
-        // Função RESTAURADA para garantir as cores das faixas na tabela
+        // FUNÇÃO DE CORES DAS FAIXAS RESTAURADA
         function getCorFaixa(faixaTexto) {
             const f = faixaTexto ? faixaTexto.toLowerCase() : '';
             if (f.includes('cinza e branca')) return 'bg-[linear-gradient(135deg,_#94A3B8_50%,_#FFFFFF_50%)] text-slate-800 border border-slate-300';
@@ -465,7 +470,7 @@
                     avatarHtml = `<img src='${a.foto_url}' class='hidden md:block h-8 w-8 rounded-full object-cover mr-3 shrink-0 border border-slate-200'>`;
                 }
 
-                // Uso da função getCorFaixa para garantir a identidade visual
+                // INJETA A COR DA FAIXA AQUI
                 const corBadgeFaixa = getCorFaixa(a.faixa);
 
                 tr.innerHTML = `
@@ -617,41 +622,6 @@
             document.getElementById('modal-carteirinha').classList.replace('hidden', 'flex');
         }
 
-        // Função de Limpeza (Faxina)
-        window.limparDuplicados = async function() {
-            if(!confirm("🧹 MODO FAXINA\n\nEste robô vai procurar todos os alunos com o mesmo NOME exato na base de dados e vai apagar as cópias repetidas, mantendo sempre a ficha mais recente.\n\nTem certeza que deseja limpar os duplicados agora?")) return;
-
-            showToast("Iniciando a faxina... aguarde.", "success");
-            let deletados = 0;
-            let agrupados = {};
-
-            todosAlunosCache.forEach(a => {
-                let nomeChave = a.nome.trim().toUpperCase();
-                if(!agrupados[nomeChave]) agrupados[nomeChave] = [];
-                agrupados[nomeChave].push(a);
-            });
-
-            for(let nomeChave in agrupados) {
-                let fichas = agrupados[nomeChave];
-                if(fichas.length > 1) {
-                    fichas.sort((a, b) => (b.data_cadastro || "").localeCompare(a.data_cadastro || ""));
-                    for(let i = 1; i < fichas.length; i++) {
-                        try {
-                            await deleteDoc(doc(db, "alunos", fichas[i].id));
-                            deletados++;
-                        } catch(e) { console.error("Erro ao deletar duplicata", e); }
-                    }
-                }
-            }
-
-            if(deletados > 0) {
-                showToast(deletados + " fichas duplicadas foram apagadas!", "success");
-                buscarAlunosFirebase();
-            } else {
-                showToast("Sua base já está limpa! Nenhuma cópia encontrada.", "success");
-            }
-        }
-
         window.verificarCheckboxFusao = function() {
             const chks = document.querySelectorAll('.chk-merge:checked');
             const btn = document.getElementById('btn-fundir');
@@ -692,7 +662,6 @@
             } catch(err) { showToast("Erro ao fundir fichas.", "error"); }
         }
 
-        // PDF da LGPD A4 com Fonte Monospace na Assinatura
         window.gerarPDF_LGPD = function() {
             if(!document.getElementById('lgpd-concordo').checked) {
                 return showToast("Atenção: A caixa de 'Li e Concordo' precisa estar marcada.", "error");

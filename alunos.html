@@ -861,8 +861,12 @@
             const anoVigente = new Date().getFullYear();
             document.getElementById('cart-aluno-validade').innerText = `31/12/${anoVigente}`;
 
-            // API para gerar QR Code
-            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=VALIDACAO-${aluno.matricula || aluno.id}`;
+            // API para gerar QR Code (AGORA COM MATRICULA NO LINK)
+            const baseUrl = window.location.origin;
+            const codigoMatricula = aluno.matricula || aluno.id; 
+            const linkValidacao = `${baseUrl}/validar.html?mat=${codigoMatricula}`;
+            
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(linkValidacao)}`;
             document.getElementById('cart-qr-code').src = qrUrl;
 
             // Abre o modal

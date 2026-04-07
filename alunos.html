@@ -436,7 +436,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
@@ -540,7 +540,6 @@
             renderizarTabela();
         }
 
-        // --- SISTEMA DE ABAS PASSO A PASSO ---
         window.mudarAba = (idAba) => {
             abaIndexAtual = ordemDasAbas.indexOf(idAba);
             
@@ -572,7 +571,6 @@
             }
         }
 
-        // --- CÁLCULO DE IDADE (MOSTRAR RESPONSÁVEL) ---
         window.calcularIdade = function() {
             const dataNascStr = document.getElementById('aluno-nasc').value;
             const divResp = document.getElementById('div-responsavel');
@@ -599,7 +597,6 @@
             }
         }
 
-        // --- MÁSCARAS ---
         window.mascaraCPF = (i) => {
             let v = i.value.replace(/\D/g, "");
             v = v.replace(/(\d{3})(\d)/, "$1.$2");
@@ -651,7 +648,6 @@
             return 'bg-slate-100 text-slate-600 border border-slate-200';
         }
 
-        // Nova Função: Cores Duplas para a Carteirinha
         function getCorFaixaDupla(faixaTexto) {
             const f = faixaTexto ? faixaTexto.toLowerCase() : '';
             if (f.includes('cinza e branca')) return 'linear-gradient(to bottom, #94A3B8 50%, #f8fafc 50%)';
@@ -836,7 +832,6 @@
                 lgpd_relatorios: document.getElementById('lgpd-relatorio').checked
             };
 
-            // Adiciona a senha apenas se o campo existir no DOM (Caso o prof preencha/edite)
             const campoSenha = document.getElementById('aluno-senha-portal');
             if(campoSenha) {
                 dados.senha_portal = campoSenha.value;
@@ -906,7 +901,6 @@
             document.getElementById('cart-aluno-matricula-txt').innerText = a.matricula || '0000';
             document.getElementById('cart-aluno-nascimento-txt').innerText = a.data_nascimento ? a.data_nascimento.split('-').reverse().join('/') : '--/--/----';
             
-            // INTEGRAÇÃO DO GRADIENTE DE CORES AQUI 🎨
             document.getElementById('cart-faixa-border').style.background = getCorFaixaDupla(a.faixa);
 
             if(a.foto_url) {
@@ -1014,7 +1008,26 @@
 
         window.fecharModal = () => document.getElementById('modal-aluno').classList.replace('flex', 'hidden');
         window.fecharModalCarteirinha = () => { document.getElementById('modal-carteirinha').classList.replace('flex', 'hidden'); abrirFichaAluno(alunoEditandoId); }
-        window.excluirAluno = async (id) => { if(confirm("Deseja excluir este atleta da sua equipe?")) { await deleteDoc(doc(db, "alunos", id)); buscarAlunosFirebase(); } }
+        
+        window.excluirAluno = async (id) => { 
+            if(confirm("Deseja excluir este atleta da sua equipe? Esta ação apagará também a foto do sistema.")) { 
+                try {
+                    const fotoPath = `fotos_carteirinha/${teamId}/${id}.jpg`;
+                    const fotoRef = ref(storage, fotoPath);
+                    try {
+                        await deleteObject(fotoRef);
+                    } catch(err) {
+                        console.log("Foto não encontrada ou já apagada.");
+                    }
+                    
+                    await deleteDoc(doc(db, "alunos", id)); 
+                    showToast("Atleta excluído com sucesso!", "success");
+                    buscarAlunosFirebase(); 
+                } catch(e) {
+                    showToast("Erro ao excluir.", "error");
+                }
+            } 
+        }
         
         window.abrirModal = () => { 
             alunoEditandoId = null; 

@@ -855,20 +855,30 @@
         // HISTÓRICO DE FATURAS (BUSCA DUPLA PARA EVITAR ERRO DE PERMISSÃO/INDEX)
         // ==========================================
         
+        
         async function buscarFaturasDuplo() {
             const lista = document.getElementById('lista-faturas');
-            if (!lista) return;
+            if (!lista || !alunoLogado) return;
 
             lista.innerHTML = `<div class="text-center p-6 text-slate-500 text-xs italic">A carregar histórico...</div>`;
 
             let faturasMensalidade = [];
+            const idsAdicionados = new Set();
 
             const normalizar = (valor) => String(valor || '').trim().toLowerCase();
 
-            const alunoId = normalizar(alunoLogado?.id);
-            const alunoEmail = normalizar(alunoLogado?.email);
-            const alunoMatricula = normalizar(alunoLogado?.matricula);
-            const alunoNome = normalizar(alunoLogado?.nome);
+            const alunoId = normalizar(alunoLogado.id);
+            const alunoEmail = normalizar(alunoLogado.email);
+            const alunoMatricula = normalizar(alunoLogado.matricula);
+            const alunoNome = normalizar(alunoLogado.nome);
+            const equipeId = normalizar(alunoLogado.equipe_id);
+
+            const adicionarFatura = (docId, origem, data) => {
+                const chave = `${origem}:${docId}`;
+                if (idsAdicionados.has(chave)) return;
+                idsAdicionados.add(chave);
+                faturasMensalidade.push({ id: docId, origem, ...data });
+            };
 
             const pertenceAoAluno = (data) => {
                 const possiveisIds = [
@@ -904,36 +914,87 @@
                 );
             };
 
+            const pertenceAEquipe = (data) => {
+                return normalizar(data.equipe_id) === equipeId;
+            };
+
             const ehMensalidade = (data) => {
                 const tipo = normalizar(data.tipo);
                 const categoria = normalizar(data.categoria);
                 const descricao = normalizar(data.descricao);
+                const referencia = normalizar(data.referencia);
+                const mesAno = normalizar(data.mes_ano);
 
                 return (
                     !tipo ||
                     tipo === 'mensalidade' ||
                     categoria === 'mensalidade' ||
-                    descricao.includes('mensalidade')
+                    descricao.includes('mensalidade') ||
+                    referencia.includes('mensalidade') ||
+                    !!mesAno
                 );
             };
 
+            const ordenarFaturas = (a, b) => {
+                const aRef = String(a.mes_ano || a.referencia || '');
+                const bRef = String(b.mes_ano || b.referencia || '');
+                return bRef.localeCompare(aRef);
+            };
+
             try {
-                const qFin = query(
-                    collection(db, "financeiro"),
-                    where("equipe_id", "==", alunoLogado.equipe_id)
-                );
+                const qAlunoId = query(collection(db, "financeiro"), where("aluno_id", "==", alunoLogado.id));
+                const snapAlunoId = await getDocs(qAlunoId);
 
-                const snapFin = await getDocs(qFin);
-
-                snapFin.forEach((docSnap) => {
+                snapAlunoId.forEach((docSnap) => {
                     const data = docSnap.data();
-
-                    if (pertenceAoAluno(data) && ehMensalidade(data)) {
-                        faturasMensalidade.push({ id: docSnap.id, origem: 'financeiro', ...data });
-                    }
+                    if (ehMensalidade(data)) adicionarFatura(docSnap.id, 'financeiro', data);
                 });
-            } catch(e) {
-                console.warn("Erro ao buscar em 'financeiro':", e);
+            } catch (e) {
+                console.warn("Erro ao buscar financeiro por aluno_id:", e);
+            }
+
+            if (faturasMensalidade.length === 0 && alunoEmail) {
+                try {
+                    const qEmail = query(collection(db, "financeiro"), where("aluno_email", "==", alunoLogado.email));
+                    const snapEmail = await getDocs(qEmail);
+
+                    snapEmail.forEach((docSnap) => {
+                        const data = docSnap.data();
+                        if (ehMensalidade(data)) adicionarFatura(docSnap.id, 'financeiro', data);
+                    });
+                } catch (e) {
+                    console.warn("Erro ao buscar financeiro por aluno_email:", e);
+                }
+            }
+
+            if (faturasMensalidade.length === 0 && alunoMatricula) {
+                try {
+                    const qMatricula = query(collection(db, "financeiro"), where("aluno_matricula", "==", alunoLogado.matricula));
+                    const snapMatricula = await getDocs(qMatricula);
+
+                    snapMatricula.forEach((docSnap) => {
+                        const data = docSnap.data();
+                        if (ehMensalidade(data)) adicionarFatura(docSnap.id, 'financeiro', data);
+                    });
+                } catch (e) {
+                    console.warn("Erro ao buscar financeiro por aluno_matricula:", e);
+                }
+            }
+
+            if (faturasMensalidade.length === 0 && equipeId) {
+                try {
+                    const qEquipe = query(collection(db, "financeiro"), where("equipe_id", "==", alunoLogado.equipe_id));
+                    const snapEquipe = await getDocs(qEquipe);
+
+                    snapEquipe.forEach((docSnap) => {
+                        const data = docSnap.data();
+                        if (pertenceAEquipe(data) && pertenceAoAluno(data) && ehMensalidade(data)) {
+                            adicionarFatura(docSnap.id, 'financeiro', data);
+                        }
+                    });
+                } catch (e) {
+                    console.warn("Erro ao buscar financeiro por equipe_id:", e);
+                }
             }
 
             if (faturasMensalidade.length === 0) {
@@ -943,9 +1004,9 @@
 
                     snapFat.forEach((docSnap) => {
                         const data = docSnap.data();
-                        faturasMensalidade.push({ id: docSnap.id, origem: 'faturas', ...data });
+                        adicionarFatura(docSnap.id, 'faturas', data);
                     });
-                } catch(e) {
+                } catch (e) {
                     console.warn("Erro ao buscar em 'faturas':", e);
                 }
             }
@@ -955,34 +1016,22 @@
                 return;
             }
 
-            faturasMensalidade = faturasMensalidade.filter((fat, index, arr) => {
-                const chaveAtual = [
-                    fat.id || '',
-                    fat.mes_ano || '',
-                    fat.valor || '',
-                    fat.aluno_id || fat.alunoId || fat.id_aluno || '',
-                    fat.matricula || fat.aluno_matricula || ''
-                ].join('|');
-
-                return index === arr.findIndex((f) => {
-                    const chaveComparada = [
-                        f.id || '',
-                        f.mes_ano || '',
-                        f.valor || '',
-                        f.aluno_id || f.alunoId || f.id_aluno || '',
-                        f.matricula || f.aluno_matricula || ''
-                    ].join('|');
-                    return chaveComparada === chaveAtual;
-                });
-            });
-
-            faturasMensalidade.sort((a, b) => {
-                const aRef = String(a.mes_ano || '');
-                const bRef = String(b.mes_ano || '');
-                return bRef.localeCompare(aRef);
-            });
-
+            faturasMensalidade.sort(ordenarFaturas);
             faturasCache = faturasMensalidade;
+
+            const formatarData = (valor) => {
+                try {
+                    if (!valor) return '';
+                    if (typeof valor?.toDate === 'function') return valor.toDate().toLocaleDateString('pt-BR');
+                    if (valor?.seconds) return new Date(valor.seconds * 1000).toLocaleDateString('pt-BR');
+                    const d = new Date(valor);
+                    if (!isNaN(d.getTime())) return d.toLocaleDateString('pt-BR');
+                    return '';
+                } catch {
+                    return '';
+                }
+            };
+
             let faturasHTML = '';
 
             faturasMensalidade.forEach((fat) => {
@@ -1045,10 +1094,7 @@
                 let btnHtml = '';
 
                 if (isPago) {
-                    let dataPag = '';
-                    if (fat.data_pagamento) dataPag = new Date(fat.data_pagamento).toLocaleDateString('pt-BR');
-                    else if (fat.data) dataPag = new Date(fat.data).toLocaleDateString('pt-BR');
-
+                    const dataPag = formatarData(fat.data_pagamento || fat.data || fat.updated_at || fat.criado_em);
                     btnHtml = `<span class="text-[10px] font-bold text-emerald-500 uppercase mt-1 bg-emerald-500/10 px-2 py-1 rounded-md">✅ Pago ${dataPag}</span>`;
                 } else if (isIsento) {
                     btnHtml = `<span class="text-[10px] font-bold text-blue-500 uppercase mt-1 bg-blue-500/10 px-2 py-1 rounded-md">⭐ Isento</span>`;
@@ -1056,7 +1102,9 @@
                     btnHtml = `<button onclick="abrirPagamento('${fat.id}')" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm transition-colors mt-1">${textoStatusBtn}</button>`;
                 }
 
-                const tituloMes = (mesStr && anoStr) ? `${mesStr}/${anoStr}` : 'Sem referência';
+                const tituloMes = (mesStr && anoStr)
+                    ? `${mesStr}/${anoStr}`
+                    : (fat.referencia || fat.descricao || 'Sem referência');
 
                 faturasHTML += `
                     <div class="p-4 flex items-center justify-between hover:bg-slate-800/50 transition-colors">
@@ -1076,7 +1124,9 @@
             });
 
             lista.innerHTML = faturasHTML;
+            console.log("Faturas do aluno carregadas:", faturasMensalidade);
         }
+
 
         window.abrirPagamento = function(faturaId) {
             const fat = faturasCache.find(f => f.id === faturaId);

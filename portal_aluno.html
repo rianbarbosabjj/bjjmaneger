@@ -602,7 +602,7 @@
             } catch(e) { console.log("Erro ao buscar dados."); }
 
             preencherCarteirinha();
-            buscarFaturas(); // Inicia a busca Anti-Falhas
+            buscarFaturasResiliente();
             
             setTimeout(ajustarZoomCarteirinha, 100);
         }
@@ -639,16 +639,12 @@
                 
                 const imgL = document.getElementById('cart-equipe-logo');
                 const fallL = document.getElementById('cart-equipe-fallback');
-                const waterL = document.getElementById('cart-equipe-watermark');
-                const waterFall = document.getElementById('cart-equipe-watermark-fallback');
-
+                
                 if(equipeDados.url_logo) {
                     imgL.src = equipeDados.url_logo; imgL.classList.remove('hidden'); fallL.classList.add('hidden');
-                    waterL.src = equipeDados.url_logo; waterL.classList.remove('hidden'); waterFall.classList.add('hidden');
                 } else {
                     const letra = (equipeDados.nome_equipe || "E").charAt(0).toUpperCase();
                     fallL.innerText = letra; fallL.classList.remove('hidden'); imgL.classList.add('hidden');
-                    waterFall.innerText = letra; waterFall.classList.remove('hidden'); waterL.classList.add('hidden');
                 }
             }
 
@@ -688,7 +684,7 @@
         }
 
         // ==========================================
-        // ALGORITMO EXPORTAÇÃO SEGURO COM CONVERSOR BASE64 E SALA INVISÍVEL
+        // ALGORITMO EXPORTAÇÃO SEGURO COM CONVERSOR BASE64
         // ==========================================
         async function convertImgToBase64(url) {
             try {
@@ -700,7 +696,7 @@
                     reader.readAsDataURL(blob);
                 });
             } catch (e) {
-                return url; // Retorna normal se falhar
+                return url; 
             }
         }
 
@@ -728,7 +724,6 @@
             clone.style.width = '600px';
             clone.style.height = '380px';
             
-            // Remove efeitos de vidro para evitar fantasmas no mobile
             const glassElements = clone.querySelectorAll('.backdrop-blur-sm, .bg-white\\/90, .bg-slate-100\\/50, .bg-white\\/50');
             glassElements.forEach(el => {
                 el.classList.remove('backdrop-blur-sm', 'bg-white/90', 'bg-slate-100/50', 'bg-white/50');
@@ -739,7 +734,6 @@
                 }
             });
 
-            // Converte as imagens para Base64 para não bloquear o PDF
             const imgs = clone.querySelectorAll('img');
             for (let img of imgs) {
                 if (img.src && img.src.startsWith('http')) {
@@ -762,11 +756,10 @@
 
             await new Promise(r => setTimeout(r, 500));
 
-            // Tira foto em 4K engando o canvas a pensar que é um PC
             const canvas = await html2canvas(clone, { 
                 scale: 4, 
                 useCORS: true, 
-                allowTaint: false,
+                allowTaint: false, 
                 backgroundColor: '#ffffff',
                 width: 600,
                 height: 380,
@@ -781,12 +774,13 @@
             const btn = document.getElementById('btn-exportar-png');
             const txtOriginal = btn.innerHTML;
             btn.innerHTML = "⏳ GERANDO..."; btn.disabled = true;
-            showToast("A Guardar Imagem com Sucesso...", "success");
+            showToast("Gerando imagem em Alta Resolução...", "success");
 
             try {
                 const canvas = await gerarCanvasCarteirinha();
                 const link = document.createElement('a');
                 link.download = `Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.png`;
+                // Exportação limpa PNG
                 link.href = canvas.toDataURL('image/png', 1.0);
                 link.click();
             } catch(e) {
@@ -800,12 +794,11 @@
             const btn = document.getElementById('btn-exportar-pdf');
             const txtOriginal = btn.innerHTML;
             btn.innerHTML = "⏳ GERANDO..."; btn.disabled = true;
-            showToast("A Criar PDF da Carteirinha...", "success");
+            showToast("Gerando PDF em Alta Resolução...", "success");
 
             try {
                 const canvas = await gerarCanvasCarteirinha();
-                
-                // Usando PNG no PDF para evitar o Erro no mobile!
+                // Usa PNG Base64 nativo para contornar qualquer bug no jsPDF em iOS
                 const imgData = canvas.toDataURL('image/png');
 
                 const { jsPDF } = window.jspdf;
@@ -818,6 +811,7 @@
                 pdf.addImage(imgData, 'PNG', 0, 0, 85.6, 54);
                 pdf.save(`Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.pdf`);
                 
+                showToast("PDF baixado com sucesso!", "success");
             } catch(e) {
                 console.error(e);
                 showToast("Erro ao exportar PDF", "error");
@@ -860,52 +854,51 @@
         }
 
         // ==========================================
-        // HISTÓRICO DE FATURAS (BUSCA EM CASCATA ANTI-ERROS)
+        // HISTÓRICO DE FATURAS (BUSCA CASCATA - BYPASS SEGURANÇA FIREBASE)
         // ==========================================
-        async function buscarFaturas() {
+        async function buscarFaturasResiliente() {
             const lista = document.getElementById('lista-faturas');
             if(!lista) return;
             
-            lista.innerHTML = '<div class="text-center p-6 text-slate-500 text-xs italic">A procurar mensalidades...</div>';
+            lista.innerHTML = '<div class="text-center p-6 text-slate-500 text-xs italic">A carregar mensalidades...</div>';
             
             let faturasMensalidade = [];
             
             try {
-                // 1º TENTATIVA (NOVA ESTRUTURA): Buscar por aluno_id na coleção financeiro
-                const q1 = query(collection(db, "financeiro"), where("aluno_id", "==", alunoLogado.id));
-                const snap1 = await getDocs(q1);
-                snap1.forEach(doc => {
+                // TENTATIVA 1: Buscar diretamente a coleção da Equipe (Para contornar o bloqueio de Index/Security)
+                const qEquipe = query(collection(db, "financeiro"), where("equipe_id", "==", alunoLogado.equipe_id));
+                const snapEquipe = await getDocs(qEquipe);
+                
+                // Filtrar apenas as faturas que pertencem a este aluno
+                snapEquipe.forEach(doc => {
                     const data = doc.data();
-                    if (data.tipo === 'MENSALIDADE' || !data.tipo) {
+                    if (data.aluno_id === alunoLogado.id && (data.tipo === 'MENSALIDADE' || !data.tipo)) {
                         faturasMensalidade.push({ id: doc.id, ...data });
                     }
                 });
-            } catch(e1) {
-                console.warn("Bloqueio de segurança ao buscar por aluno_id. Tentando via equipe_id...");
+
+            } catch(erroFinanceiro) {
+                console.warn("Sem permissão na coleção 'financeiro'. A tentar coleção antiga 'faturas'...", erroFinanceiro);
+                
                 try {
-                    // 2º TENTATIVA (BYPASS DE SEGURANÇA): Buscar as da equipe e filtrar as do aluno no telemóvel
-                    const q2 = query(collection(db, "financeiro"), where("equipe_id", "==", alunoLogado.equipe_id));
-                    const snap2 = await getDocs(q2);
-                    snap2.forEach(doc => {
-                        const data = doc.data();
-                        if (data.aluno_id === alunoLogado.id && (data.tipo === 'MENSALIDADE' || !data.tipo)) {
-                            faturasMensalidade.push({ id: doc.id, ...data });
-                        }
+                    // TENTATIVA 2: Buscar no sistema antigo, caso os dados ainda estejam lá
+                    const qFaturas = query(collection(db, "faturas"), where("aluno_id", "==", alunoLogado.id));
+                    const snapFaturas = await getDocs(qFaturas);
+                    snapFaturas.forEach(doc => {
+                        faturasMensalidade.push({ id: doc.id, ...doc.data() });
                     });
-                } catch(e2) {
-                    console.warn("Sem acesso à coleção Financeiro. Procurando nas antigas Faturas...");
-                    try {
-                        // 3º TENTATIVA (SISTEMA ANTIGO): Buscar na coleção faturas
-                        const q3 = query(collection(db, "faturas"), where("aluno_id", "==", alunoLogado.id));
-                        const snap3 = await getDocs(q3);
-                        snap3.forEach(doc => {
-                            faturasMensalidade.push({ id: doc.id, ...doc.data() });
-                        });
-                    } catch(e3) {
-                        console.error("Todas as buscas falharam. Sem permissão.", e3);
-                        lista.innerHTML = `<div class="text-center p-6 text-rose-400 text-xs font-bold">A sua conta ainda não tem permissão para aceder às faturas. Contacte o professor.</div>`;
-                        return;
-                    }
+                } catch(erroFaturas) {
+                    console.error("Bloqueado totalmente pelas Regras de Segurança do Firebase.", erroFaturas);
+                    
+                    lista.innerHTML = `
+                        <div class="bg-rose-50/10 border border-rose-500/30 p-5 rounded-2xl m-4 text-center">
+                            <span class="text-3xl mb-2 block">🔒</span>
+                            <h4 class="text-rose-400 font-black text-sm mb-1">Acesso Bloqueado</h4>
+                            <p class="text-slate-400 text-[10px] leading-relaxed mb-3">O banco de dados recusou a leitura das suas faturas devido às regras de segurança atuais.</p>
+                            <p class="text-rose-300 text-[9px] font-bold uppercase tracking-widest">Peça ao administrador para atualizar as "Rules" do Firebase.</p>
+                        </div>
+                    `;
+                    return;
                 }
             }
 
@@ -914,16 +907,16 @@
                 return;
             }
 
-            faturasCache = faturasMensalidade; 
-            
-            // Ordenar por data
+            // Ordenar por data (Mais recentes no topo)
             faturasMensalidade.sort((a, b) => {
                 const dateA = a.mes_ano || "";
                 const dateB = b.mes_ano || "";
-                return dateB.localeCompare(dateA); // Mais recentes no topo
+                return dateB.localeCompare(dateA); 
             });
 
+            faturasCache = faturasMensalidade; 
             let faturasHTML = '';
+
             faturasMensalidade.forEach(fat => {
                 let mesStr = "", anoStr = "";
                 if(fat.mes_ano && String(fat.mes_ano).includes('-')) {
@@ -991,7 +984,7 @@
                 const tituloMes = (mesStr && anoStr) ? `${mesStr}/${anoStr}` : (fat.descricao || 'Sem referência');
 
                 faturasHTML += `
-                    <div class="p-4 flex items-center justify-between hover:bg-slate-800/50 transition-colors">
+                    <div class="p-4 flex items-center justify-between hover:bg-slate-800/50 transition-colors border-b border-slate-700/30">
                         <div class="flex items-center gap-4">
                             <div class="text-xl opacity-80" title="${statusLabel}">${icone}</div>
                             <div>

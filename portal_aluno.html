@@ -20,12 +20,8 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
+        /* Ajuste de segurança para o iPhone (Notch) na barra inferior */
         .pb-safe { padding-bottom: env(safe-area-inset-bottom, 20px); }
-        
-        .carteirinha-layer-1 {
-            position: relative;
-            z-index: 10;
-        }
     </style>
 </head>
 <body class="text-slate-200 overflow-x-hidden selection:bg-cyan-500 selection:text-white min-h-screen flex flex-col relative">
@@ -64,6 +60,10 @@
                 <button type="submit" id="btn-login" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-4 rounded-2xl transition-all shadow-[0_0_15px_rgba(6,182,212,0.3)] uppercase tracking-widest text-xs transform hover:-translate-y-0.5">
                     Entrar no Tatame
                 </button>
+                
+                <div class="pt-4 text-center">
+                    <a href="index.html" class="text-[10px] text-slate-500 font-bold hover:text-cyan-400 transition-colors">Voltar ao site principal</a>
+                </div>
             </form>
         </div>
     </div>
@@ -96,71 +96,72 @@
 
                 <div id="cart-wrapper" class="w-full overflow-x-hidden hide-scrollbar pb-2 pt-2 flex justify-center origin-top transition-transform">
                     
-                    <div id="carteirinha" class="relative bg-white rounded-2xl shadow-2xl border border-slate-200 flex text-slate-800 font-sans w-full max-w-[600px] shrink-0 box-border" style="width: 600px; min-width: 600px; height: 380px; min-height: 380px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); isolation: isolate; -webkit-mask-image: -webkit-radial-gradient(white, black);">
+                    <div id="cart-oficial-aluno" class="relative bg-white rounded-2xl overflow-hidden shadow-2xl border border-slate-200 flex text-slate-800 font-sans shrink-0 mx-auto box-border" style="width: 600px; min-width: 600px; height: 380px; min-height: 380px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
                         
-                        <div class="absolute top-0 right-0 w-64 h-full bg-slate-200/60 skew-x-[-20deg] translate-x-10 z-0 pointer-events-none"></div>
-                        <div class="absolute bottom-0 left-0 w-full h-1/3 bg-slate-300/40 skew-y-[-5deg] origin-bottom-right z-0 pointer-events-none"></div>
+                        <div class="absolute top-0 right-0 w-64 h-full bg-slate-200/40 skew-x-[-20deg] translate-x-10 z-0 pointer-events-none"></div>
+                        <div class="absolute bottom-0 left-0 w-full h-1/3 bg-slate-300/30 skew-y-[-5deg] origin-bottom-right z-0 pointer-events-none"></div>
 
-                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden">
-                            <img id="cart-equipe-watermark" src="" class="w-[120%] h-[120%] object-contain opacity-[0.04] grayscale hidden" crossorigin="anonymous" style="transform: scale(1.1);">
-                            <div id="cart-equipe-watermark-fallback" class="text-[30rem] leading-none font-black text-slate-800 opacity-[0.03] hidden">E</div>
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-10 overflow-hidden">
+                            <img id="cart-equipe-watermark" src="" class="w-[120%] h-[120%] object-contain opacity-10 grayscale hidden" crossorigin="anonymous" style="transform: scale(1.1);">
+                            <div id="cart-equipe-watermark-fallback" class="text-[30rem] leading-none font-black text-slate-800 opacity-10 hidden">E</div>
                         </div>
 
-                        <div class="flex-1 p-5 md:p-6 flex flex-col z-10 w-[65%]">
-                            <div class="flex items-center gap-4 mb-4 md:mb-6">
-                                <div class="h-14 w-14 md:h-16 md:w-16 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-sm shrink-0 overflow-hidden">
+                        <div class="flex-1 p-6 flex flex-col relative z-20 w-[65%]">
+                            
+                            <div class="flex items-center gap-4 mb-6 relative z-30">
+                                <div class="h-16 w-16 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-sm shrink-0 overflow-hidden">
                                     <img id="cart-equipe-logo" src="" class="h-full w-full object-contain p-1.5 hidden" crossorigin="anonymous">
                                     <div id="cart-equipe-fallback" class="text-3xl font-black text-slate-700 hidden">E</div>
                                 </div>
                                 <div class="flex flex-col justify-center">
-                                    <h2 id="cart-equipe-nome" class="text-lg md:text-xl font-black uppercase tracking-tight text-slate-800 leading-none break-words max-w-[240px]">NOME DA EQUIPE</h2>
+                                    <h2 id="cart-equipe-nome" class="text-xl font-black uppercase tracking-tight text-slate-800 leading-none break-words max-w-[240px]">NOME DA EQUIPE</h2>
                                     <p class="text-[9px] text-slate-500 uppercase tracking-widest font-bold mt-1.5">Identificação Oficial</p>
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-y-3 gap-x-4 w-full mt-auto mb-2 md:mb-4">
-                                <div class="col-span-2 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-cyan-500 shadow-sm px-3 py-1.5 flex flex-col justify-center">
+                            <div class="grid grid-cols-2 gap-y-3 gap-x-4 w-full mt-auto mb-4 relative z-30">
+                                <div class="col-span-2 bg-white rounded-md border-l-4 border-cyan-500 shadow-sm px-3 py-2 flex flex-col justify-center relative z-30">
                                     <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Nome do Atleta</p>
-                                    <p id="cart-aluno-nome-txt" class="text-[13px] font-black uppercase text-slate-800 leading-normal pb-1 whitespace-nowrap overflow-visible">ALUNO NOME</p>
+                                    <p id="cart-aluno-nome-txt" class="text-[13px] font-black uppercase text-slate-800 leading-normal pb-0.5 whitespace-nowrap overflow-hidden text-ellipsis">ALUNO NOME</p>
                                 </div>
                                 
-                                <div class="relative col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm pr-3 py-1.5 rounded-md shadow-sm pl-5 border border-slate-200 flex flex-col justify-center">
-                                    <div id="cart-faixa-border" class="absolute top-0 left-0 w-2.5 h-full bg-slate-300 border-r border-slate-200/50 rounded-l-md"></div>
-                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5 relative z-10">Faixa / Graduação</p>
-                                    <p id="cart-aluno-faixa-texto" class="text-xs font-black uppercase text-slate-800 relative z-10 leading-normal pb-1 whitespace-nowrap overflow-visible">BRANCA</p>
+                                <div class="relative overflow-hidden col-span-1 bg-white rounded-md shadow-sm pl-5 border border-slate-200 flex flex-col justify-center z-30">
+                                    <div id="cart-faixa-border" class="absolute top-0 left-0 w-2.5 h-full bg-slate-300 border-r border-slate-200/50 rounded-l-md z-30"></div>
+                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5 relative z-40">Faixa / Graduação</p>
+                                    <p id="cart-aluno-faixa-texto" class="text-xs font-black uppercase text-slate-800 relative z-40 leading-normal pb-0.5 whitespace-nowrap overflow-hidden text-ellipsis">BRANCA</p>
                                 </div>
 
-                                <div class="col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-1.5 flex flex-col justify-center">
+                                <div class="col-span-1 bg-white rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-2 flex flex-col justify-center relative z-30">
                                     <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Nascimento</p>
-                                    <p id="cart-aluno-nascimento-txt" class="text-[10px] md:text-xs font-bold text-slate-800 leading-normal pb-1 overflow-visible">00/00/0000</p>
+                                    <p id="cart-aluno-nascimento-txt" class="text-xs font-bold text-slate-800 leading-normal pb-0.5 whitespace-nowrap overflow-hidden text-ellipsis">00/00/0000</p>
                                 </div>
                                 
-                                <div class="col-span-1 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-1.5 flex flex-col justify-center relative z-[60]">
-                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5 relative z-20">Matrícula</p>
-                                    <p id="cart-aluno-matricula-txt" class="text-[10px] md:text-xs font-mono font-black text-slate-800 tracking-widest relative z-20 leading-normal pb-1 overflow-visible">00000</p>
+                                <div class="col-span-1 bg-white rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-2 flex flex-col justify-center relative z-30">
+                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Matrícula</p>
+                                    <p id="cart-aluno-matricula-txt" class="text-xs font-mono font-black text-slate-800 tracking-widest leading-normal pb-0.5 whitespace-nowrap overflow-hidden text-ellipsis">00000</p>
                                 </div>
 
-                                <div class="col-span-1 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-1.5 flex flex-col justify-center relative z-[60]">
-                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5 relative z-20">Validade</p>
-                                    <p id="cart-aluno-validade-txt" class="text-[10px] md:text-xs font-black text-slate-800 tracking-wider relative z-20 leading-normal pb-1 overflow-visible">2026</p>
+                                <div class="col-span-1 bg-white rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-2 flex flex-col justify-center relative z-30">
+                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Validade</p>
+                                    <p id="cart-aluno-validade-txt" class="text-xs font-black text-slate-800 tracking-wider leading-normal pb-0.5 whitespace-nowrap overflow-hidden text-ellipsis">2026</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="w-[35%] max-w-[200px] p-5 md:p-6 flex flex-col items-center justify-between z-[50] bg-slate-100/50 border-l border-slate-200 backdrop-blur-sm relative">
-                            <div class="w-full aspect-[3/4] bg-white rounded-lg border-2 border-slate-200 overflow-hidden shadow-md flex items-center justify-center relative z-[60]">
+                        <div class="w-[35%] max-w-[196px] p-6 flex flex-col items-center justify-between relative z-30 bg-slate-200/40 border-l border-slate-300">
+                            <div class="w-full aspect-[3/4] bg-white rounded-lg border-[3px] border-white overflow-hidden shadow-md flex items-center justify-center relative z-40">
                                 <img id="cart-aluno-foto-modal" src="" class="w-full h-full object-cover hidden" crossorigin="anonymous">
                                 <span id="cart-aluno-foto-fallback-modal" class="text-5xl font-black text-slate-300">?</span>
                             </div>
                             
-                            <div class="w-16 h-16 bg-white p-1.5 rounded-lg mt-auto shadow-sm border border-slate-200 flex items-center justify-center relative z-[60]">
-                                <div id="cart-qr-code" class="w-full h-full bg-white flex items-center justify-center"></div>
+                            <div class="w-16 h-16 bg-white p-1.5 rounded-lg mt-auto shadow-sm border border-slate-200 flex items-center justify-center relative z-40">
+                                <div id="cart-qr-code" class="w-full h-full bg-white flex items-center justify-center relative z-50"></div>
                             </div>
                         </div>
 
-                        <div class="absolute bottom-3 left-5 md:left-6 z-10 flex items-center gap-2 bg-white px-2 py-1 rounded shadow-sm border border-slate-100 opacity-90">
-                            <img src="logo_bjj_maneger.png" class="h-3.5 w-auto grayscale" crossorigin="anonymous">
-                            <span class="text-[7px] font-bold tracking-widest text-slate-600 uppercase">Emitido por BJJ Manager | maneger.bjjdigital.com.br</span>
+                        <div class="absolute bottom-3 left-6 z-40 flex items-center gap-2 bg-white px-2 py-0.5 rounded shadow-sm border border-slate-200 opacity-90">
+                            <img src="logo_bjj_maneger.png" class="h-4 w-auto grayscale" crossorigin="anonymous">
+                            <span class="text-[7px] font-bold tracking-widest text-slate-600 uppercase relative top-px">Emitido por BJJ Manager | maneger.bjjdigital.com.br</span>
                         </div>
                     </div>
                 </div>
@@ -291,7 +292,6 @@
                         <button type="submit" id="btn-salvar-dados" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-4 rounded-xl shadow-lg transition-transform transform hover:-translate-y-1 uppercase tracking-widest text-sm flex items-center justify-center mt-4">
                             💾 Salvar Alterações
                         </button>
-
                     </form>
                 </div>
             </section>
@@ -560,7 +560,7 @@
 
         window.ajustarZoomCarteirinha = function() {
             const wrapper = document.getElementById('cart-wrapper');
-            const cart = document.getElementById('carteirinha');
+            const cart = document.getElementById('cart-oficial-aluno');
             if(!wrapper || !cart) return;
             
             const maxWidth = wrapper.parentElement.clientWidth - 32; 
@@ -636,12 +636,16 @@
                 
                 const imgL = document.getElementById('cart-equipe-logo');
                 const fallL = document.getElementById('cart-equipe-fallback');
-                
+                const waterL = document.getElementById('cart-equipe-watermark');
+                const waterFall = document.getElementById('cart-equipe-watermark-fallback');
+
                 if(equipeDados.url_logo) {
                     imgL.src = equipeDados.url_logo; imgL.classList.remove('hidden'); fallL.classList.add('hidden');
+                    waterL.src = equipeDados.url_logo; waterL.classList.remove('hidden'); waterFall.classList.add('hidden');
                 } else {
                     const letra = (equipeDados.nome_equipe || "E").charAt(0).toUpperCase();
                     fallL.innerText = letra; fallL.classList.remove('hidden'); imgL.classList.add('hidden');
+                    waterFall.innerText = letra; waterFall.classList.remove('hidden'); waterL.classList.add('hidden');
                 }
             }
 
@@ -684,7 +688,7 @@
         // ALGORITMO EXPORTAÇÃO "CLONE INVISÍVEL" 
         // ==========================================
         async function gerarCanvasCarteirinha() {
-            const elementoBase = document.getElementById('carteirinha');
+            const elementoBase = document.getElementById('cart-oficial-aluno');
             
             const divClone = document.createElement('div');
             divClone.style.position = 'absolute';
@@ -765,9 +769,6 @@
             }
         }
 
-        // ==========================================
-        // PDF CRAVADO NO TAMANHO USANDO JSPDF PURO
-        // ==========================================
         window.baixarCarteirinhaPDF = async function () {
             const btn = document.querySelector('button[onclick="baixarCarteirinhaPDF()"]');
             const txtOriginal = btn.innerHTML;
@@ -776,18 +777,15 @@
 
             try {
                 const canvas = await gerarCanvasCarteirinha();
-                // Usa JPEG de alta qualidade para não bugar a biblioteca do PDF
                 const imgData = canvas.toDataURL('image/jpeg', 1.0);
 
-                // Cria o PDF usando jsPDF puro, passando o tamanho físico (em mm)
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF({
                     orientation: 'landscape',
                     unit: 'mm',
-                    format: [85.6, 54] // Tamanho exato CR80
+                    format: [85.6, 54] 
                 });
 
-                // Injeta a foto nas coordenadas 0,0 com o tamanho total da folha
                 pdf.addImage(imgData, 'JPEG', 0, 0, 85.6, 54);
                 pdf.save(`Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.pdf`);
                 

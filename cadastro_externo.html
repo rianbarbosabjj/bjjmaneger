@@ -402,7 +402,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
         const firebaseConfig = {
@@ -538,7 +538,6 @@
             }
         }
 
-        // Arranca a página
         inicializarCadastro();
 
         window.mostrarPreviewFoto = function(event) {
@@ -655,14 +654,18 @@
                 await setDoc(novoAlunoRef, dadosAluno);
 
                 document.getElementById('form-aluno').innerHTML = `
-                    <div class="bg-emerald-50 border border-emerald-200 p-10 rounded-3xl text-center shadow-lg mt-8">
+                    <div class="bg-emerald-50 border border-emerald-200 p-10 rounded-3xl text-center shadow-lg mt-8 flex flex-col items-center">
                         <span class="text-6xl mb-4 block">${fotoErro ? '⚠️' : '✅'}</span>
                         <h2 class="text-2xl font-black ${fotoErro ? 'text-amber-600' : 'text-emerald-800'} uppercase">Matrícula Concluída!</h2>
-                        <p class="text-emerald-600 font-medium mt-2">Bem-vindo(a) à equipe, ${nome}.</p>
+                        <p class="text-emerald-600 font-medium mt-2">Bem-vindo(a) à equipe, ${nome.split(' ')[0]}.</p>
                         ${fotoErro ? '<p class="text-rose-500 font-bold mt-2 text-xs">Nota: Não foi possível salvar a foto. Verifique com o seu professor.</p>' : ''}
-                        <p class="text-xs text-emerald-500 font-bold mt-4">Sua matrícula: ${novaMatriculaStr}</p>
-                        <p class="text-[10px] text-slate-500 mt-6 font-bold uppercase">Acesse o seu portal em:</p>
-                        <a href="https://maneger.bjjdigital.com.br/portal_aluno.html" class="text-cyan-600 underline font-bold mt-1 block">maneger.bjjdigital.com.br/portal_aluno.html</a>
+                        
+                        <div class="mt-8 bg-white p-4 rounded-2xl border border-emerald-100 shadow-sm w-full max-w-sm">
+                            <p class="text-xs text-slate-500 font-bold uppercase tracking-widest mb-1">Acesse a sua Carteirinha em:</p>
+                            <a href="https://maneger.bjjdigital.com.br/portal_aluno.html" class="bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md mt-2 uppercase tracking-widest text-sm">
+                                <span>📲</span> Portal do Aluno
+                            </a>
+                        </div>
                     </div>
                 `;
 
@@ -724,11 +727,17 @@
                 await signOut(auth);
 
                 document.getElementById('form-prof').innerHTML = `
-                    <div class="bg-indigo-50 border border-indigo-200 p-10 rounded-3xl text-center shadow-lg mt-8">
+                    <div class="bg-indigo-50 border border-indigo-200 p-10 rounded-3xl text-center shadow-lg mt-8 flex flex-col items-center">
                         <span class="text-6xl mb-4 block">🤝</span>
                         <h2 class="text-2xl font-black text-indigo-800 uppercase">Acesso Criado!</h2>
-                        <p class="text-indigo-600 font-medium mt-2">Bem-vindo(a), ${nome}. O seu acesso foi configurado com sucesso.</p>
-                        <a href="index.html" class="inline-block mt-6 px-6 py-4 bg-indigo-500 text-white font-black uppercase tracking-widest rounded-xl text-xs shadow-sm hover:bg-indigo-600 transition-colors">Fazer Login no Sistema</a>
+                        <p class="text-indigo-600 font-medium mt-2">Bem-vindo(a), ${nome.split(' ')[0]}. O seu acesso foi configurado com sucesso.</p>
+                        
+                        <div class="mt-8 bg-white p-4 rounded-2xl border border-indigo-100 shadow-sm w-full max-w-sm">
+                            <p class="text-xs text-slate-500 font-bold uppercase tracking-widest mb-1">Acesse o sistema em:</p>
+                            <a href="https://maneger.bjjdigital.com.br/login.html" class="bg-indigo-500 hover:bg-indigo-600 text-white font-black py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md mt-2 uppercase tracking-widest text-sm">
+                                <span>💻</span> Fazer Login
+                            </a>
+                        </div>
                     </div>
                 `;
             } catch (e) {

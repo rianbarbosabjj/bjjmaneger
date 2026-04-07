@@ -9,6 +9,7 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
@@ -20,12 +21,6 @@
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
         .pb-safe { padding-bottom: env(safe-area-inset-bottom, 20px); }
-        
-        /* Garantir que textos fiquem na primeira camada */
-        .carteirinha-layer-1 {
-            position: relative;
-            z-index: 10;
-        }
     </style>
 </head>
 <body class="text-slate-200 overflow-x-hidden selection:bg-cyan-500 selection:text-white min-h-screen flex flex-col relative">
@@ -64,9 +59,14 @@
                 <button type="submit" id="btn-login" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-4 rounded-2xl transition-all shadow-[0_0_15px_rgba(6,182,212,0.3)] uppercase tracking-widest text-xs transform hover:-translate-y-0.5">
                     Entrar no Tatame
                 </button>
+                
+                <div class="pt-4 text-center">
+                    <a href="index.html" class="text-[10px] text-slate-500 font-bold hover:text-cyan-400 transition-colors">Voltar ao site principal</a>
+                </div>
             </form>
         </div>
     </div>
+
 
     <div id="tela-portal" class="hidden flex-col w-full flex-1 relative z-10 h-full">
         
@@ -86,94 +86,101 @@
                 <p id="subtitulo-secao" class="text-sm text-slate-400 font-medium mt-1">Sua identificação oficial e acesso à equipe.</p>
             </div>
 
-<section id="aba-carteirinha" class="aluno-secao block transition-opacity duration-300">
-    <div id="carteirinha" class="relative mx-auto bg-white rounded-2xl shadow-2xl border border-slate-200 flex text-slate-800 font-sans w-full max-w-[600px] aspect-[1.58/1] mt-4" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); overflow: visible !important;">
-        <div class="absolute top-0 right-0 w-64 h-full bg-slate-200/40 skew-x-[-20deg] translate-x-10 z-0 pointer-events-none"></div>
-        <div class="absolute bottom-0 left-0 w-full h-1/3 bg-slate-300/30 skew-y-[-5deg] origin-bottom-right z-0 pointer-events-none"></div>
-
-        <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0" style="overflow: hidden;">
-            <img id="cart-equipe-watermark" src="" class="w-[120%] h-[120%] object-contain opacity-[0.04] grayscale hidden" style="transform: scale(1.1);">
-            <div id="cart-equipe-watermark-fallback" class="text-[30rem] leading-none font-black text-slate-800 opacity-[0.03] hidden">E</div>
-        </div>
-
-        <!-- Conteúdo principal - Primeira camada -->
-        <div class="flex-1 p-4 sm:p-5 flex flex-col carteirinha-layer-1 w-[65%]" style="overflow: visible;">
-            <div class="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-                <div class="h-12 sm:h-16 w-12 sm:w-16 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-sm shrink-0 overflow-hidden">
-                    <img id="cart-equipe-logo" src="" class="h-full w-full object-contain p-1.5 hidden">
-                    <div id="cart-equipe-fallback" class="text-2xl sm:text-3xl font-black text-slate-700 hidden">E</div>
-                </div>
-                <div class="flex flex-col justify-center" style="min-width: 0;">
-                    <h2 id="cart-equipe-nome" class="text-base sm:text-xl font-black uppercase tracking-tight text-slate-800 leading-tight" style="word-wrap: break-word; white-space: normal; max-width: 100%;">NOME DA EQUIPE</h2>
-                    <p class="text-[8px] sm:text-[9px] text-slate-500 uppercase tracking-widest font-bold mt-0.5 sm:mt-1">Identificação Oficial</p>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-y-2 gap-x-2 sm:gap-x-4 w-full mt-auto mb-2 sm:mb-4">
-                <!-- Nome - Sempre na primeira camada -->
-                <div class="col-span-2 bg-white px-2.5 sm:px-3 py-1.5 rounded-md border-l-4 border-cyan-500 shadow-sm" style="min-width: 0;">
-                    <p class="text-[7px] sm:text-[8px] text-slate-400 uppercase font-bold mb-0.5">Nome do Atleta</p>
-                    <p id="cart-aluno-nome-txt" class="text-[11px] sm:text-xs font-black uppercase text-slate-800" style="word-wrap: break-word; white-space: normal;">ALUNO NOME COMPLETO AQUI</p>
-                </div>
-                
-                <!-- Faixa - Sempre na primeira camada -->
-                <div class="relative col-span-2 sm:col-span-1 bg-white pr-2.5 sm:pr-3 py-1.5 rounded-md shadow-sm pl-4 sm:pl-5 border border-slate-200" style="overflow: visible; min-width: 0;">
-                    <div id="cart-faixa-border" class="absolute top-0 left-0 w-2 sm:w-2.5 h-full bg-slate-300 border-r border-slate-200/50"></div>
-                    <p class="text-[7px] sm:text-[8px] text-slate-400 uppercase font-bold mb-0.5 relative z-10">Faixa / Graduação</p>
-                    <p id="cart-aluno-faixa-texto" class="text-[9px] sm:text-[10px] font-black uppercase text-slate-800 relative z-10" style="word-wrap: break-word; white-space: normal;">BRANCA</p>
+            <section id="aba-carteirinha" class="aluno-secao block transition-opacity duration-300">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                        <span class="text-base">🪪</span> Identificação Oficial
+                    </h2>
                 </div>
 
-                <!-- Nascimento - Sempre na primeira camada -->
-                <div class="col-span-2 sm:col-span-1 bg-white px-2.5 sm:px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm" style="min-width: 0;">
-                    <p class="text-[7px] sm:text-[8px] text-slate-400 uppercase font-bold mb-0.5">Nascimento</p>
-                    <p id="cart-aluno-nascimento-txt" class="text-[9px] sm:text-[10px] font-bold text-slate-800" style="word-wrap: break-word;">00/00/0000</p>
-                </div>
-                
-                <!-- Matrícula - Primeira camada -->
-                <div class="bg-white px-2.5 sm:px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm" style="min-width: 0;">
-                    <p class="text-[7px] sm:text-[8px] text-slate-400 uppercase font-bold mb-0.5">Matrícula</p>
-                    <p id="cart-aluno-matricula-txt" class="text-[9px] sm:text-[10px] font-mono font-bold text-slate-800 tracking-wider" style="word-wrap: break-word;">00000</p>
-                </div>
-                
-                <!-- Validade - Primeira camada -->
-                <div class="bg-white px-2.5 sm:px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm" style="min-width: 0;">
-                    <p class="text-[7px] sm:text-[8px] text-slate-400 uppercase font-bold mb-0.5">Validade</p>
-                    <p id="cart-aluno-validade-txt" class="text-[9px] sm:text-[10px] font-black text-slate-800 tracking-wider" style="word-wrap: break-word;">2026</p>
-                </div>
-            </div>
-        </div>
+                <div id="cart-wrapper" class="w-full overflow-x-auto hide-scrollbar pb-2 pt-2 -mx-4 px-4 sm:px-0 flex justify-start sm:justify-center transition-all duration-300 origin-top">
+                    
+                    <div id="carteirinha" class="relative bg-white rounded-2xl shadow-2xl border border-slate-200 flex text-slate-800 font-sans w-full max-w-[600px] shrink-0 box-border" style="width: 600px; min-width: 600px; height: 380px; min-height: 380px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); isolation: isolate; -webkit-mask-image: -webkit-radial-gradient(white, black);">
+                        
+                        <div class="absolute top-0 right-0 w-64 h-full bg-slate-200/60 skew-x-[-20deg] translate-x-10 z-0 pointer-events-none"></div>
+                        <div class="absolute bottom-0 left-0 w-full h-1/3 bg-slate-300/40 skew-y-[-5deg] origin-bottom-right z-0 pointer-events-none"></div>
 
-        <!-- Foto e QR Code - Primeira camada -->
-        <div class="w-[35%] max-w-[200px] p-4 sm:p-5 flex flex-col items-center justify-between carteirinha-layer-1 bg-slate-100/50 border-l border-slate-200">
-            <div class="w-full aspect-[3/4] bg-white rounded-lg border-2 border-white overflow-hidden shadow-md flex items-center justify-center relative">
-                <img id="cart-aluno-foto-modal" src="" class="w-full h-full object-cover hidden">
-                <span id="cart-aluno-foto-fallback-modal" class="text-4xl sm:text-5xl font-black text-slate-300">?</span>
-            </div>
-            <div class="w-14 sm:w-16 h-14 sm:h-16 bg-white p-1 rounded-lg mt-auto shadow-sm border border-slate-200">
-                <img id="cart-qr-code" src="" class="w-full h-full object-contain">
-            </div>
-        </div>
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden">
+                            <img id="cart-equipe-watermark" src="" class="w-[120%] h-[120%] object-contain opacity-[0.04] grayscale hidden" crossorigin="anonymous" style="transform: scale(1.1);">
+                            <div id="cart-equipe-watermark-fallback" class="text-[30rem] leading-none font-black text-slate-800 opacity-[0.03] hidden">E</div>
+                        </div>
 
-        <!-- Rodapé - Primeira camada -->
-        <div class="absolute bottom-2 left-4 sm:left-6 z-10 flex items-center gap-1 sm:gap-2 opacity-70 bg-white/50 px-2 py-0.5 rounded">
-            <img src="logo_bjj_maneger.png" class="h-3 sm:h-4 w-auto grayscale">
-            <span class="text-[6px] sm:text-[7px] font-bold tracking-widest text-slate-600 uppercase">Emitido por BJJ Manager | maneger.bjjdigital.com.br</span>
-        </div>
-    </div>
+                        <div class="flex-1 p-5 md:p-6 flex flex-col z-10 w-[65%]">
+                            <div class="flex items-center gap-4 mb-4 md:mb-6">
+                                <div class="h-14 w-14 md:h-16 md:w-16 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-sm shrink-0 overflow-hidden">
+                                    <img id="cart-equipe-logo" src="" class="h-full w-full object-contain p-1.5 hidden" crossorigin="anonymous">
+                                    <div id="cart-equipe-fallback" class="text-3xl font-black text-slate-700 hidden">E</div>
+                                </div>
+                                <div class="flex flex-col justify-center">
+                                    <h2 id="cart-equipe-nome" class="text-lg md:text-xl font-black uppercase tracking-tight text-slate-800 leading-none break-words max-w-[240px]">NOME DA EQUIPE</h2>
+                                    <p class="text-[9px] text-slate-500 uppercase tracking-widest font-bold mt-1.5">Identificação Oficial</p>
+                                </div>
+                            </div>
 
-    <!-- Botões fixos abaixo da carteirinha -->
-    <div class="mt-6 flex flex-row justify-center gap-3 w-full max-w-[600px] mx-auto">
-        <button onclick="baixarCarteirinhaPNG()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 px-4 rounded-xl shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 uppercase tracking-widest text-xs flex-1">
-            <span class="text-lg">📸</span> PNG
-        </button>
-        <button onclick="baixarCarteirinhaPDF()" class="bg-rose-500 hover:bg-rose-600 text-white font-black py-3 px-4 rounded-xl shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 uppercase tracking-widest text-xs flex-1">
-            <span class="text-lg">📄</span> PDF
-        </button>
-        <button onclick="compartilharCarteirinha()" class="bg-cyan-500 hover:bg-cyan-600 text-white font-black py-3 px-4 rounded-xl shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 uppercase tracking-widest text-xs flex-1">
-            <span class="text-lg">📲</span> Compartilhar
-        </button>
-    </div>
-</section>
+                            <div class="grid grid-cols-2 gap-y-3 gap-x-4 w-full mt-auto mb-2 md:mb-4">
+                                <div class="col-span-2 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-cyan-500 shadow-sm px-3 py-2 flex flex-col justify-center">
+                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Nome do Atleta</p>
+                                    <p id="cart-aluno-nome-txt" class="text-xs md:text-[13px] font-black uppercase text-slate-800 leading-normal truncate">ALUNO NOME</p>
+                                </div>
+                                
+                                <div class="relative overflow-hidden col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm pr-3 py-2 rounded-md shadow-sm pl-5 border border-slate-200 flex flex-col justify-center">
+                                    <div id="cart-faixa-border" class="absolute top-0 left-0 w-2.5 h-full bg-slate-300 border-r border-slate-200/50 rounded-l-md"></div>
+                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5 relative z-10">Faixa / Graduação</p>
+                                    <p id="cart-aluno-faixa-texto" class="text-[10px] md:text-xs font-black uppercase text-slate-800 truncate relative z-10 leading-normal">BRANCA</p>
+                                </div>
+
+                                <div class="col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-2 flex flex-col justify-center">
+                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Nascimento</p>
+                                    <p id="cart-aluno-nascimento-txt" class="text-[10px] md:text-xs font-bold text-slate-800 truncate leading-normal">00/00/0000</p>
+                                </div>
+                                
+                                <div class="bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-2 flex flex-col justify-center">
+                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Matrícula</p>
+                                    <p id="cart-aluno-matricula-txt" class="text-[10px] md:text-xs font-mono font-black text-slate-800 tracking-widest truncate leading-normal">00000</p>
+                                </div>
+
+                                <div class="bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-2 flex flex-col justify-center">
+                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Validade</p>
+                                    <p id="cart-aluno-validade-txt" class="text-[10px] md:text-xs font-black text-slate-800 tracking-wider truncate leading-normal">2026</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="w-[35%] max-w-[200px] p-5 md:p-6 flex flex-col items-center justify-between z-10 bg-slate-100/50 border-l border-slate-200 backdrop-blur-sm">
+                            <div class="w-full aspect-[3/4] bg-white rounded-lg border-2 border-slate-200 overflow-hidden shadow-md flex items-center justify-center relative">
+                                <img id="cart-aluno-foto-modal" src="" class="w-full h-full object-cover hidden" crossorigin="anonymous">
+                                <span id="cart-aluno-foto-fallback-modal" class="text-5xl font-black text-slate-300">?</span>
+                            </div>
+                            <div class="w-16 h-16 bg-white p-1.5 rounded-lg mt-auto shadow-sm border border-slate-200 flex items-center justify-center">
+                                <div id="cart-qr-code" class="w-full h-full bg-white flex items-center justify-center"></div>
+                            </div>
+                        </div>
+
+                        <div class="absolute bottom-3 left-5 md:left-6 z-10 flex items-center gap-2 bg-white px-2 py-1 rounded shadow-sm border border-slate-100 opacity-90">
+                            <img src="logo_bjj_maneger.png" class="h-3.5 w-auto grayscale" crossorigin="anonymous">
+                            <span class="text-[7px] font-bold tracking-widest text-slate-600 uppercase">Emitido por BJJ Manager | maneger.bjjdigital.com.br</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-2 mb-4 sm:hidden">
+                    <p class="text-[10px] text-slate-500 font-bold tracking-widest uppercase flex items-center justify-center gap-2">
+                        <span>👈</span> Deslize para ver a carteira completa <span>👉</span>
+                    </p>
+                </div>
+
+                <div class="mt-6 flex flex-col sm:flex-row justify-center gap-3 w-full max-w-[600px] mx-auto pb-4">
+                    <button onclick="baixarCarteirinhaPNG()" class="bg-emerald-500 hover:bg-emerald-400 text-white font-black py-3.5 px-4 rounded-xl shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 uppercase tracking-widest text-[10px] sm:text-xs w-full flex-1">
+                        <span class="text-lg">📸</span> Baixar PNG
+                    </button>
+                    <button onclick="baixarCarteirinhaPDF()" class="bg-rose-500 hover:bg-rose-400 text-white font-black py-3.5 px-4 rounded-xl shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 uppercase tracking-widest text-[10px] sm:text-xs w-full flex-1">
+                        <span class="text-lg">📄</span> Baixar PDF
+                    </button>
+                    <button onclick="compartilharCarteirinha()" class="bg-cyan-500 hover:bg-cyan-400 text-white font-black py-3.5 px-4 rounded-xl shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 uppercase tracking-widest text-[10px] sm:text-xs w-full flex-1">
+                        <span class="text-lg">📲</span> Compartilhar
+                    </button>
+                </div>
+            </section>
 
             <section id="aba-financeiro" class="aluno-secao hidden transition-opacity duration-300">
                 <div class="bg-slate-800/40 rounded-3xl border border-slate-700/50 overflow-hidden backdrop-blur-sm">
@@ -287,6 +294,7 @@
                         <button type="submit" id="btn-salvar-dados" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-4 rounded-xl shadow-lg transition-transform transform hover:-translate-y-1 uppercase tracking-widest text-sm flex items-center justify-center mt-4">
                             💾 Salvar Alterações
                         </button>
+
                     </form>
                 </div>
             </section>
@@ -360,7 +368,7 @@
 
         let alunoLogado = null;
         let equipeDados = null;
-        let faturasCache = [];
+        let faturasCache = []; 
 
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
@@ -391,7 +399,6 @@
             v = v.replace(/(\d)(\d{4})$/, "$1-$2");
             i.value = v;
         };
-        
         window.mascaraCEP = (i) => {
             let v = i.value.replace(/\D/g, "");
             v = v.replace(/^(\d{5})(\d)/, "$1-$2");
@@ -554,6 +561,26 @@
             }
         }
 
+        window.ajustarZoomCarteirinha = function() {
+            const wrapper = document.getElementById('cart-wrapper');
+            const cart = document.getElementById('carteirinha'); // ATUALIZADO PARA O NOVO ID
+            if(!wrapper || !cart) return;
+            
+            const maxWidth = wrapper.parentElement.clientWidth - 32; 
+            
+            if(maxWidth < 600) {
+                const scale = maxWidth / 600;
+                cart.style.transform = `scale(${scale})`;
+                cart.style.transformOrigin = 'top left'; // MELHOR ENCAIXE NO SCROLL
+                wrapper.style.height = `${380 * scale}px`;
+            } else {
+                cart.style.transform = `scale(1)`;
+                wrapper.style.height = '380px';
+            }
+        }
+
+        window.addEventListener('resize', ajustarZoomCarteirinha);
+
         async function iniciarPortal() {
             document.getElementById('tela-login').classList.add('hidden');
             document.getElementById('tela-portal').classList.remove('hidden');
@@ -576,6 +603,8 @@
 
             preencherCarteirinha();
             buscarFaturas();
+            
+            setTimeout(ajustarZoomCarteirinha, 100);
         }
 
         function getCorFaixaDupla(faixaTexto) {
@@ -633,8 +662,7 @@
             
             const anoAtual = new Date().getFullYear();
             document.getElementById('cart-aluno-validade-txt').innerText = `DEZ / ${anoAtual}`;
-            document.getElementById('ano-atual').innerText = `Ano: ${anoAtual}`;
-
+            
             document.getElementById('cart-faixa-border').style.background = getCorFaixaDupla(a.faixa);
 
             if(a.foto_url) {
@@ -647,10 +675,173 @@
                 document.getElementById('cart-aluno-foto-modal').classList.add('hidden');
             }
 
-            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.origin + '/validar.html?mat=' + a.matricula)}&format=jpeg&color=000000&bgcolor=FFFFFF`;
-            document.getElementById('cart-qr-code').src = qrUrl;
+            const qrContainer = document.getElementById('cart-qr-code');
+            qrContainer.innerHTML = ''; 
+            new QRCode(qrContainer, {
+                text: window.location.origin + '/validar.html?mat=' + a.matricula,
+                width: 64,
+                height: 64,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.M
+            });
         }
 
+        // ==========================================
+        // ALGORITMO EXPORTAÇÃO "CLONE INVISÍVEL" 
+        // ==========================================
+        async function gerarCanvasCarteirinha() {
+            const elementoBase = document.getElementById('carteirinha');
+            
+            const divClone = document.createElement('div');
+            divClone.style.position = 'absolute';
+            divClone.style.top = '-9999px';
+            divClone.style.left = '-9999px';
+            divClone.style.width = '600px'; 
+            divClone.style.height = '380px';
+            divClone.style.margin = '0';
+            divClone.style.padding = '0';
+            divClone.style.backgroundColor = '#ffffff';
+
+            const clone = elementoBase.cloneNode(true);
+            
+            clone.classList.remove('mx-auto', 'shadow-2xl', 'w-full', 'max-w-[600px]', 'aspect-[1.58/1]', 'shrink-0', 'mt-4'); 
+            clone.style.margin = '0';
+            clone.style.transform = 'none';
+            clone.style.position = 'relative';
+            clone.style.top = '0';
+            clone.style.left = '0';
+            clone.style.width = '600px';
+            clone.style.height = '380px';
+            
+            // REMOVE EFEITOS DE VIDRO QUE BUGAM O PDF
+            const glassElements = clone.querySelectorAll('.backdrop-blur-sm, .bg-white\\/90, .bg-slate-100\\/50, .bg-white\\/50');
+            glassElements.forEach(el => {
+                el.classList.remove('backdrop-blur-sm', 'bg-white/90', 'bg-slate-100/50', 'bg-white/50');
+                if(el.classList.contains('border-l')) {
+                    el.style.backgroundColor = '#f1f5f9'; 
+                } else {
+                    el.style.backgroundColor = '#ffffff';
+                }
+            });
+
+            const qrCodeContainer = clone.querySelector('#cart-qr-code');
+            if(qrCodeContainer) {
+                qrCodeContainer.style.opacity = '1';
+                qrCodeContainer.style.filter = 'none';
+                qrCodeContainer.style.backgroundColor = '#ffffff';
+            }
+
+            // MÁGICA: Adicionar a máscara de recorte para que a marca d'água não vaze os cantos arredondados no iOS
+            clone.style.isolation = 'isolate';
+            clone.style.webkitMaskImage = '-webkit-radial-gradient(white, black)';
+
+            divClone.appendChild(clone);
+            document.body.appendChild(divClone);
+
+            await new Promise(r => setTimeout(r, 500));
+
+            const canvas = await html2canvas(clone, { 
+                scale: 4, 
+                useCORS: true, 
+                allowTaint: false,
+                backgroundColor: '#ffffff',
+                width: 600,
+                height: 380,
+                windowWidth: 1200 // Engana o html2canvas para renderizar CSS de Desktop
+            });
+
+            document.body.removeChild(divClone);
+            return canvas;
+        }
+
+        window.baixarCarteirinhaPNG = async function () {
+            const btn = document.querySelector('button[onclick="baixarCarteirinhaPNG()"]');
+            const txtOriginal = btn.innerHTML;
+            btn.innerHTML = "⏳ GERANDO..."; btn.disabled = true;
+            showToast("Gerando imagem em Alta Resolução...", "success");
+
+            try {
+                const canvas = await gerarCanvasCarteirinha();
+                const link = document.createElement('a');
+                link.download = `Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.png`;
+                link.href = canvas.toDataURL('image/png', 1.0);
+                link.click();
+            } catch(e) {
+                showToast("Erro ao exportar PNG", "error");
+            } finally {
+                btn.innerHTML = txtOriginal; btn.disabled = false;
+            }
+        }
+
+        window.baixarCarteirinhaPDF = async function () {
+            const btn = document.querySelector('button[onclick="baixarCarteirinhaPDF()"]');
+            const txtOriginal = btn.innerHTML;
+            btn.innerHTML = "⏳ GERANDO..."; btn.disabled = true;
+            showToast("Gerando PDF em Alta Resolução...", "success");
+
+            try {
+                const canvas = await gerarCanvasCarteirinha();
+                const imgData = canvas.toDataURL('image/jpeg', 1.0);
+
+                const pdfOpt = {
+                    margin: 0,
+                    filename: `Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.pdf`,
+                    image: { type: 'jpeg', quality: 1.0 },
+                    jsPDF: { unit: 'mm', format: [85.6, 54], orientation: 'landscape' },
+                    pagebreak: { mode: ['avoid-all'] }
+                };
+
+                const divContainer = document.createElement('div');
+                divContainer.style.width = '85.6mm';
+                divContainer.style.height = '54mm';
+                divContainer.style.overflow = 'hidden';
+                divContainer.innerHTML = `<img src="${imgData}" style="width: 85.5mm; height: 53.9mm; display: block; margin: 0; padding: 0; border: none; outline: none; background-color: #fff;">`;
+
+                await html2pdf().set(pdfOpt).from(divContainer).save();
+            } catch(e) {
+                showToast("Erro ao exportar PDF", "error");
+            } finally {
+                btn.innerHTML = txtOriginal; btn.disabled = false;
+            }
+        }
+
+        window.compartilharCarteirinha = async function () {
+            const btn = document.querySelector('button[onclick="compartilharCarteirinha()"]');
+            const txtOriginal = btn.innerHTML;
+            btn.innerHTML = "⏳ GERANDO..."; btn.disabled = true;
+            showToast("Preparando arquivo para partilha...", "success");
+
+            try {
+                const canvas = await gerarCanvasCarteirinha();
+                canvas.toBlob(async (blob) => {
+                    const file = new File([blob], `Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.png`, { type: "image/png" });
+
+                    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try {
+                            await navigator.share({
+                                title: 'Carteirinha BJJ',
+                                text: 'Minha carteirinha oficial',
+                                files: [file]
+                            });
+                        } catch {
+                            // User cancelled
+                        }
+                    } else {
+                        const url = URL.createObjectURL(blob);
+                        window.open(`https://wa.me/?text=Minha carteirinha oficial`, '_blank');
+                    }
+                });
+            } catch(e) {
+                showToast("Erro ao partilhar", "error");
+            } finally {
+                btn.innerHTML = txtOriginal; btn.disabled = false;
+            }
+        }
+
+        // ==========================================
+        // LÓGICA DE FATURAS E PAGAMENTO INTELIGENTE
+        // ==========================================
         async function buscarFaturas() {
             const lista = document.getElementById('lista-faturas');
             try {
@@ -662,12 +853,12 @@
                     return;
                 }
 
-                faturasCache = [];
+                faturasCache = []; 
                 let faturasHTML = '';
 
                 snap.forEach(doc => {
                     const fat = { id: doc.id, ...doc.data() };
-                    faturasCache.push(fat);
+                    faturasCache.push(fat); 
 
                     const isPago = fat.status === 'PAGO';
                     const isAtrasado = fat.status === 'ATRASADO';
@@ -756,86 +947,6 @@
             input.setSelectionRange(0, 99999);
             navigator.clipboard.writeText(input.value);
             showToast("Chave PIX copiada para a área de transferência!", "success");
-        }
-
-        // ===============================
-        // EXPORTAÇÃO DE CARTEIRINHA
-        // ===============================
-        window.baixarCarteirinhaPNG = async function () {
-            const el = document.getElementById('carteirinha');
-            showToast("Gerando imagem...", "success");
-            
-            const canvas = await html2canvas(el, {
-                scale: 3,
-                useCORS: true,
-                backgroundColor: '#ffffff',
-                allowTaint: false
-            });
-
-            const link = document.createElement('a');
-            link.download = `Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-
-            showToast("Download iniciado!", "success");
-        }
-
-        window.baixarCarteirinhaPDF = async function () {
-            const el = document.getElementById('carteirinha');
-            showToast("Gerando PDF...", "success");
-
-            const canvas = await html2canvas(el, {
-                scale: 3,
-                useCORS: true,
-                backgroundColor: '#ffffff',
-                allowTaint: false
-            });
-
-            const imgData = canvas.toDataURL('image/jpeg', 1.0);
-
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF({
-                orientation: 'landscape',
-                unit: 'mm',
-                format: [85.6, 54]
-            });
-
-            pdf.addImage(imgData, 'JPEG', 0, 0, 85.6, 54);
-            pdf.save(`Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.pdf`);
-
-            showToast("PDF pronto!", "success");
-        }
-
-        window.compartilharCarteirinha = async function () {
-            const el = document.getElementById('carteirinha');
-            showToast("Preparando...", "success");
-
-            const canvas = await html2canvas(el, {
-                scale: 3,
-                useCORS: true,
-                backgroundColor: '#ffffff',
-                allowTaint: false
-            });
-
-            canvas.toBlob(async (blob) => {
-                const file = new File([blob], "carteirinha.png", { type: "image/png" });
-
-                if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-                    try {
-                        await navigator.share({
-                            title: 'Carteirinha BJJ',
-                            text: 'Minha carteirinha da equipe',
-                            files: [file]
-                        });
-                        showToast("Compartilhado!", "success");
-                    } catch {
-                        showToast("Cancelado.");
-                    }
-                } else {
-                    const url = URL.createObjectURL(blob);
-                    window.open(`https://wa.me/?text=Minha carteirinha: ${url}`, '_blank');
-                }
-            });
         }
 
         const sessaoSalva = localStorage.getItem('bjj_aluno_auth');

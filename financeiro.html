@@ -36,7 +36,6 @@
     <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
     <div id="interface-sistema" class="flex w-full h-full relative">
-
         <main class="flex-1 flex flex-col h-full overflow-hidden relative">
             
             <div class="bg-slate-900 text-white p-4 shrink-0 flex flex-col xl:flex-row justify-between items-center gap-4 z-10 shadow-md">
@@ -58,8 +57,13 @@
                     <div class="flex flex-wrap items-center justify-center bg-slate-800 p-1.5 rounded-xl border border-slate-700 shrink-0 gap-1 sm:gap-0">
                         <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase px-2">No Prazo (R$)</span>
                         <input type="text" id="config-prazo" oninput="mascaraMoeda(this)" class="w-14 sm:w-16 bg-slate-900 border border-slate-600 rounded-lg text-white text-center text-xs sm:text-sm font-bold p-1 outline-none focus:border-cyan-500" value="70,00">
+                        
                         <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase px-2 sm:ml-2">Atraso (R$)</span>
                         <input type="text" id="config-atraso" oninput="mascaraMoeda(this)" class="w-14 sm:w-16 bg-slate-900 border border-slate-600 rounded-lg text-rose-400 text-center text-xs sm:text-sm font-bold p-1 outline-none focus:border-rose-500" value="100,00">
+                        
+                        <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase px-2 sm:ml-2">Chave PIX</span>
+                        <input type="text" id="config-pix" placeholder="Sua Chave PIX..." class="w-20 sm:w-32 bg-slate-900 border border-slate-600 rounded-lg text-emerald-400 text-center text-xs sm:text-sm font-bold p-1 outline-none focus:border-emerald-500">
+                        
                         <button id="btn-salvar-valores" onclick="salvarConfiguracaoGeral()" class="ml-1 sm:ml-2 bg-slate-700 hover:bg-slate-600 text-white p-1 sm:p-1.5 rounded-lg text-xs transition-colors" title="Salvar Valores">💾</button>
                     </div>
 
@@ -71,7 +75,6 @@
 
             <div class="flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-10">
                 <div class="max-w-7xl mx-auto">
-
                     <div class="flex border-b border-slate-200 mb-6 overflow-x-auto hide-scrollbar snap-x">
                         <button onclick="mudarAba('tab-mensalidades')" id="btn-tab-mensalidades" class="aba-item py-4 px-4 sm:px-6 text-[10px] sm:text-xs font-black uppercase tracking-widest tab-active transition-all whitespace-nowrap snap-start">👥 Mensalidades</button>
                         <button onclick="mudarAba('tab-dash')" id="btn-tab-dash" class="aba-item py-4 px-4 sm:px-6 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all whitespace-nowrap snap-start">📊 Resumo Mês</button>
@@ -91,6 +94,7 @@
                                     <span class="mr-2 text-base">⚡</span> Gerar Faturas do Mês
                                 </button>
                             </div>
+
                             <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex-1 min-h-[400px]">
                                 <div class="overflow-x-auto w-full h-full">
                                     <table class="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
@@ -182,7 +186,6 @@
                                 <h3 class="text-2xl md:text-3xl font-black text-white mt-2" id="dash-saldo">R$ 0,00</h3>
                             </div>
                         </div>
-
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                             <div class="bg-white p-4 md:p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col items-center justify-center relative min-h-[300px] md:min-h-[350px]">
                                 <canvas id="chartBalancoMes"></canvas>
@@ -208,7 +211,6 @@
                                 <h3 class="text-2xl md:text-3xl font-black text-slate-800 mt-2" id="ano-saldo">R$ 0,00</h3>
                             </div>
                         </div>
-
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                             <div class="bg-white p-4 md:p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col items-center justify-center relative min-h-[300px] md:min-h-[350px]">
                                 <canvas id="chartEvolucaoAno"></canvas>
@@ -561,8 +563,8 @@
                     document.getElementById('filtro-mes').value = String(hoje.getMonth() + 1).padStart(2, '0');
                     document.getElementById('filtro-ano').value = hoje.getFullYear().toString();
 
-                    await carregarInfoEquipe(user); 
-                    
+                    await carregarInfoEquipe(user);
+                     
                     document.getElementById('config-prazo').value = floatToStr(equipeBaseConfig.prazo);
                     document.getElementById('config-atraso').value = floatToStr(equipeBaseConfig.atraso);
 
@@ -601,8 +603,8 @@
 
                 if (dadosEquipe) {
                     equipeNomeGlobal = dadosEquipe.nome_equipe;
-                    equipeLogoGlobal = dadosEquipe.url_logo; 
-                    
+                    equipeLogoGlobal = dadosEquipe.url_logo;
+                     
                     const elNomeEquipe = document.getElementById('nome-equipe') || document.getElementById('lbl-equipe');
                     if(elNomeEquipe) elNomeEquipe.innerText = equipeNomeGlobal.toUpperCase();
 
@@ -619,6 +621,9 @@
 
                     if(dadosEquipe.valor_prazo) equipeBaseConfig.prazo = parseFloat(dadosEquipe.valor_prazo);
                     if(dadosEquipe.valor_atraso) equipeBaseConfig.atraso = parseFloat(dadosEquipe.valor_atraso);
+                    
+                    // CARREGA A CHAVE PIX NO INPUT SE EXISTIR
+                    if(dadosEquipe.chave_pix) document.getElementById('config-pix').value = dadosEquipe.chave_pix;
                 }
             } catch (error) { console.log(error); }
         }
@@ -626,14 +631,21 @@
         window.salvarConfiguracaoGeral = async function() {
             const p = strToFloat(document.getElementById('config-prazo').value);
             const a = strToFloat(document.getElementById('config-atraso').value);
+            const pix = document.getElementById('config-pix').value.trim();
+            
             const btn = document.getElementById('btn-salvar-valores');
             const origHTML = btn.innerHTML;
             btn.innerHTML = "⏳"; btn.disabled = true;
 
             try {
-                await updateDoc(doc(db, "equipes", uid), { valor_prazo: p, valor_atraso: a });
+                await updateDoc(doc(db, "equipes", uid), { 
+                    valor_prazo: p, 
+                    valor_atraso: a,
+                    chave_pix: pix 
+                });
+                
                 equipeBaseConfig.prazo = p; equipeBaseConfig.atraso = a;
-                showToast("Configuração de valores atualizada!", "success");
+                showToast("Configuração salva com sucesso!", "success");
                 renderizarTabelas(); 
             } catch (e) { 
                 showToast("Erro ao salvar config.", "error"); 

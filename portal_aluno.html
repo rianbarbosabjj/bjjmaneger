@@ -20,6 +20,7 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
+        /* Ajuste de segurança para o iPhone (Notch) na barra inferior */
         .pb-safe { padding-bottom: env(safe-area-inset-bottom, 20px); }
     </style>
 </head>
@@ -95,7 +96,7 @@
 
                 <div id="cart-wrapper" class="w-full overflow-x-auto hide-scrollbar pb-2 pt-2 -mx-4 px-4 sm:px-0 flex justify-start sm:justify-center transition-all duration-300 origin-top">
                     
-                    <div id="carteirinha" class="relative bg-white rounded-2xl shadow-2xl border border-slate-200 flex text-slate-800 font-sans w-full max-w-[600px] shrink-0 box-border" style="width: 600px; min-width: 600px; height: 380px; min-height: 380px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); isolation: isolate; -webkit-mask-image: -webkit-radial-gradient(white, black);">
+                    <div id="cart-oficial-aluno" class="relative bg-white rounded-2xl overflow-hidden shadow-2xl border border-slate-200 flex text-slate-800 font-sans shrink-0 mx-auto box-border" style="width: 600px; min-width: 600px; height: 380px; min-height: 380px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
                         
                         <div class="absolute top-0 right-0 w-64 h-full bg-slate-200/60 skew-x-[-20deg] translate-x-10 z-0 pointer-events-none"></div>
                         <div class="absolute bottom-0 left-0 w-full h-1/3 bg-slate-300/40 skew-y-[-5deg] origin-bottom-right z-0 pointer-events-none"></div>
@@ -105,58 +106,59 @@
                             <div id="cart-equipe-watermark-fallback" class="text-[30rem] leading-none font-black text-slate-800 opacity-[0.03] hidden">E</div>
                         </div>
 
-                        <div class="flex-1 p-5 md:p-6 flex flex-col z-10 w-[65%]">
-                            <div class="flex items-center gap-4 mb-4 md:mb-6">
-                                <div class="h-14 w-14 md:h-16 md:w-16 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-sm shrink-0 overflow-hidden">
+                        <div class="flex-1 p-6 flex flex-col z-10 w-[65%] relative">
+                            <div class="flex items-center gap-4 mb-6 relative z-10">
+                                <div class="h-16 w-16 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-sm shrink-0 overflow-hidden">
                                     <img id="cart-equipe-logo" src="" class="h-full w-full object-contain p-1.5 hidden" crossorigin="anonymous">
                                     <div id="cart-equipe-fallback" class="text-3xl font-black text-slate-700 hidden">E</div>
                                 </div>
                                 <div class="flex flex-col justify-center">
-                                    <h2 id="cart-equipe-nome" class="text-lg md:text-xl font-black uppercase tracking-tight text-slate-800 leading-none break-words max-w-[240px]">NOME DA EQUIPE</h2>
+                                    <h2 id="cart-equipe-nome" class="text-xl font-black uppercase tracking-tight text-slate-800 leading-none break-words max-w-[240px]">NOME DA EQUIPE</h2>
                                     <p class="text-[9px] text-slate-500 uppercase tracking-widest font-bold mt-1.5">Identificação Oficial</p>
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-y-3 gap-x-4 w-full mt-auto mb-2 md:mb-4">
-                                <div class="col-span-2 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-cyan-500 shadow-sm px-3 py-2 flex flex-col justify-center">
+                            <div class="grid grid-cols-2 gap-y-3 gap-x-4 w-full mt-auto mb-4 relative z-10">
+                                <div class="col-span-2 bg-white rounded-md border-l-4 border-cyan-500 shadow-sm px-3 py-2 flex flex-col justify-center relative z-20">
                                     <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Nome do Atleta</p>
-                                    <p id="cart-aluno-nome-txt" class="text-xs md:text-[13px] font-black uppercase text-slate-800 leading-normal truncate">ALUNO NOME</p>
+                                    <p id="cart-aluno-nome-txt" class="text-[13px] font-black uppercase text-slate-800 leading-normal whitespace-nowrap overflow-hidden text-ellipsis">ALUNO NOME</p>
                                 </div>
                                 
-                                <div class="relative overflow-hidden col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm pr-3 py-2 rounded-md shadow-sm pl-5 border border-slate-200 flex flex-col justify-center">
+                                <div class="relative overflow-hidden col-span-1 bg-white rounded-md shadow-sm pl-5 border border-slate-200 flex flex-col justify-center z-20">
                                     <div id="cart-faixa-border" class="absolute top-0 left-0 w-2.5 h-full bg-slate-300 border-r border-slate-200/50 rounded-l-md"></div>
                                     <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5 relative z-10">Faixa / Graduação</p>
-                                    <p id="cart-aluno-faixa-texto" class="text-[10px] md:text-xs font-black uppercase text-slate-800 truncate relative z-10 leading-normal">BRANCA</p>
+                                    <p id="cart-aluno-faixa-texto" class="text-xs font-black uppercase text-slate-800 relative z-10 leading-normal whitespace-nowrap overflow-hidden text-ellipsis">BRANCA</p>
                                 </div>
 
-                                <div class="col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-2 flex flex-col justify-center">
+                                <div class="col-span-1 bg-white rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-2 flex flex-col justify-center relative z-20">
                                     <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Nascimento</p>
-                                    <p id="cart-aluno-nascimento-txt" class="text-[10px] md:text-xs font-bold text-slate-800 truncate leading-normal">00/00/0000</p>
+                                    <p id="cart-aluno-nascimento-txt" class="text-xs font-bold text-slate-800 leading-normal whitespace-nowrap overflow-hidden text-ellipsis">00/00/0000</p>
                                 </div>
                                 
-                                <div class="bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-2 flex flex-col justify-center">
+                                <div class="col-span-1 bg-white rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-2 flex flex-col justify-center relative z-[60]">
                                     <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Matrícula</p>
-                                    <p id="cart-aluno-matricula-txt" class="text-[10px] md:text-xs font-mono font-black text-slate-800 tracking-widest truncate leading-normal">00000</p>
+                                    <p id="cart-aluno-matricula-txt" class="text-xs font-mono font-black text-slate-800 tracking-widest leading-normal whitespace-nowrap overflow-hidden text-ellipsis">00000</p>
                                 </div>
 
-                                <div class="bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-2 flex flex-col justify-center">
+                                <div class="col-span-1 bg-white rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-2 flex flex-col justify-center relative z-[60]">
                                     <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Validade</p>
-                                    <p id="cart-aluno-validade-txt" class="text-[10px] md:text-xs font-black text-slate-800 tracking-wider truncate leading-normal">2026</p>
+                                    <p id="cart-aluno-validade-txt" class="text-xs font-black text-slate-800 tracking-wider leading-normal whitespace-nowrap overflow-hidden text-ellipsis">2026</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="w-[35%] max-w-[200px] p-5 md:p-6 flex flex-col items-center justify-between z-10 bg-slate-100/50 border-l border-slate-200 backdrop-blur-sm">
-                            <div class="w-full aspect-[3/4] bg-white rounded-lg border-2 border-slate-200 overflow-hidden shadow-md flex items-center justify-center relative">
+                        <div class="w-[35%] max-w-[196px] p-6 flex flex-col items-center justify-between z-[50] bg-slate-200/40 border-l border-slate-300 relative">
+                            <div class="w-full aspect-[3/4] bg-white rounded-lg border-[3px] border-white overflow-hidden shadow-md flex items-center justify-center relative z-[60]">
                                 <img id="cart-aluno-foto-modal" src="" class="w-full h-full object-cover hidden" crossorigin="anonymous">
                                 <span id="cart-aluno-foto-fallback-modal" class="text-5xl font-black text-slate-300">?</span>
                             </div>
-                            <div class="w-16 h-16 bg-white p-1.5 rounded-lg mt-auto shadow-sm border border-slate-200 flex items-center justify-center">
-                                <div id="cart-qr-code" class="w-full h-full bg-white flex items-center justify-center"></div>
+                            
+                            <div class="w-16 h-16 bg-white p-1 rounded-lg mt-auto shadow-sm border border-slate-200 flex items-center justify-center relative z-[60]">
+                                <div id="cart-qr-code" class="w-full h-full flex items-center justify-center"></div>
                             </div>
                         </div>
 
-                        <div class="absolute bottom-3 left-5 md:left-6 z-10 flex items-center gap-2 bg-white px-2 py-1 rounded shadow-sm border border-slate-100 opacity-90">
+                        <div class="absolute bottom-3 left-6 z-10 flex items-center gap-2 bg-white px-2 py-1 rounded shadow-sm border border-slate-200 opacity-90">
                             <img src="logo_bjj_maneger.png" class="h-3.5 w-auto grayscale" crossorigin="anonymous">
                             <span class="text-[7px] font-bold tracking-widest text-slate-600 uppercase">Emitido por BJJ Manager | maneger.bjjdigital.com.br</span>
                         </div>
@@ -170,13 +172,13 @@
                 </div>
 
                 <div class="mt-6 flex flex-col sm:flex-row justify-center gap-3 w-full max-w-[600px] mx-auto pb-4">
-                    <button onclick="baixarCarteirinhaPNG()" class="bg-emerald-500 hover:bg-emerald-400 text-white font-black py-3.5 px-4 rounded-xl shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 uppercase tracking-widest text-[10px] sm:text-xs w-full flex-1">
+                    <button onclick="baixarCarteirinhaPNG()" id="btn-exportar-png" class="bg-emerald-500 hover:bg-emerald-400 text-white font-black py-3.5 px-4 rounded-xl shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 uppercase tracking-widest text-[10px] sm:text-xs w-full flex-1">
                         <span class="text-lg">📸</span> Baixar PNG
                     </button>
-                    <button onclick="baixarCarteirinhaPDF()" class="bg-rose-500 hover:bg-rose-400 text-white font-black py-3.5 px-4 rounded-xl shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 uppercase tracking-widest text-[10px] sm:text-xs w-full flex-1">
+                    <button onclick="baixarCarteirinhaPDF()" id="btn-exportar-pdf" class="bg-rose-500 hover:bg-rose-400 text-white font-black py-3.5 px-4 rounded-xl shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 uppercase tracking-widest text-[10px] sm:text-xs w-full flex-1">
                         <span class="text-lg">📄</span> Baixar PDF
                     </button>
-                    <button onclick="compartilharCarteirinha()" class="bg-cyan-500 hover:bg-cyan-400 text-white font-black py-3.5 px-4 rounded-xl shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 uppercase tracking-widest text-[10px] sm:text-xs w-full flex-1">
+                    <button onclick="compartilharCarteirinha()" id="btn-compartilhar" class="bg-cyan-500 hover:bg-cyan-400 text-white font-black py-3.5 px-4 rounded-xl shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 uppercase tracking-widest text-[10px] sm:text-xs w-full flex-1">
                         <span class="text-lg">📲</span> Compartilhar
                     </button>
                 </div>
@@ -196,7 +198,6 @@
 
             <section id="aba-dados" class="aluno-secao hidden transition-opacity duration-300">
                 <div class="bg-slate-800/80 backdrop-blur-md rounded-3xl border border-slate-700 p-6 shadow-xl space-y-6">
-                    
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pb-6 border-b border-slate-700/50">
                         <div>
                             <label class="block text-[10px] font-black text-slate-500 uppercase mb-1.5">Nome Oficial</label>
@@ -212,7 +213,6 @@
                     </div>
 
                     <form id="form-edicao" onsubmit="event.preventDefault(); salvarMeusDados();" class="space-y-6">
-                        
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
                                 <label class="block text-[10px] font-black text-cyan-400 uppercase mb-1.5">WhatsApp / Telefone</label>
@@ -226,7 +226,6 @@
 
                         <div class="space-y-4">
                             <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-700/50 pb-2">Meu Endereço</h4>
-                            
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                                 <div class="col-span-1">
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">CEP</label>
@@ -237,7 +236,6 @@
                                     <input type="text" id="edit-end" class="w-full p-3.5 bg-slate-900 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold">
                                 </div>
                             </div>
-
                             <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
                                 <div class="col-span-1">
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Número</label>
@@ -252,7 +250,6 @@
                                     <input type="text" id="edit-bairro" class="w-full p-3.5 bg-slate-900 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold">
                                 </div>
                             </div>
-
                             <div class="grid grid-cols-3 gap-3">
                                 <div class="col-span-2">
                                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Cidade</label>
@@ -294,7 +291,6 @@
                         <button type="submit" id="btn-salvar-dados" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-4 rounded-xl shadow-lg transition-transform transform hover:-translate-y-1 uppercase tracking-widest text-sm flex items-center justify-center mt-4">
                             💾 Salvar Alterações
                         </button>
-
                     </form>
                 </div>
             </section>
@@ -563,7 +559,7 @@
 
         window.ajustarZoomCarteirinha = function() {
             const wrapper = document.getElementById('cart-wrapper');
-            const cart = document.getElementById('carteirinha'); // ATUALIZADO PARA O NOVO ID
+            const cart = document.getElementById('cart-oficial-aluno');
             if(!wrapper || !cart) return;
             
             const maxWidth = wrapper.parentElement.clientWidth - 32; 
@@ -571,7 +567,7 @@
             if(maxWidth < 600) {
                 const scale = maxWidth / 600;
                 cart.style.transform = `scale(${scale})`;
-                cart.style.transformOrigin = 'top left'; // MELHOR ENCAIXE NO SCROLL
+                cart.style.transformOrigin = 'top left';
                 wrapper.style.height = `${380 * scale}px`;
             } else {
                 cart.style.transform = `scale(1)`;
@@ -691,7 +687,7 @@
         // ALGORITMO EXPORTAÇÃO "CLONE INVISÍVEL" 
         // ==========================================
         async function gerarCanvasCarteirinha() {
-            const elementoBase = document.getElementById('carteirinha');
+            const elementoBase = document.getElementById('cart-oficial-aluno');
             
             const divClone = document.createElement('div');
             divClone.style.position = 'absolute';
@@ -715,9 +711,9 @@
             clone.style.height = '380px';
             
             // REMOVE EFEITOS DE VIDRO QUE BUGAM O PDF
-            const glassElements = clone.querySelectorAll('.backdrop-blur-sm, .bg-white\\/90, .bg-slate-100\\/50, .bg-white\\/50');
+            const glassElements = clone.querySelectorAll('.backdrop-blur-sm, .bg-white\\/90, .bg-slate-100\\/50, .bg-slate-200\\/40, .bg-white\\/50');
             glassElements.forEach(el => {
-                el.classList.remove('backdrop-blur-sm', 'bg-white/90', 'bg-slate-100/50', 'bg-white/50');
+                el.classList.remove('backdrop-blur-sm', 'bg-white/90', 'bg-slate-100/50', 'bg-white/50', 'bg-slate-200/40');
                 if(el.classList.contains('border-l')) {
                     el.style.backgroundColor = '#f1f5f9'; 
                 } else {
@@ -725,16 +721,13 @@
                 }
             });
 
+            // Garante opacidade no QR Code
             const qrCodeContainer = clone.querySelector('#cart-qr-code');
             if(qrCodeContainer) {
                 qrCodeContainer.style.opacity = '1';
                 qrCodeContainer.style.filter = 'none';
                 qrCodeContainer.style.backgroundColor = '#ffffff';
             }
-
-            // MÁGICA: Adicionar a máscara de recorte para que a marca d'água não vaze os cantos arredondados no iOS
-            clone.style.isolation = 'isolate';
-            clone.style.webkitMaskImage = '-webkit-radial-gradient(white, black)';
 
             divClone.appendChild(clone);
             document.body.appendChild(divClone);
@@ -748,7 +741,7 @@
                 backgroundColor: '#ffffff',
                 width: 600,
                 height: 380,
-                windowWidth: 1200 // Engana o html2canvas para renderizar CSS de Desktop
+                windowWidth: 1200
             });
 
             document.body.removeChild(divClone);
@@ -758,7 +751,7 @@
         window.baixarCarteirinhaPNG = async function () {
             const btn = document.querySelector('button[onclick="baixarCarteirinhaPNG()"]');
             const txtOriginal = btn.innerHTML;
-            btn.innerHTML = "⏳ GERANDO..."; btn.disabled = true;
+            btn.innerHTML = "⏳ A GERAR..."; btn.disabled = true;
             showToast("Gerando imagem em Alta Resolução...", "success");
 
             try {
@@ -777,7 +770,7 @@
         window.baixarCarteirinhaPDF = async function () {
             const btn = document.querySelector('button[onclick="baixarCarteirinhaPDF()"]');
             const txtOriginal = btn.innerHTML;
-            btn.innerHTML = "⏳ GERANDO..."; btn.disabled = true;
+            btn.innerHTML = "⏳ A GERAR..."; btn.disabled = true;
             showToast("Gerando PDF em Alta Resolução...", "success");
 
             try {
@@ -788,8 +781,8 @@
                     margin: 0,
                     filename: `Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.pdf`,
                     image: { type: 'jpeg', quality: 1.0 },
-                    jsPDF: { unit: 'mm', format: [85.6, 54], orientation: 'landscape' },
-                    pagebreak: { mode: ['avoid-all'] }
+                    // Crava tamanho físico de cartão (mm) com apenas 1 página
+                    jsPDF: { unit: 'mm', format: [85.6, 54], orientation: 'landscape' }
                 };
 
                 const divContainer = document.createElement('div');
@@ -809,7 +802,7 @@
         window.compartilharCarteirinha = async function () {
             const btn = document.querySelector('button[onclick="compartilharCarteirinha()"]');
             const txtOriginal = btn.innerHTML;
-            btn.innerHTML = "⏳ GERANDO..."; btn.disabled = true;
+            btn.innerHTML = "⏳ A GERAR..."; btn.disabled = true;
             showToast("Preparando arquivo para partilha...", "success");
 
             try {
@@ -825,7 +818,7 @@
                                 files: [file]
                             });
                         } catch {
-                            // User cancelled
+                            // Cancelado
                         }
                     } else {
                         const url = URL.createObjectURL(blob);

@@ -277,6 +277,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        // Importando as funções do Storage, incluindo o deleteObject
         import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
         const firebaseConfig = {
@@ -295,6 +296,7 @@
         
         let uid = null;        
         let nomeEquipeAtual = "";
+        let logoEquipeAnterior = ""; // Nova variável para guardar a logo antiga
         
         let valPrazo = 70.0;
         let valAtraso = 100.0;
@@ -367,6 +369,7 @@
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             document.getElementById('config-nome-equipe').value = nomeEquipeAtual;
+            document.getElementById('config-logo').value = ""; // Limpa input file
             switchConfigTab('dados'); 
         };
 
@@ -448,8 +451,6 @@
                                     btnSairSuporte.className = "mx-4 mb-2 bg-rose-500/10 border border-rose-500/20 text-rose-500 hover:bg-rose-500 hover:text-white font-black text-[9px] uppercase tracking-widest py-2.5 rounded-xl transition-all flex items-center justify-center gap-2";
                                     btnSairSuporte.innerHTML = "<span>🚨 MODO SUPORTE (SAIR)</span>";
                                     
-                                    // Tenta colocar o botão logo acima do botão "Sair" do menu.js
-                                    // Se não encontrar, joga no final da sidebar
                                     const botoesNoMenu = Array.from(aside.querySelectorAll('button, a'));
                                     const btnSairOriginal = botoesNoMenu.find(el => el.textContent.toUpperCase().includes('SAIR'));
                                     
@@ -484,7 +485,6 @@
                     
                     if (docSnap.exists()) {
                         const lblCargo = document.getElementById('lbl-cargo');
-                        // Já exibe que é o Super Admin no cargo se estiver a usar impersonate
                         if(lblCargo) lblCargo.innerText = (isSuper && isImpersonating) ? "SUPER ADMIN (SUPORTE)" : "Mestre / Administrador";
                         document.getElementById('btn-config-equipe').classList.remove('hidden');
                         dadosEquipe = docSnap.data();
@@ -508,6 +508,12 @@
                         }
 
                         nomeEquipeAtual = dadosEquipe.nome_equipe;
+                        
+                        // Guardar a URL da logo atual na memória
+                        if(dadosEquipe.url_logo) {
+                            logoEquipeAnterior = dadosEquipe.url_logo;
+                        }
+
                         if (dadosEquipe.valor_prazo) valPrazo = parseFloat(dadosEquipe.valor_prazo);
                         if (dadosEquipe.valor_atraso) valAtraso = parseFloat(dadosEquipe.valor_atraso);
 
@@ -597,7 +603,6 @@
             }
         };
 
-        // --- NOVA FUNÇÃO PARA RENDERIZAR FAIXAS BICOLORES E GRADIENTES ---
         function obterEstiloFaixa(faixa) {
             const faixasInfo = {
                 'Branca': 'background-color: #ffffff',
@@ -763,21 +768,18 @@
                 });
 
                 // ========================================================================
-                // 🚀 A MÁGICA DO ONBOARDING ("TAPETE VERMELHO") OCORRE AQUI!
+                // 🚀 A MÁGICA DO ONBOARDING
                 // ========================================================================
                 const painelMetricas = document.getElementById('painel-metricas');
                 const painelOnboarding = document.getElementById('painel-onboarding');
 
                 if (ativos === 0) {
-                    // Esconde as métricas vazias e mostra as boas-vindas premium
                     painelMetricas.classList.add('hidden');
                     painelOnboarding.classList.remove('hidden');
                 } else {
-                    // A academia já tem alunos, mostra o dashboard normal
                     painelMetricas.classList.remove('hidden');
                     painelOnboarding.classList.add('hidden');
 
-                    // ATUALIZANDO OS CARDS DO TOPO
                     document.getElementById('card-ativos').innerText = ativos;
                     document.getElementById('card-receitas').innerText = `R$ ${caixaDoMes.toFixed(2).replace('.', ',')}`;
                     document.getElementById('card-inadimplencia').innerText = `R$ ${valorAtrasado.toFixed(2).replace('.', ',')}`;
@@ -858,7 +860,7 @@
             } catch (error) { console.error(error); }
         }
 
-        // --- SALVAR DADOS DA EQUIPE ---
+        // --- SALVAR DADOS DA EQUIPE COM LIMPEZA DE LOGO ANTIGA ---
         window.salvarConfigEquipe = async function() {
             const btn = document.getElementById('btn-salvar-config');
             const novoNome = document.getElementById('config-nome-equipe').value.trim();
@@ -869,16 +871,35 @@
 
             try {
                 let updates = { nome_equipe: novoNome };
+                
+                // Se escolheu uma nova foto
                 if (arquivoLogo) {
+                    
+                    // 1. Apaga a logo antiga se existir
+                    if (logoEquipeAnterior) {
+                        try {
+                            // Extrai o caminho do arquivo no Firebase Storage a partir da URL
+                            // Nota: Isto assume que a imagem foi carregada usando a nossa estrutura padrão.
+                            const refLogoAntiga = ref(storage, logoEquipeAnterior);
+                            await deleteObject(refLogoAntiga);
+                            console.log("Logo antiga apagada do Storage.");
+                        } catch (errorDelete) {
+                            console.log("Aviso: Não foi possível apagar a logo antiga (pode já ter sido apagada ou URL externa).");
+                        }
+                    }
+
+                    // 2. Faz o Upload da Nova Logo
                     const timestamp = new Date().getTime();
                     const caminhoRef = ref(storage, `equipes_logos/${uid}_${timestamp}_${arquivoLogo.name}`);
                     await uploadBytes(caminhoRef, arquivoLogo);
                     updates.url_logo = await getDownloadURL(caminhoRef);
                 }
+                
                 await updateDoc(doc(db, "equipes", uid), updates);
                 showToast("Equipe atualizada!", "success");
                 setTimeout(() => window.location.reload(), 1500);
             } catch (error) {
+                console.error(error);
                 showToast("Erro ao atualizar.", "error");
                 btn.disabled = false; btn.innerHTML = "Salvar Dados";
             }

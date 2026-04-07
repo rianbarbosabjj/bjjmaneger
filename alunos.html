@@ -200,9 +200,17 @@
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Peso (Kg)</label>
                             <input type="text" id="aluno-peso" placeholder="Ex: 80" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none">
                         </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">E-mail</label>
+
+                        <div class="md:col-span-1">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">E-mail de Acesso</label>
                             <input type="email" id="aluno-email" placeholder="aluno@email.com" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none">
+                        </div>
+                        <div class="md:col-span-1">
+                            <label class="block text-[10px] font-black text-cyan-500 uppercase mb-1">Senha (Portal do Aluno)</label>
+                            <input type="text" id="aluno-senha-portal" placeholder="Defina uma senha" class="w-full p-3 bg-cyan-50 border border-cyan-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none text-cyan-800 font-bold">
+                        </div>
+                        <div class="md:col-span-2 mt-[-10px] mb-2">
+                            <p class="text-[9px] text-slate-400 font-medium">* O aluno usará este e-mail e senha para acessar a carteirinha digital no telemóvel dele.</p>
                         </div>
                         
                         <div class="md:col-span-2 border-t border-slate-100 pt-4 mt-2">
@@ -362,27 +370,30 @@
                     <div id="cart-equipe-watermark-fallback" class="text-[30rem] leading-none font-black text-slate-800 opacity-[0.03] hidden">E</div>
                 </div>
 
-                <div class="flex-1 p-5 md:p-6 flex flex-col z-10 w-[65%]">
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="h-16 md:h-20 w-16 md:w-20 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-sm shrink-0 overflow-hidden">
+                <div class="flex-1 p-4 md:p-6 flex flex-col z-10 w-[65%]">
+                    <div class="flex items-center gap-4 mb-4 md:mb-6">
+                        <div class="h-12 md:h-16 w-12 md:w-16 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-sm shrink-0 overflow-hidden">
                             <img id="cart-equipe-logo" src="" class="h-full w-full object-contain p-1.5 hidden">
-                            <div id="cart-equipe-fallback" class="text-3xl font-black text-slate-700 hidden">E</div>
+                            <div id="cart-equipe-fallback" class="text-2xl md:text-3xl font-black text-slate-700 hidden">E</div>
                         </div>
                         <div class="flex flex-col justify-center">
-                            <h2 id="cart-equipe-nome" class="text-lg md:text-2xl font-black uppercase tracking-tight text-slate-800 leading-tight break-words max-w-[200px] md:max-w-[280px] line-clamp-2">NOME DA EQUIPE</h2>
-                            <p class="text-[9px] md:text-[10px] text-slate-500 uppercase tracking-widest font-bold mt-1">Identificação Oficial</p>
+                            <h2 id="cart-equipe-nome" class="text-base md:text-xl font-black uppercase tracking-tight text-slate-800 leading-tight break-words max-w-[180px] md:max-w-[280px] line-clamp-2">NOME DA EQUIPE</h2>
+                            <p class="text-[8px] md:text-[10px] text-slate-500 uppercase tracking-widest font-bold mt-1">Identificação Oficial</p>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-y-2.5 gap-x-4 w-full mt-auto mb-4 md:mb-6">
+                    <div class="grid grid-cols-2 gap-y-2.5 gap-x-4 w-full mt-auto mb-2 md:mb-4">
                         <div class="col-span-2 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md border-l-4 border-cyan-500 shadow-sm">
                             <p class="text-[8px] md:text-[9px] text-slate-400 uppercase font-bold mb-0.5">Nome do Atleta</p>
                             <p id="cart-aluno-nome-txt" class="text-xs md:text-sm font-black uppercase text-slate-800 truncate">ALUNO NOME</p>
                         </div>
-                        <div class="col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm" id="cart-faixa-border">
-                            <p class="text-[8px] md:text-[9px] text-slate-400 uppercase font-bold mb-0.5">Faixa / Graduação</p>
-                            <p id="cart-aluno-faixa-texto" class="text-[10px] md:text-xs font-black uppercase text-slate-800 truncate">BRANCA</p>
+                        
+                        <div class="relative overflow-hidden col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm pr-3 py-1.5 rounded-md shadow-sm pl-5 border border-slate-200">
+                            <div id="cart-faixa-border" class="absolute top-0 left-0 w-2.5 h-full bg-slate-300 border-r border-slate-200/50"></div>
+                            <p class="text-[8px] md:text-[9px] text-slate-400 uppercase font-bold mb-0.5 relative z-10">Faixa / Graduação</p>
+                            <p id="cart-aluno-faixa-texto" class="text-[10px] md:text-xs font-black uppercase text-slate-800 truncate relative z-10">BRANCA</p>
                         </div>
+
                         <div class="col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm">
                             <p class="text-[8px] md:text-[9px] text-slate-400 uppercase font-bold mb-0.5">Nascimento</p>
                             <p id="cart-aluno-nascimento-txt" class="text-[10px] md:text-xs font-bold text-slate-800">00/00/0000</p>
@@ -398,12 +409,12 @@
                     </div>
                 </div>
 
-                <div class="w-[35%] max-w-[200px] p-5 md:p-6 flex flex-col items-center justify-between z-10 bg-slate-100/50 border-l border-slate-200 backdrop-blur-sm">
+                <div class="w-[35%] max-w-[200px] p-4 md:p-6 flex flex-col items-center justify-between z-10 bg-slate-100/50 border-l border-slate-200 backdrop-blur-sm">
                     <div class="w-full aspect-[3/4] bg-white rounded-lg border-2 border-white overflow-hidden shadow-md flex items-center justify-center relative">
                         <img id="cart-aluno-foto-modal" src="" class="w-full h-full object-cover hidden">
                         <span id="cart-aluno-foto-fallback-modal" class="text-5xl md:text-6xl font-black text-slate-300">?</span>
                     </div>
-                    <div class="w-16 h-16 md:w-20 md:h-20 bg-white p-1 rounded-lg mt-auto shadow-sm border border-slate-200">
+                    <div class="w-14 h-14 md:w-20 md:h-20 bg-white p-1 rounded-lg mt-auto shadow-sm border border-slate-200">
                         <img id="cart-qr-code" src="" class="w-full h-full object-contain">
                     </div>
                 </div>
@@ -615,6 +626,7 @@
             }
         };
 
+        // Função Antiga (Cores Sólidas na Tabela)
         function getCorFaixa(faixaTexto) {
             const f = faixaTexto ? faixaTexto.toLowerCase() : '';
             if (f.includes('cinza e branca')) return 'bg-[linear-gradient(135deg,_#94A3B8_50%,_#FFFFFF_50%)] text-slate-800 border border-slate-300';
@@ -635,6 +647,31 @@
             if (f.includes('marrom')) return 'bg-amber-800 text-white border border-amber-900';
             if (f.includes('preta')) return 'bg-slate-900 text-white border border-black';
             return 'bg-slate-100 text-slate-600 border border-slate-200';
+        }
+
+        // Nova Função: Cores Duplas para a Carteirinha
+        function getCorFaixaDupla(faixaTexto) {
+            const f = faixaTexto ? faixaTexto.toLowerCase() : '';
+            if (f.includes('cinza e branca')) return 'linear-gradient(to bottom, #94A3B8 50%, #f8fafc 50%)';
+            if (f.includes('cinza e preta')) return 'linear-gradient(to bottom, #94A3B8 50%, #0F172A 50%)';
+            if (f.includes('amarela e branca')) return 'linear-gradient(to bottom, #FACC15 50%, #f8fafc 50%)';
+            if (f.includes('amarela e preta')) return 'linear-gradient(to bottom, #FACC15 50%, #0F172A 50%)';
+            if (f.includes('laranja e branca')) return 'linear-gradient(to bottom, #F97316 50%, #f8fafc 50%)';
+            if (f.includes('laranja e preta')) return 'linear-gradient(to bottom, #F97316 50%, #0F172A 50%)';
+            if (f.includes('verde e branca')) return 'linear-gradient(to bottom, #16A34A 50%, #f8fafc 50%)';
+            if (f.includes('verde e preta')) return 'linear-gradient(to bottom, #16A34A 50%, #0F172A 50%)';
+            
+            if (f.includes('branca')) return '#f8fafc';
+            if (f.includes('cinza')) return '#94A3B8';
+            if (f.includes('amarela')) return '#FACC15';
+            if (f.includes('laranja')) return '#F97316';
+            if (f.includes('verde')) return '#16A34A';
+            if (f.includes('azul')) return '#3b82f6';
+            if (f.includes('roxa')) return '#a855f7';
+            if (f.includes('marrom')) return '#78350f';
+            if (f.includes('preta')) return '#0F172A';
+            
+            return '#cbd5e1'; 
         }
 
         window.renderizarTabela = function() {
@@ -711,6 +748,11 @@
             document.getElementById('aluno-tel').value = a.telefone || '';
             document.getElementById('aluno-peso').value = a.peso || '';
             document.getElementById('aluno-email').value = a.email || '';
+            
+            if(document.getElementById('aluno-senha-portal')) {
+                document.getElementById('aluno-senha-portal').value = a.senha_portal || '';
+            }
+
             document.getElementById('aluno-endereco').value = a.endereco || '';
             document.getElementById('aluno-bairro').value = a.bairro || '';
             document.getElementById('aluno-numero').value = a.numero || '';
@@ -742,7 +784,7 @@
             document.getElementById('btn-abrir-carteirinha').classList.remove('hidden');
             document.getElementById('btn-gerar-pdf').classList.remove('hidden');
 
-            calcularIdade(); // Ajusta os campos do responsável baseados na data lida
+            calcularIdade(); 
             mudarAba('aba-pessoal');
             document.getElementById('modal-aluno').classList.replace('hidden', 'flex');
         }
@@ -792,6 +834,12 @@
                 lgpd_promo: document.getElementById('lgpd-promo').checked,
                 lgpd_relatorios: document.getElementById('lgpd-relatorio').checked
             };
+
+            // Adiciona a senha apenas se o campo existir no DOM (Caso o prof preencha/edite)
+            const campoSenha = document.getElementById('aluno-senha-portal');
+            if(campoSenha) {
+                dados.senha_portal = campoSenha.value;
+            }
 
             try {
                 let docRefId = id;
@@ -857,10 +905,8 @@
             document.getElementById('cart-aluno-matricula-txt').innerText = a.matricula || '0000';
             document.getElementById('cart-aluno-nascimento-txt').innerText = a.data_nascimento ? a.data_nascimento.split('-').reverse().join('/') : '--/--/----';
             
-            const f = a.faixa.toLowerCase();
-            let cB = '#cbd5e1';
-            if(f.includes('azul')) cB='#3b82f6'; else if(f.includes('roxa')) cB='#a855f7'; else if(f.includes('marrom')) cB='#78350f'; else if(f.includes('preta')) cB='#000000'; else if(f.includes('amarela')) cB='#eab308'; else if(f.includes('laranja')) cB='#f97316'; else if(f.includes('verde')) cB='#22c55e';
-            document.getElementById('cart-faixa-border').style.borderLeftColor = cB;
+            // INTEGRAÇÃO DO GRADIENTE DE CORES AQUI 🎨
+            document.getElementById('cart-faixa-border').style.background = getCorFaixaDupla(a.faixa);
 
             if(a.foto_url) {
                 document.getElementById('cart-aluno-foto-modal').src = a.foto_url; 
@@ -992,7 +1038,7 @@
             document.getElementById('btn-abrir-carteirinha').classList.add('hidden'); 
             document.getElementById('btn-gerar-pdf').classList.add('hidden');
             
-            calcularIdade(); // Ajusta os campos do responsável
+            calcularIdade();
 
             mudarAba('aba-pessoal'); 
             document.getElementById('modal-aluno').classList.replace('hidden', 'flex'); 

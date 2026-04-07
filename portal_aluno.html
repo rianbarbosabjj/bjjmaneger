@@ -645,7 +645,7 @@
         }
 
         // ==========================================
-        // LÓGICA DE GERAR PDF/PNG DA CARTEIRINHA
+        // LÓGICA DE GERAR PDF/PNG DA CARTEIRINHA (Correção Mobile)
         // ==========================================
         window.baixarCarteirinha = async function(formato) {
             const elemento = document.getElementById('cart-oficial-aluno');
@@ -653,56 +653,32 @@
 
             showToast("Preparando " + formato.toUpperCase() + "...", "success");
 
-            // Para garantir que o PDF não quebre em 2 páginas e a qualidade fique perfeita:
-            // Clonamos a carteirinha para renderizar num container invisível perfeito.
-            const containerClone = document.createElement('div');
-            containerClone.style.position = 'fixed';
-            containerClone.style.top = '-9999px';
-            containerClone.style.left = '-9999px';
-            // Proporção de cartão CR80: 856 x 540
-            containerClone.style.width = '856px';
-            containerClone.style.height = '540px';
+            // SALVAR ESTADO ORIGINAL
+            const originalCssText = elemento.style.cssText;
             
-            const clone = elemento.cloneNode(true);
-            // Removemos as classes responsivas que podem causar reflow indesejado
-            clone.classList.remove('w-full', 'max-w-[600px]', 'aspect-[1.58/1]', 'mt-4');
-            clone.style.width = '100%';
-            clone.style.height = '100%';
-            clone.style.margin = '0';
+            // FORÇAR TAMANHO DE DESKTOP (Isto evita que no telemóvel as letras fiquem cortadas!)
+            elemento.classList.remove('w-full', 'max-w-[600px]');
+            elemento.style.width = '600px';
+            elemento.style.height = '380px';
             
-            containerClone.appendChild(clone);
-            document.body.appendChild(containerClone);
-
-            // Aguarda imagens carregarem no clone
-            await new Promise(r => setTimeout(r, 300));
+            // Pausa para o navegador desenhar com o novo tamanho
+            await new Promise(r => setTimeout(r, 100));
 
             try {
-                // Usamos html2canvas com um windowWidth grande para forçar as classes 'sm:' e 'md:' do Tailwind
-                const canvas = await html2canvas(clone, { 
-                    scale: 3, 
-                    useCORS: true, 
-                    backgroundColor: null,
-                    windowWidth: 1200 
-                });
-
                 if(formato === 'pdf') {
-                    const imgData = canvas.toDataURL('image/jpeg', 1.0);
-                    const pdfOpt = {
-                        margin: 0,
-                        filename: `Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.pdf`,
-                        image: { type: 'jpeg', quality: 1.0 },
-                        html2canvas: { scale: 3, useCORS: true },
-                        jsPDF: { unit: 'mm', format: [85.6, 54], orientation: 'landscape' },
-                        pagebreak: { mode: ['avoid-all'] } 
+                    const opt = {
+                        margin:       0,
+                        filename:     `Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.pdf`,
+                        image:        { type: 'jpeg', quality: 1 },
+                        html2canvas:  { scale: 3, useCORS: true },
+                        // Tamanho fixo do formato em pixels garante que encaixa perfeito e não divide em 2 folhas
+                        jsPDF:        { unit: 'px', format: [600, 380], orientation: 'landscape' }
                     };
-                    
-                    // Injetamos a imagem num div temporário para passar pro html2pdf
-                    const divImg = document.createElement('div');
-                    divImg.innerHTML = `<img src="${imgData}" style="width: 100%; height: 100%; display: block; margin: 0; padding: 0; border: none;">`;
-                    
-                    await html2pdf().set(pdfOpt).from(divImg).save();
+                    await html2pdf().set(opt).from(elemento).save();
                     showToast("PDF baixado com sucesso!", "success");
                 } else {
+                    // GERAR PNG USANDO HTML2CANVAS
+                    const canvas = await html2canvas(elemento, { scale: 3, useCORS: true, backgroundColor: null });
                     const link = document.createElement('a');
                     link.download = `Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.png`;
                     link.href = canvas.toDataURL('image/png');
@@ -713,8 +689,9 @@
                 console.error(err);
                 showToast("Erro ao gerar o arquivo.", "error");
             } finally {
-                // Removemos o clone da tela
-                document.body.removeChild(containerClone);
+                // DEVOLVER AO VISUAL MOBILE RESPONSIVO
+                elemento.style.cssText = originalCssText;
+                elemento.classList.add('w-full', 'max-w-[600px]');
             }
         };
 

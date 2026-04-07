@@ -85,10 +85,16 @@
                                 <option value="INATIVO">Inativos</option>
                                 <option value="TODOS">Todos</option>
                             </select>
+                            
                             <div class="relative w-full">
-                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">🔍</div>
-                                <input type="text" id="input-busca" onkeyup="renderizarTabela()" class="bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl block w-full pl-10 p-3 md:p-2.5 outline-none" placeholder="Buscar por nome ou CPF...">
+                                <input type="text" id="input-busca" onkeyup="renderizarTabela()" class="bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl block w-full pl-4 pr-10 p-3 md:p-2.5 outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all" placeholder="Buscar por nome ou CPF...">
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                                    </svg>
+                                </div>
                             </div>
+                            
                             <button onclick="limparBusca()" class="w-full sm:w-auto bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold py-3 md:py-2.5 px-4 rounded-xl text-sm transition-colors">Limpar</button>
                         </div>
                         <div class="flex items-center justify-between w-full md:w-auto gap-4">
@@ -623,7 +629,6 @@
             }
         };
 
-        // Função Antiga (Cores Sólidas na Tabela)
         function getCorFaixa(faixaTexto) {
             const f = faixaTexto ? faixaTexto.toLowerCase() : '';
             if (f.includes('cinza e branca')) return 'bg-[linear-gradient(135deg,_#94A3B8_50%,_#FFFFFF_50%)] text-slate-800 border border-slate-300';

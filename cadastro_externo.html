@@ -402,7 +402,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
         const firebaseConfig = {
@@ -423,7 +423,6 @@
         const tipoAcesso = paramsUrl.get('tipo'); 
         const equipeId = paramsUrl.get('equipe');
 
-        let quantidadeAlunosAtual = 0;
         let ficheiroFotoSelecionado = null;
 
         window.showToast = function(message, type = 'error') {
@@ -594,61 +593,66 @@
             btn.innerHTML = "<span class='mr-2 text-xl'>⏳</span> A SALVAR DADOS...";
             btn.disabled = true;
 
-            const dadosAluno = {
-                equipe_id: equipeId,
-                matricula: novaMatriculaStr,
-                nome: nome,
-                cpf: cpf,
-                data_nascimento: nasc,
-                faixa: document.getElementById('cad-faixa').value,
-                grau: document.getElementById('cad-grau').value,
-                peso: document.getElementById('cad-peso').value.trim(),
-                telefone: tel,
-                email: email,
-                senha_portal: senhaPortal,
-                cep: document.getElementById('cad-cep').value.trim(),
-                endereco: document.getElementById('cad-end').value.trim(),
-                numero: document.getElementById('cad-num').value.trim(),
-                complemento: document.getElementById('cad-comp').value.trim(),
-                bairro: document.getElementById('cad-bairro').value.trim(),
-                cidade: document.getElementById('cad-cidade').value.trim(),
-                uf: document.getElementById('cad-uf').value,
-                nome_responsavel: document.getElementById('cad-resp-nome').value.toUpperCase().trim(),
-                cpf_responsavel: document.getElementById('cad-resp-cpf').value.trim(),
-                status: "ATIVO",
-                bolsa_perc: 0,
-                dia_vencimento: 10,
-                lgpd_concordo: concordo,
-                lgpd_redes: document.getElementById('cad-lgpd-redes').checked,
-                lgpd_site: document.getElementById('cad-lgpd-site').checked,
-                lgpd_promo: document.getElementById('cad-lgpd-promo').checked,
-                lgpd_relatorios: document.getElementById('cad-lgpd-relatorio').checked,
-                foto_url: "", 
-                data_cadastro: new Date().toISOString()
-            };
-
             try {
-                const docRef = await addDoc(collection(db, "alunos"), dadosAluno);
-                
+                // 1. Gera a ref (ID) do documento ANTES de o criar no banco
+                const novoAlunoRef = doc(collection(db, "alunos"));
+                const novoAlunoId = novoAlunoRef.id;
+
+                // 2. Faz o upload da foto se existir, usando o ID gerado
+                let urlDaFoto = "";
                 let fotoErro = false;
+
                 if (ficheiroFotoSelecionado) {
                     try {
-                        const fotoPath = `fotos_carteirinha/${equipeId}/${docRef.id}.jpg`;
+                        const fotoPath = `fotos_carteirinha/${equipeId}/${novoAlunoId}.jpg`;
                         const storageRef = ref(storage, fotoPath);
                         
-                        // 🔥 A MÁGICA ESTÁ AQUI: Avisar ao Firebase que é uma imagem
-                        const metadata = {
-                            contentType: ficheiroFotoSelecionado.type || 'image/jpeg'
-                        };
+                        const metadata = { contentType: ficheiroFotoSelecionado.type || 'image/jpeg' };
                         
                         await uploadBytes(storageRef, ficheiroFotoSelecionado, metadata);
-                        const downloadUrl = await getDownloadURL(storageRef);
-                        await updateDoc(docRef, { foto_url: downloadUrl });
+                        urlDaFoto = await getDownloadURL(storageRef);
                     } catch (imgError) {
                         console.error("Erro no upload da imagem:", imgError);
                         fotoErro = true;
                     }
                 }
+
+                // 3. Prepara TODOS os dados do aluno num único bloco (CREATE)
+                const dadosAluno = {
+                    equipe_id: equipeId,
+                    matricula: novaMatriculaStr,
+                    nome: nome,
+                    cpf: cpf,
+                    data_nascimento: nasc,
+                    faixa: document.getElementById('cad-faixa').value,
+                    grau: document.getElementById('cad-grau').value,
+                    peso: document.getElementById('cad-peso').value.trim(),
+                    telefone: tel,
+                    email: email,
+                    senha_portal: senhaPortal,
+                    cep: document.getElementById('cad-cep').value.trim(),
+                    endereco: document.getElementById('cad-end').value.trim(),
+                    numero: document.getElementById('cad-num').value.trim(),
+                    complemento: document.getElementById('cad-comp').value.trim(),
+                    bairro: document.getElementById('cad-bairro').value.trim(),
+                    cidade: document.getElementById('cad-cidade').value.trim(),
+                    uf: document.getElementById('cad-uf').value,
+                    nome_responsavel: document.getElementById('cad-resp-nome').value.toUpperCase().trim(),
+                    cpf_responsavel: document.getElementById('cad-resp-cpf').value.trim(),
+                    status: "ATIVO",
+                    bolsa_perc: 0,
+                    dia_vencimento: 10,
+                    lgpd_concordo: concordo,
+                    lgpd_redes: document.getElementById('cad-lgpd-redes').checked,
+                    lgpd_site: document.getElementById('cad-lgpd-site').checked,
+                    lgpd_promo: document.getElementById('cad-lgpd-promo').checked,
+                    lgpd_relatorios: document.getElementById('cad-lgpd-relatorio').checked,
+                    foto_url: urlDaFoto, 
+                    data_cadastro: new Date().toISOString()
+                };
+
+                // 4. Salva a ficha completa de uma só vez
+                await setDoc(novoAlunoRef, dadosAluno);
 
                 document.getElementById('form-aluno').innerHTML = `
                     <div class="bg-emerald-50 border border-emerald-200 p-10 rounded-3xl text-center shadow-lg mt-8">
@@ -657,6 +661,8 @@
                         <p class="text-emerald-600 font-medium mt-2">Bem-vindo(a) à equipe, ${nome}.</p>
                         ${fotoErro ? '<p class="text-rose-500 font-bold mt-2 text-xs">Nota: Não foi possível salvar a foto. Verifique com o seu professor.</p>' : ''}
                         <p class="text-xs text-emerald-500 font-bold mt-4">Sua matrícula: ${novaMatriculaStr}</p>
+                        <p class="text-[10px] text-slate-500 mt-6 font-bold uppercase">Acesse o seu portal em:</p>
+                        <a href="https://maneger.bjjdigital.com.br/portal_aluno.html" class="text-cyan-600 underline font-bold mt-1 block">maneger.bjjdigital.com.br/portal_aluno.html</a>
                     </div>
                 `;
 

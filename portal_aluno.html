@@ -9,6 +9,7 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
@@ -58,6 +59,10 @@
                 <button type="submit" id="btn-login" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-4 rounded-2xl transition-all shadow-[0_0_15px_rgba(6,182,212,0.3)] uppercase tracking-widest text-xs transform hover:-translate-y-0.5">
                     Entrar no Tatame
                 </button>
+                
+                <div class="pt-4 text-center">
+                    <a href="index.html" class="text-[10px] text-slate-500 font-bold hover:text-cyan-400 transition-colors">Voltar ao site principal</a>
+                </div>
             </form>
         </div>
     </div>
@@ -82,6 +87,12 @@
             </div>
 
             <section id="aba-carteirinha" class="aluno-secao block transition-opacity duration-300">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                        <span class="text-base">🪪</span> Identificação Oficial
+                    </h2>
+                </div>
+
                 <div id="carteirinha" class="relative mx-auto bg-white rounded-2xl overflow-hidden shadow-2xl border border-slate-200 flex text-slate-800 font-sans w-full max-w-[600px] aspect-[1.58/1] mt-4" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
                     <div class="absolute top-0 right-0 w-64 h-full bg-slate-200/40 skew-x-[-20deg] translate-x-10 z-0 pointer-events-none"></div>
                     <div class="absolute bottom-0 left-0 w-full h-1/3 bg-slate-300/30 skew-y-[-5deg] origin-bottom-right z-0 pointer-events-none"></div>
@@ -119,13 +130,13 @@
                                 <p class="text-[7px] sm:text-[8px] text-slate-400 uppercase font-bold mb-0.5">Nascimento</p>
                                 <p id="cart-aluno-nascimento-txt" class="text-[9px] sm:text-[10px] font-bold text-slate-800">00/00/0000</p>
                             </div>
-                            <div class="bg-white/90 backdrop-blur-sm px-2.5 sm:px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm">
-                                <p class="text-[7px] sm:text-[8px] text-slate-400 uppercase font-bold mb-0.5">Matrícula</p>
-                                <p id="cart-aluno-matricula-txt" class="text-[9px] sm:text-[10px] font-mono font-bold text-slate-800 tracking-wider">00000</p>
+                            <div class="relative z-20 bg-white/90 backdrop-blur-sm px-2.5 sm:px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm">
+                                <p class="text-[7px] sm:text-[8px] text-slate-400 uppercase font-bold mb-0.5 relative z-20">Matrícula</p>
+                                <p id="cart-aluno-matricula-txt" class="text-[9px] sm:text-[10px] font-mono font-bold text-slate-800 tracking-wider relative z-20">00000</p>
                             </div>
-                            <div class="bg-white/90 backdrop-blur-sm px-2.5 sm:px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm">
-                                <p class="text-[7px] sm:text-[8px] text-slate-400 uppercase font-bold mb-0.5">Validade</p>
-                                <p id="cart-aluno-validade-txt" class="text-[9px] sm:text-[10px] font-black text-slate-800 tracking-wider">2026</p>
+                            <div class="relative z-20 bg-white/90 backdrop-blur-sm px-2.5 sm:px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm">
+                                <p class="text-[7px] sm:text-[8px] text-slate-400 uppercase font-bold mb-0.5 relative z-20">Validade</p>
+                                <p id="cart-aluno-validade-txt" class="text-[9px] sm:text-[10px] font-black text-slate-800 tracking-wider relative z-20">2026</p>
                             </div>
                         </div>
                     </div>
@@ -145,6 +156,19 @@
                         <span class="text-[6px] sm:text-[7px] font-bold tracking-widest text-slate-600 uppercase">Emitido por BJJ Manager | maneger.bjjdigital.com.br</span>
                     </div>
                 </div>
+
+                <div class="mt-6 flex flex-col sm:flex-row justify-center gap-3 w-full max-w-[600px] mx-auto">
+                    <button onclick="baixarCarteirinhaPNG()" class="bg-emerald-500 hover:bg-emerald-400 text-white font-black py-3.5 px-4 rounded-xl shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 uppercase tracking-widest text-[10px] sm:text-xs w-full flex-1">
+                        <span class="text-lg">📸</span> Baixar PNG
+                    </button>
+                    <button onclick="baixarCarteirinhaPDF()" class="bg-rose-500 hover:bg-rose-400 text-white font-black py-3.5 px-4 rounded-xl shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 uppercase tracking-widest text-[10px] sm:text-xs w-full flex-1">
+                        <span class="text-lg">📄</span> Baixar PDF
+                    </button>
+                    <button onclick="compartilharCarteirinha()" class="bg-cyan-500 hover:bg-cyan-400 text-white font-black py-3.5 px-4 rounded-xl shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 uppercase tracking-widest text-[10px] sm:text-xs w-full flex-1">
+                        <span class="text-lg">📲</span> Compartilhar
+                    </button>
+                </div>
+
             </section>
 
             <section id="aba-financeiro" class="aluno-secao hidden transition-opacity duration-300">
@@ -314,24 +338,6 @@
             </div>
         </div>
     </div>
-    <div class="fixed bottom-24 right-4 z-[999] flex flex-col gap-3">
-
-    <button onclick="baixarCarteirinhaPNG()" 
-        class="bg-emerald-500 hover:bg-emerald-400 text-white p-4 rounded-full shadow-xl text-xl">
-        📸
-    </button>
-
-    <button onclick="baixarCarteirinhaPDF()" 
-        class="bg-rose-500 hover:bg-rose-400 text-white p-4 rounded-full shadow-xl text-xl">
-        📄
-    </button>
-
-    <button onclick="compartilharCarteirinha()" 
-        class="bg-cyan-500 hover:bg-cyan-400 text-white p-4 rounded-full shadow-xl text-xl">
-        📲
-    </button>
-
-</div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -351,7 +357,7 @@
 
         let alunoLogado = null;
         let equipeDados = null;
-        let faturasCache = []; // Guarda as faturas carregadas
+        let faturasCache = [];
 
         // UI Helpers
         window.showToast = function(message, type = 'error') {
@@ -629,8 +635,7 @@
             
             const anoAtual = new Date().getFullYear();
             document.getElementById('cart-aluno-validade-txt').innerText = `DEZ / ${anoAtual}`;
-            document.getElementById('ano-atual').innerText = `Ano: ${anoAtual}`;
-
+            
             document.getElementById('cart-faixa-border').style.background = getCorFaixaDupla(a.faixa);
 
             if(a.foto_url) {
@@ -645,6 +650,79 @@
 
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.origin + '/validar.html?mat=' + a.matricula)}`;
             document.getElementById('cart-qr-code').src = qrUrl;
+        }
+
+        // ===============================
+        // EXPORTAÇÃO DE CARTEIRINHA
+        // ===============================
+
+        window.baixarCarteirinhaPNG = async function () {
+            const el = document.getElementById('carteirinha');
+
+            showToast("Gerando imagem...", "success");
+
+            const canvas = await html2canvas(el, {
+                scale: 3,
+                useCORS: true
+            });
+
+            const link = document.createElement('a');
+            link.download = `Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        window.baixarCarteirinhaPDF = async function () {
+            const el = document.getElementById('carteirinha');
+
+            showToast("Gerando PDF...", "success");
+
+            const canvas = await html2canvas(el, {
+                scale: 3,
+                useCORS: true
+            });
+
+            const imgData = canvas.toDataURL('image/png');
+
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({
+                orientation: 'landscape',
+                unit: 'mm',
+                format: [85.6, 54]
+            });
+
+            pdf.addImage(imgData, 'PNG', 0, 0, 85.6, 54);
+            pdf.save(`Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.pdf`);
+        }
+
+        window.compartilharCarteirinha = async function () {
+            const el = document.getElementById('carteirinha');
+
+            showToast("Preparando...", "success");
+
+            const canvas = await html2canvas(el, {
+                scale: 3,
+                useCORS: true
+            });
+
+            canvas.toBlob(async (blob) => {
+                const file = new File([blob], `Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.png`, { type: "image/png" });
+
+                if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try {
+                        await navigator.share({
+                            title: 'Carteirinha BJJ',
+                            text: 'Minha carteirinha oficial',
+                            files: [file]
+                        });
+                    } catch {
+                        // User cancelled
+                    }
+                } else {
+                    const url = URL.createObjectURL(blob);
+                    window.open(`https://wa.me/?text=Minha carteirinha oficial`, '_blank');
+                }
+            });
         }
 
         // ==========================================
@@ -681,7 +759,6 @@
                         icone = '🚨'; corTexto = 'text-rose-400';
                     }
 
-                    // Se a fatura tem um link automático de pagamento (ex: MercadoPago, Asaas)
                     if(fat.link_pagamento && !isPago) {
                         textoStatusBtn = 'Pagar (Cartão/Pix)';
                     }
@@ -721,17 +798,14 @@
             const fat = faturasCache.find(f => f.id === faturaId);
             if(!fat) return showToast("Fatura não encontrada.");
 
-            // 1. SE FOR PLANO ELITE (AUTOMAÇÃO): Tem Link de Pagamento Direto (Gateway)
             if(fat.link_pagamento) {
                 window.open(fat.link_pagamento, '_blank');
                 return;
             }
 
-            // 2. SE FOR PLANO BLACK BELT (MANUAL): Mostra o Modal de Pagamento
             document.getElementById('pix-ref').innerText = `Mensalidade - ${fat.mes_ref}`;
             document.getElementById('pix-valor').innerText = `R$ ${parseFloat(fat.valor).toFixed(2).replace('.', ',')}`;
             
-            // Verifica se a equipe já configurou a chave PIX
             const inputPix = document.getElementById('pix-codigo');
             if(equipeDados && equipeDados.chave_pix) {
                 inputPix.value = equipeDados.chave_pix;
@@ -767,83 +841,6 @@
             alunoLogado = JSON.parse(sessaoSalva);
             iniciarPortal();
         }
-        // ===============================
-// EXPORTAÇÃO DE CARTEIRINHA
-// ===============================
-
-window.baixarCarteirinhaPNG = async function () {
-    const el = document.getElementById('carteirinha');
-
-    showToast("Gerando imagem...");
-
-    const canvas = await html2canvas(el, {
-        scale: 3,
-        useCORS: true
-    });
-
-    const link = document.createElement('a');
-    link.download = 'carteirinha.png';
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-
-    showToast("Download iniciado!", "success");
-}
-
-window.baixarCarteirinhaPDF = async function () {
-    const el = document.getElementById('carteirinha');
-
-    showToast("Gerando PDF...");
-
-    const canvas = await html2canvas(el, {
-        scale: 3,
-        useCORS: true
-    });
-
-    const imgData = canvas.toDataURL('image/png');
-
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({
-        orientation: 'landscape',
-        unit: 'mm',
-        format: [85.6, 54]
-    });
-
-    pdf.addImage(imgData, 'PNG', 0, 0, 85.6, 54);
-    pdf.save('carteirinha.pdf');
-
-    showToast("PDF pronto!", "success");
-}
-
-window.compartilharCarteirinha = async function () {
-    const el = document.getElementById('carteirinha');
-
-    showToast("Preparando...");
-
-    const canvas = await html2canvas(el, {
-        scale: 3,
-        useCORS: true
-    });
-
-    canvas.toBlob(async (blob) => {
-        const file = new File([blob], "carteirinha.png", { type: "image/png" });
-
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-            try {
-                await navigator.share({
-                    title: 'Carteirinha BJJ',
-                    text: 'Minha carteirinha da equipe',
-                    files: [file]
-                });
-                showToast("Compartilhado!", "success");
-            } catch {
-                showToast("Cancelado.");
-            }
-        } else {
-            const url = URL.createObjectURL(blob);
-            window.open(`https://wa.me/?text=Minha carteirinha: ${url}`, '_blank');
-        }
-    });
-}
     </script>
 </body>
 </html>

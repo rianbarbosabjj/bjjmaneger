@@ -24,7 +24,6 @@
         ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
         .table-row-hover:hover td { background-color: #F1F5F9; }
-        .chk-merge { accent-color: #06B6D4; cursor: pointer; width: 1.2rem; height: 1.2rem; }
 
         @media print {
             @page { size: landscape; margin: 0; }
@@ -94,7 +93,6 @@
                         </div>
                         <div class="flex items-center justify-between w-full md:w-auto gap-4">
                             <span id="lbl-total-ativos" class="text-xs md:text-sm font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100">Total Ativos: 0</span>
-                            <button onclick="fundirFichas()" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-colors shadow-sm items-center hidden" id="btn-fundir">🧬 Fundir (2)</button>
                         </div>
                     </div>
 
@@ -103,16 +101,15 @@
                             <table class="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
                                 <thead>
                                     <tr class="bg-slate-50 border-b border-slate-200 uppercase text-[10px] font-black text-slate-400 tracking-widest">
-                                        <th class="px-4 md:px-6 py-4 w-10 text-center">Sel</th>
-                                        <th class="px-4 md:px-6 py-4">Atleta</th>
-                                        <th class="px-4 md:px-6 py-4 text-center">CPF</th>
-                                        <th class="px-4 md:px-6 py-4 text-center">Faixa</th>
-                                        <th class="px-4 md:px-6 py-4 text-center">Status</th>
-                                        <th class="px-4 md:px-6 py-4 text-center">Ações</th>
+                                        <th class="px-6 py-4">Atleta</th>
+                                        <th class="px-6 py-4 text-center">CPF</th>
+                                        <th class="px-6 py-4 text-center">Faixa</th>
+                                        <th class="px-6 py-4 text-center">Status</th>
+                                        <th class="px-6 py-4 text-center">Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tabela-alunos" class="divide-y divide-slate-100">
-                                    <tr><td colspan="6" class="text-center py-12 text-slate-400 font-medium">Buscando dados...</td></tr>
+                                    <tr><td colspan="5" class="text-center py-12 text-slate-400 font-medium">Buscando dados...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -681,7 +678,7 @@
             const filtrados = todosAlunosCache.filter(a => (a.nome.toLowerCase().includes(busca) || (a.cpf && a.cpf.includes(busca))) && (status === "TODOS" || a.status === status));
             
             document.getElementById('lbl-total-ativos').innerText = "Total Ativos: " + todosAlunosCache.filter(x => x.status === "ATIVO").length;
-            tab.innerHTML = filtrados.length ? '' : '<tr><td colspan="6" class="p-10 text-center text-slate-400">Nenhum atleta encontrado.</td></tr>';
+            tab.innerHTML = filtrados.length ? '' : '<tr><td colspan="5" class="p-10 text-center text-slate-400">Nenhum atleta encontrado.</td></tr>';
 
             filtrados.forEach(a => {
                 const tr = document.createElement('tr');
@@ -696,7 +693,6 @@
                 const corBadgeFaixa = getCorFaixa(a.faixa);
 
                 tr.innerHTML = `
-                    <td class="px-6 py-4 text-center" onclick="event.stopPropagation()"><input type="checkbox" class="chk-merge" value="${a.id}"></td>
                     <td class="px-6 py-4 whitespace-nowrap min-w-[200px]">
                         <div class="flex items-center">
                             ${avatarHtml}

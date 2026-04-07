@@ -9,6 +9,7 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
@@ -17,7 +18,6 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Ajuste de segurança para o iPhone (Notch) na barra inferior */
         .pb-safe { padding-bottom: env(safe-area-inset-bottom, 20px); }
     </style>
 </head>
@@ -57,6 +57,10 @@
                 <button type="submit" id="btn-login" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-4 rounded-2xl transition-all shadow-[0_0_15px_rgba(6,182,212,0.3)] uppercase tracking-widest text-xs transform hover:-translate-y-0.5">
                     Entrar no Tatame
                 </button>
+                
+                <div class="pt-4 text-center">
+                    <a href="index.html" class="text-[10px] text-slate-500 font-bold hover:text-cyan-400 transition-colors">Voltar ao site principal</a>
+                </div>
             </form>
         </div>
     </div>
@@ -81,7 +85,13 @@
             </div>
 
             <section id="aba-carteirinha" class="aluno-secao block transition-opacity duration-300">
-                <div class="relative mx-auto bg-white rounded-2xl overflow-hidden shadow-2xl border border-slate-200 flex text-slate-800 font-sans w-full max-w-[600px] aspect-[1.58/1] mt-4" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                        <span class="text-base">🪪</span> Identificação Oficial
+                    </h2>
+                </div>
+
+                <div id="cart-oficial-aluno" class="relative mx-auto bg-white rounded-2xl overflow-hidden shadow-2xl border border-slate-200 flex text-slate-800 font-sans w-full max-w-[600px] aspect-[1.58/1] mt-4" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
                     <div class="absolute top-0 right-0 w-64 h-full bg-slate-200/40 skew-x-[-20deg] translate-x-10 z-0 pointer-events-none"></div>
                     <div class="absolute bottom-0 left-0 w-full h-1/3 bg-slate-300/30 skew-y-[-5deg] origin-bottom-right z-0 pointer-events-none"></div>
 
@@ -143,6 +153,12 @@
                         <img src="logo_bjj_maneger.png" class="h-3 sm:h-4 w-auto grayscale">
                         <span class="text-[6px] sm:text-[7px] font-bold tracking-widest text-slate-600 uppercase">Emitido por BJJ Manager | maneger.bjjdigital.com.br</span>
                     </div>
+                </div>
+
+                <div class="mt-8 flex justify-center w-full">
+                    <button onclick="baixarCarteirinha()" class="bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 px-8 rounded-xl shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all transform hover:-translate-y-1 flex items-center justify-center gap-3 uppercase tracking-widest text-xs w-full max-w-sm">
+                        <span class="text-lg">📥</span> Baixar Carteirinha
+                    </button>
                 </div>
             </section>
 
@@ -267,7 +283,7 @@
         <nav class="fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-xl border-t border-slate-800 flex justify-around px-2 pt-2 pb-safe z-50">
             <button onclick="mudarAbaAluno('aba-carteirinha')" id="nav-aba-carteirinha" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-cyan-400 transition-colors">
                 <span class="text-2xl mb-1 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)] transition-all transform scale-110">🪪</span>
-                <span class="text-[10px] font-black uppercase tracking-widest">Início</span>
+                <span class="text-[10px] font-black uppercase tracking-widest">Carteira</span>
             </button>
             <button onclick="mudarAbaAluno('aba-financeiro')" id="nav-aba-financeiro" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
                 <span class="text-2xl mb-1 grayscale transition-all">💰</span>
@@ -332,9 +348,8 @@
 
         let alunoLogado = null;
         let equipeDados = null;
-        let faturasCache = []; // Guarda as faturas carregadas
+        let faturasCache = []; 
 
-        // UI Helpers
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -383,7 +398,6 @@
             }
         };
 
-        // LÓGICA DE LOGIN
         window.fazerLoginAluno = async function() {
             const email = document.getElementById('login-email').value.trim().toLowerCase();
             const senha = document.getElementById('login-senha').value;
@@ -420,7 +434,6 @@
             window.location.reload();
         }
 
-        // LÓGICA DAS ABAS INFERIORES
         window.mudarAbaAluno = function(idAba) {
             document.querySelectorAll('.aluno-secao').forEach(el => {
                 el.classList.add('hidden');
@@ -456,7 +469,6 @@
             }
         }
 
-        // PREENCHE FORMULÁRIO DE EDIÇÃO
         function preencherFormularioDados() {
             if(!alunoLogado) return;
             
@@ -478,7 +490,6 @@
             document.getElementById('edit-uf').value = alunoLogado.uf || '';
         }
 
-        // SALVA AS ALTERAÇÕES DO ALUNO
         window.salvarMeusDados = async function() {
             const tel = document.getElementById('edit-tel').value.trim();
             const email = document.getElementById('edit-email').value.trim().toLowerCase();
@@ -530,7 +541,6 @@
             }
         }
 
-        // INICIALIZAÇÃO DO PORTAL
         async function iniciarPortal() {
             document.getElementById('tela-login').classList.add('hidden');
             document.getElementById('tela-portal').classList.remove('hidden');
@@ -629,8 +639,29 @@
         }
 
         // ==========================================
-        // LÓGICA DE FATURAS E PAGAMENTO INTELIGENTE
+        // LÓGICA DE GERAR PDF DA CARTEIRINHA
         // ==========================================
+        window.baixarCarteirinha = function() {
+            const elemento = document.getElementById('cart-oficial-aluno');
+            if(!elemento) return;
+
+            const nomePdf = `Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.pdf`;
+            
+            // Proporção de um cartão de crédito padrão (CR80: 85.6mm x 54mm)
+            const opt = {
+                margin:       0,
+                filename:     nomePdf,
+                image:        { type: 'jpeg', quality: 1 },
+                html2canvas:  { scale: 3, useCORS: true, letterRendering: true },
+                jsPDF:        { unit: 'mm', format: [85.6, 54], orientation: 'landscape' }
+            };
+
+            showToast("Preparando download...", "success");
+            html2pdf().set(opt).from(elemento).save().then(() => {
+                showToast("Download concluído com sucesso!", "success");
+            });
+        };
+
         async function buscarFaturas() {
             const lista = document.getElementById('lista-faturas');
             try {
@@ -642,12 +673,12 @@
                     return;
                 }
 
-                faturasCache = []; // Limpa o cache
+                faturasCache = []; 
                 let faturasHTML = '';
 
                 snap.forEach(doc => {
                     const fat = { id: doc.id, ...doc.data() };
-                    faturasCache.push(fat); // Salva a fatura no cache
+                    faturasCache.push(fat); 
 
                     const isPago = fat.status === 'PAGO';
                     const isAtrasado = fat.status === 'ATRASADO';
@@ -662,7 +693,6 @@
                         icone = '🚨'; corTexto = 'text-rose-400';
                     }
 
-                    // Se a fatura tem um link automático de pagamento (ex: MercadoPago, Asaas)
                     if(fat.link_pagamento && !isPago) {
                         textoStatusBtn = 'Pagar (Cartão/Pix)';
                     }
@@ -702,17 +732,14 @@
             const fat = faturasCache.find(f => f.id === faturaId);
             if(!fat) return showToast("Fatura não encontrada.");
 
-            // 1. SE FOR PLANO ELITE (AUTOMAÇÃO): Tem Link de Pagamento Direto (Gateway)
             if(fat.link_pagamento) {
                 window.open(fat.link_pagamento, '_blank');
                 return;
             }
 
-            // 2. SE FOR PLANO BLACK BELT (MANUAL): Mostra o Modal de Pagamento
             document.getElementById('pix-ref').innerText = `Mensalidade - ${fat.mes_ref}`;
             document.getElementById('pix-valor').innerText = `R$ ${parseFloat(fat.valor).toFixed(2).replace('.', ',')}`;
             
-            // Verifica se a equipe já configurou a chave PIX
             const inputPix = document.getElementById('pix-codigo');
             if(equipeDados && equipeDados.chave_pix) {
                 inputPix.value = equipeDados.chave_pix;
@@ -742,7 +769,6 @@
             showToast("Chave PIX copiada para a área de transferência!", "success");
         }
 
-        // Verifica Sessão ao Abrir
         const sessaoSalva = localStorage.getItem('bjj_aluno_auth');
         if(sessaoSalva) {
             alunoLogado = JSON.parse(sessaoSalva);

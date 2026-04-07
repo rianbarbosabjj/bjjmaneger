@@ -16,18 +16,6 @@
         
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        .carteirinha-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.18);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        }
-        
-        .belt-texture {
-            background-image: repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px);
-        }
     </style>
 </head>
 <body class="text-slate-200 overflow-x-hidden selection:bg-cyan-500 selection:text-white pb-safe min-h-screen flex flex-col relative">
@@ -98,60 +86,66 @@
                     <h2 class="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
                         <span class="text-base">🪪</span> Identificação Oficial
                     </h2>
-                    <button onclick="virarCarteirinha()" class="text-xs text-cyan-400 font-bold hover:underline">Ver Verso 🔄</button>
                 </div>
 
-                <div id="carteirinha-container" class="relative w-full aspect-[1.586/1] max-w-md mx-auto perspective-1000">
-                    
-                    <div id="cart-frente" class="absolute inset-0 carteirinha-card rounded-2xl overflow-hidden flex flex-col transition-all duration-500 transform-gpu backface-hidden">
-                        <div class="bg-rose-600 h-2 w-full shrink-0"></div>
-                        
-                        <div class="flex-1 p-5 flex flex-col justify-between">
-                            <div class="flex justify-between items-start">
-                                <div class="h-12 w-12 bg-white rounded-full flex items-center justify-center p-1 shadow-md overflow-hidden border-2 border-white/20">
-                                    <img id="cart-logo" src="" class="h-full w-full object-contain hidden">
-                                    <span id="cart-logo-fallback" class="text-xl font-black text-slate-800 hidden">E</span>
-                                </div>
-                                <div class="text-right">
-                                    <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Matrícula</p>
-                                    <p class="text-sm font-mono font-bold text-white tracking-wider" id="cart-id">0000</p>
-                                </div>
-                            </div>
+                <div class="relative mx-auto bg-white rounded-2xl overflow-hidden shadow-2xl border border-slate-200 flex text-slate-800 font-sans w-full max-w-[600px] aspect-[1.58/1]" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+                    <div class="absolute top-0 right-0 w-64 h-full bg-slate-200/40 skew-x-[-20deg] translate-x-10 z-0 pointer-events-none"></div>
+                    <div class="absolute bottom-0 left-0 w-full h-1/3 bg-slate-300/30 skew-y-[-5deg] origin-bottom-right z-0 pointer-events-none"></div>
 
-                            <div class="mt-4">
-                                <p class="text-[9px] font-black text-cyan-500 uppercase tracking-widest mb-0.5">Nome</p>
-                                <h3 class="text-lg sm:text-xl font-black text-white uppercase leading-tight truncate" id="cart-nome">NOME DO ATLETA</h3>
-                                <p class="text-xs font-bold text-slate-400 mt-1 uppercase" id="cart-equipe">NOME DA EQUIPE</p>
+                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden">
+                        <img id="cart-equipe-watermark" src="" class="w-[120%] h-[120%] object-contain opacity-[0.04] grayscale hidden" style="transform: scale(1.1);">
+                        <div id="cart-equipe-watermark-fallback" class="text-[30rem] leading-none font-black text-slate-800 opacity-[0.03] hidden">E</div>
+                    </div>
+
+                    <div class="flex-1 p-4 sm:p-5 flex flex-col z-10 w-[65%]">
+                        <div class="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+                            <div class="h-12 sm:h-16 w-12 sm:w-16 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-sm shrink-0 overflow-hidden">
+                                <img id="cart-equipe-logo" src="" class="h-full w-full object-contain p-1.5 hidden">
+                                <div id="cart-equipe-fallback" class="text-2xl sm:text-3xl font-black text-slate-700 hidden">E</div>
+                            </div>
+                            <div class="flex flex-col justify-center">
+                                <h2 id="cart-equipe-nome" class="text-base sm:text-xl font-black uppercase tracking-tight text-slate-800 leading-tight break-words max-w-[180px] sm:max-w-[280px] line-clamp-2">NOME DA EQUIPE</h2>
+                                <p class="text-[8px] sm:text-[9px] text-slate-500 uppercase tracking-widest font-bold mt-0.5 sm:mt-1">Identificação Oficial</p>
                             </div>
                         </div>
 
-                        <div id="cart-faixa-bg" class="h-12 w-full bg-slate-800 relative flex items-center justify-between px-5 border-t border-white/10 shrink-0">
-                            <div class="absolute inset-0 belt-texture opacity-20"></div>
-                            <span class="relative z-10 text-white font-black uppercase tracking-widest text-xs shadow-black drop-shadow-md" id="cart-faixa-nome">FAIXA</span>
-                            
-                            <div class="relative z-10 h-full w-16 bg-slate-900 border-l-4 border-rose-600 flex flex-col justify-between py-1 px-2">
-                                <div id="cart-graus" class="flex flex-col gap-1 w-full mt-auto"></div>
+                        <div class="grid grid-cols-2 gap-y-2 gap-x-2 sm:gap-x-4 w-full mt-auto mb-2 sm:mb-4">
+                            <div class="col-span-2 bg-white/90 backdrop-blur-sm px-2.5 sm:px-3 py-1.5 rounded-md border-l-4 border-cyan-500 shadow-sm">
+                                <p class="text-[7px] sm:text-[8px] text-slate-400 uppercase font-bold mb-0.5">Nome do Atleta</p>
+                                <p id="cart-aluno-nome-txt" class="text-[11px] sm:text-xs font-black uppercase text-slate-800 truncate">ALUNO NOME</p>
+                            </div>
+                            <div class="col-span-2 sm:col-span-1 bg-white/90 backdrop-blur-sm px-2.5 sm:px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm" id="cart-faixa-border">
+                                <p class="text-[7px] sm:text-[8px] text-slate-400 uppercase font-bold mb-0.5">Faixa / Graduação</p>
+                                <p id="cart-aluno-faixa-texto" class="text-[9px] sm:text-[10px] font-black uppercase text-slate-800 truncate">BRANCA</p>
+                            </div>
+                            <div class="col-span-2 sm:col-span-1 bg-white/90 backdrop-blur-sm px-2.5 sm:px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm">
+                                <p class="text-[7px] sm:text-[8px] text-slate-400 uppercase font-bold mb-0.5">Nascimento</p>
+                                <p id="cart-aluno-nascimento-txt" class="text-[9px] sm:text-[10px] font-bold text-slate-800">00/00/0000</p>
+                            </div>
+                            <div class="bg-white/90 backdrop-blur-sm px-2.5 sm:px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm">
+                                <p class="text-[7px] sm:text-[8px] text-slate-400 uppercase font-bold mb-0.5">Matrícula</p>
+                                <p id="cart-aluno-matricula-txt" class="text-[9px] sm:text-[10px] font-mono font-bold text-slate-800 tracking-wider">00000</p>
+                            </div>
+                            <div class="bg-white/90 backdrop-blur-sm px-2.5 sm:px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm">
+                                <p class="text-[7px] sm:text-[8px] text-slate-400 uppercase font-bold mb-0.5">Validade</p>
+                                <p id="cart-aluno-validade-txt" class="text-[9px] sm:text-[10px] font-black text-slate-800 tracking-wider">2026</p>
                             </div>
                         </div>
                     </div>
 
-                    <div id="cart-verso" class="absolute inset-0 carteirinha-card rounded-2xl overflow-hidden flex flex-col transition-all duration-500 transform-gpu rotate-y-180 opacity-0 pointer-events-none backface-hidden p-5">
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Documento</p>
-                                <p class="text-xs font-bold text-white" id="cart-doc">000.000.000-00</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Nascimento</p>
-                                <p class="text-xs font-bold text-white" id="cart-nasc">--/--/----</p>
-                            </div>
+                    <div class="w-[35%] max-w-[200px] p-4 sm:p-5 flex flex-col items-center justify-between z-10 bg-slate-100/50 border-l border-slate-200 backdrop-blur-sm">
+                        <div class="w-full aspect-[3/4] bg-white rounded-lg border-2 border-white overflow-hidden shadow-md flex items-center justify-center relative">
+                            <img id="cart-aluno-foto-modal" src="" class="w-full h-full object-cover hidden">
+                            <span id="cart-aluno-foto-fallback-modal" class="text-4xl sm:text-5xl font-black text-slate-300">?</span>
                         </div>
-                        
-                        <div class="flex-1 flex items-center justify-center bg-white rounded-xl p-2 w-32 mx-auto aspect-square" id="qrcode-box"></div>
-                        
-                        <div class="mt-4 text-center">
-                            <p class="text-[8px] font-bold text-slate-500 uppercase">Validade Oficial: <span class="text-cyan-400" id="cart-validade">2026</span></p>
+                        <div class="w-14 sm:w-16 h-14 sm:h-16 bg-white p-1 rounded-lg mt-auto shadow-sm border border-slate-200">
+                            <img id="cart-qr-code" src="" class="w-full h-full object-contain">
                         </div>
+                    </div>
+
+                    <div class="absolute bottom-2 left-4 sm:left-6 z-10 flex items-center gap-1 sm:gap-2 opacity-70 bg-white/50 px-2 py-0.5 rounded backdrop-blur-sm">
+                        <img src="logo_bjj_maneger.png" class="h-3 sm:h-4 w-auto grayscale">
+                        <span class="text-[6px] sm:text-[7px] font-bold tracking-widest text-slate-600 uppercase">Emitido por BJJ Manager | maneger.bjjdigital.com.br</span>
                     </div>
                 </div>
             </section>
@@ -209,7 +203,7 @@
             </div>
             
             <div class="p-4 bg-slate-800 border-t border-slate-700 text-center">
-                <p class="text-[10px] text-slate-400 font-medium">Após o pagamento, o seu mestre dará baixa no sistema e a fatura ficará verde.</p>
+                <p class="text-[10px] text-slate-400 font-medium">Após o pagamento, o seu professor dará baixa no sistema e a fatura ficará verde.</p>
             </div>
         </div>
     </div>
@@ -232,7 +226,6 @@
 
         let alunoLogado = null;
         let equipeDados = null;
-        let isVerso = false;
 
         // UI Helpers
         window.showToast = function(message, type = 'error') {
@@ -256,19 +249,6 @@
                 input.type = "password";
                 btnElement.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>`;
             }
-        }
-
-        window.virarCarteirinha = function() {
-            const frente = document.getElementById('cart-frente');
-            const verso = document.getElementById('cart-verso');
-            if (!isVerso) {
-                frente.style.transform = 'rotateY(180deg)'; frente.style.opacity = '0'; frente.style.pointerEvents = 'none';
-                verso.style.transform = 'rotateY(0deg)'; verso.style.opacity = '1'; verso.style.pointerEvents = 'auto';
-            } else {
-                frente.style.transform = 'rotateY(0deg)'; frente.style.opacity = '1'; frente.style.pointerEvents = 'auto';
-                verso.style.transform = 'rotateY(180deg)'; verso.style.opacity = '0'; verso.style.pointerEvents = 'none';
-            }
-            isVerso = !isVerso;
         }
 
         // LÓGICA DE LOGIN
@@ -308,7 +288,7 @@
             window.location.reload();
         }
 
-        // INICIALIZAÇÃO DO PORTAL
+        // INICIALIZAÇÃO DO PORTAL COM ATUALIZAÇÃO SILENCIOSA
         async function iniciarPortal() {
             document.getElementById('tela-login').classList.add('hidden');
             document.getElementById('tela-portal').classList.remove('hidden');
@@ -316,13 +296,21 @@
 
             document.getElementById('nome-saudacao').innerText = alunoLogado.nome.split(' ')[0];
 
-            // Busca dados da Equipe
             try {
+                // 1. Vai ao banco de dados verificar se a faixa, grau ou dados do aluno mudaram
+                const alunoSnap = await getDoc(doc(db, "alunos", alunoLogado.id));
+                if (alunoSnap.exists()) {
+                    alunoLogado = { id: alunoSnap.id, ...alunoSnap.data() };
+                    // Atualiza o cache do celular para os dados novos
+                    localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoLogado));
+                }
+                
+                // 2. Busca dados da Equipe
                 const eqSnap = await getDoc(doc(db, "equipes", alunoLogado.equipe_id));
                 if (eqSnap.exists()) {
                     equipeDados = eqSnap.data();
                 }
-            } catch(e) { console.log("Erro ao buscar equipe"); }
+            } catch(e) { console.log("Erro ao buscar dados mais recentes."); }
 
             preencherCarteirinha();
             buscarFaturas();
@@ -330,79 +318,78 @@
 
         function getCorFaixa(faixaTexto) {
             const f = faixaTexto ? faixaTexto.toLowerCase() : '';
-            if (f.includes('cinza e branca')) return 'bg-[linear-gradient(135deg,_#94A3B8_50%,_#FFFFFF_50%)] text-slate-800';
-            if (f.includes('cinza e preta')) return 'bg-[linear-gradient(135deg,_#94A3B8_50%,_#0F172A_50%)] text-white';
-            if (f.includes('amarela e branca')) return 'bg-[linear-gradient(135deg,_#FACC15_50%,_#FFFFFF_50%)] text-slate-800';
-            if (f.includes('amarela e preta')) return 'bg-[linear-gradient(135deg,_#FACC15_50%,_#0F172A_50%)] text-white';
-            if (f.includes('laranja e branca')) return 'bg-[linear-gradient(135deg,_#F97316_50%,_#FFFFFF_50%)] text-slate-800';
-            if (f.includes('laranja e preta')) return 'bg-[linear-gradient(135deg,_#F97316_50%,_#0F172A_50%)] text-white';
-            if (f.includes('verde e branca')) return 'bg-[linear-gradient(135deg,_#16A34A_50%,_#FFFFFF_50%)] text-slate-800';
-            if (f.includes('verde e preta')) return 'bg-[linear-gradient(135deg,_#16A34A_50%,_#0F172A_50%)] text-white';
-            if (f.includes('branca')) return 'bg-white text-slate-800 border-t border-slate-300';
-            if (f.includes('cinza')) return 'bg-slate-400 text-white';
-            if (f.includes('amarela')) return 'bg-yellow-400 text-yellow-900';
-            if (f.includes('laranja')) return 'bg-orange-500 text-white';
-            if (f.includes('verde')) return 'bg-green-600 text-white';
-            if (f.includes('azul')) return 'bg-blue-600 text-white';
-            if (f.includes('roxa')) return 'bg-purple-600 text-white';
-            if (f.includes('marrom')) return 'bg-amber-800 text-white';
-            if (f.includes('preta')) return 'bg-slate-900 text-white';
-            return 'bg-slate-800 text-white';
+            if (f.includes('cinza e branca')) return '#94A3B8';
+            if (f.includes('cinza e preta')) return '#64748b';
+            if (f.includes('amarela e branca')) return '#FACC15';
+            if (f.includes('amarela e preta')) return '#ca8a04';
+            if (f.includes('laranja e branca')) return '#F97316';
+            if (f.includes('laranja e preta')) return '#c2410c';
+            if (f.includes('verde e branca')) return '#16A34A';
+            if (f.includes('verde e preta')) return '#15803d';
+            if (f.includes('branca')) return '#cbd5e1';
+            if (f.includes('cinza')) return '#94A3B8';
+            if (f.includes('amarela')) return '#FACC15';
+            if (f.includes('laranja')) return '#F97316';
+            if (f.includes('verde')) return '#16A34A';
+            if (f.includes('azul')) return '#3b82f6';
+            if (f.includes('roxa')) return '#a855f7';
+            if (f.includes('marrom')) return '#78350f';
+            if (f.includes('preta')) return '#000000';
+            return '#cbd5e1';
         }
 
         function preencherCarteirinha() {
-            document.getElementById('cart-nome').innerText = alunoLogado.nome;
-            document.getElementById('cart-id').innerText = alunoLogado.matricula || '0000';
-            document.getElementById('cart-doc').innerText = alunoLogado.cpf || '-';
+            const a = alunoLogado;
             
-            if(alunoLogado.data_nascimento) {
-                document.getElementById('cart-nasc').innerText = alunoLogado.data_nascimento.split('-').reverse().join('/');
-            }
-
-            const anoAtual = new Date().getFullYear();
-            document.getElementById('cart-validade').innerText = `DEZ / ${anoAtual}`;
-            document.getElementById('ano-atual').innerText = `Ano: ${anoAtual}`;
-
+            // DADOS DA EQUIPE
             if(equipeDados) {
-                document.getElementById('cart-equipe').innerText = (equipeDados.nome_equipe || "Sua Equipe").toUpperCase();
+                document.getElementById('cart-equipe-nome').innerText = (equipeDados.nome_equipe || "Sua Equipe").toUpperCase();
+                
+                const imgL = document.getElementById('cart-equipe-logo');
+                const fallL = document.getElementById('cart-equipe-fallback');
+                const waterL = document.getElementById('cart-equipe-watermark');
+                const waterFall = document.getElementById('cart-equipe-watermark-fallback');
+
                 if(equipeDados.url_logo) {
-                    document.getElementById('cart-logo').src = equipeDados.url_logo;
-                    document.getElementById('cart-logo').classList.remove('hidden');
-                    document.getElementById('cart-logo-fallback').classList.add('hidden');
-                    document.getElementById('logo-equipe-topo').src = equipeDados.url_logo;
+                    imgL.src = equipeDados.url_logo; imgL.classList.remove('hidden'); fallL.classList.add('hidden');
+                    waterL.src = equipeDados.url_logo; waterL.classList.remove('hidden'); waterFall.classList.add('hidden');
                 } else {
-                    document.getElementById('cart-logo-fallback').innerText = equipeDados.nome_equipe.charAt(0).toUpperCase();
-                    document.getElementById('cart-logo-fallback').classList.remove('hidden');
-                    document.getElementById('cart-logo').classList.add('hidden');
+                    const letra = (equipeDados.nome_equipe || "E").charAt(0).toUpperCase();
+                    fallL.innerText = letra; fallL.classList.remove('hidden'); imgL.classList.add('hidden');
+                    waterFall.innerText = letra; waterFall.classList.remove('hidden'); waterL.classList.add('hidden');
                 }
             }
 
-            const faixaBg = document.getElementById('cart-faixa-bg');
-            const faixaCorClass = getCorFaixa(alunoLogado.faixa);
-            faixaBg.className = `h-12 w-full relative flex items-center justify-between px-5 shrink-0 ${faixaCorClass}`;
-            document.getElementById('cart-faixa-nome').innerText = `FAIXA ${(alunoLogado.faixa || 'BRANCA').toUpperCase()}`;
-
-            let qtdGraus = 0;
-            if(alunoLogado.grau) {
-                if(alunoLogado.grau.includes('1')) qtdGraus = 1;
-                if(alunoLogado.grau.includes('2')) qtdGraus = 2;
-                if(alunoLogado.grau.includes('3')) qtdGraus = 3;
-                if(alunoLogado.grau.includes('4')) qtdGraus = 4;
-            }
+            // DADOS DO ALUNO
+            document.getElementById('cart-aluno-nome-txt').innerText = a.nome;
             
-            let grausHtml = '';
-            for(let i=0; i<qtdGraus; i++) {
-                grausHtml += `<div class="w-full h-1.5 bg-white rounded-sm opacity-90"></div>`;
+            const grau = a.grau && a.grau !== "Sem grau" ? ` - ${a.grau}` : "";
+            document.getElementById('cart-aluno-faixa-texto').innerText = ((a.faixa || 'BRANCA') + grau).toUpperCase();
+            
+            document.getElementById('cart-aluno-matricula-txt').innerText = a.matricula || '0000';
+            document.getElementById('cart-aluno-nascimento-txt').innerText = a.data_nascimento ? a.data_nascimento.split('-').reverse().join('/') : '--/--/----';
+            
+            const anoAtual = new Date().getFullYear();
+            document.getElementById('cart-aluno-validade-txt').innerText = `2026`;
+            document.getElementById('ano-atual').innerText = `Ano: ${anoAtual}`;
+
+            // Cores da Faixa
+            document.getElementById('cart-faixa-border').style.borderLeftColor = getCorFaixa(a.faixa);
+
+            // Foto
+            if(a.foto_url) {
+                document.getElementById('cart-aluno-foto-modal').src = a.foto_url; 
+                document.getElementById('cart-aluno-foto-modal').classList.remove('hidden'); 
+                document.getElementById('cart-aluno-foto-fallback-modal').classList.add('hidden');
+            } else {
+                document.getElementById('cart-aluno-foto-fallback-modal').innerText = a.nome.charAt(0).toUpperCase(); 
+                document.getElementById('cart-aluno-foto-fallback-modal').classList.remove('hidden'); 
+                document.getElementById('cart-aluno-foto-modal').classList.add('hidden');
             }
-            document.getElementById('cart-graus').innerHTML = grausHtml;
 
             // QR Code
-            new QRCode(document.getElementById("qrcode-box"), {
-                text: "https://maneger.bjjdigital.com.br/validar?id=" + alunoLogado.matricula,
-                width: 100, height: 100,
-                colorDark : "#0F172A", colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.L
-            });
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.origin + '/validar.html?mat=' + a.matricula)}`;
+            document.getElementById('cart-qr-code').src = qrUrl;
         }
 
         async function buscarFaturas() {

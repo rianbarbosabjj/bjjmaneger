@@ -114,10 +114,13 @@
                                 <p class="text-[7px] sm:text-[8px] text-slate-400 uppercase font-bold mb-0.5">Nome do Atleta</p>
                                 <p id="cart-aluno-nome-txt" class="text-[11px] sm:text-xs font-black uppercase text-slate-800 truncate">ALUNO NOME</p>
                             </div>
-                            <div class="col-span-2 sm:col-span-1 bg-white/90 backdrop-blur-sm px-2.5 sm:px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm" id="cart-faixa-border">
-                                <p class="text-[7px] sm:text-[8px] text-slate-400 uppercase font-bold mb-0.5">Faixa / Graduação</p>
-                                <p id="cart-aluno-faixa-texto" class="text-[9px] sm:text-[10px] font-black uppercase text-slate-800 truncate">BRANCA</p>
+                            
+                            <div class="relative overflow-hidden col-span-2 sm:col-span-1 bg-white/90 backdrop-blur-sm pr-2.5 sm:pr-3 py-1.5 rounded-md shadow-sm pl-4 sm:pl-5 border border-slate-200">
+                                <div id="cart-faixa-border" class="absolute top-0 left-0 w-2 sm:w-2.5 h-full bg-slate-300 border-r border-slate-200/50"></div>
+                                <p class="text-[7px] sm:text-[8px] text-slate-400 uppercase font-bold mb-0.5 relative z-10">Faixa / Graduação</p>
+                                <p id="cart-aluno-faixa-texto" class="text-[9px] sm:text-[10px] font-black uppercase text-slate-800 truncate relative z-10">BRANCA</p>
                             </div>
+
                             <div class="col-span-2 sm:col-span-1 bg-white/90 backdrop-blur-sm px-2.5 sm:px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm">
                                 <p class="text-[7px] sm:text-[8px] text-slate-400 uppercase font-bold mb-0.5">Nascimento</p>
                                 <p id="cart-aluno-nascimento-txt" class="text-[9px] sm:text-[10px] font-bold text-slate-800">00/00/0000</p>
@@ -297,15 +300,13 @@
             document.getElementById('nome-saudacao').innerText = alunoLogado.nome.split(' ')[0];
 
             try {
-                // 1. Vai ao banco de dados verificar se a faixa, grau ou dados do aluno mudaram
+                // Atualização Silenciosa
                 const alunoSnap = await getDoc(doc(db, "alunos", alunoLogado.id));
                 if (alunoSnap.exists()) {
                     alunoLogado = { id: alunoSnap.id, ...alunoSnap.data() };
-                    // Atualiza o cache do celular para os dados novos
                     localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoLogado));
                 }
                 
-                // 2. Busca dados da Equipe
                 const eqSnap = await getDoc(doc(db, "equipes", alunoLogado.equipe_id));
                 if (eqSnap.exists()) {
                     equipeDados = eqSnap.data();
@@ -316,17 +317,20 @@
             buscarFaturas();
         }
 
-        function getCorFaixa(faixaTexto) {
+        // LÓGICA DE FAIXA COM DUAS CORES (GLASSMORPHISM)
+        function getCorFaixaDupla(faixaTexto) {
             const f = faixaTexto ? faixaTexto.toLowerCase() : '';
-            if (f.includes('cinza e branca')) return '#94A3B8';
-            if (f.includes('cinza e preta')) return '#64748b';
-            if (f.includes('amarela e branca')) return '#FACC15';
-            if (f.includes('amarela e preta')) return '#ca8a04';
-            if (f.includes('laranja e branca')) return '#F97316';
-            if (f.includes('laranja e preta')) return '#c2410c';
-            if (f.includes('verde e branca')) return '#16A34A';
-            if (f.includes('verde e preta')) return '#15803d';
-            if (f.includes('branca')) return '#cbd5e1';
+            if (f.includes('cinza e branca')) return 'linear-gradient(to bottom, #94A3B8 50%, #f8fafc 50%)';
+            if (f.includes('cinza e preta')) return 'linear-gradient(to bottom, #94A3B8 50%, #0F172A 50%)';
+            if (f.includes('amarela e branca')) return 'linear-gradient(to bottom, #FACC15 50%, #f8fafc 50%)';
+            if (f.includes('amarela e preta')) return 'linear-gradient(to bottom, #FACC15 50%, #0F172A 50%)';
+            if (f.includes('laranja e branca')) return 'linear-gradient(to bottom, #F97316 50%, #f8fafc 50%)';
+            if (f.includes('laranja e preta')) return 'linear-gradient(to bottom, #F97316 50%, #0F172A 50%)';
+            if (f.includes('verde e branca')) return 'linear-gradient(to bottom, #16A34A 50%, #f8fafc 50%)';
+            if (f.includes('verde e preta')) return 'linear-gradient(to bottom, #16A34A 50%, #0F172A 50%)';
+            
+            // Faixas sólidas
+            if (f.includes('branca')) return '#f8fafc';
             if (f.includes('cinza')) return '#94A3B8';
             if (f.includes('amarela')) return '#FACC15';
             if (f.includes('laranja')) return '#F97316';
@@ -334,14 +338,14 @@
             if (f.includes('azul')) return '#3b82f6';
             if (f.includes('roxa')) return '#a855f7';
             if (f.includes('marrom')) return '#78350f';
-            if (f.includes('preta')) return '#000000';
-            return '#cbd5e1';
+            if (f.includes('preta')) return '#0F172A';
+            
+            return '#cbd5e1'; // Padrão
         }
 
         function preencherCarteirinha() {
             const a = alunoLogado;
             
-            // DADOS DA EQUIPE
             if(equipeDados) {
                 document.getElementById('cart-equipe-nome').innerText = (equipeDados.nome_equipe || "Sua Equipe").toUpperCase();
                 
@@ -360,7 +364,6 @@
                 }
             }
 
-            // DADOS DO ALUNO
             document.getElementById('cart-aluno-nome-txt').innerText = a.nome;
             
             const grau = a.grau && a.grau !== "Sem grau" ? ` - ${a.grau}` : "";
@@ -370,13 +373,12 @@
             document.getElementById('cart-aluno-nascimento-txt').innerText = a.data_nascimento ? a.data_nascimento.split('-').reverse().join('/') : '--/--/----';
             
             const anoAtual = new Date().getFullYear();
-            document.getElementById('cart-aluno-validade-txt').innerText = `2026`;
+            document.getElementById('cart-aluno-validade-txt').innerText = `DEZ / ${anoAtual}`;
             document.getElementById('ano-atual').innerText = `Ano: ${anoAtual}`;
 
-            // Cores da Faixa
-            document.getElementById('cart-faixa-border').style.borderLeftColor = getCorFaixa(a.faixa);
+            // APLICA O FUNDO DE DUAS CORES
+            document.getElementById('cart-faixa-border').style.background = getCorFaixaDupla(a.faixa);
 
-            // Foto
             if(a.foto_url) {
                 document.getElementById('cart-aluno-foto-modal').src = a.foto_url; 
                 document.getElementById('cart-aluno-foto-modal').classList.remove('hidden'); 
@@ -387,7 +389,6 @@
                 document.getElementById('cart-aluno-foto-modal').classList.add('hidden');
             }
 
-            // QR Code
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.origin + '/validar.html?mat=' + a.matricula)}`;
             document.getElementById('cart-qr-code').src = qrUrl;
         }
@@ -464,7 +465,6 @@
             showToast("Chave PIX copiada para a área de transferência!", "success");
         }
 
-        // Verifica Sessão ao Abrir
         const sessaoSalva = localStorage.getItem('bjj_aluno_auth');
         if(sessaoSalva) {
             alunoLogado = JSON.parse(sessaoSalva);

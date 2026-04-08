@@ -353,6 +353,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs, getDoc, doc, query, where, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        // IMPORTAÇÃO DAS CLOUD FUNCTIONS 
+        import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
@@ -365,6 +367,8 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        // INICIALIZAÇÃO DAS CLOUD FUNCTIONS
+        const functions = getFunctions(app);
 
         let alunoLogado = null;
         let equipeDados = null;
@@ -683,9 +687,6 @@
             });
         }
 
-        // ==========================================
-        // ALGORITMO EXPORTAÇÃO SEGURO COM CONVERSOR BASE64
-        // ==========================================
         async function convertImgToBase64(url) {
             try {
                 const response = await fetch(url, { mode: 'cors' });
@@ -780,7 +781,6 @@
                 const canvas = await gerarCanvasCarteirinha();
                 const link = document.createElement('a');
                 link.download = `Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.png`;
-                // Exportação limpa PNG
                 link.href = canvas.toDataURL('image/png', 1.0);
                 link.click();
             } catch(e) {
@@ -798,7 +798,6 @@
 
             try {
                 const canvas = await gerarCanvasCarteirinha();
-                // Usa PNG Base64 nativo para contornar qualquer bug no jsPDF em iOS
                 const imgData = canvas.toDataURL('image/png');
 
                 const { jsPDF } = window.jspdf;
@@ -853,9 +852,6 @@
             }
         }
 
-        // ==========================================
-        // HISTÓRICO DE FATURAS (BUSCA CASCATA - BYPASS SEGURANÇA FIREBASE)
-        // ==========================================
         async function buscarFaturasResiliente() {
             const lista = document.getElementById('lista-faturas');
             if(!lista) return;
@@ -865,11 +861,9 @@
             let faturasMensalidade = [];
             
             try {
-                // TENTATIVA 1: Buscar diretamente a coleção da Equipe (Para contornar o bloqueio de Index/Security)
                 const qEquipe = query(collection(db, "financeiro"), where("equipe_id", "==", alunoLogado.equipe_id));
                 const snapEquipe = await getDocs(qEquipe);
                 
-                // Filtrar apenas as faturas que pertencem a este aluno
                 snapEquipe.forEach(doc => {
                     const data = doc.data();
                     if (data.aluno_id === alunoLogado.id && (data.tipo === 'MENSALIDADE' || !data.tipo)) {
@@ -881,7 +875,6 @@
                 console.warn("Sem permissão na coleção 'financeiro'. A tentar coleção antiga 'faturas'...", erroFinanceiro);
                 
                 try {
-                    // TENTATIVA 2: Buscar no sistema antigo, caso os dados ainda estejam lá
                     const qFaturas = query(collection(db, "faturas"), where("aluno_id", "==", alunoLogado.id));
                     const snapFaturas = await getDocs(qFaturas);
                     snapFaturas.forEach(doc => {
@@ -907,7 +900,6 @@
                 return;
             }
 
-            // Ordenar por data (Mais recentes no topo)
             faturasMensalidade.sort((a, b) => {
                 const dateA = a.mes_ano || "";
                 const dateB = b.mes_ano || "";
@@ -978,7 +970,8 @@
                 } else if(isIsento) {
                     btnHtml = `<span class="text-[10px] font-bold text-blue-500 uppercase mt-1 bg-blue-500/10 px-2 py-1 rounded-md">⭐ Isento</span>`;
                 } else {
-                    btnHtml = `<button onclick="abrirPagamento('${fat.id}')" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm transition-colors mt-1">${textoStatusBtn}</button>`;
+                    // Botão agora possui um ID único para podermos mostrar o "Aguarde..."
+                    btnHtml = `<button id="btn-pagar-${fat.id}" onclick="abrirPagamento('${fat.id}')" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm transition-colors mt-1">${textoStatusBtn}</button>`;
                 }
 
                 const tituloMes = (mesStr && anoStr) ? `${mesStr}/${anoStr}` : (fat.descricao || 'Sem referência');
@@ -1003,37 +996,54 @@
             lista.innerHTML = faturasHTML;
         }
 
-        window.abrirPagamento = function(faturaId) {
+        // ==========================================
+        // NOVA FUNÇÃO DE PAGAMENTO COM ASAAS
+        // ==========================================
+        window.abrirPagamento = async function(faturaId) {
             const fat = faturasCache.find(f => f.id === faturaId);
-            if(!fat) return showToast("Fatura não encontrada.");
+            if (!fat) return showToast("Fatura não encontrada.", "error");
 
-            if(fat.link_pagamento) {
+            if (fat.link_pagamento) {
                 window.open(fat.link_pagamento, '_blank');
                 return;
             }
 
-            let mesStr = "", anoStr = "";
-            if(fat.mes_ano && String(fat.mes_ano).includes('-')) {
-                const partes = fat.mes_ano.split('-');
-                anoStr = partes[0];
-                mesStr = partes[1];
-            }
-            const tituloMes = (mesStr && anoStr) ? `${mesStr}/${anoStr}` : 'Atual';
-
-            document.getElementById('pix-ref').innerText = `Mensalidade - ${tituloMes}`;
-            document.getElementById('pix-valor').innerText = `R$ ${parseFloat(fat.valor || 0).toFixed(2).replace('.', ',')}`;
+            showToast("⏳ Gerando link de pagamento seguro...", "success");
             
-            const inputPix = document.getElementById('pix-codigo');
-            if(equipeDados && equipeDados.chave_pix) {
-                inputPix.value = equipeDados.chave_pix;
-                document.getElementById('aviso-pagamento').innerText = "Após o pagamento, envie o comprovante ao professor para ele dar a baixa no sistema.";
-            } else {
-                inputPix.value = "Chave PIX não configurada pelo professor.";
-                document.getElementById('aviso-pagamento').innerText = "Peça a chave PIX diretamente ao seu professor.";
+            const btnPagamento = document.getElementById(`btn-pagar-${faturaId}`);
+            let textoOriginal = "";
+            if(btnPagamento) {
+                textoOriginal = btnPagamento.innerHTML;
+                btnPagamento.innerHTML = "⏳ Aguarde...";
+                btnPagamento.disabled = true;
             }
 
-            document.getElementById('modal-pix').classList.remove('hidden');
-            document.getElementById('modal-pix').classList.add('flex');
+            try {
+                const gerarCobranca = httpsCallable(functions, 'gerarCobrancaAsaas');
+                
+                const resultado = await gerarCobranca({
+                    alunoId: fat.aluno_id, 
+                    valor: fat.valor,      
+                    mesAno: fat.mes_ano,   
+                    descricao: `Mensalidade Jiu-Jitsu - Ref: ${fat.mes_ano}`
+                });
+
+                if (resultado.data.success) {
+                    showToast("✅ Fatura gerada com sucesso!", "success");
+                    window.open(resultado.data.url, '_blank');
+                    buscarFaturasResiliente(); 
+                } else {
+                    showToast("❌ Erro ao gerar cobrança: " + resultado.data.error, "error");
+                }
+            } catch (error) {
+                console.error("Erro na requisição:", error);
+                showToast("🚨 Falha na conexão com o servidor financeiro.", "error");
+            } finally {
+                if(btnPagamento) {
+                    btnPagamento.innerHTML = textoOriginal;
+                    btnPagamento.disabled = false;
+                }
+            }
         }
 
         window.fecharModalPix = function() {

@@ -68,7 +68,7 @@
                     </div>
 
                     <button onclick="abrirModalRelatorio()" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-colors shrink-0 flex items-center justify-center shadow-sm">
-                        <span class="mr-1">📊</span> Gerar relatório financeiro
+                        <span class="mr-1">📊</span> Relatório
                     </button>
                 </div>
             </div>
@@ -79,98 +79,123 @@
                         <button onclick="mudarAba('tab-mensalidades')" id="btn-tab-mensalidades" class="aba-item py-4 px-4 sm:px-6 text-[10px] sm:text-xs font-black uppercase tracking-widest tab-active transition-all whitespace-nowrap snap-start">👥 Mensalidades</button>
                         <button onclick="mudarAba('tab-dash')" id="btn-tab-dash" class="aba-item py-4 px-4 sm:px-6 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all whitespace-nowrap snap-start">📊 Resumo Mês</button>
                         <button onclick="mudarAba('tab-anual')" id="btn-tab-anual" class="aba-item py-4 px-4 sm:px-6 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all whitespace-nowrap snap-start">📈 Análise Anual</button>
-                        <button onclick="mudarAba('tab-fluxo')" id="btn-tab-fluxo" class="aba-item py-4 px-4 sm:px-6 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all whitespace-nowrap snap-start">📋 Fluxo / Extras</button>
+                        <button onclick="mudarAba('tab-fluxo')" id="btn-tab-fluxo" class="aba-item py-4 px-4 sm:px-6 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all whitespace-nowrap snap-start">📋 Extras</button>
+                        <button onclick="mudarAba('tab-config-asaas')" id="btn-tab-config-asaas" class="aba-item py-4 px-4 sm:px-6 text-[10px] sm:text-xs font-black uppercase tracking-widest text-blue-500 hover:text-blue-700 transition-all whitespace-nowrap snap-start">⚙️ Integração Asaas</button>
                     </div>
 
-                    <div id="tab-mensalidades" class="aba-content flex flex-col lg:flex-row gap-6">
+                    <div id="tab-mensalidades" class="aba-content flex flex-col gap-6">
                         
-                        <div class="flex-1 overflow-hidden flex flex-col gap-4">
-                            <div class="flex flex-col sm:flex-row gap-3">
-                                <div class="relative flex-1">
-                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">🔍</div>
-                                    <input type="text" id="input-busca-mens" onkeyup="filtrarMensalidades()" class="bg-white border border-slate-200 text-slate-900 text-sm rounded-xl w-full pl-9 p-3 outline-none focus:border-cyan-500 transition-all" placeholder="Buscar atleta ou fatura...">
+                        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                            <div class="flex gap-6">
+                                <div>
+                                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Caixa Atual</p>
+                                    <p class="text-xl font-black text-emerald-500" id="lbl-resumo-pago">Recebido: R$ 0,00</p>
                                 </div>
-                                <button id="btn-gerar-faturas" onclick="gerarFaturas()" class="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 p-3 sm:px-6 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest flex items-center justify-center shrink-0">
+                                <div>
+                                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Falta Receber</p>
+                                    <p class="text-xl font-black text-rose-400" id="lbl-resumo-pendente">A Receber: R$ 0,00</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                                <div class="relative flex-1 sm:w-64">
+                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">🔍</div>
+                                    <input type="text" id="input-busca-mens" onkeyup="filtrarMensalidades()" class="bg-slate-50 border border-slate-200 text-slate-900 text-xs font-bold rounded-xl w-full pl-9 p-3 outline-none focus:border-cyan-500 transition-all" placeholder="Buscar atleta ou fatura...">
+                                </div>
+                                <button id="btn-gerar-faturas" onclick="gerarFaturas()" class="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-600 text-white font-black py-3 px-6 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest flex items-center justify-center shrink-0">
                                     <span class="mr-2 text-base">⚡</span> Gerar Faturas do Mês
                                 </button>
                             </div>
-
-                            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex-1 min-h-[400px]">
-                                <div class="overflow-x-auto w-full h-full">
-                                    <table class="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
-                                        <thead>
-                                            <tr class="bg-slate-900 border-b border-slate-800 text-white">
-                                                <th class="px-4 py-4 text-[10px] font-black uppercase tracking-widest">Aluno</th>
-                                                <th class="px-4 py-4 text-[10px] font-black uppercase tracking-widest text-center">Vencimento</th>
-                                                <th class="px-4 py-4 text-[10px] font-black uppercase tracking-widest text-center">Bolsa</th>
-                                                <th class="px-4 py-4 text-[10px] font-black uppercase tracking-widest text-center">Status</th>
-                                                <th class="px-4 py-4 text-[10px] font-black uppercase tracking-widest text-center">Valor Total</th>
-                                                <th class="px-4 py-4 text-[10px] font-black uppercase tracking-widest text-center">Pago Em</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="tabela-mensalidades" class="divide-y divide-slate-100 text-sm bg-white">
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
                         </div>
 
-                        <div id="ancora-acoes-mobile" class="w-full lg:w-80 shrink-0 flex flex-col gap-4">
-                            <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm text-center">
-                                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Caixa de Mensalidades</h3>
-                                <p class="text-xl md:text-2xl font-black text-emerald-500 mb-1" id="lbl-resumo-pago">Recebido: R$ 0,00</p>
-                                <p class="text-xs md:text-sm font-black text-rose-400" id="lbl-resumo-pendente">A Receber: R$ 0,00</p>
+                        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex-1 min-h-[400px]">
+                            <div class="overflow-x-auto w-full h-full">
+                                <table class="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
+                                    <thead>
+                                        <tr class="bg-slate-900 border-b border-slate-800 text-white">
+                                            <th class="px-4 py-4 text-[10px] font-black uppercase tracking-widest">Aluno</th>
+                                            <th class="px-4 py-4 text-[10px] font-black uppercase tracking-widest text-center">Vencimento</th>
+                                            <th class="px-4 py-4 text-[10px] font-black uppercase tracking-widest text-center">Bolsa</th>
+                                            <th class="px-4 py-4 text-[10px] font-black uppercase tracking-widest text-center">Status</th>
+                                            <th class="px-4 py-4 text-[10px] font-black uppercase tracking-widest text-center">Valor Total</th>
+                                            <th class="px-4 py-4 text-[10px] font-black uppercase tracking-widest text-center">Pago Em</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tabela-mensalidades" class="divide-y divide-slate-100 text-sm bg-white">
+                                    </tbody>
+                                </table>
                             </div>
+                        </div>
+                    </div>
 
-                            <div id="modal-acoes-wrapper" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden lg:block lg:static lg:bg-transparent lg:backdrop-blur-none lg:p-0 items-center justify-center p-4">
-                                <div id="painel-acoes-mensalidade" class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm opacity-50 pointer-events-none transition-opacity w-full max-w-md lg:max-w-full relative max-h-[90vh] overflow-y-auto hide-scrollbar mx-auto">
-                                    
-                                    <button onclick="fecharPainelAcoesMobile()" class="absolute top-4 right-4 lg:hidden text-slate-400 hover:text-slate-600 text-3xl leading-none">&times;</button>
-
-                                    <h3 class="font-black text-slate-800 truncate mb-1 text-lg pr-8" id="acao-aluno-nome">Selecione uma fatura</h3>
-                                    <p class="text-[10px] font-bold text-rose-500 uppercase mb-4 h-4" id="acao-alerta-divida"></p>
-
-                                    <div class="grid grid-cols-2 gap-2 mb-6 border-b border-slate-100 pb-4">
-                                        <button onclick="gerarReciboPDF()" id="btn-recibo-lateral" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center transition-colors"><span class="mr-1">📄</span> Baixar recibo</button>
-                                        
-                                        <button id="btn-whats-lateral" onclick="enviarWhatsApp()" class="bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold py-2.5 rounded-xl text-[11px] flex items-center justify-center transition-colors">
-                                            <span class="mr-1">💬</span> Cobrar
-                                        </button>
-                                    </div>
-
-                                    <div class="space-y-3 border-b border-slate-100 pb-4 mb-4">
-                                        <h4 class="text-[10px] font-black text-slate-400 uppercase">💸 Registrar Pagamento</h4>
-                                        <input type="date" id="acao-data-pag" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold text-slate-700 outline-none">
-                                        <select id="acao-forma-pag" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold text-slate-700 outline-none cursor-pointer">
-                                            <option value="PIX">PIX manual</option><option value="Dinheiro">Dinheiro</option>
-                                        </select>
-                                        
-                                        <button id="btn-reg-pagamento" onclick="registrarPagamento()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest mt-2 cursor-pointer">✅ Baixa Manual</button>
-                                        
-                                        <button id="btn-gerar-asaas" onclick="gerarLinkAsaasAdmin()" class="hidden w-full bg-blue-500 hover:bg-blue-600 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest mt-2 cursor-pointer border border-blue-600">💳 Gerar Link Asaas</button>
-
-                                        <div class="flex gap-2 mt-2">
-                                            <button id="btn-desfazer-pag" onclick="cancelarPagamento()" class="flex-1 bg-slate-100 text-slate-300 font-bold py-2.5 rounded-lg text-[10px] uppercase tracking-widest cursor-not-allowed transition-colors">Desfazer</button>
-                                            <button id="btn-excluir-pag" onclick="excluirPagamento()" class="flex-1 bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold py-2.5 rounded-lg text-[10px] uppercase tracking-widest transition-colors">Excluir</button>
-                                        </div>
-                                    </div>
-
-                                    <div class="space-y-3">
-                                        <h4 class="text-[10px] font-black text-purple-500 uppercase">⚙️ Regras do Atleta</h4>
-                                        <div class="flex items-center justify-between">
-                                            <span class="text-xs font-bold text-slate-600">Bolsa (%)</span>
-                                            <select id="acao-bolsa" class="p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 w-24 outline-none">
-                                                <option value="0">0</option><option value="10">10</option><option value="20">20</option><option value="25">25</option><option value="50">50</option><option value="75">75</option><option value="100">100</option>
-                                            </select>
-                                        </div>
-                                        <div class="flex items-center justify-between">
-                                            <span class="text-xs font-bold text-slate-600">Vencimento (Dia)</span>
-                                            <select id="acao-venc" class="p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 w-24 outline-none"></select>
-                                        </div>
-                                        <button id="btn-salvar-regras" onclick="salvarConfigAluno()" class="w-full bg-purple-100 hover:bg-purple-200 text-purple-700 font-bold py-2.5 rounded-lg text-[10px] uppercase tracking-widest transition-colors mt-2">💾 Salvar Regras</button>
-                                    </div>
+                    <div id="tab-config-asaas" class="aba-content hidden flex-col gap-6">
+                        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8 max-w-3xl mx-auto w-full">
+                            
+                            <div class="flex items-center gap-4 mb-8 pb-6 border-b border-slate-100">
+                                <div class="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center text-3xl shadow-lg shadow-blue-500/30">💳</div>
+                                <div>
+                                    <h2 class="text-xl font-black text-slate-800">Automação Asaas (White-Label)</h2>
+                                    <p class="text-xs font-bold text-slate-400 mt-1">Transforme sua academia numa máquina de recebimentos automáticos.</p>
                                 </div>
                             </div>
+
+                            <div id="asaas-ativo-panel" class="hidden text-center py-8">
+                                <div class="text-6xl mb-4">✅</div>
+                                <h3 class="text-2xl font-black text-emerald-500 mb-2">Conta Conectada e Ativa!</h3>
+                                <p class="text-sm font-bold text-slate-500 max-w-md mx-auto">Sua academia já está operando com a tecnologia Asaas. Todos os links gerados já sairão com os dados da sua equipe.</p>
+                                <div class="mt-8 p-4 bg-slate-50 border border-slate-200 rounded-xl inline-block text-left">
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Seu Wallet ID (Carteira)</p>
+                                    <p class="font-mono text-sm font-bold text-slate-700" id="asaas-wallet-display">---</p>
+                                </div>
+                            </div>
+
+                            <form id="asaas-form-panel" class="space-y-6" onsubmit="event.preventDefault(); criarSubcontaAsaas();">
+                                <p class="text-xs font-bold text-amber-600 bg-amber-50 p-4 rounded-xl border border-amber-200">
+                                    ⚠️ Para gerar boletos, cartões e PIX em seu nome, o Banco Central exige o preenchimento dos dados abaixo para criar sua subconta digital de recebimentos.
+                                </p>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome Completo / Razão Social</label>
+                                        <input type="text" id="asaas-nome" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold text-slate-700">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CPF ou CNPJ (Apenas números)</label>
+                                        <input type="text" id="asaas-cpf" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold text-slate-700">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">E-mail Profissional</label>
+                                        <input type="email" id="asaas-email" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold text-slate-700">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Celular (Apenas números, com DDD)</label>
+                                        <input type="text" id="asaas-celular" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold text-slate-700" placeholder="Ex: 21999999999">
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-slate-100 pt-6">
+                                    <div class="col-span-1">
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CEP</label>
+                                        <input type="text" id="asaas-cep" onblur="buscarCEPAsaas(this.value)" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold text-slate-700" placeholder="00000000">
+                                    </div>
+                                    <div class="col-span-1 md:col-span-2">
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Endereço (Rua/Avenida)</label>
+                                        <input type="text" id="asaas-end" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold text-slate-700">
+                                    </div>
+                                    <div class="col-span-1">
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Número</label>
+                                        <input type="text" id="asaas-num" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold text-slate-700">
+                                    </div>
+                                    <div class="col-span-1 md:col-span-2">
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Bairro</label>
+                                        <input type="text" id="asaas-bairro" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold text-slate-700">
+                                    </div>
+                                </div>
+
+                                <button type="submit" id="btn-ativar-asaas-form" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest transition-all mt-4 text-xs">
+                                    🚀 Ativar Minha Subconta
+                                </button>
+                            </form>
                         </div>
                     </div>
 
@@ -258,6 +283,59 @@
         </main>
     </div>
 
+    <div id="modal-acoes-wrapper" class="fixed inset-0 z-[200] bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity">
+        <div id="painel-acoes-mensalidade" class="bg-white p-6 rounded-3xl border border-slate-200 shadow-2xl w-full max-w-md relative max-h-[90vh] overflow-y-auto hide-scrollbar">
+            
+            <button onclick="fecharModalAcoes()" class="absolute top-4 right-4 text-slate-400 hover:text-rose-500 text-3xl leading-none transition-colors">&times;</button>
+
+            <h3 class="font-black text-slate-800 truncate mb-1 text-xl pr-8" id="acao-aluno-nome">Selecione uma fatura</h3>
+            <p class="text-[10px] font-bold text-rose-500 uppercase mb-4 h-4" id="acao-alerta-divida"></p>
+
+            <div class="grid grid-cols-2 gap-3 mb-6 border-b border-slate-100 pb-6">
+                <button onclick="gerarReciboPDF()" id="btn-recibo-lateral" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl text-xs flex items-center justify-center transition-colors shadow-sm"><span class="mr-2">📄</span> Baixar recibo</button>
+                <button id="btn-whats-lateral" onclick="enviarWhatsApp()" class="bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center transition-colors shadow-sm">
+                    <span class="mr-2">💬</span> Cobrar
+                </button>
+            </div>
+
+            <div class="space-y-4 border-b border-slate-100 pb-6 mb-6">
+                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">💸 Registrar Pagamento</h4>
+                <div class="flex gap-2">
+                    <input type="date" id="acao-data-pag" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none">
+                    <select id="acao-forma-pag" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none cursor-pointer">
+                        <option value="PIX">PIX manual</option><option value="Dinheiro">Dinheiro</option>
+                    </select>
+                </div>
+                
+                <button id="btn-reg-pagamento" onclick="registrarPagamento()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest cursor-pointer">✅ Baixa Manual</button>
+                
+                <button id="btn-gerar-asaas" onclick="gerarLinkAsaasAdmin()" class="hidden w-full bg-blue-500 hover:bg-blue-600 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest cursor-pointer border border-blue-600">💳 Gerar Link Asaas</button>
+
+                <div class="flex gap-3 mt-4">
+                    <button id="btn-desfazer-pag" onclick="cancelarPagamento()" class="flex-1 bg-slate-100 text-slate-300 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest cursor-not-allowed transition-colors">Desfazer</button>
+                    <button id="btn-excluir-pag" onclick="excluirPagamento()" class="flex-1 bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest transition-colors">Excluir Fatura</button>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <h4 class="text-[10px] font-black text-purple-500 uppercase tracking-widest">⚙️ Regras do Atleta</h4>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <span class="block text-[10px] font-bold text-slate-500 mb-1">Bolsa (%)</span>
+                        <select id="acao-bolsa" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 outline-none">
+                            <option value="0">0%</option><option value="10">10%</option><option value="20">20%</option><option value="25">25%</option><option value="50">50%</option><option value="75">75%</option><option value="100">100%</option>
+                        </select>
+                    </div>
+                    <div>
+                        <span class="block text-[10px] font-bold text-slate-500 mb-1">Venc. (Dia)</span>
+                        <select id="acao-venc" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 outline-none"></select>
+                    </div>
+                </div>
+                <button id="btn-salvar-regras" onclick="salvarConfigAluno()" class="w-full bg-purple-100 hover:bg-purple-200 text-purple-700 font-black py-3 rounded-xl text-[10px] uppercase tracking-widest transition-colors shadow-sm">💾 Salvar Regras</button>
+            </div>
+        </div>
+    </div>
+
     <div id="modal-despesa" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
             <div class="bg-rose-500 p-5 text-white flex justify-between items-center">
@@ -342,7 +420,7 @@
                 <button onclick="fecharModalRelatorio()" class="text-amber-200 hover:text-white text-2xl leading-none">&times;</button>
             </div>
             <div class="p-6 space-y-4">
-                <p class="text-sm font-bold text-slate-500 mb-4 text-center">Selecione o período de cálculo para gerar o PDF Oficial de Lucro Real.</p>
+                <p class="text-sm font-bold text-slate-500 mb-4 text-center">Selecione o período de cálculo para gerar o PDF Oficial.</p>
                 <div class="flex items-center justify-between gap-2">
                     <span class="text-xs font-bold text-slate-400 uppercase w-8">De:</span>
                     <select id="rel-mes-ini" class="p-2.5 bg-slate-50 border border-slate-200 rounded-lg outline-none font-bold text-slate-700 w-full"></select>
@@ -366,7 +444,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        // 🚀 IMPORTAÇÃO DAS CLOUD FUNCTIONS AQUI!
         import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
 
         const firebaseConfig = {
@@ -381,17 +458,16 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        // 🚀 INICIALIZAÇÃO DO COMUNICADOR DO ASAAS
         const functions = getFunctions(app);
 
         let uid = null;
         let equipeNomeGlobal = "PROJETO RESGATE";
         let equipeLogoGlobal = null; 
+        let equipeDados = null;
         let equipeBaseConfig = { prazo: 70.0, atraso: 100.0, chave_pix: "" };
         let alunosCache = [];
         let financeiroMesCache = [];
         let financeiroAnoCache = []; 
-        
         let alunoSelecionadoMens = null;
 
         let chartBalancoMes = null;
@@ -404,7 +480,6 @@
             const toast = document.createElement('div');
             const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : 'bg-slate-800');
             const icon = type === 'success' ? '✅' : (type === 'error' ? '🚨' : 'ℹ️');
-            
             toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transform transition-all duration-300 translate-x-full opacity-0 flex items-center gap-3 font-bold text-sm z-50 pointer-events-auto max-w-sm`;
             toast.innerHTML = `<span class="text-xl">${icon}</span> <span class="flex-1">${message}</span>`;
             container.appendChild(toast);
@@ -531,12 +606,11 @@
 
             try {
                 const docSnap = await getDoc(doc(db, "equipes", uid));
-                let dadosEquipe = null;
                 
                 if (docSnap.exists()) {
                     const lblCargo = document.getElementById('lbl-cargo');
                     if(lblCargo) lblCargo.innerText = "Mestre / Administrador";
-                    dadosEquipe = docSnap.data();
+                    equipeDados = docSnap.data();
                 } else {
                     const colabSnap = await getDoc(doc(db, "colaboradores", uid));
                     if(colabSnap.exists()) {
@@ -544,13 +618,13 @@
                         const lblCargo = document.getElementById('lbl-cargo');
                         if(lblCargo) lblCargo.innerText = "Co-Administrador";
                         const equipeMestreSnap = await getDoc(doc(db, "equipes", uid));
-                        if(equipeMestreSnap.exists()) dadosEquipe = equipeMestreSnap.data();
+                        if(equipeMestreSnap.exists()) equipeDados = equipeMestreSnap.data();
                     }
                 }
 
-                if (dadosEquipe) {
-                    equipeNomeGlobal = dadosEquipe.nome_equipe;
-                    equipeLogoGlobal = dadosEquipe.url_logo;
+                if (equipeDados) {
+                    equipeNomeGlobal = equipeDados.nome_equipe;
+                    equipeLogoGlobal = equipeDados.url_logo;
                      
                     const elNomeEquipe = document.getElementById('nome-equipe') || document.getElementById('lbl-equipe');
                     if(elNomeEquipe) elNomeEquipe.innerText = equipeNomeGlobal.toUpperCase();
@@ -566,11 +640,21 @@
                         }
                     }
 
-                    if(dadosEquipe.valor_prazo) equipeBaseConfig.prazo = parseFloat(dadosEquipe.valor_prazo);
-                    if(dadosEquipe.valor_atraso) equipeBaseConfig.atraso = parseFloat(dadosEquipe.valor_atraso);
-                    if(dadosEquipe.chave_pix) {
-                        equipeBaseConfig.chave_pix = dadosEquipe.chave_pix;
-                        document.getElementById('config-pix').value = dadosEquipe.chave_pix;
+                    if(equipeDados.valor_prazo) equipeBaseConfig.prazo = parseFloat(equipeDados.valor_prazo);
+                    if(equipeDados.valor_atraso) equipeBaseConfig.atraso = parseFloat(equipeDados.valor_atraso);
+                    if(equipeDados.chave_pix) {
+                        equipeBaseConfig.chave_pix = equipeDados.chave_pix;
+                        document.getElementById('config-pix').value = equipeDados.chave_pix;
+                    }
+
+                    // 🚀 Controle de Tela do Asaas
+                    if(equipeDados.status_asaas === 'ATIVO') {
+                        document.getElementById('asaas-ativo-panel').classList.remove('hidden');
+                        document.getElementById('asaas-form-panel').classList.add('hidden');
+                        document.getElementById('asaas-wallet-display').innerText = equipeDados.asaas_wallet_id || "Carregando...";
+                    } else {
+                        document.getElementById('asaas-ativo-panel').classList.add('hidden');
+                        document.getElementById('asaas-form-panel').classList.remove('hidden');
                     }
                 }
             } catch (error) { console.log(error); }
@@ -593,6 +677,61 @@
             } catch (e) { showToast("Erro ao salvar config.", "error"); } 
             finally { btn.innerHTML = origHTML; btn.disabled = false; }
         }
+
+        // =========================================================
+        // 🚀 CRIAÇÃO DA SUBCONTA ASAAS PELO PROFESSOR
+        // =========================================================
+        window.buscarCEPAsaas = async (cep) => {
+            const cleanCep = cep.replace(/\D/g, "");
+            if (cleanCep.length !== 8) return;
+            const r = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`).then(res => res.json());
+            if (!r.erro) {
+                document.getElementById('asaas-end').value = r.logradouro || "";
+                document.getElementById('asaas-bairro').value = r.bairro || "";
+                document.getElementById('asaas-num').focus();
+            }
+        };
+
+        window.criarSubcontaAsaas = async function() {
+            const nome = document.getElementById('asaas-nome').value.trim();
+            const cpfCnpj = document.getElementById('asaas-cpf').value.trim();
+            const email = document.getElementById('asaas-email').value.trim();
+            const celular = document.getElementById('asaas-celular').value.trim();
+            const cep = document.getElementById('asaas-cep').value.trim();
+            const endereco = document.getElementById('asaas-end').value.trim();
+            const numero = document.getElementById('asaas-num').value.trim();
+            const bairro = document.getElementById('asaas-bairro').value.trim();
+
+            if(!nome || !cpfCnpj || !email || !celular || !cep || !endereco || !numero || !bairro) {
+                return showToast("Preencha todos os campos obrigatórios!", "error");
+            }
+
+            const btn = document.getElementById('btn-ativar-asaas-form');
+            const origTxt = btn.innerHTML;
+            btn.innerHTML = "⏳ Criando sua conta no banco..."; btn.disabled = true;
+
+            try {
+                const criarSubconta = httpsCallable(functions, 'criarSubcontaAsaas');
+                const res = await criarSubconta({
+                    equipeId: uid, nome, cpfCnpj, email, celular, cep, endereco, numero, bairro
+                });
+
+                if(res.data.success) {
+                    showToast("Conta Asaas ativada com sucesso!", "success");
+                    equipeDados.status_asaas = "ATIVO";
+                    // Recarrega visualmente
+                    carregarInfoEquipe({email: document.getElementById('email-logado') ? document.getElementById('email-logado').innerText : ''});
+                } else {
+                    showToast("Erro Asaas: " + res.data.error, "error");
+                }
+            } catch(e) {
+                showToast("Falha de conexão ao criar conta.", "error");
+            } finally {
+                btn.innerHTML = origTxt; btn.disabled = false;
+            }
+        }
+        // =========================================================
+
 
         window.gerarFaturas = async function() {
             const btn = document.getElementById('btn-gerar-faturas');
@@ -646,7 +785,7 @@
             renderizarTabelas();
             atualizarDashboardMes();
             atualizarAnaliseAnual();
-            fecharPainelAcoesMobile();
+            fecharModalAcoes();
         }
 
         window.filtrarMensalidades = function() { renderizarTabelas(); }
@@ -710,13 +849,12 @@
                     else if (status === 'ISENTO') corStatus = 'bg-blue-100 text-blue-700 border border-blue-200'; 
                     else corStatus = 'bg-amber-100 text-amber-700 border border-amber-200';
 
-                    // 🚀 ÍCONE DO ASAAS DINÂMICO
                     let iconeAsaas = f.link_pagamento && status !== 'PAGO' && status !== 'ISENTO' ? ' <span title="Link Asaas Gerado" class="ml-1 opacity-80">💳</span>' : '';
 
                     const tr = document.createElement('tr');
                     tr.className = `cursor-pointer transition-colors border-b border-slate-100 ${corBg}`;
                     const calcData = { fatura_id: f.id, status: status, valor: valorFinal, reg: f };
-                    tr.onclick = () => carregarAcoesAluno(aluno.id, calcData);
+                    tr.onclick = () => abrirModalAcoes(aluno.id, calcData);
 
                     tr.innerHTML = `
                         <td class="px-4 py-3">
@@ -762,58 +900,59 @@
         }
 
         // =========================================================
-        // CONTROLO DO PAINEL DE AÇÕES
+        // 🚀 NOVO: CONTROLO DA MODAL DE AÇÕES
         // =========================================================
-        window.carregarAcoesAluno = function(alunoId, calcData) {
+        window.abrirModalAcoes = function(alunoId, calcData) {
             const aluno = alunosCache.find(a => a.id === alunoId);
             alunoSelecionadoMens = { ...aluno, _calc: calcData };
-
-            const painel = document.getElementById('painel-acoes-mensalidade');
-            painel.classList.remove('opacity-50', 'pointer-events-none');
 
             document.getElementById('acao-aluno-nome').innerText = aluno.nome;
             
             const btnWhats = document.getElementById('btn-whats-lateral');
             const btnRegPag = document.getElementById('btn-reg-pagamento');
             const btnDesfazer = document.getElementById('btn-desfazer-pag');
-            const btnAsaas = document.getElementById('btn-gerar-asaas'); // O NOSSO NOVO BOTÃO ASAAS
+            const btnAsaas = document.getElementById('btn-gerar-asaas');
 
             if(calcData.status === 'PAGO' || calcData.status === 'ISENTO') {
                 document.getElementById('acao-alerta-divida').innerText = "";
                 
-                btnWhats.innerHTML = `<span class="mr-1">💬</span> Enviar Recibo`;
-                btnWhats.className = "bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] font-bold py-2.5 rounded-xl text-[11px] flex items-center justify-center transition-colors";
+                btnWhats.innerHTML = `<span class="mr-2">💬</span> Enviar Recibo`;
+                btnWhats.className = "bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] font-bold py-3 rounded-xl text-xs flex items-center justify-center transition-colors shadow-sm";
                 
                 btnRegPag.disabled = true;
                 btnRegPag.innerHTML = "✅ Pagamento Registrado";
-                btnRegPag.className = "w-full bg-slate-100 text-slate-400 font-black py-3.5 rounded-xl text-xs uppercase tracking-widest mt-2 cursor-not-allowed border border-slate-200";
+                btnRegPag.className = "w-full bg-slate-100 text-slate-400 font-black py-3.5 rounded-xl text-xs uppercase tracking-widest cursor-not-allowed border border-slate-200";
 
                 btnDesfazer.disabled = false;
-                btnDesfazer.className = "flex-1 bg-amber-100 hover:bg-amber-200 text-amber-700 font-bold py-2.5 rounded-lg text-[10px] uppercase tracking-widest transition-colors cursor-pointer";
+                btnDesfazer.className = "flex-1 bg-amber-100 hover:bg-amber-200 text-amber-700 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest transition-colors cursor-pointer";
                 
-                btnAsaas.classList.add('hidden'); // Oculta o botão Asaas se a fatura já está paga
+                btnAsaas.classList.add('hidden');
 
             } else {
                 document.getElementById('acao-alerta-divida').innerText = calcData.status === 'ATRASADO' ? "⚠️ MENSALIDADE EM ATRASO" : "PENDENTE DE PAGAMENTO";
                 
-                btnWhats.innerHTML = `<span class="mr-1">💬</span> Cobrar no WhatsApp`;
-                btnWhats.className = "bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold py-2.5 rounded-xl text-[11px] flex items-center justify-center transition-colors shadow-sm";
+                btnWhats.innerHTML = `<span class="mr-2">💬</span> Cobrar`;
+                btnWhats.className = "bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center transition-colors shadow-sm";
                 
                 btnRegPag.disabled = false;
                 btnRegPag.innerHTML = "✅ Baixa Manual";
-                btnRegPag.className = "w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest mt-2 cursor-pointer";
+                btnRegPag.className = "w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest cursor-pointer";
 
                 btnDesfazer.disabled = true;
-                btnDesfazer.className = "flex-1 bg-slate-100 text-slate-300 font-bold py-2.5 rounded-lg text-[10px] uppercase tracking-widest cursor-not-allowed";
+                btnDesfazer.className = "flex-1 bg-slate-100 text-slate-300 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest cursor-not-allowed transition-colors";
 
-                // 🚀 LÓGICA DO BOTÃO ASAAS PARA O PROFESSOR
-                btnAsaas.classList.remove('hidden');
-                if (calcData.reg.link_pagamento) {
-                    btnAsaas.innerHTML = "💳 Ver Link Asaas (Gerado)";
-                    btnAsaas.className = "w-full bg-blue-100 hover:bg-blue-200 text-blue-700 font-black py-3.5 rounded-xl transition-all text-xs uppercase tracking-widest mt-2 cursor-pointer border border-blue-200";
+                // Se a academia tem o Asaas ativo, mostra o botão
+                if (equipeDados && equipeDados.status_asaas === 'ATIVO') {
+                    btnAsaas.classList.remove('hidden');
+                    if (calcData.reg.link_pagamento) {
+                        btnAsaas.innerHTML = "💳 Ver Link Asaas (Gerado)";
+                        btnAsaas.className = "w-full bg-blue-100 hover:bg-blue-200 text-blue-700 font-black py-3.5 rounded-xl transition-all text-xs uppercase tracking-widest cursor-pointer border border-blue-200";
+                    } else {
+                        btnAsaas.innerHTML = "💳 Gerar Link Asaas";
+                        btnAsaas.className = "w-full bg-blue-500 hover:bg-blue-600 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest cursor-pointer border border-blue-600";
+                    }
                 } else {
-                    btnAsaas.innerHTML = "💳 Gerar Link Asaas";
-                    btnAsaas.className = "w-full bg-blue-500 hover:bg-blue-600 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest mt-2 cursor-pointer border border-blue-600";
+                    btnAsaas.classList.add('hidden');
                 }
             }
 
@@ -821,28 +960,19 @@
             document.getElementById('acao-venc').value = aluno.dia_vencimento || "10";
             document.getElementById('acao-data-pag').valueAsDate = new Date();
 
-            if (window.innerWidth < 1024) {
-                const wrapper = document.getElementById('modal-acoes-wrapper');
-                wrapper.classList.remove('hidden');
-                wrapper.classList.add('flex');
-            }
+            // Mostra a Modal
+            const modal = document.getElementById('modal-acoes-wrapper');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
 
-        window.fecharPainelAcoesMobile = function() {
-            const wrapper = document.getElementById('modal-acoes-wrapper');
-            wrapper.classList.remove('flex'); wrapper.classList.add('hidden');
-            const painel = document.getElementById('painel-acoes-mensalidade');
-            painel.classList.add('opacity-50', 'pointer-events-none');
+        window.fecharModalAcoes = function() {
+            const modal = document.getElementById('modal-acoes-wrapper');
+            modal.classList.remove('flex'); 
+            modal.classList.add('hidden');
             alunoSelecionadoMens = null;
-            document.getElementById('acao-aluno-nome').innerText = "Selecione uma fatura";
-            document.getElementById('acao-alerta-divida').innerText = "";
         }
 
-        function autoFecharPainelMobile() { if (window.innerWidth < 1024) fecharPainelAcoesMobile(); }
-
-        // =========================================================
-        // 🚀 GERAR LINK ASAAS PELO PAINEL DO PROFESSOR
-        // =========================================================
         window.gerarLinkAsaasAdmin = async function() {
             if(!alunoSelecionadoMens) return;
             const fatura = alunoSelecionadoMens._calc.reg;
@@ -869,7 +999,7 @@
                     showToast("Link Asaas gerado com sucesso!", "success");
                     fatura.link_pagamento = resultado.data.url;
                     carregarDados();
-                    carregarAcoesAluno(alunoSelecionadoMens.id, alunoSelecionadoMens._calc); 
+                    abrirModalAcoes(alunoSelecionadoMens.id, alunoSelecionadoMens._calc); 
                 } else {
                     showToast("Erro Asaas: " + resultado.data.error, "error");
                 }
@@ -892,7 +1022,7 @@
             try {
                 await updateDoc(doc(db, "alunos", alunoSelecionadoMens.id), { bolsa_perc: nb, dia_vencimento: nv });
                 showToast("Regras do atleta atualizadas!", "success");
-                carregarDados(); autoFecharPainelMobile();
+                carregarDados();
             } catch(e) { showToast("Erro ao salvar regras.", "error"); } 
             finally { btn.innerText = origTxt; btn.disabled = false; }
         }
@@ -916,7 +1046,7 @@
                     status: 'PAGO', data: dtPag, forma_pagamento: forma, valor: valorCalculado 
                 });
                 showToast("Pagamento Registado!", "success");
-                carregarDados(); autoFecharPainelMobile();
+                carregarDados(); 
             } catch (e) { showToast("Erro ao dar baixa na mensalidade.", "error"); } 
             finally { btn.innerHTML = origTxt; btn.disabled = false; }
         }
@@ -934,7 +1064,7 @@
                     status: 'PENDENTE', data: null, forma_pagamento: null
                 });
                 showToast("Pagamento cancelado com sucesso.", "success");
-                carregarDados(); autoFecharPainelMobile();
+                carregarDados(); 
             } catch (e) { showToast("Erro ao cancelar.", "error"); } 
             finally { btn.innerText = origTxt; btn.disabled = false; }
         }
@@ -949,7 +1079,7 @@
             try {
                 await deleteDoc(doc(db, "financeiro", alunoSelecionadoMens._calc.fatura_id));
                 showToast("Fatura excluída com sucesso.", "success");
-                carregarDados(); autoFecharPainelMobile();
+                carregarDados(); 
             } catch (e) { showToast("Erro ao excluir.", "error"); } 
             finally { btn.innerText = origTxt; btn.disabled = false; }
         } 
@@ -1069,7 +1199,6 @@
             });
         }
 
-        // Dashboard functions omitted for brevity... they remain the same below
         function atualizarDashboardMes() {
             let tMens = 0, tExt = 0, tDesp = 0;
             financeiroMesCache.forEach(f => {
@@ -1286,8 +1415,12 @@
         window.mudarAba = function(id) {
             document.querySelectorAll('.aba-content').forEach(a => a.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex');
-            document.querySelectorAll('.aba-item').forEach(b => b.classList.remove('tab-active', 'text-slate-400'));
-            document.getElementById('btn-' + id).classList.add('tab-active');
+            document.querySelectorAll('.aba-item').forEach(b => b.classList.remove('tab-active', 'text-slate-400', 'text-blue-500', 'text-blue-700'));
+            
+            const abaClicada = document.getElementById('btn-' + id);
+            abaClicada.classList.add('tab-active');
+            // Se for a aba Asaas, manter ela azul
+            if(id === 'tab-config-asaas') abaClicada.classList.add('text-blue-500');
         }
 
         window.abrirModalDespesa = () => {

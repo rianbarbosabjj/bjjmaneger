@@ -152,7 +152,7 @@
                                         <div>
                                             <p class="text-[10px] font-black uppercase tracking-widest text-emerald-400 mb-1 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Saldo Disponível</p>
                                             <h3 class="text-4xl md:text-5xl font-black text-white tracking-tight mb-4" id="asaas-saldo-display">R$ 0,00</h3>
-                                            <button onclick="carregarSaldoAsaas()" id="btn-atualizar-saldo" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-bold px-4 py-2 rounded-lg transition-colors border border-slate-700 flex items-center gap-2">
+                                            <button onclick="carregarSaldoAsaas()" id="btn-atualizar-saldo" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-bold px-4 py-2 rounded-lg transition-colors border border-slate-700 flex items-center gap-2 w-max">
                                                 <span>🔄</span> Atualizar Saldo
                                             </button>
                                         </div>
@@ -168,7 +168,12 @@
                                         </h4>
                                         <form id="form-saque" onsubmit="event.preventDefault(); solicitarSaque();" class="space-y-5 flex-1 flex flex-col">
                                             <div>
-                                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Valor do Saque (R$)</label>
+                                                <div class="flex justify-between items-center mb-1">
+                                                    <label class="block text-[10px] font-black text-slate-400 uppercase">Valor do Saque (R$)</label>
+                                                    <button type="button" onclick="preencherSaldoTotal()" class="text-[9px] bg-blue-50 text-blue-600 font-bold uppercase tracking-widest px-2 py-1 rounded hover:bg-blue-100 transition-colors">
+                                                        Puxar Todo o Saldo
+                                                    </button>
+                                                </div>
                                                 <input type="text" id="saque-valor" oninput="mascaraMoeda(this)" required class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-black text-blue-600 text-xl" placeholder="0,00">
                                             </div>
                                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -193,6 +198,15 @@
                                         </form>
                                     </div>
                                 </div>
+                                
+                                <div class="mt-6 bg-blue-50/50 border border-blue-100 p-4 rounded-2xl flex items-start gap-4">
+                                    <div class="text-2xl">🤖</div>
+                                    <div>
+                                        <h4 class="text-xs font-black text-blue-800 uppercase tracking-widest">Aviso: Transferência Automática Mensal</h4>
+                                        <p class="text-xs text-blue-600/80 font-medium mt-1">O sistema salvará automaticamente a sua chave PIX no primeiro saque. O Agendamento Mensal Automático está em fase de liberação técnica.</p>
+                                    </div>
+                                </div>
+
                             </div>
 
                             <form id="asaas-form-panel" class="space-y-6" onsubmit="event.preventDefault(); criarSubcontaAsaas();">
@@ -712,7 +726,12 @@
                         document.getElementById('asaas-form-panel').classList.add('hidden');
                         document.getElementById('asaas-wallet-display').innerText = equipeDados.asaas_wallet_id || "Carregando...";
                         
-                        // 🚀 CHAMA A FUNÇÃO DE BUSCAR SALDO ASSIM QUE A TELA CARREGAR
+                        // 🚀 PREENCHE A CHAVE PIX SALVA SE EXISTIR
+                        if(equipeDados.pix_saque_chave) {
+                            document.getElementById('saque-chave-pix').value = equipeDados.pix_saque_chave;
+                            if(equipeDados.pix_saque_tipo) document.getElementById('saque-tipo-pix').value = equipeDados.pix_saque_tipo;
+                        }
+
                         carregarSaldoAsaas();
                     } else {
                         document.getElementById('asaas-ativo-panel').classList.add('hidden');
@@ -739,6 +758,89 @@
             } catch (e) { showToast("Erro ao salvar config.", "error"); } 
             finally { btn.innerHTML = origHTML; btn.disabled = false; }
         }
+
+        // =========================================================
+        // 🚀 VER SALDO E SOLICITAR SAQUE (COM FUNÇÃO DE SACAR TUDO E SALVAR CHAVE)
+        // =========================================================
+        window.carregarSaldoAsaas = async function() {
+            if(!equipeDados || !equipeDados.asaas_api_key) return;
+            
+            const btn = document.getElementById('btn-atualizar-saldo');
+            const origTxt = btn.innerHTML;
+            btn.innerHTML = "🔄 ..."; btn.disabled = true;
+            
+            try {
+                const consultarSaldo = httpsCallable(functions, 'consultarSaldoAsaas');
+                const res = await consultarSaldo({ apiKey: equipeDados.asaas_api_key });
+                
+                if(res.data.success) {
+                    document.getElementById('asaas-saldo-display').innerText = `R$ ${floatToStr(res.data.balance)}`;
+                } else {
+                    showToast("Erro ao buscar saldo no banco.", "error");
+                }
+            } catch(e) {
+                showToast("Erro de conexão com o banco.", "error");
+            } finally {
+                btn.innerHTML = origTxt; btn.disabled = false;
+            }
+        }
+
+        // FUNÇÃO NOVA: Clica e preenche o campo de saque com o saldo total
+        window.preencherSaldoTotal = function() {
+            const textoSaldo = document.getElementById('asaas-saldo-display').innerText;
+            if (textoSaldo === "---" || textoSaldo === "R$ 0,00") {
+                showToast("Sem saldo disponível para saque.", "info");
+                return;
+            }
+            const valorLimpo = textoSaldo.replace('R$', '').trim();
+            document.getElementById('saque-valor').value = valorLimpo;
+        }
+
+        window.solicitarSaque = async function() {
+            const valorNum = strToFloat(document.getElementById('saque-valor').value);
+            const tipo = document.getElementById('saque-tipo-pix').value;
+            const chave = document.getElementById('saque-chave-pix').value.trim();
+            
+            if(valorNum <= 0) return showToast("Digite um valor válido para saque.", "error");
+            if(!chave) return showToast("Digite sua chave PIX de destino.", "error");
+            
+            if(!confirm(`Confirma a transferência PIX de R$ ${floatToStr(valorNum)} para a chave: ${chave}?`)) return;
+
+            const btn = document.getElementById('btn-sacar-asaas');
+            const origTxt = btn.innerHTML;
+            btn.innerHTML = "⏳ Processando Transferência..."; btn.disabled = true;
+
+            try {
+                // 1. Faz a transferência
+                const fazerSaque = httpsCallable(functions, 'solicitarSaqueAsaas');
+                const res = await fazerSaque({
+                    apiKey: equipeDados.asaas_api_key,
+                    valor: valorNum,
+                    chavePix: chave,
+                    tipoChave: tipo
+                });
+
+                if(res.data.success) {
+                    showToast("Saque solicitado com sucesso! Em breve estará na sua conta.", "success");
+                    document.getElementById('saque-valor').value = "";
+                    
+                    // 2. Salva a Chave PIX no Firebase para a próxima vez
+                    await updateDoc(doc(db, "equipes", uid), {
+                        pix_saque_chave: chave,
+                        pix_saque_tipo: tipo
+                    });
+
+                    carregarSaldoAsaas(); // Atualiza o valor do saldo na hora
+                } else {
+                    showToast("Erro do Banco: " + res.data.error, "error");
+                }
+            } catch(e) {
+                showToast("Falha na comunicação com o banco.", "error");
+            } finally {
+                btn.innerHTML = origTxt; btn.disabled = false;
+            }
+        }
+        // =========================================================
 
         window.buscarCEPAsaas = async (cep) => {
             const cleanCep = cep.replace(/\D/g, "");
@@ -809,69 +911,6 @@
             }
         }
 
-        // =========================================================
-        // 🚀 VER SALDO E SOLICITAR SAQUE (NOVAS FUNÇÕES!)
-        // =========================================================
-        window.carregarSaldoAsaas = async function() {
-            if(!equipeDados || !equipeDados.asaas_api_key) return;
-            
-            const btn = document.getElementById('btn-atualizar-saldo');
-            const origTxt = btn.innerHTML;
-            btn.innerHTML = "🔄 ..."; btn.disabled = true;
-            
-            try {
-                const consultarSaldo = httpsCallable(functions, 'consultarSaldoAsaas');
-                const res = await consultarSaldo({ apiKey: equipeDados.asaas_api_key });
-                
-                if(res.data.success) {
-                    document.getElementById('asaas-saldo-display').innerText = `R$ ${floatToStr(res.data.balance)}`;
-                } else {
-                    showToast("Erro ao buscar saldo no banco.", "error");
-                }
-            } catch(e) {
-                showToast("Erro de conexão com o banco.", "error");
-            } finally {
-                btn.innerHTML = origTxt; btn.disabled = false;
-            }
-        }
-
-        window.solicitarSaque = async function() {
-            const valorNum = strToFloat(document.getElementById('saque-valor').value);
-            const tipo = document.getElementById('saque-tipo-pix').value;
-            const chave = document.getElementById('saque-chave-pix').value.trim();
-            
-            if(valorNum <= 0) return showToast("Digite um valor válido para saque.", "error");
-            if(!chave) return showToast("Digite sua chave PIX de destino.", "error");
-            
-            if(!confirm(`Confirma a transferência PIX de R$ ${floatToStr(valorNum)} para a chave: ${chave}?`)) return;
-
-            const btn = document.getElementById('btn-sacar-asaas');
-            const origTxt = btn.innerHTML;
-            btn.innerHTML = "⏳ Processando Transferência..."; btn.disabled = true;
-
-            try {
-                const fazerSaque = httpsCallable(functions, 'solicitarSaqueAsaas');
-                const res = await fazerSaque({
-                    apiKey: equipeDados.asaas_api_key,
-                    valor: valorNum,
-                    chavePix: chave,
-                    tipoChave: tipo
-                });
-
-                if(res.data.success) {
-                    showToast("Saque solicitado com sucesso! Em breve estará na sua conta.", "success");
-                    document.getElementById('saque-valor').value = "";
-                    carregarSaldoAsaas(); // Atualiza o valor do saldo na hora
-                } else {
-                    showToast("Erro do Banco: " + res.data.error, "error");
-                }
-            } catch(e) {
-                showToast("Falha na comunicação com o banco.", "error");
-            } finally {
-                btn.innerHTML = origTxt; btn.disabled = false;
-            }
-        }
-        // =========================================================
 
         window.gerarFaturas = async function() {
             const btn = document.getElementById('btn-gerar-faturas');

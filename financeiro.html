@@ -176,7 +176,7 @@
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-slate-100 pt-6">
                                     <div class="col-span-1">
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CEP</label>
-                                        <input type="text" id="asaas-cep" onblur="buscarCEPAsaas(this.value)" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold text-slate-700" placeholder="00000000">
+                                        <input type="text" id="asaas-cep" onblur="buscarCEPAsaas(this.value)" oninput="mascaraCEP(this)" required maxlength="9" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold text-slate-700" placeholder="00000-000">
                                     </div>
                                     <div class="col-span-1 md:col-span-2">
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Endereço (Rua/Avenida)</label>
@@ -478,7 +478,7 @@
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : 'bg-slate-800');
+            const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : (type === 'info' ? 'bg-blue-500' : 'bg-slate-800'));
             const icon = type === 'success' ? '✅' : (type === 'error' ? '🚨' : 'ℹ️');
             toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transform transition-all duration-300 translate-x-full opacity-0 flex items-center gap-3 font-bold text-sm z-50 pointer-events-auto max-w-sm`;
             toast.innerHTML = `<span class="text-xl">${icon}</span> <span class="flex-1">${message}</span>`;
@@ -517,6 +517,12 @@
         function floatToStr(valor) {
             return valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
+
+        window.mascaraCEP = (i) => {
+            let v = i.value.replace(/\D/g, "");
+            v = v.replace(/^(\d{5})(\d)/, "$1-$2");
+            i.value = v;
+        };
 
         function numeroParaExtenso(valor) {
             const unidades = ["zero", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove"];
@@ -677,14 +683,31 @@
             finally { btn.innerHTML = origHTML; btn.disabled = false; }
         }
 
+        // =========================================================
+        // 🚀 CRIAÇÃO DA SUBCONTA ASAAS PELO PROFESSOR
+        // =========================================================
         window.buscarCEPAsaas = async (cep) => {
             const cleanCep = cep.replace(/\D/g, "");
             if (cleanCep.length !== 8) return;
-            const r = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`).then(res => res.json());
-            if (!r.erro) {
-                document.getElementById('asaas-end').value = r.logradouro || "";
-                document.getElementById('asaas-bairro').value = r.bairro || "";
-                document.getElementById('asaas-num').focus();
+            
+            document.getElementById('asaas-end').value = "Buscando...";
+            document.getElementById('asaas-bairro').value = "Buscando...";
+
+            try {
+                const r = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`).then(res => res.json());
+                if (!r.erro) {
+                    document.getElementById('asaas-end').value = r.logradouro || "";
+                    document.getElementById('asaas-bairro').value = r.bairro || "";
+                    document.getElementById('asaas-num').focus();
+                } else {
+                    document.getElementById('asaas-end').value = "";
+                    document.getElementById('asaas-bairro').value = "";
+                    showToast("CEP não encontrado.", "error");
+                }
+            } catch(e) {
+                document.getElementById('asaas-end').value = "";
+                document.getElementById('asaas-bairro').value = "";
+                showToast("Erro ao buscar CEP.", "error");
             }
         };
 
@@ -725,6 +748,8 @@
                 btn.innerHTML = origTxt; btn.disabled = false;
             }
         }
+        // =========================================================
+
 
         window.gerarFaturas = async function() {
             const btn = document.getElementById('btn-gerar-faturas');

@@ -84,6 +84,7 @@
                     </div>
 
                     <div id="tab-mensalidades" class="aba-content flex flex-col gap-6">
+                        
                         <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
                             <div class="flex gap-6">
                                 <div>
@@ -385,8 +386,13 @@
                 <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">💸 Registrar Pagamento</h4>
                 <div class="flex gap-2">
                     <input type="date" id="acao-data-pag" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none">
-                    <select id="acao-forma-pag" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none cursor-pointer">
-                        <option value="PIX">PIX manual</option><option value="Dinheiro">Dinheiro</option>
+                    
+                    <select id="acao-forma-pag" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed">
+                        <option value="PIX">PIX manual</option>
+                        <option value="Dinheiro">Dinheiro</option>
+                        <option value="PIX_ASAAS">PIX (Automático)</option>
+                        <option value="CREDIT_CARD">Cartão de Crédito</option>
+                        <option value="BOLETO">Boleto Bancário</option>
                     </select>
                 </div>
                 
@@ -789,10 +795,8 @@
                 const res = await consultarSaldo({ apiKey: equipeDados.asaas_api_key });
                 
                 if(res.data.success) {
-                    // Atualiza o Saldo Livre
                     document.getElementById('asaas-saldo-display').innerText = `R$ ${floatToStr(res.data.balance)}`;
                     
-                    // Atualiza o Saldo a Compensar (O Futuro)
                     const previsto = document.getElementById('asaas-saldo-previsto');
                     if(previsto) {
                         const aCompensar = res.data.estimatedBalance - res.data.balance;
@@ -1142,6 +1146,7 @@
             }
         }
 
+        // 🚀 A MÁGICA DA FORMA DE PAGAMENTO ACONTECE AQUI
         window.abrirModalAcoes = function(alunoId, calcData) {
             const aluno = alunosCache.find(a => a.id === alunoId);
             alunoSelecionadoMens = { ...aluno, _calc: calcData };
@@ -1152,6 +1157,9 @@
             const btnRegPag = document.getElementById('btn-reg-pagamento');
             const btnDesfazer = document.getElementById('btn-desfazer-pag');
             const btnAsaas = document.getElementById('btn-gerar-asaas');
+            
+            const inputData = document.getElementById('acao-data-pag');
+            const selectForma = document.getElementById('acao-forma-pag');
 
             if(calcData.status === 'PAGO' || calcData.status === 'ISENTO') {
                 document.getElementById('acao-alerta-divida').innerText = "";
@@ -1168,6 +1176,31 @@
                 
                 btnAsaas.classList.add('hidden');
 
+                // 🚀 PREENCHE OS DADOS DO PAGAMENTO REALIZADO
+                if(calcData.reg.data_pagamento) {
+                    inputData.value = calcData.reg.data_pagamento;
+                } else {
+                    inputData.valueAsDate = new Date();
+                }
+                
+                // Mapeia a forma de pagamento do Asaas ou manual
+                let forma = calcData.reg.forma_pagamento;
+                if(forma === 'CREDIT_CARD') selectForma.value = 'CREDIT_CARD';
+                else if(forma === 'BOLETO') selectForma.value = 'BOLETO';
+                else if(forma === 'PIX' && calcData.reg.asaas_id) selectForma.value = 'PIX_ASAAS'; // Pix via sistema
+                else if(forma) selectForma.value = forma; // Pix manual ou Dinheiro
+                
+                // Se foi pago via Asaas, bloqueia a edição manual
+                if(calcData.reg.asaas_id && calcData.status === 'PAGO') {
+                    selectForma.disabled = true;
+                    inputData.disabled = true;
+                    btnDesfazer.disabled = true; // Impede de desfazer um pagamento que veio do banco!
+                    btnDesfazer.className = "flex-1 bg-slate-100 text-slate-300 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest cursor-not-allowed transition-colors";
+                } else {
+                    selectForma.disabled = false;
+                    inputData.disabled = false;
+                }
+
             } else {
                 document.getElementById('acao-alerta-divida').innerText = calcData.status === 'ATRASADO' ? "⚠️ MENSALIDADE EM ATRASO" : "PENDENTE DE PAGAMENTO";
                 
@@ -1180,6 +1213,12 @@
 
                 btnDesfazer.disabled = true;
                 btnDesfazer.className = "flex-1 bg-slate-100 text-slate-300 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest cursor-not-allowed transition-colors";
+
+                // Libera a edição para a Baixa Manual
+                inputData.valueAsDate = new Date();
+                inputData.disabled = false;
+                selectForma.value = 'PIX';
+                selectForma.disabled = false;
 
                 if (equipeDados && equipeDados.status_asaas === 'ATIVO') {
                     btnAsaas.classList.remove('hidden');
@@ -1197,7 +1236,6 @@
 
             document.getElementById('acao-bolsa').value = aluno.bolsa_perc || "0";
             document.getElementById('acao-venc').value = aluno.dia_vencimento || "10";
-            document.getElementById('acao-data-pag').valueAsDate = new Date();
 
             const modal = document.getElementById('modal-acoes-wrapper');
             modal.classList.remove('hidden');
@@ -1273,6 +1311,12 @@
             
             const dtPag = document.getElementById('acao-data-pag').value;
             const forma = document.getElementById('acao-forma-pag').value;
+            
+            // Impede dar "Baixa Manual" escolhendo as formas automáticas
+            if(forma === 'PIX_ASAAS' || forma === 'CREDIT_CARD' || forma === 'BOLETO') {
+                return showToast("Estas formas de pagamento só podem ser baixadas automaticamente pelo sistema.", "error");
+            }
+
             const valorCalculado = alunoSelecionadoMens._calc.valor;
 
             const btn = document.getElementById('btn-reg-pagamento');
@@ -1281,7 +1325,7 @@
 
             try {
                 await updateDoc(doc(db, "financeiro", alunoSelecionadoMens._calc.fatura_id), {
-                    status: 'PAGO', data: dtPag, forma_pagamento: forma, valor: valorCalculado 
+                    status: 'PAGO', data_pagamento: dtPag, forma_pagamento: forma, valor: valorCalculado 
                 });
                 showToast("Pagamento Registado!", "success");
                 carregarDados(); 
@@ -1299,7 +1343,7 @@
 
             try {
                 await updateDoc(doc(db, "financeiro", alunoSelecionadoMens._calc.fatura_id), {
-                    status: 'PENDENTE', data: null, forma_pagamento: null
+                    status: 'PENDENTE', data_pagamento: null, forma_pagamento: null
                 });
                 showToast("Pagamento cancelado com sucesso.", "success");
                 carregarDados(); 
@@ -1358,7 +1402,8 @@
             const alunoData = alunoSelecionadoMens;
             const valorExtenso = numeroParaExtenso(pagData.valor);
 
-            const dataPagto = new Date(pagData.data).toLocaleDateString('pt-BR');
+            // AQUI TAMBÉM MUDEI A DATA PARA PUXAR CORRETAMENTE
+            const dataPagto = pagData.data_pagamento ? new Date(pagData.data_pagamento + 'T12:00:00').toLocaleDateString('pt-BR') : '--/--/----';
             const pMesAno = pagData.mes_ano.split('-');
             const mesRef = `${pMesAno[1]}/${pMesAno[0]}`;
 
@@ -1398,6 +1443,11 @@
                 logoHtml = `<div style="height: 70px; width: 70px; background-color: #0F172A; color: #FFFFFF; border-radius: 50%; text-align: center; line-height: 70px; font-size: 32px; font-weight: bold; margin: 0 auto 10px auto; font-family: Arial, sans-serif;">${equipeNomeGlobal.charAt(0).toUpperCase()}</div>`;
             }
 
+            // Traduzir a forma de pagamento no PDF
+            let formaPrint = pagData.forma_pagamento || 'Dinheiro';
+            if(formaPrint === 'CREDIT_CARD') formaPrint = 'Cartão de Crédito';
+            if(formaPrint === 'PIX_ASAAS') formaPrint = 'PIX (Sistema)';
+
             const htmlFinal = `
                 <div style="font-family: Arial, sans-serif; padding: 25px; color: #1E293B; width: 100%; box-sizing: border-box;">
                     <div style="text-align: center; border-bottom: 2px solid #1E293B; padding-bottom: 15px; margin-bottom: 20px;">
@@ -1406,7 +1456,7 @@
                         <p style="margin: 5px 0 0 0; font-size: 12px; font-weight: bold; color: #64748B; letter-spacing: 2px;">${equipeNomeGlobal.toUpperCase()}</p>
                     </div>
                     <div style="font-size: 15px; line-height: 1.8; color: #334155; text-align: justify;">
-                        Recebi de <b>${alunoData.nome.toUpperCase()}</b> a importância de <b>R$ ${floatToStr(pagData.valor)}</b> (<b>${valorExtenso}</b>), paga via <b>${pagData.forma_pagamento || 'Dinheiro'}</b>, referente à mensalidade das aulas de <b>Jiu-Jitsu</b>, correspondente ao mês de <b>${mesRef}</b>.<br><br>
+                        Recebi de <b>${alunoData.nome.toUpperCase()}</b> a importância de <b>R$ ${floatToStr(pagData.valor)}</b> (<b>${valorExtenso}</b>), paga via <b>${formaPrint}</b>, referente à mensalidade das aulas de <b>Jiu-Jitsu</b>, correspondente ao mês de <b>${mesRef}</b>.<br><br>
                         Por ser verdade, firmo o presente recibo para os devidos fins.
                     </div>
                     <div style="margin-top: 25px; text-align: right; font-weight: bold; color: #1E293B; font-size: 14px;">

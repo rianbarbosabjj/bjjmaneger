@@ -150,7 +150,10 @@
                                         <div class="absolute top-0 right-0 p-6 opacity-5 text-6xl pointer-events-none">💰</div>
                                         <div>
                                             <p class="text-[10px] font-black uppercase tracking-widest text-emerald-400 mb-1 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Saldo Disponível</p>
-                                            <h3 class="text-4xl md:text-5xl font-black text-white tracking-tight mb-4" id="asaas-saldo-display">R$ 0,00</h3>
+                                            <h3 class="text-4xl md:text-5xl font-black text-white tracking-tight mb-2" id="asaas-saldo-display">R$ 0,00</h3>
+                                            
+                                            <p class="text-xs text-slate-400 font-bold mb-4" id="asaas-saldo-previsto">A compensar: R$ 0,00</p>
+
                                             <button onclick="carregarSaldoAsaas()" id="btn-atualizar-saldo" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-bold px-4 py-2 rounded-lg transition-colors border border-slate-700 flex items-center gap-2 w-max">
                                                 <span>🔄</span> Atualizar Saldo
                                             </button>
@@ -744,7 +747,6 @@
                         }
 
                         carregarSaldoAsaas();
-                        // 🚀 NOVO: CARREGA O HISTÓRICO ASSIM QUE ENTRA
                         carregarHistoricoSaques();
                     } else {
                         document.getElementById('asaas-ativo-panel').classList.add('hidden');
@@ -787,7 +789,15 @@
                 const res = await consultarSaldo({ apiKey: equipeDados.asaas_api_key });
                 
                 if(res.data.success) {
+                    // Atualiza o Saldo Livre
                     document.getElementById('asaas-saldo-display').innerText = `R$ ${floatToStr(res.data.balance)}`;
+                    
+                    // Atualiza o Saldo a Compensar (O Futuro)
+                    const previsto = document.getElementById('asaas-saldo-previsto');
+                    if(previsto) {
+                        const aCompensar = res.data.estimatedBalance - res.data.balance;
+                        previsto.innerText = `A compensar: R$ ${floatToStr(aCompensar > 0 ? aCompensar : 0)}`;
+                    }
                 } else {
                     showToast("Erro ao buscar saldo no banco.", "error");
                 }
@@ -841,7 +851,6 @@
                     });
 
                     carregarSaldoAsaas(); 
-                    // 🚀 NOVO: Atualiza a tabela na hora que pede o saque
                     carregarHistoricoSaques();
                 } else {
                     showToast("Erro do Banco: " + res.data.error, "error");
@@ -853,7 +862,6 @@
             }
         }
         
-        // 🚀 NOVO: FUNÇÃO PARA BUSCAR E MOSTRAR O HISTÓRICO DE SAQUES
         window.carregarHistoricoSaques = async function() {
             if(!equipeDados || !equipeDados.asaas_api_key) return;
             
@@ -867,7 +875,6 @@
                 if(res.data.success && res.data.transfers && res.data.transfers.length > 0) {
                     tb.innerHTML = '';
                     
-                    // Mostra só os 10 últimos para não lotar a tela
                     const ultimos = res.data.transfers.slice(0, 10);
                     
                     ultimos.forEach(t => {

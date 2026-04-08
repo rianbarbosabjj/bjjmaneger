@@ -996,53 +996,81 @@
             lista.innerHTML = faturasHTML;
         }
 
-        // ==========================================
-        // NOVA FUNÇÃO DE PAGAMENTO COM ASAAS
+// ==========================================
+        // FUNÇÃO DE PAGAMENTO INTELIGENTE (BÁSICO VS PRO)
         // ==========================================
         window.abrirPagamento = async function(faturaId) {
             const fat = faturasCache.find(f => f.id === faturaId);
             if (!fat) return showToast("Fatura não encontrada.", "error");
 
-            if (fat.link_pagamento) {
-                window.open(fat.link_pagamento, '_blank');
-                return;
-            }
+            // Verifica se o professor tem o plano Asaas ativo
+            const temPlanoAsaas = equipeDados && equipeDados.plano_asaas === true;
 
-            showToast("⏳ Gerando link de pagamento seguro...", "success");
-            
-            const btnPagamento = document.getElementById(`btn-pagar-${faturaId}`);
-            let textoOriginal = "";
-            if(btnPagamento) {
-                textoOriginal = btnPagamento.innerHTML;
-                btnPagamento.innerHTML = "⏳ Aguarde...";
-                btnPagamento.disabled = true;
-            }
-
-            try {
-                const gerarCobranca = httpsCallable(functions, 'gerarCobrancaAsaas');
-                
-                const resultado = await gerarCobranca({
-                    alunoId: fat.aluno_id, 
-                    valor: fat.valor,      
-                    mesAno: fat.mes_ano,   
-                    descricao: `Mensalidade Jiu-Jitsu - Ref: ${fat.mes_ano}`
-                });
-
-                if (resultado.data.success) {
-                    showToast("✅ Fatura gerada com sucesso!", "success");
-                    window.open(resultado.data.url, '_blank');
-                    buscarFaturasResiliente(); 
-                } else {
-                    showToast("❌ Erro ao gerar cobrança: " + resultado.data.error, "error");
+            if (temPlanoAsaas) {
+                // 🚀 FLUXO PRO: ASAAS AUTOMÁTICO
+                if (fat.link_pagamento) {
+                    window.open(fat.link_pagamento, '_blank');
+                    return;
                 }
-            } catch (error) {
-                console.error("Erro na requisição:", error);
-                showToast("🚨 Falha na conexão com o servidor financeiro.", "error");
-            } finally {
+
+                showToast("⏳ Gerando link de pagamento seguro...", "success");
+                const btnPagamento = document.getElementById(`btn-pagar-${faturaId}`);
+                let textoOriginal = "";
                 if(btnPagamento) {
-                    btnPagamento.innerHTML = textoOriginal;
-                    btnPagamento.disabled = false;
+                    textoOriginal = btnPagamento.innerHTML;
+                    btnPagamento.innerHTML = "⏳ Aguarde...";
+                    btnPagamento.disabled = true;
                 }
+
+                try {
+                    const gerarCobranca = httpsCallable(functions, 'gerarCobrancaAsaas');
+                    const resultado = await gerarCobranca({
+                        alunoId: fat.aluno_id, 
+                        valor: fat.valor,      
+                        mesAno: fat.mes_ano,   
+                        descricao: `Mensalidade Jiu-Jitsu - Ref: ${fat.mes_ano}`
+                    });
+
+                    if (resultado.data.success) {
+                        showToast("✅ Fatura gerada com sucesso!", "success");
+                        window.open(resultado.data.url, '_blank');
+                        buscarFaturasResiliente(); 
+                    } else {
+                        showToast("❌ Erro ao gerar cobrança: " + resultado.data.error, "error");
+                    }
+                } catch (error) {
+                    console.error("Erro na requisição:", error);
+                    showToast("🚨 Falha na conexão com o servidor financeiro.", "error");
+                } finally {
+                    if(btnPagamento) {
+                        btnPagamento.innerHTML = textoOriginal;
+                        btnPagamento.disabled = false;
+                    }
+                }
+            } else {
+                // 🥋 FLUXO BÁSICO: MODAL PIX MANUAL
+                let mesStr = "", anoStr = "";
+                if(fat.mes_ano && String(fat.mes_ano).includes('-')) {
+                    const partes = fat.mes_ano.split('-');
+                    anoStr = partes[0];
+                    mesStr = partes[1];
+                }
+                const tituloMes = (mesStr && anoStr) ? `${mesStr}/${anoStr}` : 'Atual';
+
+                document.getElementById('pix-ref').innerText = `Mensalidade - ${tituloMes}`;
+                document.getElementById('pix-valor').innerText = `R$ ${parseFloat(fat.valor || 0).toFixed(2).replace('.', ',')}`;
+                
+                const inputPix = document.getElementById('pix-codigo');
+                if(equipeDados && equipeDados.chave_pix) {
+                    inputPix.value = equipeDados.chave_pix;
+                    document.getElementById('aviso-pagamento').innerText = "Após o pagamento, envie o comprovante ao professor para ele dar a baixa no sistema.";
+                } else {
+                    inputPix.value = "Chave PIX não configurada pelo professor.";
+                    document.getElementById('aviso-pagamento').innerText = "Peça a chave PIX diretamente ao seu professor.";
+                }
+
+                document.getElementById('modal-pix').classList.remove('hidden');
+                document.getElementById('modal-pix').classList.add('flex');
             }
         }
 

@@ -353,7 +353,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs, getDoc, doc, query, where, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        // IMPORTAÇÃO DAS CLOUD FUNCTIONS 
         import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
 
         const firebaseConfig = {
@@ -367,7 +366,6 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        // INICIALIZAÇÃO DAS CLOUD FUNCTIONS
         const functions = getFunctions(app);
 
         let alunoLogado = null;
@@ -970,7 +968,6 @@
                 } else if(isIsento) {
                     btnHtml = `<span class="text-[10px] font-bold text-blue-500 uppercase mt-1 bg-blue-500/10 px-2 py-1 rounded-md">⭐ Isento</span>`;
                 } else {
-                    // Botão agora possui um ID único para podermos mostrar o "Aguarde..."
                     btnHtml = `<button id="btn-pagar-${fat.id}" onclick="abrirPagamento('${fat.id}')" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm transition-colors mt-1">${textoStatusBtn}</button>`;
                 }
 
@@ -996,18 +993,16 @@
             lista.innerHTML = faturasHTML;
         }
 
-// ==========================================
+        // ==========================================
         // FUNÇÃO DE PAGAMENTO INTELIGENTE (BÁSICO VS PRO)
         // ==========================================
         window.abrirPagamento = async function(faturaId) {
             const fat = faturasCache.find(f => f.id === faturaId);
             if (!fat) return showToast("Fatura não encontrada.", "error");
 
-            // Verifica se o professor tem o plano Asaas ativo
             const temPlanoAsaas = equipeDados && equipeDados.plano_asaas === true;
 
             if (temPlanoAsaas) {
-                // 🚀 FLUXO PRO: ASAAS AUTOMÁTICO
                 if (fat.link_pagamento) {
                     window.open(fat.link_pagamento, '_blank');
                     return;
@@ -1025,7 +1020,7 @@
                 try {
                     const gerarCobranca = httpsCallable(functions, 'gerarCobrancaAsaas');
                     const resultado = await gerarCobranca({
-                        alunoId: fat.aluno_id, 
+                        alunoId: alunoLogado.id, 
                         valor: fat.valor,      
                         mesAno: fat.mes_ano,   
                         descricao: `Mensalidade Jiu-Jitsu - Ref: ${fat.mes_ano}`
@@ -1048,7 +1043,6 @@
                     }
                 }
             } else {
-                // 🥋 FLUXO BÁSICO: MODAL PIX MANUAL
                 let mesStr = "", anoStr = "";
                 if(fat.mes_ano && String(fat.mes_ano).includes('-')) {
                     const partes = fat.mes_ano.split('-');

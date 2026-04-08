@@ -155,13 +155,17 @@
                                 </p>
                                 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
+                                    <div class="md:col-span-2">
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome Completo / Razão Social</label>
                                         <input type="text" id="asaas-nome" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold text-slate-700">
                                     </div>
                                     <div>
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CPF ou CNPJ (Apenas números)</label>
                                         <input type="text" id="asaas-cpf" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold text-slate-700">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Data de Nascimento (Se for CPF)</label>
+                                        <input type="date" id="asaas-nascimento" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold text-slate-700">
                                     </div>
                                     <div>
                                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">E-mail de Contato</label>
@@ -714,6 +718,7 @@
         window.criarSubcontaAsaas = async function() {
             const nome = document.getElementById('asaas-nome').value.trim();
             const cpfCnpj = document.getElementById('asaas-cpf').value.trim();
+            const dataNascimento = document.getElementById('asaas-nascimento').value;
             const email = document.getElementById('asaas-email').value.trim();
             const celular = document.getElementById('asaas-celular').value.trim();
             const cep = document.getElementById('asaas-cep').value.trim();
@@ -724,6 +729,10 @@
             if(!nome || !cpfCnpj || !email || !celular || !cep || !endereco || !numero || !bairro) {
                 return showToast("Preencha todos os campos obrigatórios!", "error");
             }
+            
+            if (cpfCnpj.length === 11 && !dataNascimento) {
+                return showToast("A Data de Nascimento é obrigatória para CPF.", "error");
+            }
 
             const btn = document.getElementById('btn-ativar-asaas-form');
             const origTxt = btn.innerHTML;
@@ -732,7 +741,7 @@
             try {
                 const criarSubconta = httpsCallable(functions, 'criarSubcontaAsaas');
                 const res = await criarSubconta({
-                    equipeId: uid, nome, cpfCnpj, email, celular, cep, endereco, numero, bairro
+                    equipeId: uid, nome, cpfCnpj, dataNascimento, email, celular, cep, endereco, numero, bairro
                 });
 
                 if(res.data.success) {

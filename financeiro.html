@@ -80,7 +80,7 @@
                         <button onclick="mudarAba('tab-dash')" id="btn-tab-dash" class="aba-item py-4 px-4 sm:px-6 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all whitespace-nowrap snap-start">📊 Resumo Mês</button>
                         <button onclick="mudarAba('tab-anual')" id="btn-tab-anual" class="aba-item py-4 px-4 sm:px-6 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all whitespace-nowrap snap-start">📈 Análise Anual</button>
                         <button onclick="mudarAba('tab-fluxo')" id="btn-tab-fluxo" class="aba-item py-4 px-4 sm:px-6 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all whitespace-nowrap snap-start">📋 Extras</button>
-                        <button onclick="mudarAba('tab-config-asaas')" id="btn-tab-config-asaas" class="aba-item py-4 px-4 sm:px-6 text-[10px] sm:text-xs font-black uppercase tracking-widest text-blue-500 hover:text-blue-700 transition-all whitespace-nowrap snap-start">⚙️ Integração Asaas</button>
+                        <button onclick="mudarAba('tab-config-asaas')" id="btn-tab-config-asaas" class="aba-item py-4 px-4 sm:px-6 text-[10px] sm:text-xs font-black uppercase tracking-widest text-blue-500 hover:text-blue-700 transition-all whitespace-nowrap snap-start">⚙️ Recebimento Automático</button>
                     </div>
 
                     <div id="tab-mensalidades" class="aba-content flex flex-col gap-6">
@@ -134,24 +134,24 @@
                             <div class="flex items-center gap-4 mb-8 pb-6 border-b border-slate-100">
                                 <div class="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center text-3xl shadow-lg shadow-blue-500/30">💳</div>
                                 <div>
-                                    <h2 class="text-xl font-black text-slate-800">Automação Asaas (White-Label)</h2>
-                                    <p class="text-xs font-bold text-slate-400 mt-1">Transforme sua academia numa máquina de recebimentos automáticos.</p>
+                                    <h2 class="text-xl font-black text-slate-800">Conta Digital da Academia</h2>
+                                    <p class="text-xs font-bold text-slate-400 mt-1">Ative para receber via PIX, Boleto e Cartão com baixa automática no sistema.</p>
                                 </div>
                             </div>
 
                             <div id="asaas-ativo-panel" class="hidden text-center py-8">
                                 <div class="text-6xl mb-4">✅</div>
-                                <h3 class="text-2xl font-black text-emerald-500 mb-2">Conta Conectada e Ativa!</h3>
-                                <p class="text-sm font-bold text-slate-500 max-w-md mx-auto">Sua academia já está operando com a tecnologia Asaas. Todos os links gerados já sairão com os dados da sua equipe.</p>
+                                <h3 class="text-2xl font-black text-emerald-500 mb-2">Conta de Recebimentos Ativa!</h3>
+                                <p class="text-sm font-bold text-slate-500 max-w-md mx-auto">Tudo pronto! Sua academia já pode gerar links de cobrança e os alunos podem pagar as mensalidades direto pelo Portal do Atleta.</p>
                                 <div class="mt-8 p-4 bg-slate-50 border border-slate-200 rounded-xl inline-block text-left">
-                                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Seu Wallet ID (Carteira)</p>
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Código da sua Carteira Digital</p>
                                     <p class="font-mono text-sm font-bold text-slate-700" id="asaas-wallet-display">---</p>
                                 </div>
                             </div>
 
                             <form id="asaas-form-panel" class="space-y-6" onsubmit="event.preventDefault(); criarSubcontaAsaas();">
                                 <p class="text-xs font-bold text-amber-600 bg-amber-50 p-4 rounded-xl border border-amber-200">
-                                    ⚠️ Para gerar boletos, cartões e PIX em seu nome, o Banco Central exige o preenchimento dos dados abaixo para criar sua subconta digital de recebimentos.
+                                    ⚠️ Para garantir a sua segurança e obedecer às regras do Banco Central, preencha os dados reais do responsável pela academia para habilitarmos a emissão de cobranças automáticas.
                                 </p>
                                 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -164,7 +164,7 @@
                                         <input type="text" id="asaas-cpf" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold text-slate-700">
                                     </div>
                                     <div>
-                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">E-mail Profissional</label>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">E-mail de Contato</label>
                                         <input type="email" id="asaas-email" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold text-slate-700">
                                     </div>
                                     <div>
@@ -193,7 +193,7 @@
                                 </div>
 
                                 <button type="submit" id="btn-ativar-asaas-form" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest transition-all mt-4 text-xs">
-                                    🚀 Ativar Minha Subconta
+                                    🚀 Ativar Minha Conta Digital
                                 </button>
                             </form>
                         </div>
@@ -309,7 +309,7 @@
                 
                 <button id="btn-reg-pagamento" onclick="registrarPagamento()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest cursor-pointer">✅ Baixa Manual</button>
                 
-                <button id="btn-gerar-asaas" onclick="gerarLinkAsaasAdmin()" class="hidden w-full bg-blue-500 hover:bg-blue-600 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest cursor-pointer border border-blue-600">💳 Gerar Link Asaas</button>
+                <button id="btn-gerar-asaas" onclick="gerarLinkAsaasAdmin()" class="hidden w-full bg-blue-500 hover:bg-blue-600 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest cursor-pointer border border-blue-600">💳 Gerar Link de Pagamento</button>
 
                 <div class="flex gap-3 mt-4">
                     <button id="btn-desfazer-pag" onclick="cancelarPagamento()" class="flex-1 bg-slate-100 text-slate-300 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest cursor-not-allowed transition-colors">Desfazer</button>
@@ -647,7 +647,6 @@
                         document.getElementById('config-pix').value = equipeDados.chave_pix;
                     }
 
-                    // 🚀 Controle de Tela do Asaas
                     if(equipeDados.status_asaas === 'ATIVO') {
                         document.getElementById('asaas-ativo-panel').classList.remove('hidden');
                         document.getElementById('asaas-form-panel').classList.add('hidden');
@@ -678,9 +677,6 @@
             finally { btn.innerHTML = origHTML; btn.disabled = false; }
         }
 
-        // =========================================================
-        // 🚀 CRIAÇÃO DA SUBCONTA ASAAS PELO PROFESSOR
-        // =========================================================
         window.buscarCEPAsaas = async (cep) => {
             const cleanCep = cep.replace(/\D/g, "");
             if (cleanCep.length !== 8) return;
@@ -719,7 +715,6 @@
                 if(res.data.success) {
                     showToast("Conta Asaas ativada com sucesso!", "success");
                     equipeDados.status_asaas = "ATIVO";
-                    // Recarrega visualmente
                     carregarInfoEquipe({email: document.getElementById('email-logado') ? document.getElementById('email-logado').innerText : ''});
                 } else {
                     showToast("Erro Asaas: " + res.data.error, "error");
@@ -730,8 +725,6 @@
                 btn.innerHTML = origTxt; btn.disabled = false;
             }
         }
-        // =========================================================
-
 
         window.gerarFaturas = async function() {
             const btn = document.getElementById('btn-gerar-faturas');
@@ -849,7 +842,7 @@
                     else if (status === 'ISENTO') corStatus = 'bg-blue-100 text-blue-700 border border-blue-200'; 
                     else corStatus = 'bg-amber-100 text-amber-700 border border-amber-200';
 
-                    let iconeAsaas = f.link_pagamento && status !== 'PAGO' && status !== 'ISENTO' ? ' <span title="Link Asaas Gerado" class="ml-1 opacity-80">💳</span>' : '';
+                    let iconeAsaas = f.link_pagamento && status !== 'PAGO' && status !== 'ISENTO' ? ' <span title="Link Gerado" class="ml-1 opacity-80">💳</span>' : '';
 
                     const tr = document.createElement('tr');
                     tr.className = `cursor-pointer transition-colors border-b border-slate-100 ${corBg}`;
@@ -899,9 +892,6 @@
             }
         }
 
-        // =========================================================
-        // 🚀 NOVO: CONTROLO DA MODAL DE AÇÕES
-        // =========================================================
         window.abrirModalAcoes = function(alunoId, calcData) {
             const aluno = alunosCache.find(a => a.id === alunoId);
             alunoSelecionadoMens = { ...aluno, _calc: calcData };
@@ -941,14 +931,13 @@
                 btnDesfazer.disabled = true;
                 btnDesfazer.className = "flex-1 bg-slate-100 text-slate-300 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest cursor-not-allowed transition-colors";
 
-                // Se a academia tem o Asaas ativo, mostra o botão
                 if (equipeDados && equipeDados.status_asaas === 'ATIVO') {
                     btnAsaas.classList.remove('hidden');
                     if (calcData.reg.link_pagamento) {
-                        btnAsaas.innerHTML = "💳 Ver Link Asaas (Gerado)";
+                        btnAsaas.innerHTML = "💳 Ver Link Gerado";
                         btnAsaas.className = "w-full bg-blue-100 hover:bg-blue-200 text-blue-700 font-black py-3.5 rounded-xl transition-all text-xs uppercase tracking-widest cursor-pointer border border-blue-200";
                     } else {
-                        btnAsaas.innerHTML = "💳 Gerar Link Asaas";
+                        btnAsaas.innerHTML = "💳 Gerar Link de Cobrança";
                         btnAsaas.className = "w-full bg-blue-500 hover:bg-blue-600 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest cursor-pointer border border-blue-600";
                     }
                 } else {
@@ -960,7 +949,6 @@
             document.getElementById('acao-venc').value = aluno.dia_vencimento || "10";
             document.getElementById('acao-data-pag').valueAsDate = new Date();
 
-            // Mostra a Modal
             const modal = document.getElementById('modal-acoes-wrapper');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -996,12 +984,12 @@
                 });
 
                 if(resultado.data.success) {
-                    showToast("Link Asaas gerado com sucesso!", "success");
+                    showToast("Link gerado com sucesso!", "success");
                     fatura.link_pagamento = resultado.data.url;
                     carregarDados();
                     abrirModalAcoes(alunoSelecionadoMens.id, alunoSelecionadoMens._calc); 
                 } else {
-                    showToast("Erro Asaas: " + resultado.data.error, "error");
+                    showToast("Erro: " + resultado.data.error, "error");
                 }
             } catch(e) {
                 showToast("Erro de conexão.", "error");
@@ -1084,9 +1072,6 @@
             finally { btn.innerText = origTxt; btn.disabled = false; }
         } 
 
-        // =========================================================
-        // 🚀 WHATSAPP TURBINADO COM LINK ASAAS
-        // =========================================================
         window.enviarWhatsApp = function() {
             if(!alunoSelecionadoMens) return;
             const a = alunoSelecionadoMens;
@@ -1419,7 +1404,6 @@
             
             const abaClicada = document.getElementById('btn-' + id);
             abaClicada.classList.add('tab-active');
-            // Se for a aba Asaas, manter ela azul
             if(id === 'tab-config-asaas') abaClicada.classList.add('text-blue-500');
         }
 

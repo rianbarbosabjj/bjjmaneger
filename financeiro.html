@@ -129,23 +129,69 @@
                     </div>
 
                     <div id="tab-config-asaas" class="aba-content hidden flex-col gap-6">
-                        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8 max-w-3xl mx-auto w-full">
+                        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8 max-w-4xl mx-auto w-full">
                             
                             <div class="flex items-center gap-4 mb-8 pb-6 border-b border-slate-100">
                                 <div class="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center text-3xl shadow-lg shadow-blue-500/30">💳</div>
                                 <div>
                                     <h2 class="text-xl font-black text-slate-800">Conta Digital da Academia</h2>
-                                    <p class="text-xs font-bold text-slate-400 mt-1">Ative para receber via PIX, Boleto e Cartão com baixa automática no sistema.</p>
+                                    <p class="text-xs font-bold text-slate-400 mt-1">Gestão de recebimentos via PIX, Boleto e Cartão com baixa automática no sistema.</p>
                                 </div>
                             </div>
 
-                            <div id="asaas-ativo-panel" class="hidden text-center py-8">
-                                <div class="text-6xl mb-4">✅</div>
-                                <h3 class="text-2xl font-black text-emerald-500 mb-2">Conta de Recebimentos Ativa!</h3>
-                                <p class="text-sm font-bold text-slate-500 max-w-md mx-auto">Tudo pronto! Sua academia já pode gerar links de cobrança e os alunos podem pagar as mensalidades direto pelo Portal do Atleta.</p>
-                                <div class="mt-8 p-4 bg-slate-50 border border-slate-200 rounded-xl inline-block text-left">
-                                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Código da sua Carteira Digital</p>
-                                    <p class="font-mono text-sm font-bold text-slate-700" id="asaas-wallet-display">---</p>
+                            <div id="asaas-ativo-panel" class="hidden py-4">
+                                <div class="text-center mb-8">
+                                    <div class="inline-flex items-center justify-center w-16 h-16 bg-emerald-100 text-emerald-500 rounded-full text-3xl mb-3">✅</div>
+                                    <h3 class="text-2xl font-black text-slate-800">Tudo pronto e conectado!</h3>
+                                    <p class="text-sm font-medium text-slate-500 mt-1">Sua academia já está operando com recebimentos automáticos.</p>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="bg-slate-900 p-6 md:p-8 rounded-3xl shadow-xl border border-slate-800 text-left relative overflow-hidden flex flex-col justify-between">
+                                        <div class="absolute top-0 right-0 p-6 opacity-5 text-6xl pointer-events-none">💰</div>
+                                        <div>
+                                            <p class="text-[10px] font-black uppercase tracking-widest text-emerald-400 mb-1 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Saldo Disponível</p>
+                                            <h3 class="text-4xl md:text-5xl font-black text-white tracking-tight mb-4" id="asaas-saldo-display">R$ 0,00</h3>
+                                            <button onclick="carregarSaldoAsaas()" id="btn-atualizar-saldo" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-bold px-4 py-2 rounded-lg transition-colors border border-slate-700 flex items-center gap-2">
+                                                <span>🔄</span> Atualizar Saldo
+                                            </button>
+                                        </div>
+                                        <div class="mt-8 pt-4 border-t border-slate-800">
+                                            <p class="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-1">Código da Carteira (Wallet ID)</p>
+                                            <p class="font-mono text-xs font-bold text-slate-400 truncate" id="asaas-wallet-display">---</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-200 text-left flex flex-col">
+                                        <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-6 flex items-center gap-2">
+                                            <span class="bg-blue-100 text-blue-600 p-2 rounded-lg">💸</span> Transferir / Sacar
+                                        </h4>
+                                        <form id="form-saque" onsubmit="event.preventDefault(); solicitarSaque();" class="space-y-5 flex-1 flex flex-col">
+                                            <div>
+                                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Valor do Saque (R$)</label>
+                                                <input type="text" id="saque-valor" oninput="mascaraMoeda(this)" required class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-black text-blue-600 text-xl" placeholder="0,00">
+                                            </div>
+                                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Tipo de Chave</label>
+                                                    <select id="saque-tipo-pix" required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold text-slate-700 cursor-pointer">
+                                                        <option value="CPF">CPF</option>
+                                                        <option value="CNPJ">CNPJ</option>
+                                                        <option value="EMAIL">E-mail</option>
+                                                        <option value="PHONE">Celular</option>
+                                                        <option value="EVP">Chave Aleatória</option>
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Sua Chave PIX</label>
+                                                    <input type="text" id="saque-chave-pix" required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold text-slate-700" placeholder="Chave de destino...">
+                                                </div>
+                                            </div>
+                                            <button type="submit" id="btn-sacar-asaas" class="w-full mt-auto bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest transition-all text-xs flex items-center justify-center border border-blue-500">
+                                                Efetuar Transferência PIX
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
 
@@ -665,6 +711,9 @@
                         document.getElementById('asaas-ativo-panel').classList.remove('hidden');
                         document.getElementById('asaas-form-panel').classList.add('hidden');
                         document.getElementById('asaas-wallet-display').innerText = equipeDados.asaas_wallet_id || "Carregando...";
+                        
+                        // 🚀 CHAMA A FUNÇÃO DE BUSCAR SALDO ASSIM QUE A TELA CARREGAR
+                        carregarSaldoAsaas();
                     } else {
                         document.getElementById('asaas-ativo-panel').classList.add('hidden');
                         document.getElementById('asaas-form-panel').classList.remove('hidden');
@@ -760,6 +809,69 @@
             }
         }
 
+        // =========================================================
+        // 🚀 VER SALDO E SOLICITAR SAQUE (NOVAS FUNÇÕES!)
+        // =========================================================
+        window.carregarSaldoAsaas = async function() {
+            if(!equipeDados || !equipeDados.asaas_api_key) return;
+            
+            const btn = document.getElementById('btn-atualizar-saldo');
+            const origTxt = btn.innerHTML;
+            btn.innerHTML = "🔄 ..."; btn.disabled = true;
+            
+            try {
+                const consultarSaldo = httpsCallable(functions, 'consultarSaldoAsaas');
+                const res = await consultarSaldo({ apiKey: equipeDados.asaas_api_key });
+                
+                if(res.data.success) {
+                    document.getElementById('asaas-saldo-display').innerText = `R$ ${floatToStr(res.data.balance)}`;
+                } else {
+                    showToast("Erro ao buscar saldo no banco.", "error");
+                }
+            } catch(e) {
+                showToast("Erro de conexão com o banco.", "error");
+            } finally {
+                btn.innerHTML = origTxt; btn.disabled = false;
+            }
+        }
+
+        window.solicitarSaque = async function() {
+            const valorNum = strToFloat(document.getElementById('saque-valor').value);
+            const tipo = document.getElementById('saque-tipo-pix').value;
+            const chave = document.getElementById('saque-chave-pix').value.trim();
+            
+            if(valorNum <= 0) return showToast("Digite um valor válido para saque.", "error");
+            if(!chave) return showToast("Digite sua chave PIX de destino.", "error");
+            
+            if(!confirm(`Confirma a transferência PIX de R$ ${floatToStr(valorNum)} para a chave: ${chave}?`)) return;
+
+            const btn = document.getElementById('btn-sacar-asaas');
+            const origTxt = btn.innerHTML;
+            btn.innerHTML = "⏳ Processando Transferência..."; btn.disabled = true;
+
+            try {
+                const fazerSaque = httpsCallable(functions, 'solicitarSaqueAsaas');
+                const res = await fazerSaque({
+                    apiKey: equipeDados.asaas_api_key,
+                    valor: valorNum,
+                    chavePix: chave,
+                    tipoChave: tipo
+                });
+
+                if(res.data.success) {
+                    showToast("Saque solicitado com sucesso! Em breve estará na sua conta.", "success");
+                    document.getElementById('saque-valor').value = "";
+                    carregarSaldoAsaas(); // Atualiza o valor do saldo na hora
+                } else {
+                    showToast("Erro do Banco: " + res.data.error, "error");
+                }
+            } catch(e) {
+                showToast("Falha na comunicação com o banco.", "error");
+            } finally {
+                btn.innerHTML = origTxt; btn.disabled = false;
+            }
+        }
+        // =========================================================
 
         window.gerarFaturas = async function() {
             const btn = document.getElementById('btn-gerar-faturas');

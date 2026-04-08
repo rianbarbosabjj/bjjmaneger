@@ -84,7 +84,6 @@
                     </div>
 
                     <div id="tab-mensalidades" class="aba-content flex flex-col gap-6">
-                        
                         <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
                             <div class="flex gap-6">
                                 <div>
@@ -199,11 +198,24 @@
                                     </div>
                                 </div>
                                 
-                                <div class="mt-6 bg-blue-50/50 border border-blue-100 p-4 rounded-2xl flex items-start gap-4">
-                                    <div class="text-2xl">🤖</div>
-                                    <div>
-                                        <h4 class="text-xs font-black text-blue-800 uppercase tracking-widest">Aviso: Transferência Automática Mensal</h4>
-                                        <p class="text-xs text-blue-600/80 font-medium mt-1">O sistema salvará automaticamente a sua chave PIX no primeiro saque. O Agendamento Mensal Automático está em fase de liberação técnica.</p>
+                                <div class="mt-6 bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-200">
+                                    <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                        <span class="bg-slate-100 text-slate-600 p-2 rounded-lg">📜</span> Histórico de Saques
+                                    </h4>
+                                    <div class="overflow-x-auto w-full">
+                                        <table class="w-full text-left border-collapse whitespace-nowrap min-w-[500px]">
+                                            <thead>
+                                                <tr class="bg-slate-50 border-b border-slate-200 text-slate-500">
+                                                    <th class="px-4 py-3 text-[9px] font-black uppercase tracking-widest">Data</th>
+                                                    <th class="px-4 py-3 text-[9px] font-black uppercase tracking-widest">Valor</th>
+                                                    <th class="px-4 py-3 text-[9px] font-black uppercase tracking-widest">Destino (Chave)</th>
+                                                    <th class="px-4 py-3 text-[9px] font-black uppercase tracking-widest text-center">Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tabela-saques" class="divide-y divide-slate-100 text-sm">
+                                                <tr><td colspan="4" class="text-center p-4 text-slate-400 text-xs italic">Nenhum saque realizado ainda.</td></tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
 
@@ -726,13 +738,14 @@
                         document.getElementById('asaas-form-panel').classList.add('hidden');
                         document.getElementById('asaas-wallet-display').innerText = equipeDados.asaas_wallet_id || "Carregando...";
                         
-                        // 🚀 PREENCHE A CHAVE PIX SALVA SE EXISTIR
                         if(equipeDados.pix_saque_chave) {
                             document.getElementById('saque-chave-pix').value = equipeDados.pix_saque_chave;
                             if(equipeDados.pix_saque_tipo) document.getElementById('saque-tipo-pix').value = equipeDados.pix_saque_tipo;
                         }
 
                         carregarSaldoAsaas();
+                        // 🚀 NOVO: CARREGA O HISTÓRICO ASSIM QUE ENTRA
+                        carregarHistoricoSaques();
                     } else {
                         document.getElementById('asaas-ativo-panel').classList.add('hidden');
                         document.getElementById('asaas-form-panel').classList.remove('hidden');
@@ -760,7 +773,7 @@
         }
 
         // =========================================================
-        // 🚀 VER SALDO E SOLICITAR SAQUE (COM FUNÇÃO DE SACAR TUDO E SALVAR CHAVE)
+        // 🚀 VER SALDO E SOLICITAR SAQUE
         // =========================================================
         window.carregarSaldoAsaas = async function() {
             if(!equipeDados || !equipeDados.asaas_api_key) return;
@@ -785,7 +798,6 @@
             }
         }
 
-        // FUNÇÃO NOVA: Clica e preenche o campo de saque com o saldo total
         window.preencherSaldoTotal = function() {
             const textoSaldo = document.getElementById('asaas-saldo-display').innerText;
             if (textoSaldo === "---" || textoSaldo === "R$ 0,00") {
@@ -811,7 +823,6 @@
             btn.innerHTML = "⏳ Processando Transferência..."; btn.disabled = true;
 
             try {
-                // 1. Faz a transferência
                 const fazerSaque = httpsCallable(functions, 'solicitarSaqueAsaas');
                 const res = await fazerSaque({
                     apiKey: equipeDados.asaas_api_key,
@@ -824,13 +835,14 @@
                     showToast("Saque solicitado com sucesso! Em breve estará na sua conta.", "success");
                     document.getElementById('saque-valor').value = "";
                     
-                    // 2. Salva a Chave PIX no Firebase para a próxima vez
                     await updateDoc(doc(db, "equipes", uid), {
                         pix_saque_chave: chave,
                         pix_saque_tipo: tipo
                     });
 
-                    carregarSaldoAsaas(); // Atualiza o valor do saldo na hora
+                    carregarSaldoAsaas(); 
+                    // 🚀 NOVO: Atualiza a tabela na hora que pede o saque
+                    carregarHistoricoSaques();
                 } else {
                     showToast("Erro do Banco: " + res.data.error, "error");
                 }
@@ -838,6 +850,51 @@
                 showToast("Falha na comunicação com o banco.", "error");
             } finally {
                 btn.innerHTML = origTxt; btn.disabled = false;
+            }
+        }
+        
+        // 🚀 NOVO: FUNÇÃO PARA BUSCAR E MOSTRAR O HISTÓRICO DE SAQUES
+        window.carregarHistoricoSaques = async function() {
+            if(!equipeDados || !equipeDados.asaas_api_key) return;
+            
+            const tb = document.getElementById('tabela-saques');
+            tb.innerHTML = '<tr><td colspan="4" class="text-center p-4 text-slate-400 text-xs italic">⏳ Buscando histórico no banco...</td></tr>';
+            
+            try {
+                const listarSaques = httpsCallable(functions, 'listarSaquesAsaas');
+                const res = await listarSaques({ apiKey: equipeDados.asaas_api_key });
+                
+                if(res.data.success && res.data.transfers && res.data.transfers.length > 0) {
+                    tb.innerHTML = '';
+                    
+                    // Mostra só os 10 últimos para não lotar a tela
+                    const ultimos = res.data.transfers.slice(0, 10);
+                    
+                    ultimos.forEach(t => {
+                        const dataReq = new Date(t.dateCreated).toLocaleDateString('pt-BR');
+                        const valorFormatado = floatToStr(t.value);
+                        const chavePix = t.pixAddressKey || 'Transferência Bancária';
+                        
+                        let statusHtml = '';
+                        if(t.status === 'PENDING') statusHtml = '<span class="bg-amber-100 text-amber-700 px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest">Pendente</span>';
+                        else if(t.status === 'DONE') statusHtml = '<span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest">Efetivado</span>';
+                        else if(t.status === 'FAILED' || t.status === 'CANCELLED') statusHtml = '<span class="bg-rose-100 text-rose-700 px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest">Falhou</span>';
+                        else statusHtml = `<span class="bg-slate-100 text-slate-700 px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest">${t.status}</span>`;
+
+                        tb.innerHTML += `
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="px-4 py-3 text-xs text-slate-500 font-bold">${dataReq}</td>
+                                <td class="px-4 py-3 text-xs text-rose-500 font-black">- R$ ${valorFormatado}</td>
+                                <td class="px-4 py-3 text-xs text-slate-600 font-mono">${chavePix}</td>
+                                <td class="px-4 py-3 text-center">${statusHtml}</td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    tb.innerHTML = '<tr><td colspan="4" class="text-center p-4 text-slate-400 text-xs italic">Nenhum saque realizado ainda.</td></tr>';
+                }
+            } catch(e) {
+                tb.innerHTML = '<tr><td colspan="4" class="text-center p-4 text-rose-400 text-xs italic">Erro ao carregar histórico.</td></tr>';
             }
         }
         // =========================================================

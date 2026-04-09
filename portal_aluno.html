@@ -93,59 +93,76 @@
                     </h2>
                 </div>
 
-                <div id="cart-wrapper" class="w-full overflow-x-auto hide-scrollbar pb-2 pt-2 -mx-4 px-4 sm:px-0 flex justify-start sm:justify-center transition-all duration-300 origin-top">
-                    
-                    <div id="carteirinha" class="relative bg-white rounded-2xl shadow-2xl border border-slate-200 flex text-slate-800 font-sans w-full max-w-[600px] shrink-0 box-border overflow-hidden" style="width: 600px; min-width: 600px; height: 380px; min-height: 380px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+<div id="cart-wrapper" class="w-full overflow-x-auto hide-scrollbar pb-2 pt-2 -mx-4 px-4 sm:px-0 flex justify-start sm:justify-center transition-all duration-300 origin-top">
     
-                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden" style="z-index: 1;">
-                         <img id="cart-equipe-watermark" src="" style="width: 140%; height: 140%; max-width: none; object-fit: contain; opacity: 0.15; filter: grayscale(100%);" class="hidden" crossorigin="anonymous">
-                         <div id="cart-equipe-watermark-fallback" style="font-size: 400px; opacity: 0.10;" class="leading-none font-black text-slate-800 hidden">E</div>
-                    </div>
+    <div id="carteirinha" class="relative bg-white rounded-2xl shadow-2xl border border-slate-200 flex text-slate-800 font-sans w-full max-w-[600px] shrink-0 box-border overflow-hidden" style="width: 600px; min-width: 600px; height: 380px; min-height: 380px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
 
-                    <div class="absolute top-0 right-0 w-64 h-full bg-slate-200/40 skew-x-[-20deg] translate-x-10 z-0 pointer-events-none backdrop-blur-[1px]"></div>
-                    <div class="absolute bottom-0 left-0 w-full h-1/3 bg-slate-300/30 skew-y-[-5deg] origin-bottom-right z-0 pointer-events-none backdrop-blur-[1px]"></div>
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden" style="z-index: 1;">
+            <img id="cart-equipe-watermark" src="" style="width: 140%; height: 140%; max-width: none; object-fit: contain; opacity: 0.15; filter: grayscale(100%);" class="hidden" crossorigin="anonymous">
+            <div id="cart-equipe-watermark-fallback" style="font-size: 400px; opacity: 0.10;" class="leading-none font-black text-slate-800 hidden">E</div>
+        </div>
+
+        <div class="absolute top-0 right-0 w-64 h-full bg-slate-200/40 skew-x-[-20deg] translate-x-10 z-0 pointer-events-none backdrop-blur-[1px]"></div>
+        <div class="absolute bottom-0 left-0 w-full h-1/3 bg-slate-300/30 skew-y-[-5deg] origin-bottom-right z-0 pointer-events-none backdrop-blur-[1px]"></div>
+
+        <div class="flex-1 p-5 md:p-6 flex flex-col z-10 w-[65%] relative">
+            <div class="flex items-center gap-4 mb-4 md:mb-6">
+                <div class="h-14 w-14 md:h-16 md:w-16 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-sm shrink-0 overflow-hidden">
+                    <img id="cart-equipe-logo" src="" class="h-full w-full object-contain p-1.5 hidden" crossorigin="anonymous">
+                    <div id="cart-equipe-fallback" class="text-3xl font-black text-slate-700 hidden">E</div>
+                </div>
+                <div class="flex flex-col justify-center">
+                    <h2 id="cart-equipe-nome" class="text-lg md:text-xl font-black uppercase tracking-tight text-slate-800 leading-none break-words max-w-[240px]">NOME DA EQUIPE</h2>
+                    <p class="text-[9px] text-slate-500 uppercase tracking-widest font-bold mt-1.5">Identificação Oficial</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-y-3 gap-x-4 w-full mt-auto mb-2 md:mb-4">
+                <div class="col-span-2 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-cyan-500 shadow-sm px-3 py-1.5 flex flex-col justify-center overflow-hidden">
+                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Nome do Atleta</p>
+                    <p id="cart-aluno-nome-txt" class="text-xs md:text-[13px] font-black uppercase text-slate-800 leading-relaxed pb-1 whitespace-nowrap overflow-hidden text-ellipsis">ALUNO NOME</p>
+                </div>
+                
+                <div class="relative overflow-hidden col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm pr-3 py-1.5 rounded-md shadow-sm pl-5 border border-slate-200 flex flex-col justify-center">
+                    <div id="cart-faixa-border" class="absolute top-0 left-0 w-2.5 h-full bg-slate-300 border-r border-slate-200/50 rounded-l-md"></div>
+                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5 relative z-10">Faixa / Graduação</p>
+                    <p id="cart-aluno-faixa-texto" class="text-[10px] md:text-xs font-black uppercase text-slate-800 relative z-10 leading-relaxed pb-1 whitespace-nowrap overflow-hidden text-ellipsis">BRANCA</p>
                 </div>
 
-                        <div class="flex-1 p-5 md:p-6 flex flex-col z-10 w-[65%]">
-                            <div class="flex items-center gap-4 mb-4 md:mb-6 relative z-30">
-                                <div class="h-14 w-14 md:h-16 md:w-16 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-sm shrink-0 overflow-hidden">
-                                    <img id="cart-equipe-logo" src="" class="h-full w-full object-contain p-1.5 hidden" crossorigin="anonymous">
-                                    <div id="cart-equipe-fallback" class="text-3xl font-black text-slate-700 hidden">E</div>
-                                </div>
-                                <div class="flex flex-col justify-center">
-                                    <h2 id="cart-equipe-nome" class="text-lg md:text-xl font-black uppercase tracking-tight text-slate-800 leading-none break-words max-w-[240px]">NOME DA EQUIPE</h2>
-                                    <p class="text-[9px] text-slate-500 uppercase tracking-widest font-bold mt-1.5">Identificação Oficial</p>
-                                </div>
-                            </div>
+                <div class="col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-1.5 flex flex-col justify-center overflow-hidden">
+                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Nascimento</p>
+                    <p id="cart-aluno-nascimento-txt" class="text-[10px] md:text-xs font-bold text-slate-800 leading-relaxed pb-1 whitespace-nowrap overflow-hidden text-ellipsis">00/00/0000</p>
+                </div>
+                
+                <div class="col-span-1 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-1.5 flex flex-col justify-center overflow-hidden">
+                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Matrícula</p>
+                    <p id="cart-aluno-matricula-txt" class="text-[10px] md:text-xs font-mono font-black text-slate-800 tracking-widest leading-relaxed pb-1 whitespace-nowrap overflow-hidden text-ellipsis">00000</p>
+                </div>
 
-                            <div class="grid grid-cols-2 gap-y-3 gap-x-4 w-full mt-auto mb-2 md:mb-4 relative z-30">
-                                <div class="col-span-2 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-cyan-500 shadow-sm px-3 py-1.5 flex flex-col justify-center relative z-30 overflow-visible">
-                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Nome do Atleta</p>
-                                    <p id="cart-aluno-nome-txt" class="text-xs md:text-[13px] font-black uppercase text-slate-800 leading-relaxed pb-1 whitespace-nowrap overflow-hidden text-ellipsis">ALUNO NOME</p>
-                                </div>
-                                
-                                <div class="relative overflow-visible col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm pr-3 py-1.5 rounded-md shadow-sm pl-5 border border-slate-200 flex flex-col justify-center z-30">
-                                    <div id="cart-faixa-border" class="absolute top-0 left-0 w-2.5 h-full bg-slate-300 border-r border-slate-200/50 rounded-l-md z-30"></div>
-                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5 relative z-40">Faixa / Graduação</p>
-                                    <p id="cart-aluno-faixa-texto" class="text-[10px] md:text-xs font-black uppercase text-slate-800 relative z-40 leading-relaxed pb-1 whitespace-nowrap overflow-hidden text-ellipsis">BRANCA</p>
-                                </div>
+                <div class="col-span-1 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-1.5 flex flex-col justify-center overflow-hidden">
+                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Validade</p>
+                    <p id="cart-aluno-validade-txt" class="text-[10px] md:text-xs font-black text-slate-800 tracking-wider leading-relaxed pb-1 whitespace-nowrap overflow-hidden text-ellipsis">2026</p>
+                </div>
+            </div>
+        </div>
 
-                                <div class="col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-1.5 flex flex-col justify-center relative z-30 overflow-visible">
-                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Nascimento</p>
-                                    <p id="cart-aluno-nascimento-txt" class="text-[10px] md:text-xs font-bold text-slate-800 leading-relaxed pb-1 whitespace-nowrap overflow-hidden text-ellipsis">00/00/0000</p>
-                                </div>
-                                
-                                <div class="col-span-1 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-1.5 flex flex-col justify-center relative z-[60] overflow-visible">
-                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5 relative z-20">Matrícula</p>
-                                    <p id="cart-aluno-matricula-txt" class="text-[10px] md:text-xs font-mono font-black text-slate-800 tracking-widest relative z-20 leading-relaxed pb-1 whitespace-nowrap overflow-hidden text-ellipsis">00000</p>
-                                </div>
+        <div class="w-[35%] max-w-[200px] p-5 md:p-6 flex flex-col items-center justify-between z-10 bg-slate-100/50 border-l border-slate-200 backdrop-blur-sm relative">
+            <div class="w-full aspect-[3/4] bg-white rounded-lg border-[3px] border-white overflow-hidden shadow-md flex items-center justify-center relative">
+                <img id="cart-aluno-foto-modal" src="" class="w-full h-full object-cover hidden" crossorigin="anonymous">
+                <span id="cart-aluno-foto-fallback-modal" class="text-5xl font-black text-slate-300">?</span>
+            </div>
+            
+            <div class="w-16 h-16 bg-white p-1.5 rounded-lg mt-auto shadow-sm border border-slate-200 flex items-center justify-center">
+                <div id="cart-qr-code" class="w-full h-full bg-white flex items-center justify-center"></div>
+            </div>
+        </div>
 
-                                <div class="col-span-1 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-1.5 flex flex-col justify-center relative z-[60] overflow-visible">
-                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5 relative z-20">Validade</p>
-                                    <p id="cart-aluno-validade-txt" class="text-[10px] md:text-xs font-black text-slate-800 tracking-wider relative z-20 leading-relaxed pb-1 whitespace-nowrap overflow-hidden text-ellipsis">2026</p>
-                                </div>
-                            </div>
-                        </div>
+        <div class="absolute bottom-3 left-5 md:left-6 z-20 flex items-center gap-2 bg-white px-2 py-1 rounded shadow-sm border border-slate-100 opacity-90">
+            <img src="logo_bjj_maneger.png" class="h-3.5 w-auto grayscale" crossorigin="anonymous">
+            <span class="text-[7px] font-bold tracking-widest text-slate-600 uppercase relative top-px">Emitido por BJJ Manager | maneger.bjjdigital.com.br</span>
+        </div>
+        
+    </div> </div>
 
                         <div class="w-[35%] max-w-[200px] p-5 md:p-6 flex flex-col items-center justify-between z-[50] bg-slate-100/50 border-l border-slate-200 backdrop-blur-sm relative">
                             <div class="w-full aspect-[3/4] bg-white rounded-lg border-[3px] border-white overflow-hidden shadow-md flex items-center justify-center relative z-[60]">

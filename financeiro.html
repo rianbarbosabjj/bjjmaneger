@@ -1836,7 +1836,28 @@ window.gerarFaturas = async function() {
             try { await deleteDoc(doc(db, "financeiro", id)); carregarDados(); showToast("Registo apagado com sucesso.", "success");
             } catch (e) { showToast("Erro ao apagar.", "error"); }
         }
+        window.salvarConfigPagamento = async function() {
+            const aceitaBoleto = document.getElementById('asaas-aceita-boleto').checked;
+            const aceitaCartao = document.getElementById('asaas-aceita-cartao').checked;
+            
+            const btn = document.getElementById('btn-salvar-pagamentos');
+            const origTxt = btn.innerHTML;
+            btn.innerHTML = "⏳ Salvando..."; btn.disabled = true;
 
+            try {
+                await updateDoc(doc(db, "equipes", uid), {
+                    asaas_aceita_boleto: aceitaBoleto,
+                    asaas_aceita_cartao: aceitaCartao
+                });
+                equipeDados.asaas_aceita_boleto = aceitaBoleto;
+                equipeDados.asaas_aceita_cartao = aceitaCartao;
+                showToast("Preferências de pagamento atualizadas com sucesso!", "success");
+            } catch(e) {
+                showToast("Erro ao salvar preferências.", "error");
+            } finally {
+                btn.innerHTML = origTxt; btn.disabled = false;
+            }
+        }
         window.sairDoSistema = () => signOut(auth).then(() => window.location.href = "index.html");
     </script>
 </body>

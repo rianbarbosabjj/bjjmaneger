@@ -201,6 +201,41 @@
                                         </form>
                                     </div>
                                 </div>
+<div class="mt-6 bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-200">
+                                    <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                        <span class="bg-purple-100 text-purple-600 p-2 rounded-lg">⚙️</span> Formas de Pagamento Aceitas
+                                    </h4>
+                                    <p class="text-xs text-slate-500 font-bold mb-4">Escolha quais métodos de pagamento seus alunos poderão usar nos links automáticos. Atenção aos prazos em que o dinheiro fica disponível para saque!</p>
+                                    
+                                    <div class="space-y-3">
+                                        <label class="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-xl cursor-not-allowed opacity-80">
+                                            <input type="checkbox" checked disabled class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
+                                            <div>
+                                                <p class="text-xs font-black text-slate-700">PIX (Obrigatório)</p>
+                                                <p class="text-[10px] font-bold text-emerald-500">Liberação Imediata na conta</p>
+                                            </div>
+                                        </label>
+                                        
+                                        <label class="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors shadow-sm">
+                                            <input type="checkbox" id="asaas-aceita-boleto" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
+                                            <div>
+                                                <p class="text-xs font-black text-slate-700">Boleto Bancário</p>
+                                                <p class="text-[10px] font-bold text-amber-500">Liberação em 1 a 3 dias úteis após o pagamento</p>
+                                            </div>
+                                        </label>
+                                        
+                                        <label class="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors shadow-sm">
+                                            <input type="checkbox" id="asaas-aceita-cartao" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
+                                            <div>
+                                                <p class="text-xs font-black text-slate-700">Cartão de Crédito</p>
+                                                <p class="text-[10px] font-bold text-rose-500">Liberação em 30 dias após o pagamento</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <button onclick="salvarConfigPagamento()" id="btn-salvar-pagamentos" class="mt-4 bg-slate-800 hover:bg-slate-700 text-white text-[10px] font-bold px-6 py-3 rounded-xl transition-colors uppercase tracking-widest w-full sm:w-auto shadow-md">
+                                        💾 Salvar Preferências
+                                    </button>
+                                </div>
                                 
                                 <div class="mt-6 bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-200">
                                     <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-4 flex items-center gap-2">

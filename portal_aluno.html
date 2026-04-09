@@ -633,20 +633,42 @@
             return '#cbd5e1'; 
         }
 
-        function preencherCarteirinha() {
+function preencherCarteirinha() {
             const a = alunoLogado;
             
             if(equipeDados) {
                 document.getElementById('cart-equipe-nome').innerText = (equipeDados.nome_equipe || "Sua Equipe").toUpperCase();
                 
+                // Logo Pequena
                 const imgL = document.getElementById('cart-equipe-logo');
                 const fallL = document.getElementById('cart-equipe-fallback');
                 
+                // Marca d'água
+                const waterL = document.getElementById('cart-equipe-watermark');
+                const waterFall = document.getElementById('cart-equipe-watermark-fallback');
+                
                 if(equipeDados.url_logo) {
-                    imgL.src = equipeDados.url_logo; imgL.classList.remove('hidden'); fallL.classList.add('hidden');
+                    imgL.src = equipeDados.url_logo; 
+                    imgL.classList.remove('hidden'); 
+                    fallL.classList.add('hidden');
+                    
+                    if(waterL) {
+                        waterL.src = equipeDados.url_logo; 
+                        waterL.classList.remove('hidden');
+                    }
+                    if(waterFall) waterFall.classList.add('hidden');
                 } else {
                     const letra = (equipeDados.nome_equipe || "E").charAt(0).toUpperCase();
-                    fallL.innerText = letra; fallL.classList.remove('hidden'); imgL.classList.add('hidden');
+                    
+                    fallL.innerText = letra; 
+                    fallL.classList.remove('hidden'); 
+                    imgL.classList.add('hidden');
+                    
+                    if(waterFall) {
+                        waterFall.innerText = letra; 
+                        waterFall.classList.remove('hidden');
+                    }
+                    if(waterL) waterL.classList.add('hidden');
                 }
             }
 

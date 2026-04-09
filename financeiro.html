@@ -695,7 +695,7 @@
             } else window.location.href = "index.html";
         });
 
-        async function carregarInfoEquipe(user) {
+async function carregarInfoEquipe(user) {
             const elEmailLogado = document.getElementById('email-logado');
             if (elEmailLogado) elEmailLogado.innerText = user.email;
 
@@ -741,6 +741,12 @@
                         equipeBaseConfig.chave_pix = equipeDados.chave_pix;
                         document.getElementById('config-pix').value = equipeDados.chave_pix;
                     }
+
+                    // 🚀 NOVO: PREENCHIMENTO AUTOMÁTICO DO FORMULÁRIO ASAAS
+                    document.getElementById('asaas-cpf').value = equipeDados.cpf_cnpj || equipeDados.cpf || equipeDados.cnpj || "";
+                    document.getElementById('asaas-nome').value = equipeDados.nome_responsavel || equipeDados.nome_equipe || "";
+                    document.getElementById('asaas-email').value = user.email || equipeDados.email || "";
+                    document.getElementById('asaas-celular').value = equipeDados.telefone || equipeDados.celular || "";
 
                     if(equipeDados.status_asaas === 'ATIVO') {
                         document.getElementById('asaas-ativo-panel').classList.remove('hidden');
@@ -980,7 +986,7 @@
         }
 
 
-        window.gerarFaturas = async function() {
+window.gerarFaturas = async function() {
             const btn = document.getElementById('btn-gerar-faturas');
             if(!btn) return;
             const originalTxt = btn.innerHTML;
@@ -991,6 +997,7 @@
             const ano = document.getElementById('filtro-ano').value;
             const mesAnoFiltro = `${ano}-${mes}`;
             let geradas = 0;
+            const filaAsaas = []; // 🚀 Fila para gerar links automaticamente
 
             try {
                 for (const aluno of alunosCache) {
@@ -999,17 +1006,50 @@
                         const bolsa = aluno.bolsa_perc || 0;
                         const status = bolsa === 100 ? 'ISENTO' : 'PENDENTE';
                         const valor = equipeBaseConfig.prazo * (1 - bolsa/100);
+
                         await addDoc(collection(db, "financeiro"), { equipe_id: uid, aluno_id: aluno.id, tipo: 'MENSALIDADE', status: status, valor: valor, mes_ano: mesAnoFiltro, descricao: `Mensalidade - ${aluno.nome}`, data_criacao: new Date().toISOString() });
                         geradas++;
+
+                        // Se a academia tem Asaas e o aluno não for isento, adiciona na fila
+                        if (equipeDados && equipeDados.status_asaas === 'ATIVO' && status !== 'ISENTO') {
+                            filaAsaas.push({
+                                alunoId: aluno.id,
+                                valor: valor,
+                                mesAno: mesAnoFiltro,
+                                descricao: `Mensalidade Jiu-Jitsu - Ref: ${mesAnoFiltro}`
+                            });
+                        }
                     }
                 }
                 
                 if (geradas > 0) {
-                    showToast(`${geradas} faturas geradas com sucesso para ${mes}/${ano}!`, "success");
+                    // 🚀 GERADOR DE LINKS EM LOTE
+                    if (filaAsaas.length > 0) {
+                        showToast(`Gerando ${filaAsaas.length} links de cobrança. Por favor, aguarde...`, "info");
+                        const gerarCobranca = httpsCallable(functions, 'gerarCobrancaAsaas');
+                        let count = 0;
+                        for (const cob of filaAsaas) {
+                            try {
+                                count++;
+                                btn.innerHTML = `<span class='mr-2 text-base'>⏳</span> Gerando Links (${count}/${filaAsaas.length})...`;
+                                await gerarCobranca(cob);
+                            } catch (err) { 
+                                console.error(`Erro ao gerar link Asaas para ${cob.alunoId}`, err); 
+                            }
+                        }
+                    }
+
+                    showToast(`Faturas geradas com sucesso para ${mes}/${ano}!`, "success");
                     await carregarDados(); 
-                } else showToast("Todas as faturas dos alunos ativos neste mês já estavam geradas.", "info");
-            } catch (e) { showToast("Erro ao gerar faturas.", "error"); console.error(e); } 
-            finally { btn.innerHTML = originalTxt; btn.disabled = false; }
+                } else {
+                    showToast("Todas as faturas dos alunos ativos neste mês já estavam geradas.", "info");
+                }
+            } catch (e) { 
+                showToast("Erro ao gerar faturas.", "error"); console.error(e); 
+            } 
+            finally { 
+                btn.innerHTML = originalTxt; btn.disabled = false; 
+            }
         }
 
         window.carregarDados = async function() {

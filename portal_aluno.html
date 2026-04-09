@@ -95,15 +95,14 @@
 
                 <div id="cart-wrapper" class="w-full overflow-x-auto hide-scrollbar pb-2 pt-2 -mx-4 px-4 sm:px-0 flex justify-start sm:justify-center transition-all duration-300 origin-top">
                     
-                    <div id="carteirinha" class="relative bg-white rounded-2xl shadow-2xl border border-slate-200 flex text-slate-800 font-sans w-full max-w-[600px] shrink-0 box-border" style="width: 600px; min-width: 600px; height: 380px; min-height: 380px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); isolation: isolate; -webkit-mask-image: -webkit-radial-gradient(white, black);">
-                        
-                        <div class="absolute top-0 right-0 w-64 h-full bg-slate-200/40 skew-x-[-20deg] translate-x-10 z-0 pointer-events-none"></div>
-                        <div class="absolute bottom-0 left-0 w-full h-1/3 bg-slate-300/30 skew-y-[-5deg] origin-bottom-right z-0 pointer-events-none"></div>
+            <div class="print-carteirinha-wrapper relative mx-auto bg-white rounded-2xl overflow-hidden shadow-2xl border border-slate-200 flex text-slate-800 font-sans w-full max-w-[600px] aspect-[1.58/1] shrink-0" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+                <div class="absolute top-0 right-0 w-64 h-full bg-slate-200/40 skew-x-[-20deg] translate-x-10 z-0 pointer-events-none"></div>
+                <div class="absolute bottom-0 left-0 w-full h-1/3 bg-slate-300/30 skew-y-[-5deg] origin-bottom-right z-0 pointer-events-none"></div>
 
-                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden">
-                            <img id="cart-equipe-watermark" src="" class="w-[120%] h-[120%] object-contain opacity-15 grayscale hidden" crossorigin="anonymous" style="transform: scale(1.1);">
-                            <div id="cart-equipe-watermark-fallback" class="text-[30rem] leading-none font-black text-slate-800 opacity-10 hidden">E</div>
-                        </div>
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden">
+                    <img id="cart-equipe-watermark" src="" class="w-[120%] h-[120%] object-contain opacity-[0.10] grayscale hidden" style="transform: scale(1.1);">
+                    <div id="cart-equipe-watermark-fallback" class="text-[30rem] leading-none font-black text-slate-800 opacity-[0.03] hidden">E</div>
+                </div>
 
                         <div class="flex-1 p-5 md:p-6 flex flex-col z-10 w-[65%]">
                             <div class="flex items-center gap-4 mb-4 md:mb-6 relative z-30">

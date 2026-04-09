@@ -201,7 +201,8 @@
                                         </form>
                                     </div>
                                 </div>
-<div class="mt-6 bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-200">
+
+                                <div class="mt-6 bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-200">
                                     <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-4 flex items-center gap-2">
                                         <span class="bg-purple-100 text-purple-600 p-2 rounded-lg">⚙️</span> Formas de Pagamento Aceitas
                                     </h4>
@@ -236,7 +237,6 @@
                                         💾 Salvar Preferências
                                     </button>
                                 </div>
-                                
                                 <div class="mt-6 bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-200">
                                     <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-4 flex items-center gap-2">
                                         <span class="bg-slate-100 text-slate-600 p-2 rounded-lg">📜</span> Histórico de Saques
@@ -730,7 +730,7 @@
             } else window.location.href = "index.html";
         });
 
-async function carregarInfoEquipe(user) {
+        async function carregarInfoEquipe(user) {
             const elEmailLogado = document.getElementById('email-logado');
             if (elEmailLogado) elEmailLogado.innerText = user.email;
 
@@ -777,11 +777,14 @@ async function carregarInfoEquipe(user) {
                         document.getElementById('config-pix').value = equipeDados.chave_pix;
                     }
 
-                    // 🚀 NOVO: PREENCHIMENTO AUTOMÁTICO DO FORMULÁRIO ASAAS
+                    // 🚀 NOVO: PREENCHIMENTO AUTOMÁTICO DO FORMULÁRIO ASAAS E DOS CHECKBOXES
                     document.getElementById('asaas-cpf').value = equipeDados.cpf_cnpj || equipeDados.cpf || equipeDados.cnpj || "";
                     document.getElementById('asaas-nome').value = equipeDados.nome_responsavel || equipeDados.nome_equipe || "";
                     document.getElementById('asaas-email').value = user.email || equipeDados.email || "";
                     document.getElementById('asaas-celular').value = equipeDados.telefone || equipeDados.celular || "";
+
+                    document.getElementById('asaas-aceita-boleto').checked = equipeDados.asaas_aceita_boleto === true;
+                    document.getElementById('asaas-aceita-cartao').checked = equipeDados.asaas_aceita_cartao === true;
 
                     if(equipeDados.status_asaas === 'ATIVO') {
                         document.getElementById('asaas-ativo-panel').classList.remove('hidden');
@@ -1021,7 +1024,7 @@ async function carregarInfoEquipe(user) {
         }
 
 
-window.gerarFaturas = async function() {
+        window.gerarFaturas = async function() {
             const btn = document.getElementById('btn-gerar-faturas');
             if(!btn) return;
             const originalTxt = btn.innerHTML;
@@ -1032,7 +1035,7 @@ window.gerarFaturas = async function() {
             const ano = document.getElementById('filtro-ano').value;
             const mesAnoFiltro = `${ano}-${mes}`;
             let geradas = 0;
-            const filaAsaas = []; // 🚀 Fila para gerar links automaticamente
+            const filaAsaas = []; 
 
             try {
                 for (const aluno of alunosCache) {
@@ -1045,20 +1048,21 @@ window.gerarFaturas = async function() {
                         await addDoc(collection(db, "financeiro"), { equipe_id: uid, aluno_id: aluno.id, tipo: 'MENSALIDADE', status: status, valor: valor, mes_ano: mesAnoFiltro, descricao: `Mensalidade - ${aluno.nome}`, data_criacao: new Date().toISOString() });
                         geradas++;
 
-                        // Se a academia tem Asaas e o aluno não for isento, adiciona na fila
+                        // 🚀 NOVO: ADICIONAMOS AS ESCOLHAS DO USUÁRIO AQUI NA FILA!
                         if (equipeDados && equipeDados.status_asaas === 'ATIVO' && status !== 'ISENTO') {
                             filaAsaas.push({
                                 alunoId: aluno.id,
                                 valor: valor,
                                 mesAno: mesAnoFiltro,
-                                descricao: `Mensalidade Jiu-Jitsu - Ref: ${mesAnoFiltro}`
+                                descricao: `Mensalidade Jiu-Jitsu - Ref: ${mesAnoFiltro}`,
+                                aceitaBoleto: equipeDados.asaas_aceita_boleto === true,
+                                aceitaCartao: equipeDados.asaas_aceita_cartao === true
                             });
                         }
                     }
                 }
                 
                 if (geradas > 0) {
-                    // 🚀 GERADOR DE LINKS EM LOTE
                     if (filaAsaas.length > 0) {
                         showToast(`Gerando ${filaAsaas.length} links de cobrança. Por favor, aguarde...`, "info");
                         const gerarCobranca = httpsCallable(functions, 'gerarCobrancaAsaas');
@@ -1251,26 +1255,23 @@ window.gerarFaturas = async function() {
                 
                 btnAsaas.classList.add('hidden');
 
-                // 🚀 PREENCHE OS DADOS DO PAGAMENTO REALIZADO
                 if(calcData.reg.data_pagamento) {
                     inputData.value = calcData.reg.data_pagamento;
                 } else {
                     inputData.valueAsDate = new Date();
                 }
                 
-                // Mapeia a forma de pagamento do Asaas ou manual
                 let forma = calcData.reg.forma_pagamento;
                 if(forma === 'CREDIT_CARD') selectForma.value = 'CREDIT_CARD';
                 else if(forma === 'BOLETO') selectForma.value = 'BOLETO';
-                else if(forma === 'PIX' && calcData.reg.asaas_id) selectForma.value = 'PIX_ASAAS'; // Pix via sistema
-                else if(forma) selectForma.value = forma; // Pix manual ou Dinheiro
+                else if(forma === 'PIX' && calcData.reg.asaas_id) selectForma.value = 'PIX_ASAAS'; 
+                else if(forma) selectForma.value = forma; 
                 else selectForma.value = 'PIX';
                 
-                // Se foi pago via Asaas, bloqueia a edição manual
                 if(calcData.reg.asaas_id && calcData.status === 'PAGO') {
                     selectForma.disabled = true;
                     inputData.disabled = true;
-                    btnDesfazer.disabled = true; // Impede de desfazer um pagamento que veio do banco!
+                    btnDesfazer.disabled = true; 
                     btnDesfazer.className = "flex-1 bg-slate-100 text-slate-300 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest cursor-not-allowed transition-colors";
                 } else {
                     selectForma.disabled = false;
@@ -1290,7 +1291,6 @@ window.gerarFaturas = async function() {
                 btnDesfazer.disabled = true;
                 btnDesfazer.className = "flex-1 bg-slate-100 text-slate-300 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest cursor-not-allowed transition-colors";
 
-                // Libera a edição para a Baixa Manual
                 inputData.valueAsDate = new Date();
                 inputData.disabled = false;
                 selectForma.value = 'PIX';
@@ -1344,7 +1344,10 @@ window.gerarFaturas = async function() {
                     alunoId: alunoSelecionadoMens.id,
                     valor: alunoSelecionadoMens._calc.valor,
                     mesAno: fatura.mes_ano,
-                    descricao: `Mensalidade Jiu-Jitsu - Ref: ${fatura.mes_ano}`
+                    descricao: `Mensalidade Jiu-Jitsu - Ref: ${fatura.mes_ano}`,
+                    // 🚀 NOVO: ADICIONAMOS AS ESCOLHAS AQUI TAMBÉM!
+                    aceitaBoleto: equipeDados.asaas_aceita_boleto === true,
+                    aceitaCartao: equipeDados.asaas_aceita_cartao === true
                 });
 
                 if(resultado.data.success) {
@@ -1388,7 +1391,6 @@ window.gerarFaturas = async function() {
             const dtPag = document.getElementById('acao-data-pag').value;
             const forma = document.getElementById('acao-forma-pag').value;
             
-            // Impede dar "Baixa Manual" escolhendo as formas automáticas
             if(forma === 'PIX_ASAAS' || forma === 'CREDIT_CARD' || forma === 'BOLETO') {
                 return showToast("Estas formas de pagamento só podem ser baixadas automaticamente pelo sistema.", "error");
             }

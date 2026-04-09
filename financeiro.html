@@ -68,7 +68,7 @@
                     </div>
 
                     <button onclick="abrirModalRelatorio()" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-colors shrink-0 flex items-center justify-center shadow-sm">
-                        <span class="mr-1">📊</span> Relatório
+                        <span class="mr-2 text-base">📊</span> Gerar Relatório Financeiro
                     </button>
                 </div>
             </div>
@@ -84,7 +84,6 @@
                     </div>
 
                     <div id="tab-mensalidades" class="aba-content flex flex-col gap-6">
-                        
                         <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
                             <div class="flex gap-6">
                                 <div>
@@ -1088,7 +1087,7 @@
                     if (status === 'PAGO') rPagos += valorFinal;
                     else if (status === 'PENDENTE' || status === 'ATRASADO') rPendentes += valorFinal;
 
-                    const dataPagTxt = (status === 'PAGO' && f.data) ? new Date(f.data).toLocaleDateString('pt-BR') : '--';
+                    const dataPagTxt = (status === 'PAGO' && f.data_pagamento) ? new Date(f.data_pagamento + 'T12:00:00').toLocaleDateString('pt-BR') : (status === 'PAGO' && f.data) ? new Date(f.data).toLocaleDateString('pt-BR') : '--';
                     
                     let corBg = "hover:bg-cyan-50"; let corStatus = "";
                     if (status === 'PAGO') { corBg = "bg-emerald-50/30 hover:bg-emerald-50"; corStatus = 'bg-emerald-100 text-emerald-700 border border-emerald-200'; } 
@@ -1189,6 +1188,7 @@
                 else if(forma === 'BOLETO') selectForma.value = 'BOLETO';
                 else if(forma === 'PIX' && calcData.reg.asaas_id) selectForma.value = 'PIX_ASAAS'; // Pix via sistema
                 else if(forma) selectForma.value = forma; // Pix manual ou Dinheiro
+                else selectForma.value = 'PIX';
                 
                 // Se foi pago via Asaas, bloqueia a edição manual
                 if(calcData.reg.asaas_id && calcData.status === 'PAGO') {
@@ -1402,7 +1402,6 @@
             const alunoData = alunoSelecionadoMens;
             const valorExtenso = numeroParaExtenso(pagData.valor);
 
-            // AQUI TAMBÉM MUDEI A DATA PARA PUXAR CORRETAMENTE
             const dataPagto = pagData.data_pagamento ? new Date(pagData.data_pagamento + 'T12:00:00').toLocaleDateString('pt-BR') : '--/--/----';
             const pMesAno = pagData.mes_ano.split('-');
             const mesRef = `${pMesAno[1]}/${pMesAno[0]}`;
@@ -1443,7 +1442,6 @@
                 logoHtml = `<div style="height: 70px; width: 70px; background-color: #0F172A; color: #FFFFFF; border-radius: 50%; text-align: center; line-height: 70px; font-size: 32px; font-weight: bold; margin: 0 auto 10px auto; font-family: Arial, sans-serif;">${equipeNomeGlobal.charAt(0).toUpperCase()}</div>`;
             }
 
-            // Traduzir a forma de pagamento no PDF
             let formaPrint = pagData.forma_pagamento || 'Dinheiro';
             if(formaPrint === 'CREDIT_CARD') formaPrint = 'Cartão de Crédito';
             if(formaPrint === 'PIX_ASAAS') formaPrint = 'PIX (Sistema)';

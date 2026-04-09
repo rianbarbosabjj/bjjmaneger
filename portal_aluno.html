@@ -634,10 +634,11 @@
             return '#cbd5e1'; 
         }
 
-function preencherCarteirinha() {
+        function preencherCarteirinha() {
             const a = alunoLogado;
             
             if(equipeDados) {
+                // MUDEI AQUI: de equipeDados.nome para equipeDados.nome_equipe
                 document.getElementById('cart-equipe-nome').innerText = (equipeDados.nome_equipe || "Sua Equipe").toUpperCase();
                 
                 // Logo Pequena
@@ -648,17 +649,21 @@ function preencherCarteirinha() {
                 const waterL = document.getElementById('cart-equipe-watermark');
                 const waterFall = document.getElementById('cart-equipe-watermark-fallback');
                 
+                // MUDEI AQUI: de equipeDados.logo para equipeDados.url_logo
                 if(equipeDados.url_logo) {
+                    // MUDEI AQUI: de equipeDados.logo para equipeDados.url_logo
                     imgL.src = equipeDados.url_logo; 
                     imgL.classList.remove('hidden'); 
                     fallL.classList.add('hidden');
                     
                     if(waterL) {
+                        // MUDEI AQUI: de equipeDados.logo para equipeDados.url_logo
                         waterL.src = equipeDados.url_logo; 
                         waterL.classList.remove('hidden');
                     }
                     if(waterFall) waterFall.classList.add('hidden');
                 } else {
+                    // MUDEI AQUI: de equipeDados.nome para equipeDados.nome_equipe
                     const letra = (equipeDados.nome_equipe || "E").charAt(0).toUpperCase();
                     
                     fallL.innerText = letra; 

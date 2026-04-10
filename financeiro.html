@@ -16,7 +16,7 @@
         
         body { font-family: 'Inter', sans-serif; background-color: #F1F5F9; }
 
-        /* 🎨 CLASSE CORPORATE PREMIUM */
+        /* CLASSE CORPORATIVA PREMIUM */
         .card-premium {
             background: white;
             border: 1px solid rgba(226, 232, 240, 0.8);
@@ -28,6 +28,11 @@
             border-bottom: 3px solid #06B6D4; 
             color: #06B6D4; 
             font-weight: 800; 
+        }
+
+        input, select {
+            border-radius: 12px;
+            transition: all 0.2s ease;
         }
 
         .hide-scrollbar::-webkit-scrollbar { display: none; }
@@ -55,10 +60,16 @@
                 <div class="flex flex-wrap items-center justify-center gap-3 w-full xl:w-auto">
                     <span class="text-2xl">💰</span>
                     <div class="flex bg-slate-800 rounded-xl p-1 border border-slate-700">
-                        <select id="filtro-mes" class="bg-transparent border-none text-white text-xs sm:text-sm font-bold p-2 outline-none cursor-pointer"></select>
-                        <select id="filtro-ano" class="bg-transparent border-none text-white text-xs sm:text-sm font-bold p-2 outline-none cursor-pointer"></select>
+                        <select id="filtro-mes" class="bg-transparent border-none text-white text-xs sm:text-sm font-bold p-2 outline-none cursor-pointer">
+                            <option value="01">Jan</option><option value="02">Fev</option><option value="03">Mar</option><option value="04">Abr</option>
+                            <option value="05">Mai</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ago</option>
+                            <option value="09">Set</option><option value="10">Out</option><option value="11">Nov</option><option value="12">Dez</option>
+                        </select>
+                        <select id="filtro-ano" class="bg-transparent border-none text-white text-xs sm:text-sm font-bold p-2 outline-none cursor-pointer">
+                            <option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option>
+                        </select>
                     </div>
-                    <button onclick="carregarDados()" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-md">Atualizar</button>
+                    <button onclick="carregarDados()" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-xl text-xs font-bold transition-all">Atualizar Dados</button>
                 </div>
 
                 <div class="flex items-center gap-3">
@@ -67,7 +78,7 @@
                         <div class="flex flex-col"><span class="text-[8px] text-slate-400 font-bold uppercase">Atraso</span><input type="text" id="config-atraso" oninput="mascaraMoeda(this)" class="bg-transparent text-rose-400 font-bold text-xs w-14 outline-none" value="100,00"></div>
                         <button onclick="salvarConfiguracaoGeral()" class="text-xs hover:scale-110 transition-transform">💾</button>
                     </div>
-                    <button onclick="abrirModalRelatorio()" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs shadow-sm">📊 Relatório PDF</button>
+                    <button onclick="abrirModalRelatorio()" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs shadow-md">📊 Relatório PDF</button>
                 </div>
             </div>
 
@@ -87,7 +98,7 @@
                     <div id="tab-dash" class="aba-content flex flex-col gap-6">
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                             <div class="bg-white p-8 card-premium text-center">
-                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Recebido (Mensalidades)</p>
+                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Recebido (Mês)</p>
                                 <h3 class="text-4xl font-black text-emerald-500 mt-2" id="lbl-resumo-pago">R$ 0,00</h3>
                             </div>
                             <div class="bg-white p-8 card-premium text-center">
@@ -95,11 +106,11 @@
                                 <h3 class="text-4xl font-black text-rose-500 mt-2" id="lbl-resumo-pendente">R$ 0,00</h3>
                             </div>
                             <div class="bg-slate-900 p-8 card-premium text-center shadow-xl">
-                                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Saldo Extra (Outros)</p>
-                                <h3 class="text-4xl font-black text-white mt-2" id="dash-saldo-extra">R$ 0,00</h3>
+                                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Saldo em Conta</p>
+                                <h3 class="text-4xl font-black text-white mt-2" id="asaas-saldo-display-dash">R$ 0,00</h3>
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[350px]">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[400px]">
                             <div class="bg-white p-6 card-premium"><canvas id="chartBalancoMes"></canvas></div>
                             <div class="bg-white p-6 card-premium"><canvas id="chartOrigemMes"></canvas></div>
                         </div>
@@ -107,8 +118,8 @@
 
                     <div id="tab-mensalidades" class="aba-content hidden flex flex-col gap-6">
                         <div class="flex justify-between items-center bg-white p-6 card-premium">
-                            <input type="text" id="input-busca-mens" onkeyup="filtrarMensalidades()" class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-bold w-64" placeholder="🔍 Buscar aluno...">
-                            <button onclick="gerarFaturas()" id="btn-gerar-faturas" class="bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 px-8 rounded-2xl shadow-lg text-xs uppercase tracking-widest transition-all">⚡ Gerar Faturas do Mês</button>
+                            <input type="text" id="input-busca-mens" onkeyup="filtrarMensalidades()" class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-bold w-64 shadow-inner" placeholder="🔍 Buscar atleta...">
+                            <button onclick="gerarFaturas()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 px-8 rounded-2xl shadow-lg text-xs uppercase tracking-widest transition-all">⚡ Gerar Faturas do Mês</button>
                         </div>
                         <div class="card-premium overflow-hidden">
                             <table class="w-full text-left border-collapse whitespace-nowrap">
@@ -117,9 +128,9 @@
                                         <th class="px-6 py-4">Aluno</th>
                                         <th class="px-6 py-4 text-center">Vencimento</th>
                                         <th class="px-6 py-4 text-center">Bolsa</th>
-                                        <th class="px-6 py-4 text-center">PIX</th>
                                         <th class="px-6 py-4 text-center">Status</th>
                                         <th class="px-6 py-4 text-right">Valor</th>
+                                        <th class="px-6 py-4 text-center">Pago Em</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tabela-mensalidades" class="divide-y divide-slate-50 text-sm bg-white"></tbody>
@@ -129,8 +140,8 @@
 
                     <div id="tab-fluxo" class="aba-content hidden flex flex-col gap-6">
                         <div class="flex justify-end gap-3">
-                            <button onclick="abrirModalReceita()" class="bg-emerald-500 text-white font-bold py-3 px-6 rounded-2xl text-xs uppercase shadow-md">+ Receita</button>
-                            <button onclick="abrirModalDespesa()" class="bg-rose-500 text-white font-bold py-3 px-6 rounded-2xl text-xs uppercase shadow-md">+ Despesa</button>
+                            <button onclick="abrirModalReceita()" class="bg-emerald-500 text-white font-bold py-3 px-6 rounded-xl text-xs uppercase shadow-md">+ Nova Receita</button>
+                            <button onclick="abrirModalDespesa()" class="bg-rose-500 text-white font-bold py-3 px-6 rounded-xl text-xs uppercase shadow-md">+ Nova Despesa</button>
                         </div>
                         <div class="card-premium overflow-hidden bg-white">
                             <table class="w-full text-left border-collapse">
@@ -142,31 +153,30 @@
                         </div>
                     </div>
 
-                    <div id="tab-config-asaas" class="aba-content hidden flex-col gap-8">
+                    <div id="tab-config-asaas" class="aba-content hidden flex flex-col gap-8">
                         <div class="max-w-4xl mx-auto w-full space-y-6">
-                            
                             <div id="asaas-ativo-panel" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div class="md:col-span-2 card-premium p-8 relative overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800 text-white shadow-2xl">
                                     <div class="relative z-10">
-                                        <p class="text-blue-400 text-[10px] font-black uppercase tracking-widest mb-4">Saldo Disponível na Subconta</p>
+                                        <p class="text-blue-400 text-[10px] font-black uppercase tracking-widest mb-4">Saldo na Subconta</p>
                                         <h3 class="text-5xl font-black tracking-tighter mb-6" id="asaas-saldo-display">R$ 0,00</h3>
-                                        <button onclick="carregarSaldoAsaas()" class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl text-[10px] font-black transition-all border border-white/10">🔄 Atualizar</button>
+                                        <button onclick="carregarSaldoAsaas()" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all border border-white/10">🔄 Atualizar Saldo</button>
                                     </div>
                                     <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl"></div>
                                 </div>
                                 <div class="card-premium p-8 flex flex-col justify-between bg-white border-l-4 border-l-emerald-500">
-                                    <div><p class="text-slate-400 text-[10px] font-black uppercase mb-1">Status do Banco</p><span class="inline-block px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[9px] font-black uppercase">Ativo</span></div>
+                                    <div><p class="text-slate-400 text-[10px] font-black uppercase mb-1">Status do Banco</p><span class="inline-block px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[9px] font-black uppercase tracking-widest">Ativo</span></div>
                                     <div class="mt-4"><p class="text-slate-400 text-[9px] font-black uppercase">Wallet ID</p><p class="font-mono text-[10px] text-slate-500 break-all" id="asaas-wallet-display">---</p></div>
                                 </div>
                             </div>
 
-                            <div id="asaas-config-grid" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="card-premium p-8">
-                                    <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-6">⚙️ Métodos Aceitos</h4>
+                                    <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-6">⚙️ Métodos Disponíveis</h4>
                                     <div class="space-y-4 mb-6">
                                         <label class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-blue-200 opacity-80 cursor-not-allowed">
                                             <span class="text-xs font-black text-slate-700">⚡ PIX (Sempre Ativo)</span>
-                                            <input type="checkbox" checked disabled class="w-6 h-6 rounded-lg text-blue-600 border-none">
+                                            <input type="checkbox" checked disabled class="w-6 h-6 rounded-lg text-blue-600 border-none shadow-sm">
                                         </label>
                                         <label class="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50 transition-colors shadow-sm">
                                             <span class="text-xs font-bold text-slate-700">🏦 Boleto Bancário</span>
@@ -177,28 +187,29 @@
                                             <input type="checkbox" id="asaas-aceita-cartao" class="w-6 h-6 rounded-lg text-blue-600 border-slate-300">
                                         </label>
                                     </div>
-                                    <button onclick="salvarConfigPagamento()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-[10px] uppercase shadow-lg transition-all">Salvar Preferências</button>
+                                    <button onclick="salvarConfigPagamento()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg">Salvar Preferências</button>
                                 </div>
-                                <div class="card-premium p-8 flex flex-col">
-                                    <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-6 flex items-center gap-2"><span>🛡️</span> Identidade</h4>
-                                    <p class="text-xs text-slate-500 mb-6 font-medium">Envie as fotos para liberar o saque via PIX.</p>
-                                    <div class="grid grid-cols-3 gap-2 mb-4">
-                                        <label class="h-16 bg-slate-50 rounded-xl flex items-center justify-center cursor-pointer border-2 border-dashed border-slate-200 hover:bg-blue-50 transition-all"><input type="file" class="hidden" onchange="previewFile(this, 'p1')"><span id="p1" class="text-xl">📇</span></label>
-                                        <label class="h-16 bg-slate-50 rounded-xl flex items-center justify-center cursor-pointer border-2 border-dashed border-slate-200 hover:bg-blue-50 transition-all"><input type="file" class="hidden" onchange="previewFile(this, 'p2')"><span id="p2" class="text-xl">📑</span></label>
-                                        <label class="h-16 bg-slate-50 rounded-xl flex items-center justify-center cursor-pointer border-2 border-dashed border-slate-200 hover:bg-blue-50 transition-all"><input type="file" class="hidden" onchange="previewFile(this, 'p3')"><span id="p3" class="text-xl">🤳</span></label>
+                                <div class="card-premium p-8 flex flex-col justify-between">
+                                    <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-6 flex items-center gap-2"><span>🛡️</span> Verificação de Identidade</h4>
+                                    <p class="text-xs text-slate-500 mb-6 font-medium">Anexe as fotos dos documentos para habilitar saques via PIX.</p>
+                                    <div class="grid grid-cols-3 gap-2 mb-6">
+                                        <label class="h-20 bg-slate-50 rounded-xl flex items-center justify-center cursor-pointer border-2 border-dashed border-slate-200 hover:bg-blue-50 transition-all"><input type="file" class="hidden" onchange="previewFile(this, 'p1')"><span id="p1" class="text-xl">📇</span></label>
+                                        <label class="h-20 bg-slate-50 rounded-xl flex items-center justify-center cursor-pointer border-2 border-dashed border-slate-200 hover:bg-blue-50 transition-all"><input type="file" class="hidden" onchange="previewFile(this, 'p2')"><span id="p2" class="text-xl">📑</span></label>
+                                        <label class="h-20 bg-slate-50 rounded-xl flex items-center justify-center cursor-pointer border-2 border-dashed border-slate-200 hover:bg-blue-50 transition-all"><input type="file" class="hidden" onchange="previewFile(this, 'p3')"><span id="p3" class="text-xl">🤳</span></label>
                                     </div>
-                                    <button onclick="enviarDocumentosAsaas()" id="btn-enviar-docs" class="mt-auto w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-[9px] uppercase tracking-widest shadow-md">📤 Enviar para Análise</button>
+                                    <button onclick="enviarDocumentosAsaas()" id="btn-enviar-docs" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-[9px] uppercase tracking-widest shadow-md">📤 Enviar Documentos</button>
                                 </div>
                             </div>
 
                             <form id="asaas-form-panel" class="card-premium p-8 space-y-6" onsubmit="event.preventDefault(); criarSubcontaAsaas();">
-                                <h4 class="text-lg font-black text-slate-800">Ativação Financeira</h4>
+                                <h4 class="text-lg font-black text-slate-800">Ativação da Conta Digital</h4>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div class="md:col-span-2"><label class="text-[10px] font-black text-slate-400 uppercase">Nome Completo</label><input type="text" id="asaas-nome" required class="w-full p-3 bg-slate-50 rounded-xl"></div>
-                                    <div><label class="text-[10px] font-black text-slate-400 uppercase">CPF ou CNPJ</label><input type="text" id="asaas-cpf" required class="w-full p-3 bg-slate-50 rounded-xl"></div>
-                                    <div><label class="text-[10px] font-black text-slate-400 uppercase">E-mail</label><input type="email" id="asaas-email" required class="w-full p-3 bg-slate-50 rounded-xl"></div>
+                                    <div class="md:col-span-2"><label class="text-[10px] font-black text-slate-400 uppercase">Nome Completo</label><input type="text" id="asaas-nome" required class="w-full bg-slate-50 p-3 rounded-xl border border-slate-200"></div>
+                                    <div><label class="text-[10px] font-black text-slate-400 uppercase">CPF ou CNPJ</label><input type="text" id="asaas-cpf" required class="w-full bg-slate-50 p-3 rounded-xl border border-slate-200"></div>
+                                    <div><label class="text-[10px] font-black text-slate-400 uppercase">E-mail</label><input type="email" id="asaas-email" required class="w-full bg-slate-50 p-3 rounded-xl border border-slate-200"></div>
+                                    <div class="md:col-span-2"><label class="text-[10px] font-black text-slate-400 uppercase">Renda Estimada (R$)</label><input type="text" id="asaas-renda" required class="w-full bg-slate-50 p-3 rounded-xl border border-slate-200"></div>
                                 </div>
-                                <button type="submit" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl uppercase text-xs shadow-lg transition-all">🚀 Ativar Agora</button>
+                                <button type="submit" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl uppercase text-xs shadow-lg transition-all">🚀 Ativar Minha Conta</button>
                             </form>
                         </div>
                     </div>
@@ -215,15 +226,15 @@
         </main>
     </div>
 
-    <div id="modal-acoes-wrapper" class="fixed inset-0 z-[200] bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity">
+    <div id="modal-acoes-wrapper" class="fixed inset-0 z-[200] bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4">
         <div id="painel-acoes-mensalidade" class="bg-white p-8 card-premium shadow-2xl w-full max-w-md relative">
             <button onclick="fecharModalAcoes()" class="absolute top-4 right-4 text-slate-300 hover:text-rose-500 text-2xl transition-colors">&times;</button>
             <h3 class="font-black text-slate-800 text-2xl mb-1" id="acao-aluno-nome">Selecione</h3>
             <p class="text-[10px] font-black text-rose-500 uppercase mb-6" id="acao-alerta-divida"></p>
 
             <div class="grid grid-cols-2 gap-3 mb-8">
-                <button onclick="gerarReciboPDF()" class="bg-slate-100 hover:bg-slate-200 py-4 rounded-2xl text-xs font-bold flex items-center justify-center gap-2">📄 Recibo</button>
-                <button onclick="enviarWhatsApp()" class="bg-[#25D366] text-white py-4 rounded-2xl text-xs font-bold flex items-center justify-center gap-2">💬 WhatsApp</button>
+                <button onclick="gerarReciboPDF()" class="bg-slate-100 py-4 rounded-2xl text-xs font-bold transition-all hover:bg-slate-200">📄 Recibo PDF</button>
+                <button onclick="enviarWhatsApp()" class="bg-[#25D366] text-white py-4 rounded-2xl text-xs font-bold transition-all hover:scale-105">💬 Cobrar WhatsApp</button>
             </div>
 
             <div class="space-y-4 pt-4 border-t border-slate-100">
@@ -233,12 +244,8 @@
                         <option value="PIX">PIX manual</option><option value="Dinheiro">Dinheiro</option><option value="PIX_ASAAS">Automático</option>
                     </select>
                 </div>
-                <button onclick="registrarPagamento()" class="w-full bg-emerald-500 text-white font-black py-4 rounded-2xl shadow-lg transition-all uppercase text-xs">✅ Registrar Pagamento</button>
-                <button id="btn-gerar-asaas" onclick="gerarLinkAsaasAdmin()" class="hidden w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-lg uppercase text-xs">💳 Gerar Link Digital</button>
-                <div class="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-slate-50">
-                    <div class="flex flex-col"><span class="text-[8px] text-slate-400 uppercase font-black">Bolsa</span><select id="acao-bolsa" class="p-2 bg-slate-50 rounded-lg text-xs font-bold border-none"></select></div>
-                    <div class="flex flex-col"><span class="text-[8px] text-slate-400 uppercase font-black">Venc.</span><select id="acao-venc" class="p-2 bg-slate-50 rounded-lg text-xs font-bold border-none"></select></div>
-                </div>
+                <button onclick="registrarPagamento()" class="w-full bg-emerald-500 text-white font-black py-4 rounded-2xl shadow-lg transition-all uppercase text-xs">✅ Confirmar Pagamento</button>
+                <button id="btn-gerar-asaas" onclick="gerarLinkAsaasAdmin()" class="hidden w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-lg uppercase text-xs">💳 Gerar Cobrança Digital</button>
             </div>
         </div>
     </div>
@@ -268,23 +275,20 @@
         let equipeDados = null;
         let alunosCache = [];
         let financeiroMesCache = [];
-        let financeiroAnoCache = [];
+        let financeiroAnoCache = []; 
         let alunoSelecionadoMens = null;
 
-        // POPULAR FILTROS (Datalist)
+        // POPULAR FILTROS
         const meses = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
         const selMes = document.getElementById('filtro-mes');
         const selAno = document.getElementById('filtro-ano');
-        meses.forEach((m, i) => selMes.appendChild(new Option(m, String(i+1).padStart(2,'0'))));
-        [2024, 2025, 2026, 2027].forEach(y => selAno.appendChild(new Option(y, y)));
-        const hj = new Date();
-        selMes.value = String(hj.getMonth() + 1).padStart(2, '0');
-        selAno.value = hj.getFullYear();
-
-        const selVenc = document.getElementById('acao-venc');
-        const selBolsa = document.getElementById('acao-bolsa');
-        for(let i=1; i<=31; i++) selVenc.appendChild(new Option(i, i));
-        [0, 10, 20, 25, 50, 75, 100].forEach(b => selBolsa.appendChild(new Option(b + '%', b)));
+        if (selMes && selAno) {
+            meses.forEach((m, i) => selMes.appendChild(new Option(m, String(i+1).padStart(2,'0'))));
+            [2024, 2025, 2026, 2027].forEach(y => selAno.appendChild(new Option(y, y)));
+            const hj = new Date();
+            selMes.value = String(hj.getMonth() + 1).padStart(2, '0');
+            selAno.value = hj.getFullYear();
+        }
 
         // KYC PREVIEW
         window.previewFile = function(input, previewId) {
@@ -310,12 +314,9 @@
             const docSnap = await getDoc(doc(db, "equipes", uid));
             if (docSnap.exists()) {
                 equipeDados = docSnap.data();
-                document.getElementById('config-prazo').value = (equipeDados.valor_prazo || 70).toFixed(2).replace('.',',');
-                document.getElementById('config-atraso').value = (equipeDados.valor_atraso || 100).toFixed(2).replace('.',',');
                 if (equipeDados.status_asaas === 'ATIVO') {
                     document.getElementById('asaas-ativo-panel').classList.remove('hidden');
                     document.getElementById('asaas-config-grid')?.classList.remove('hidden');
-                    document.getElementById('asaas-verificacao-panel').classList.remove('hidden');
                     document.getElementById('asaas-form-panel').classList.add('hidden');
                     document.getElementById('asaas-wallet-display').innerText = equipeDados.asaas_wallet_id || "---";
                     carregarSaldoAsaas();
@@ -350,12 +351,12 @@
                 const tr = document.createElement('tr');
                 tr.className = "cursor-pointer hover:bg-slate-50 transition-colors";
                 tr.onclick = () => abrirModalAcoes(aluno.id, { fatura_id: f.id, status: f.status, valor: f.valor, reg: f });
-                tr.innerHTML = `<td class="px-6 py-5"><div class="font-bold text-slate-800 text-sm">${aluno.nome}</div></td>
+                tr.innerHTML = `<td class="px-6 py-5 font-bold text-slate-800 text-sm">${aluno.nome}</td>
                                 <td class="px-6 py-5 text-center text-xs font-bold text-slate-500">Dia ${aluno.dia_vencimento || 10}</td>
                                 <td class="px-6 py-5 text-center text-xs text-slate-500">${aluno.bolsa_perc || 0}%</td>
-                                <td class="px-6 py-5 text-center text-blue-500 font-black text-xs">Sim</td>
                                 <td class="px-6 py-5 text-center"><span class="px-3 py-1 rounded-full text-[9px] font-black ${f.status === 'PAGO' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${f.status || 'PENDENTE'}</span></td>
-                                <td class="px-6 py-5 text-right font-black text-slate-800">R$ ${f.valor.toFixed(2).replace('.',',')}</td>`;
+                                <td class="px-6 py-5 text-right font-black text-slate-800">R$ ${f.valor.toFixed(2).replace('.',',')}</td>
+                                <td class="px-6 py-5 text-center text-[10px] text-slate-400 font-bold">${f.data_pagamento || '--'}</td>`;
                 cont.appendChild(tr);
                 if(f.status === 'PAGO') tPago += f.valor; else tPend += f.valor;
             });
@@ -374,8 +375,6 @@
             const aluno = alunosCache.find(a => a.id === alId);
             alunoSelecionadoMens = { ...aluno, _calc: data };
             document.getElementById('acao-aluno-nome').innerText = aluno.nome;
-            document.getElementById('acao-bolsa').value = aluno.bolsa_perc || 0;
-            document.getElementById('acao-venc').value = aluno.dia_vencimento || 10;
             document.getElementById('modal-acoes-wrapper').classList.replace('hidden', 'flex');
             const btnAsaas = document.getElementById('btn-gerar-asaas');
             if(equipeDados?.status_asaas === 'ATIVO' && data.status !== 'PAGO') btnAsaas.classList.remove('hidden');

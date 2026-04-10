@@ -9,195 +9,121 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #0F172A; }
-        
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
         .pb-safe { padding-bottom: env(safe-area-inset-bottom, 20px); }
-        
-        .carteirinha-layer-1 { position: relative; z-index: 10; }
-
         .custom-checkbox {
-            appearance: none;
-            background-color: #1e293b;
-            margin: 0;
-            font: inherit;
-            color: currentColor;
-            width: 1.15em;
-            height: 1.15em;
-            border: 1px solid #334155;
-            border-radius: 0.25em;
-            display: grid;
-            place-content: center;
+            appearance: none; background-color: #1e293b; margin: 0; font: inherit; color: currentColor;
+            width: 1.15em; height: 1.15em; border: 1px solid #334155; border-radius: 0.25em; display: grid; place-content: center;
         }
         .custom-checkbox::before {
-            content: "";
-            width: 0.65em;
-            height: 0.65em;
-            transform: scale(0);
-            transition: 120ms transform ease-in-out;
-            box-shadow: inset 1em 1em #06b6d4;
-            background-color: transform;
-            transform-origin: center;
-            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+            content: ""; width: 0.65em; height: 0.65em; transform: scale(0); transition: 120ms transform ease-in-out;
+            box-shadow: inset 1em 1em #06b6d4; clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
         }
         .custom-checkbox:checked::before { transform: scale(1); }
-
-        /* Linha do tempo vertical */
         .timeline-line::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 11px;
-            width: 2px;
-            background: linear-gradient(to bottom, transparent, #334155 5%, #334155 95%, transparent);
-            z-index: 0;
+            content: ''; position: absolute; top: 0; bottom: 0; left: 11px; width: 2px;
+            background: linear-gradient(to bottom, transparent, #334155 5%, #334155 95%, transparent); z-index: 0;
         }
     </style>
 </head>
-<body class="text-slate-200 overflow-x-hidden selection:bg-cyan-500 selection:text-white min-h-screen flex flex-col relative">
+<body class="text-slate-200 overflow-x-hidden min-h-screen flex flex-col relative">
 
     <div class="fixed inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:20px_20px] opacity-20 pointer-events-none z-0"></div>
-    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-md h-64 bg-cyan-500/10 blur-[100px] rounded-full pointer-events-none z-0"></div>
-
     <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
-    <div id="tela-login" class="relative z-10 flex-1 flex items-center justify-center p-4 w-full h-full min-h-screen">
-        <div class="w-full max-w-md bg-slate-800/80 backdrop-blur-xl border border-slate-700 p-8 rounded-3xl shadow-2xl relative">
+    <div id="tela-login" class="relative z-10 flex-1 flex items-center justify-center p-4 min-h-screen">
+        <div class="w-full max-w-md bg-slate-800/80 backdrop-blur-xl border border-slate-700 p-8 rounded-3xl shadow-2xl">
             <div class="text-center mb-8">
-                <img src="logo_bjj_maneger.png" alt="Logo" class="h-20 w-auto mx-auto filter drop-shadow-[0_0_15px_rgba(6,182,212,0.4)] mb-4">
+                <img src="logo_bjj_maneger.png" alt="Logo" class="h-20 mx-auto mb-4 filter drop-shadow-[0_0_15px_rgba(6,182,212,0.4)]">
                 <h2 class="text-2xl font-black text-white uppercase tracking-wider">Portal do Atleta</h2>
-                <p class="text-[10px] text-cyan-500 mt-1 uppercase font-black tracking-[0.2em]">Acesso Exclusivo</p>
+                <p class="text-[10px] text-cyan-500 mt-1 uppercase font-black tracking-widest">Acesso Exclusivo</p>
             </div>
-
             <form id="form-login" class="space-y-5" onsubmit="event.preventDefault(); fazerLoginAluno();">
                 <div class="space-y-1.5">
                     <label class="text-[10px] font-black text-slate-400 uppercase ml-2">E-mail</label>
-                    <input type="email" id="login-email" required class="w-full px-5 py-4 bg-slate-900 border border-slate-700 rounded-2xl text-white outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600" placeholder="seu@email.com">
+                    <input type="email" id="login-email" required class="w-full px-5 py-4 bg-slate-900 border border-slate-700 rounded-2xl text-white outline-none focus:border-cyan-500 transition-all">
                 </div>
-                
                 <div class="space-y-1.5">
-                    <div class="flex justify-between items-center ml-2 mr-2">
-                        <label class="text-[10px] font-black text-slate-400 uppercase">Senha</label>
-                    </div>
+                    <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Senha</label>
                     <div class="relative">
-                        <input type="password" id="login-senha" required class="w-full px-5 py-4 bg-slate-900 border border-slate-700 rounded-2xl text-white outline-none focus:border-cyan-500 transition-all pr-12 placeholder:text-slate-600" placeholder="••••••••">
-                        <button type="button" onclick="toggleSenha('login-senha', this)" class="absolute inset-y-0 right-4 flex items-center text-slate-400 hover:text-cyan-400 transition-colors outline-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>
-                        </button>
+                        <input type="password" id="login-senha" required class="w-full px-5 py-4 bg-slate-900 border border-slate-700 rounded-2xl text-white outline-none focus:border-cyan-500 pr-12">
+                        <button type="button" onclick="toggleSenha('login-senha', this)" class="absolute inset-y-0 right-4 flex items-center text-slate-400">👁️</button>
                     </div>
                 </div>
-                
-                <button type="submit" id="btn-login" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-4 rounded-2xl transition-all shadow-[0_0_15px_rgba(6,182,212,0.3)] uppercase tracking-widest text-xs transform hover:-translate-y-0.5">
-                    Entrar no Tatame
-                </button>
+                <button type="submit" id="btn-login" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-4 rounded-2xl shadow-lg uppercase text-xs tracking-widest transition-all transform hover:-translate-y-0.5">Entrar no Tatame</button>
             </form>
         </div>
     </div>
 
     <div id="tela-portal" class="hidden flex-col w-full flex-1 relative z-10 h-full">
-        
         <div id="banner-anamnese" class="hidden bg-rose-600 text-white p-3 text-center text-xs font-bold flex-col sm:flex-row items-center justify-center gap-3 z-50 shadow-md">
-            <span class="flex items-center gap-2"><span class="text-lg">⚠️</span> Ficha Médica Pendente: Preencha para sua segurança.</span>
-            <button onclick="abrirModalAnamnese()" class="bg-white text-rose-600 px-4 py-1.5 rounded-full text-[10px] uppercase font-black tracking-widest hover:bg-rose-100 transition shadow-sm shrink-0">Preencher</button>
+            <span>⚠️ Ficha Médica Pendente: Preencha para sua segurança no tatame.</span>
+            <button onclick="abrirModalAnamnese()" class="bg-white text-rose-600 px-4 py-1.5 rounded-full text-[10px] uppercase font-black hover:bg-rose-100 transition shadow-sm shrink-0">Preencher Agora</button>
         </div>
 
-        <header class="pt-8 pb-4 px-6 flex justify-between items-center max-w-3xl mx-auto w-full shrink-0">
-            <div class="flex items-center gap-3">
-                <img id="logo-equipe-topo" src="logo_bjj_maneger.png" alt="Logo" class="h-10 w-auto filter drop-shadow-lg">
-            </div>
-            <button onclick="sairDoPortal()" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-rose-400 transition-colors flex items-center gap-1 bg-slate-800/50 px-3 py-1.5 rounded-lg border border-slate-700/50">
-                Sair <span class="text-sm">🚪</span>
-            </button>
+        <header class="pt-8 pb-4 px-6 flex justify-between items-center max-w-3xl mx-auto w-full">
+            <img id="logo-equipe-topo" src="logo_bjj_maneger.png" alt="Logo" class="h-10 filter drop-shadow-lg">
+            <button onclick="sairDoPortal()" class="text-[10px] font-black uppercase text-slate-400 hover:text-rose-400 transition-colors bg-slate-800/50 px-3 py-1.5 rounded-lg border border-slate-700/50">Sair 🚪</button>
         </header>
 
-        <main class="flex-1 max-w-3xl w-full mx-auto px-4 sm:px-6 pb-28 overflow-y-auto hide-scrollbar space-y-6">
-            
+        <main class="flex-1 max-w-3xl w-full mx-auto px-4 pb-28 overflow-y-auto hide-scrollbar space-y-6">
             <div class="pt-2">
                 <h1 class="text-3xl font-black text-white tracking-tight">Oss, <span id="nome-saudacao" class="text-cyan-400">Atleta</span>!</h1>
                 <p id="subtitulo-secao" class="text-sm text-slate-400 font-medium mt-1">Sua identificação oficial e acesso à equipe.</p>
             </div>
 
             <section id="aba-carteirinha" class="aluno-secao block transition-opacity duration-300">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                        <span class="text-base">🪪</span> Identificação Oficial
-                    </h2>
-                </div>
-
-                <div id="cart-wrapper" class="w-full overflow-x-auto hide-scrollbar pb-2 pt-2 -mx-4 px-4 sm:px-0 flex justify-start sm:justify-center transition-all duration-300 origin-top">
-                    <div id="carteirinha" class="relative bg-white rounded-2xl shadow-2xl border border-slate-200 flex text-slate-800 font-sans w-full max-w-[600px] shrink-0 box-border overflow-hidden" style="width: 600px; min-width: 600px; height: 380px; min-height: 380px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+                <div id="cart-wrapper" class="w-full overflow-x-auto hide-scrollbar pb-4 pt-2 -mx-4 px-4 flex justify-start sm:justify-center">
+                    <div id="carteirinha" class="relative bg-white rounded-2xl shadow-2xl border border-slate-200 flex text-slate-800 font-sans w-full max-w-[600px] shrink-0 overflow-hidden" style="width: 600px; height: 380px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
                         <div class="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden" style="z-index: 1;">
-                            <img id="cart-equipe-watermark" src="" style="width: 140%; height: 140%; max-width: none; object-fit: contain; opacity: 0.15; filter: grayscale(100%);" class="hidden" crossorigin="anonymous">
+                            <img id="cart-equipe-watermark" src="" style="width: 140%; opacity: 0.15; filter: grayscale(100%);" class="hidden">
                         </div>
-                        <div class="absolute top-0 right-0 w-64 h-full bg-slate-200/40 skew-x-[-20deg] translate-x-10 z-0 pointer-events-none backdrop-blur-[1px]"></div>
-                        <div class="absolute bottom-0 left-0 w-full h-1/3 bg-slate-300/30 skew-y-[-5deg] origin-bottom-right z-0 pointer-events-none backdrop-blur-[1px]"></div>
-                        <div class="flex-1 p-5 md:p-6 flex flex-col z-10 w-[65%] relative">
-                            <div class="flex items-center gap-4 mb-4 md:mb-6">
-                                <div class="h-14 w-14 md:h-16 md:w-16 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-sm shrink-0 overflow-hidden">
-                                    <img id="cart-equipe-logo" src="" class="h-full w-full object-contain p-1.5 hidden" crossorigin="anonymous">
-                                    <div id="cart-equipe-fallback" class="text-3xl font-black text-slate-700 hidden">E</div>
+                        <div class="flex-1 p-6 flex flex-col z-10 w-[65%]">
+                            <div class="flex items-center gap-4 mb-6">
+                                <div class="h-16 w-16 bg-white rounded-full flex items-center justify-center border border-slate-200 overflow-hidden shrink-0">
+                                    <img id="cart-equipe-logo" src="" class="h-full w-full object-contain p-1 hidden">
+                                    <div id="cart-equipe-fallback" class="text-3xl font-black text-slate-700">E</div>
                                 </div>
-                                <div class="flex flex-col justify-center">
-                                    <h2 id="cart-equipe-nome" class="text-lg md:text-xl font-black uppercase tracking-tight text-slate-800 leading-none break-words max-w-[240px]">NOME DA EQUIPE</h2>
-                                    <p class="text-[9px] text-slate-500 uppercase tracking-widest font-bold mt-1.5">Identificação Oficial</p>
+                                <div>
+                                    <h2 id="cart-equipe-nome" class="text-xl font-black uppercase text-slate-800 leading-none">NOME DA EQUIPE</h2>
+                                    <p class="text-[9px] text-slate-500 uppercase tracking-widest font-bold mt-1">Identificação Oficial</p>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-2 gap-y-3 gap-x-4 w-full mt-auto mb-2 md:mb-4">
-                                <div class="col-span-2 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-cyan-500 shadow-sm px-3 py-1.5 flex flex-col justify-center overflow-hidden">
-                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Nome do Atleta</p>
-                                    <p id="cart-aluno-nome-txt" class="text-xs md:text-[13px] font-black uppercase text-slate-800 truncate">ALUNO NOME</p>
+                            <div class="grid grid-cols-2 gap-3 mt-auto">
+                                <div class="col-span-2 bg-white/90 p-2 rounded border-l-4 border-cyan-500 shadow-sm">
+                                    <p class="text-[8px] text-slate-400 uppercase font-bold">Nome do Atleta</p>
+                                    <p id="cart-aluno-nome-txt" class="text-sm font-black uppercase text-slate-800 truncate">ALUNO NOME</p>
                                 </div>
-                                <div class="relative overflow-hidden col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm pr-3 py-1.5 rounded-md shadow-sm pl-5 border border-slate-200 flex flex-col justify-center">
-                                    <div id="cart-faixa-border" class="absolute top-0 left-0 w-2.5 h-full bg-slate-300 border-r border-slate-200/50 rounded-l-md"></div>
-                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5 relative z-10">Faixa / Graduação</p>
-                                    <p id="cart-aluno-faixa-texto" class="text-[10px] md:text-xs font-black uppercase text-slate-800 relative z-10 truncate">BRANCA</p>
+                                <div class="relative bg-white/90 p-2 pl-5 rounded border border-slate-200 shadow-sm">
+                                    <div id="cart-faixa-border" class="absolute top-0 left-0 w-2.5 h-full bg-slate-300"></div>
+                                    <p class="text-[8px] text-slate-400 uppercase font-bold">Graduação</p>
+                                    <p id="cart-aluno-faixa-texto" class="text-xs font-black uppercase text-slate-800 truncate">BRANCA</p>
                                 </div>
-                                <div class="col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-1.5 flex flex-col justify-center overflow-hidden">
-                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Nascimento</p>
-                                    <p id="cart-aluno-nascimento-txt" class="text-[10px] md:text-xs font-bold text-slate-800">00/00/0000</p>
-                                </div>
-                                <div class="col-span-1 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-1.5 flex flex-col justify-center overflow-hidden">
-                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Matrícula</p>
-                                    <p id="cart-aluno-matricula-txt" class="text-[10px] md:text-xs font-mono font-black text-slate-800 tracking-widest">00000</p>
-                                </div>
-                                <div class="col-span-1 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-1.5 flex flex-col justify-center overflow-hidden">
-                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Validade</p>
-                                    <p id="cart-aluno-validade-txt" class="text-[10px] md:text-xs font-black text-slate-800 tracking-wider">2026</p>
+                                <div class="bg-white/90 p-2 rounded border-l-4 border-slate-300 shadow-sm">
+                                    <p class="text-[8px] text-slate-400 uppercase font-bold">Matrícula</p>
+                                    <p id="cart-aluno-matricula-txt" class="text-xs font-mono font-bold text-slate-800">00000</p>
                                 </div>
                             </div>
                         </div>
-                        <div class="w-[35%] max-w-[200px] p-5 md:p-6 flex flex-col items-center justify-between z-10 bg-slate-100/50 border-l border-slate-200 backdrop-blur-sm relative">
-                            <div class="w-full aspect-[3/4] bg-white rounded-lg border-[3px] border-white overflow-hidden shadow-md flex items-center justify-center relative">
-                                <img id="cart-aluno-foto-modal" src="" class="w-full h-full object-cover hidden" crossorigin="anonymous">
-                                <span id="cart-aluno-foto-fallback-modal" class="text-5xl font-black text-slate-300">?</span>
+                        <div class="w-[35%] p-6 flex flex-col items-center justify-between z-10 bg-slate-100/50 border-l border-slate-200 backdrop-blur-sm">
+                            <div class="w-full aspect-[3/4] bg-white rounded-lg border-2 border-white overflow-hidden shadow-md flex items-center justify-center">
+                                <img id="cart-aluno-foto-modal" src="" class="w-full h-full object-cover hidden">
+                                <span id="cart-aluno-foto-fallback" class="text-5xl font-black text-slate-300">?</span>
                             </div>
-                            <div class="w-16 h-16 bg-white p-1.5 rounded-lg mt-auto shadow-sm border border-slate-200 flex items-center justify-center">
-                                <div id="cart-qr-code" class="w-full h-full bg-white flex items-center justify-center"></div>
-                            </div>
-                        </div>
-                        <div class="absolute bottom-3 left-5 md:left-6 z-20 flex items-center gap-2 bg-white px-2 py-1 rounded shadow-sm border border-slate-100 opacity-90">
-                            <img src="logo_bjj_maneger.png" class="h-3.5 w-auto grayscale" crossorigin="anonymous">
-                            <span class="text-[7px] font-bold tracking-widest text-slate-600 uppercase">Emitido por BJJ Manager | maneger.bjjdigital.com.br</span>
+                            <div id="cart-qr-code" class="w-16 h-16 bg-white p-1 rounded-lg border border-slate-200"></div>
                         </div>
                     </div>
                 </div>
-
-                <div class="mt-6 flex flex-col sm:flex-row justify-center gap-3 w-full max-w-[600px] mx-auto pb-4">
-                    <button onclick="baixarCarteirinhaPNG()" class="group flex-1 flex items-center justify-center gap-2.5 bg-gradient-to-b from-emerald-400 to-emerald-600 text-white font-black py-3.5 px-4 rounded-2xl shadow-lg transition-all text-[10px] sm:text-xs uppercase tracking-widest">
-                        Baixar PNG
-                    </button>
-                    <button onclick="compartilharCarteirinha()" class="group flex-1 flex items-center justify-center gap-2.5 bg-gradient-to-b from-cyan-400 to-cyan-600 text-white font-black py-3.5 px-4 rounded-2xl shadow-lg transition-all text-[10px] sm:text-xs uppercase tracking-widest">
-                        Compartilhar
-                    </button>
+                <div class="mt-4 flex flex-col sm:flex-row gap-3">
+                    <button onclick="baixarCarteirinhaPNG()" class="flex-1 bg-emerald-600 text-white font-black py-3 rounded-xl uppercase text-[10px] tracking-widest shadow-lg">Baixar PNG</button>
+                    <button onclick="compartilharCarteirinha()" class="flex-1 bg-cyan-600 text-white font-black py-3 rounded-xl uppercase text-[10px] tracking-widest shadow-lg">Compartilhar</button>
                 </div>
             </section>
 
@@ -205,136 +131,129 @@
                 <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl border border-slate-700 p-6 shadow-xl relative overflow-hidden">
                     <div class="absolute -right-4 -top-4 text-8xl opacity-10">🥋</div>
                     <h3 class="text-[10px] font-black text-cyan-500 uppercase tracking-widest mb-1 relative z-10">Faixa Atual</h3>
-                    <p id="hist-faixa-atual" class="text-2xl font-black text-white uppercase relative z-10">CARREGANDO...</p>
+                    <p id="hist-faixa-atual" class="text-2xl font-black text-white uppercase relative z-10">---</p>
                     <p id="hist-tempo-faixa" class="text-xs text-slate-400 font-medium mt-2 relative z-10">Calculando tempo...</p>
                 </div>
-
-                <div class="bg-slate-800/50 backdrop-blur-md rounded-3xl border border-slate-700 p-6 shadow-xl">
-                    <h3 class="text-xs font-black text-slate-300 uppercase tracking-widest mb-6 flex items-center gap-2"><span class="text-lg">📜</span> Jornada de Graduação</h3>
-                    <div id="lista-graduacoes" class="timeline-line relative space-y-6 pl-4 text-sm">
-                        <div class="text-center p-4 text-slate-500 text-xs italic">Buscando histórico...</div>
-                    </div>
+                <div class="bg-slate-800/50 rounded-3xl border border-slate-700 p-6 shadow-xl">
+                    <h3 class="text-xs font-black text-slate-300 uppercase tracking-widest mb-6 flex items-center gap-2">📜 Jornada de Graduação</h3>
+                    <div id="lista-graduacoes" class="timeline-line relative space-y-6 pl-4 text-sm"></div>
                 </div>
-
-                <div class="bg-slate-800/50 backdrop-blur-md rounded-3xl border border-slate-700 p-6 shadow-xl">
-                    <h3 class="text-xs font-black text-slate-300 uppercase tracking-widest mb-6 flex items-center gap-2"><span class="text-lg">🏆</span> Conquistas e Medalhas</h3>
-                    <div id="lista-competicoes" class="space-y-3">
-                        <div class="text-center p-4 text-slate-500 text-xs italic">Buscando competições...</div>
-                    </div>
+                <div class="bg-slate-800/50 rounded-3xl border border-slate-700 p-6 shadow-xl">
+                    <h3 class="text-xs font-black text-slate-300 uppercase tracking-widest mb-6 flex items-center gap-2">🏆 Conquistas e Medalhas</h3>
+                    <div id="lista-competicoes" class="space-y-3"></div>
                 </div>
             </section>
 
             <section id="aba-financeiro" class="aluno-secao hidden transition-opacity duration-300">
-                <div class="bg-slate-800/40 rounded-3xl border border-slate-700/50 overflow-hidden backdrop-blur-sm">
-                    <div class="p-4 border-b border-slate-700/50 bg-slate-800/80 flex justify-between items-center">
-                        <span class="text-xs font-bold text-slate-300">Histórico de Mensalidades</span>
-                    </div>
-                    <div id="lista-faturas" class="divide-y divide-slate-700/30">
-                        <div class="text-center p-6 text-slate-500 text-xs italic">A carregar histórico...</div>
-                    </div>
+                <div class="bg-slate-800/40 rounded-3xl border border-slate-700 overflow-hidden backdrop-blur-sm">
+                    <div id="lista-faturas" class="divide-y divide-slate-700/30"></div>
                 </div>
             </section>
 
             <section id="aba-dados" class="aluno-secao hidden transition-opacity duration-300">
-                <div class="bg-slate-800/80 backdrop-blur-md rounded-3xl border border-slate-700 p-6 shadow-xl space-y-6">
-                    <div class="flex flex-col items-center justify-center pb-6 border-b border-slate-700/50">
-                        <div class="relative w-24 h-24 rounded-full border-2 border-cyan-500 bg-slate-900 shadow-lg flex items-center justify-center overflow-hidden group">
+                <div class="bg-slate-800/80 rounded-3xl border border-slate-700 p-6 shadow-xl space-y-6">
+                    <div class="flex flex-col items-center pb-6 border-b border-slate-700/50">
+                        <div class="relative w-24 h-24 rounded-full border-2 border-cyan-500 bg-slate-900 flex items-center justify-center overflow-hidden group shadow-lg">
                             <img id="edit-preview-foto" src="" class="w-full h-full object-cover hidden z-10" />
-                            <span id="edit-fallback-foto" class="text-3xl font-black text-slate-600 z-0">?</span>
-                            <div class="absolute inset-0 bg-black/50 z-20 hidden group-hover:flex items-center justify-center transition-all cursor-pointer">
-                                <span class="text-xl">📷</span>
-                            </div>
+                            <span id="edit-fallback-foto" class="text-3xl font-black text-slate-600">?</span>
+                            <div class="absolute inset-0 bg-black/50 z-20 hidden group-hover:flex items-center justify-center cursor-pointer transition-all">📷</div>
                             <input type="file" id="input-foto" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-30" onchange="previewImagem(this)">
                         </div>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-3">Toque para alterar a foto</p>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase mt-3">Tocar na foto para alterar</p>
                     </div>
-
                     <form id="form-edicao" onsubmit="event.preventDefault(); salvarMeusDados();" class="space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            <div>
-                                <label class="block text-[10px] font-black text-cyan-400 uppercase mb-1.5">WhatsApp</label>
-                                <input type="text" id="edit-tel" maxlength="15" oninput="mascaraTelefone(this)" class="w-full p-3.5 bg-slate-900 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500">
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-black text-cyan-400 uppercase">WhatsApp</label>
+                                <input type="text" id="edit-tel" maxlength="15" oninput="mascaraTelefone(this)" class="w-full p-3.5 bg-slate-900 border border-slate-700 rounded-xl text-white font-bold outline-none">
                             </div>
-                            <div>
-                                <label class="block text-[10px] font-black text-cyan-400 uppercase mb-1.5">Peso (Kg)</label>
-                                <input type="text" id="edit-peso" class="w-full p-3.5 bg-slate-900 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500">
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-black text-cyan-400 uppercase">Peso (Kg)</label>
+                                <input type="text" id="edit-peso" class="w-full p-3.5 bg-slate-900 border border-slate-700 rounded-xl text-white font-bold outline-none">
                             </div>
                         </div>
-                        <button type="submit" id="btn-salvar-dados" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-4 rounded-xl shadow-lg transition-transform transform hover:-translate-y-1 uppercase tracking-widest text-sm flex items-center justify-center mt-4">
-                            💾 Salvar Alterações
-                        </button>
+                        <button type="submit" id="btn-salvar-dados" class="w-full bg-cyan-600 text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest text-sm transition-transform transform hover:-translate-y-1">💾 Salvar Alterações</button>
                     </form>
                 </div>
             </section>
         </main>
 
         <nav class="fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-xl border-t border-slate-800 flex justify-around px-2 pt-2 pb-safe z-40">
-            <button onclick="mudarAbaAluno('aba-carteirinha')" id="nav-aba-carteirinha" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-cyan-400 transition-colors">
-                <span class="text-2xl mb-1 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)] transition-all transform scale-110">🪪</span>
-                <span class="text-[10px] font-black uppercase tracking-widest">Início</span>
+            <button onclick="mudarAbaAluno('aba-carteirinha')" id="nav-aba-carteirinha" class="nav-btn flex-1 flex flex-col items-center py-2 text-cyan-400">
+                <span class="text-2xl mb-1">🪪</span> <span class="text-[10px] font-black uppercase">Início</span>
             </button>
-            <button onclick="mudarAbaAluno('aba-historico')" id="nav-aba-historico" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
-                <span class="text-2xl mb-1 grayscale transition-all">📜</span>
-                <span class="text-[10px] font-bold uppercase tracking-widest">Histórico</span>
+            <button onclick="mudarAbaAluno('aba-historico')" id="nav-aba-historico" class="nav-btn flex-1 flex flex-col items-center py-2 text-slate-500">
+                <span class="text-2xl mb-1 grayscale">📜</span> <span class="text-[10px] font-bold uppercase">Histórico</span>
             </button>
-            <button onclick="mudarAbaAluno('aba-financeiro')" id="nav-aba-financeiro" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
-                <span class="text-2xl mb-1 grayscale transition-all">💰</span>
-                <span class="text-[10px] font-bold uppercase tracking-widest">Faturas</span>
+            <button onclick="mudarAbaAluno('aba-financeiro')" id="nav-aba-financeiro" class="nav-btn flex-1 flex flex-col items-center py-2 text-slate-500">
+                <span class="text-2xl mb-1 grayscale">💰</span> <span class="text-[10px] font-bold uppercase">Faturas</span>
             </button>
-            <button onclick="mudarAbaAluno('aba-dados')" id="nav-aba-dados" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
-                <span class="text-2xl mb-1 grayscale transition-all">⚙️</span>
-                <span class="text-[10px] font-bold uppercase tracking-widest">Ajustes</span>
+            <button onclick="mudarAbaAluno('aba-dados')" id="nav-aba-dados" class="nav-btn flex-1 flex flex-col items-center py-2 text-slate-500">
+                <span class="text-2xl mb-1 grayscale">⚙️</span> <span class="text-[10px] font-bold uppercase">Ajustes</span>
             </button>
         </nav>
     </div>
 
     <div id="modal-anamnese" class="fixed inset-0 bg-slate-950/90 backdrop-blur-sm hidden items-center justify-center z-[250] p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[95vh]">
-            <div class="bg-rose-600 p-5 text-white text-center shadow-inner shrink-0 relative">
+            <div class="bg-rose-600 p-5 text-white text-center shrink-0">
                 <h3 class="font-black uppercase tracking-widest text-sm">⚕️ Ficha de Saúde e Inclusão</h3>
-                <p class="text-[10px] mt-1 opacity-90">Preenchimento obrigatório para sua segurança.</p>
             </div>
             <div class="p-6 overflow-y-auto hide-scrollbar space-y-8 flex-1">
                 <div class="space-y-4">
-                    <h4 class="text-xs font-black text-cyan-400 uppercase tracking-widest border-b border-slate-700/50 pb-2">Saúde Clínica e Ortopédica</h4>
+                    <h4 class="text-xs font-black text-cyan-400 uppercase tracking-widest border-b border-slate-700/50 pb-2">1. Saúde Clínica e Ortopédica</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                         <label class="flex items-center gap-2 text-sm font-bold text-slate-300"><input type="checkbox" id="ana-med-asma" class="custom-checkbox"> Asma</label>
                         <label class="flex items-center gap-2 text-sm font-bold text-slate-300"><input type="checkbox" id="ana-med-hipertensao" class="custom-checkbox"> Pressão Alta</label>
-                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300"><input type="checkbox" id="ana-med-diabetes" class="custom-checkbox"> Diabetes</label>
-                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300"><input type="checkbox" id="ana-med-epilepsia" class="custom-checkbox"> Convulsões</label>
                     </div>
-                    <textarea id="ana-med-dores" rows="2" placeholder="Dores articulares ou coluna?" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold text-sm outline-none"></textarea>
-                    <textarea id="ana-med-medicamentos" rows="2" placeholder="Medicamentos contínuos?" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold text-sm outline-none"></textarea>
+                    <input type="text" id="ana-med-dores" placeholder="Dores articulares ou coluna?" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold text-sm outline-none">
+                    <input type="text" id="ana-med-medicamentos" placeholder="Medicamentos contínuos?" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold text-sm outline-none">
                 </div>
                 <div class="space-y-4">
-                    <h4 class="text-xs font-black text-rose-400 uppercase tracking-widest border-b border-slate-700/50 pb-2">Inclusão / Neurodivergência</h4>
+                    <h4 class="text-xs font-black text-rose-400 uppercase tracking-widest border-b border-slate-700/50 pb-2">2. Inclusão / Neurodivergência</h4>
                     <select id="ana-tem-neuro" onchange="toggleNeuro()" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold text-sm">
-                        <option value="Não">Não possui</option><option value="Sim">Possui diagnóstico</option>
+                        <option value="Não">Não possui diagnóstico</option><option value="Sim">Possui diagnóstico (TEA, TDAH, etc)</option>
                     </select>
-                    <div id="div-neuro-detalhes" class="hidden space-y-4">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                             <label class="flex items-center gap-2 text-xs font-bold text-slate-400"><input type="checkbox" id="ana-diag-tea" class="custom-checkbox"> TEA</label>
-                             <label class="flex items-center gap-2 text-xs font-bold text-slate-400"><input type="checkbox" id="ana-diag-tdah" class="custom-checkbox"> TDAH</label>
+                    <div id="div-neuro-detalhes" class="hidden space-y-4 pt-2">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <label class="flex items-center gap-2 text-sm font-bold text-slate-300"><input type="checkbox" id="ana-diag-tea" class="custom-checkbox"> TEA (Autismo)</label>
+                            <label class="flex items-center gap-2 text-sm font-bold text-slate-300"><input type="checkbox" id="ana-diag-tdah" class="custom-checkbox"> TDAH</label>
                         </div>
-                        <input type="text" id="ana-diag-profissional" placeholder="Profissional responsável" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold text-sm">
+                        <input type="text" id="ana-diag-profissional" placeholder="Especialidade do Médico" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold text-sm">
                     </div>
                 </div>
-                <div class="bg-rose-500/10 border border-rose-500/30 p-4 rounded-xl mt-4">
+                <div class="bg-rose-500/10 border border-rose-500/30 p-4 rounded-xl">
                     <label class="flex items-start gap-3 cursor-pointer">
                         <input type="checkbox" id="ana-termo-aceite" class="custom-checkbox mt-1 shrink-0" onchange="validarTermoAnamnese()">
-                        <span class="text-xs text-rose-200 font-medium leading-relaxed">Declaro que as informações prestadas são verdadeiras.</span>
+                        <span class="text-xs text-rose-200">Declaro que as informações são verdadeiras. Assumo a responsabilidade por qualquer alteração no meu quadro clínico.</span>
                     </label>
                 </div>
             </div>
-            <div class="p-4 bg-slate-800 border-t border-slate-700 flex justify-between gap-3 shrink-0">
-                <button onclick="fecharModalAnamnese()" class="px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-bold text-xs uppercase tracking-widest transition">Depois</button>
-                <button onclick="salvarAnamnese()" id="btn-salvar-anamnese" disabled class="flex-1 bg-slate-600 text-slate-400 rounded-xl font-black text-xs uppercase transition shadow-lg">Salvar Ficha</button>
+            <div class="p-4 bg-slate-800 border-t border-slate-700 flex justify-between gap-3">
+                <button onclick="fecharModalAnamnese()" class="px-4 py-3 bg-slate-700 text-white rounded-xl font-bold text-xs">Depois</button>
+                <button onclick="salvarAnamnese()" id="btn-salvar-anamnese" disabled class="flex-1 bg-slate-600 text-slate-400 rounded-xl font-black text-xs uppercase shadow-lg">Salvar Ficha</button>
             </div>
         </div>
     </div>
 
     <div id="modal-pix" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center z-[200] p-4 transition-opacity">
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col">
+            <div class="bg-gradient-to-r from-cyan-600 to-blue-600 p-5 text-white flex justify-between items-center shadow-inner">
+                <h3 class="font-black uppercase tracking-widest text-sm">Pagamento Mensalidade</h3>
+                <button onclick="fecharModalPix()" class="text-cyan-100 hover:text-white text-2xl leading-none">&times;</button>
+            </div>
+            <div class="p-6 flex flex-col items-center text-center space-y-5">
+                <h2 class="text-3xl font-black text-cyan-400" id="pix-valor">R$ 0,00</h2>
+                <div class="w-full">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Chave PIX da Equipe</p>
+                    <div class="flex items-center gap-2 bg-slate-800 p-2 rounded-xl border border-slate-700">
+                        <input type="text" id="pix-codigo" readonly class="bg-transparent text-xs text-slate-300 font-mono w-full truncate" value="Carregando...">
+                        <button onclick="copiarPix()" class="bg-cyan-500/20 text-cyan-400 p-2 rounded-lg">📋</button>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -362,13 +281,13 @@
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             const bgColor = type === 'success' ? 'bg-emerald-500' : 'bg-rose-500';
-            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transform transition-all duration-300 flex items-center gap-3 font-bold text-sm z-[9999] pointer-events-auto`;
+            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 font-bold text-sm z-[9999] pointer-events-auto`;
             toast.innerHTML = `<span>${type === 'success' ? '✅' : '🚨'}</span> <span>${message}</span>`;
             container.appendChild(toast);
-            setTimeout(() => toast.remove(), 4500);
+            setTimeout(() => toast.remove(), 4000);
         }
 
-        window.toggleSenha = (id, btn) => { const el = document.getElementById(id); el.type = el.type === "password" ? "text" : "password"; };
+        window.toggleSenha = (id) => { const el = document.getElementById(id); el.type = el.type === "password" ? "text" : "password"; };
         window.mascaraTelefone = (i) => { let v = i.value.replace(/\D/g, ""); v = v.replace(/^(\d{2})(\d)/g, "($1) $2"); v = v.replace(/(\d)(\d{4})$/, "$1-$2"); i.value = v; };
 
         window.fazerLoginAluno = async function() {
@@ -398,127 +317,131 @@
             activeBtn.classList.replace('text-slate-500', 'text-cyan-400');
             activeBtn.querySelector('span:first-child').classList.remove('grayscale');
             if(idAba === 'aba-historico') carregarHistoricoAluno();
+            if(idAba === 'aba-dados') preencherFormularioDados();
         }
 
-        /* --- LÓGICA DO HISTÓRICO ESPORTIVO (CURRÍCULO) --- */
+        window.previewImagem = function(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('edit-preview-foto'); img.src = e.target.result;
+                    img.classList.remove('hidden'); document.getElementById('edit-fallback-foto').classList.add('hidden');
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function preencherFormularioDados() {
+            if(!alunoLogado) return;
+            if(alunoLogado.foto_url) {
+                const img = document.getElementById('edit-preview-foto'); img.src = alunoLogado.foto_url;
+                img.classList.remove('hidden'); document.getElementById('edit-fallback-foto').classList.add('hidden');
+            }
+            document.getElementById('edit-tel').value = alunoLogado.telefone || '';
+            document.getElementById('edit-peso').value = alunoLogado.peso || '';
+        }
+
+        window.salvarMeusDados = async function() {
+            const btn = document.getElementById('btn-salvar-dados');
+            btn.disabled = true; btn.innerHTML = "⏳ Salvando...";
+            const dadosAtualizados = { 
+                telefone: document.getElementById('edit-tel').value.trim(), 
+                peso: document.getElementById('edit-peso').value.trim() 
+            };
+            try {
+                const inputFoto = document.getElementById('input-foto');
+                if (inputFoto.files && inputFoto.files[0]) {
+                    const fotoRef = ref(storage, `alunos_fotos/${alunoLogado.id}_${Date.now()}`);
+                    await uploadBytes(fotoRef, inputFoto.files[0]);
+                    dadosAtualizados.foto_url = await getDownloadURL(fotoRef);
+                }
+                await updateDoc(doc(db, "alunos", alunoLogado.id), dadosAtualizados);
+                alunoLogado = { ...alunoLogado, ...dadosAtualizados }; localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoLogado));
+                showToast("Dados atualizados!", "success"); preencherCarteirinha();
+            } catch (e) { showToast("Erro ao salvar."); } finally { btn.disabled = false; btn.innerHTML = "💾 Salvar Alterações"; }
+        }
+
         window.carregarHistoricoAluno = async function() {
             const divGrad = document.getElementById('lista-graduacoes');
             const divComp = document.getElementById('lista-competicoes');
-            const faixaAtualTxt = document.getElementById('hist-faixa-atual');
             const tempoAtualTxt = document.getElementById('hist-tempo-faixa');
 
-            divGrad.innerHTML = '<div class="text-center p-4 text-slate-500 text-xs italic">Buscando histórico...</div>';
-            divComp.innerHTML = '<div class="text-center p-4 text-slate-500 text-xs italic">Buscando competições...</div>';
+            divGrad.innerHTML = '<div class="text-xs italic p-4">Carregando...</div>';
+            divComp.innerHTML = '<div class="text-xs italic p-4">Carregando...</div>';
+            document.getElementById('hist-faixa-atual').innerText = alunoLogado.faixa || 'BRANCA';
 
-            const grau = alunoLogado.grau && alunoLogado.grau !== "Sem grau" ? ` ${alunoLogado.grau}` : "";
-            faixaAtualTxt.innerText = `${alunoLogado.faixa || 'BRANCA'}${grau}`;
-
-            // Puxar Graduações
             try {
+                // Graduações
                 const qGrad = query(collection(db, "graduacoes"), where("aluno_id", "==", alunoLogado.id));
                 const snapGrad = await getDocs(qGrad);
                 let grads = [];
                 snapGrad.forEach(doc => grads.push(doc.data()));
                 
-                if (grads.length === 0) {
-                    divGrad.innerHTML = `<div class='text-slate-500 italic py-4'>Faixa Inicial: ${alunoLogado.faixa || 'BRANCA'}</div>`;
-                    tempoAtualTxt.innerText = "Tempo não registrado no sistema.";
-                } else {
-                    grads.sort((a, b) => new Date(b.data) - new Date(a.data));
+                if (grads.length > 0) {
+                    grads.sort((a, b) => (b.data?.seconds || 0) - (a.data?.seconds || 0));
+                    const ultima = grads[0].data?.seconds ? grads[0].data.toDate() : new Date(grads[0].data);
+                    const diff = new Date() - ultima;
+                    const mesesTotal = Math.floor(diff / (1000 * 60 * 60 * 24 * 30));
+                    tempoAtualTxt.innerText = `Nesta faixa há ${Math.floor(mesesTotal/12)} anos e ${mesesTotal%12} meses`;
                     
-                    // Tempo na faixa
-                    const ultimaGrad = new Date(grads[0].data);
-                    const diff = new Date() - ultimaGrad;
-                    const meses = Math.floor(diff / (1000 * 60 * 60 * 24 * 30));
-                    const anos = Math.floor(meses / 12);
-                    tempoAtualTxt.innerText = `Nesta faixa há ${anos > 0 ? anos + ' ano(s) e ' : ''}${meses % 12} mês(es)`;
+                    divGrad.innerHTML = grads.map(g => `
+                        <div class="relative flex items-start gap-4 mb-6">
+                            <div class="w-2 h-2 rounded-full bg-cyan-500 mt-1.5 z-10 shadow-[0_0_8px_#06b6d4]"></div>
+                            <div>
+                                <p class="text-[10px] font-bold text-cyan-400 uppercase">${(g.data?.seconds ? g.data.toDate() : new Date(g.data)).toLocaleDateString('pt-BR')}</p>
+                                <p class="font-black text-white">${g.faixa} ${g.grau || ''}</p>
+                            </div>
+                        </div>`).join('');
+                } else { divGrad.innerHTML = "<div class='text-slate-500 p-4'>Nenhum histórico encontrado.</div>"; tempoAtualTxt.innerText = "Tempo não registado."; }
 
-                    let gradHTML = '';
-                    grads.forEach(g => {
-                        gradHTML += `
-                            <div class="relative flex items-start gap-4 mb-6">
-                                <div class="w-2 h-2 rounded-full bg-cyan-500 mt-1.5 z-10"></div>
-                                <div class="flex-1">
-                                    <p class="text-[10px] font-bold text-cyan-400 uppercase">${new Date(g.data).toLocaleDateString('pt-BR')}</p>
-                                    <p class="font-black text-white">${g.faixa} ${g.grau || ''}</p>
-                                    <p class="text-[10px] text-slate-500 italic">Professor: ${g.professor || 'Equipe'}</p>
-                                </div>
-                            </div>`;
-                    });
-                    divGrad.innerHTML = gradHTML;
-                }
-            } catch(e) { console.error(e); }
-
-            // Puxar Competições
-            try {
+                // Competições
                 const qComp = query(collection(db, "competicoes"), where("aluno_id", "==", alunoLogado.id));
                 const snapComp = await getDocs(qComp);
                 let comps = [];
                 snapComp.forEach(doc => comps.push(doc.data()));
-                if (comps.length === 0) {
-                    divComp.innerHTML = '<div class="text-center p-4 text-slate-500 text-xs italic">Nenhuma competição registrada.</div>';
-                } else {
-                    comps.sort((a, b) => new Date(b.data) - new Date(a.data));
-                    let compHTML = '';
-                    comps.forEach(c => {
-                        let medal = (c.colocacao && c.colocacao.includes('1')) ? '🥇' : (c.colocacao && c.colocacao.includes('2')) ? '🥈' : (c.colocacao && c.colocacao.includes('3')) ? '🥉' : '🏅';
-                        compHTML += `
-                            <div class="flex items-center gap-3 p-3 rounded-2xl border border-slate-700 bg-slate-800/50">
-                                <div class="text-2xl">${medal}</div>
-                                <div class="flex-1">
-                                    <h4 class="text-sm font-black text-white">${c.nome_evento || c.campeonato || 'Campeonato'}</h4>
-                                    <p class="text-[10px] text-slate-500 uppercase font-bold">${new Date(c.data).toLocaleDateString('pt-BR')} | ${c.categoria || 'Geral'}</p>
-                                </div>
-                                <div class="text-right text-xs font-black text-cyan-400">${c.colocacao || 'Participou'}</div>
-                            </div>`;
-                    });
-                    divComp.innerHTML = compHTML;
-                }
+                if(comps.length > 0) {
+                    divComp.innerHTML = comps.map(c => {
+                        let medal = (c.colocacao?.includes('1')) ? '🥇' : (c.colocacao?.includes('2')) ? '🥈' : (c.colocacao?.includes('3')) ? '🥉' : '🏅';
+                        return `<div class="flex items-center gap-3 p-3 rounded-2xl border border-slate-700 bg-slate-800/50">
+                            <div class="text-2xl">${medal}</div>
+                            <div class="flex-1">
+                                <h4 class="text-sm font-black text-white">${c.nome_evento || c.campeonato}</h4>
+                                <p class="text-[10px] text-slate-500">${c.colocacao || 'Participou'}</p>
+                            </div>
+                        </div>`;
+                    }).join('');
+                } else { divComp.innerHTML = "<div class='text-slate-500 p-4'>Nenhuma medalha registada.</div>"; }
             } catch(e) { console.error(e); }
         };
 
         window.toggleNeuro = () => {
-            const select = document.getElementById('ana-tem-neuro').value;
-            document.getElementById('div-neuro-detalhes').className = select === 'Sim' ? 'space-y-4' : 'hidden';
-        };
-
-        async function iniciarPortal() {
-            const authSessao = localStorage.getItem('bjj_aluno_auth');
-            if(!authSessao) return window.location.href = "index.html";
-            alunoLogado = JSON.parse(authSessao);
-            document.getElementById('tela-login').classList.add('hidden');
-            document.getElementById('tela-portal').classList.remove('hidden');
-            document.getElementById('tela-portal').classList.add('flex');
-            document.getElementById('nome-saudacao').innerText = alunoLogado.nome.split(' ')[0];
-
-            // Buscar dados da Equipe e Aluno atualizados
-            const alunoSnap = await getDoc(doc(db, "alunos", alunoLogado.id));
-            if(alunoSnap.exists()) { 
-                alunoLogado = { id: alunoSnap.id, ...alunoSnap.data() };
-                preencherCarteirinha();
-                verificarAnamnese();
-            }
-            const eqSnap = await getDoc(doc(db, "equipes", alunoLogado.equipe_id));
-            if(eqSnap.exists()) { equipeDados = eqSnap.data(); preencherCarteirinha(); }
-            
-            setTimeout(ajustarZoomCarteirinha, 100);
+            const val = document.getElementById('ana-tem-neuro').value;
+            document.getElementById('div-neuro-detalhes').className = val === 'Sim' ? 'space-y-4' : 'hidden';
         }
 
-        /* Funções de Carteirinha e PDF (Mesmas do código anterior) */
+        async function iniciarPortal() {
+            const authS = localStorage.getItem('bjj_aluno_auth'); if(!authS) return;
+            alunoLogado = JSON.parse(authS);
+            document.getElementById('tela-login').classList.add('hidden');
+            document.getElementById('tela-portal').classList.remove('hidden'); document.getElementById('tela-portal').classList.add('flex');
+            document.getElementById('nome-saudacao').innerText = alunoLogado.nome.split(' ')[0];
+            const eqS = await getDoc(doc(db, "equipes", alunoLogado.equipe_id));
+            if(eqS.exists()) { equipeDados = eqS.data(); preencherCarteirinha(); }
+            verificarAnamnese();
+        }
+
         function preencherCarteirinha() {
             const a = alunoLogado;
             document.getElementById('cart-aluno-nome-txt').innerText = a.nome;
             document.getElementById('cart-aluno-faixa-texto').innerText = (a.faixa + (a.grau !== 'Sem grau' ? ' - ' + a.grau : '')).toUpperCase();
             document.getElementById('cart-aluno-matricula-txt').innerText = a.matricula || '0000';
-            document.getElementById('cart-aluno-nascimento-txt').innerText = a.data_nascimento ? a.data_nascimento.split('-').reverse().join('/') : '--/--/----';
-            if(a.foto_url) { document.getElementById('cart-aluno-foto-modal').src = a.foto_url; document.getElementById('cart-aluno-foto-modal').classList.remove('hidden'); document.getElementById('cart-aluno-foto-fallback-modal').classList.add('hidden'); }
-            const qrContainer = document.getElementById('cart-qr-code'); qrContainer.innerHTML = ''; 
-            new QRCode(qrContainer, { text: window.location.origin + '/validar.html?mat=' + a.matricula, width: 64, height: 64 });
+            document.getElementById('cart-aluno-nascimento-txt').innerText = a.data_nascimento?.split('-').reverse().join('/') || '--/--/----';
+            if(a.foto_url) { document.getElementById('cart-aluno-foto-modal').src = a.foto_url; document.getElementById('cart-aluno-foto-modal').classList.remove('hidden'); document.getElementById('cart-aluno-foto-fallback').classList.add('hidden'); }
+            const qrC = document.getElementById('cart-qr-code'); qrC.innerHTML = '';
+            new QRCode(qrC, { text: window.location.origin + '/validar.html?mat=' + a.matricula, width: 64, height: 64 });
         }
 
-        // Inicia
-        const sessao = localStorage.getItem('bjj_aluno_auth');
-        if(sessao) iniciarPortal();
+        if(localStorage.getItem('bjj_aluno_auth')) iniciarPortal();
     </script>
 </body>
 </html>

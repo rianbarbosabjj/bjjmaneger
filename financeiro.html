@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Financeiro Pro | BJJ Manager</title>
+    <title>Centro de Controle Financeiro | BJJ Manager</title>
     
     <link rel="icon" type="image/png" href="logo_bjj_maneger.png">
     
@@ -15,8 +15,8 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         
         body { font-family: 'Inter', sans-serif; background-color: #F1F5F9; }
-
-        /* CLASSE CORPORATIVA PREMIUM */
+        
+        /* 🎨 CLASSE MODERN CORPORATE */
         .card-premium {
             background: white;
             border: 1px solid rgba(226, 232, 240, 0.8);
@@ -30,17 +30,13 @@
             font-weight: 800; 
         }
 
-        input, select {
-            border-radius: 12px;
-            transition: all 0.2s ease;
-        }
-
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
         
         @media print {
             body * { visibility: hidden; }
@@ -57,224 +53,53 @@
         <main class="flex-1 flex flex-col h-full overflow-hidden relative">
             
             <div class="bg-slate-900 text-white p-4 shrink-0 flex flex-col xl:flex-row justify-between items-center gap-4 z-10 shadow-md">
-                <div class="flex flex-wrap items-center justify-center gap-3 w-full xl:w-auto">
-                    <span class="text-2xl">💰</span>
-                    <div class="flex bg-slate-800 rounded-xl p-1 border border-slate-700">
-                        <select id="filtro-mes" class="bg-transparent border-none text-white text-xs sm:text-sm font-bold p-2 outline-none cursor-pointer">
-                            <option value="01">Jan</option><option value="02">Fev</option><option value="03">Mar</option><option value="04">Abr</option>
-                            <option value="05">Mai</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ago</option>
-                            <option value="09">Set</option><option value="10">Out</option><option value="11">Nov</option><option value="12">Dez</option>
-                        </select>
-                        <select id="filtro-ano" class="bg-transparent border-none text-white text-xs sm:text-sm font-bold p-2 outline-none cursor-pointer">
-                            <option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option>
-                        </select>
-                    </div>
-                    <button onclick="carregarDados()" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-xl text-xs font-bold transition-all">Atualizar Dados</button>
-                </div>
-
-                <div class="flex items-center gap-3">
-                    <div class="hidden md:flex bg-slate-800 p-2 rounded-xl border border-slate-700 gap-4">
-                        <div class="flex flex-col"><span class="text-[8px] text-slate-400 font-bold uppercase">No Prazo</span><input type="text" id="config-prazo" oninput="mascaraMoeda(this)" class="bg-transparent text-white font-bold text-xs w-14 outline-none" value="70,00"></div>
-                        <div class="flex flex-col"><span class="text-[8px] text-slate-400 font-bold uppercase">Atraso</span><input type="text" id="config-atraso" oninput="mascaraMoeda(this)" class="bg-transparent text-rose-400 font-bold text-xs w-14 outline-none" value="100,00"></div>
-                        <button onclick="salvarConfiguracaoGeral()" class="text-xs hover:scale-110 transition-transform">💾</button>
-                    </div>
-                    <button onclick="abrirModalRelatorio()" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs shadow-md">📊 Relatório PDF</button>
-                </div>
-            </div>
-
-            <div class="bg-white border-b border-slate-200 px-4 md:px-8 overflow-x-auto hide-scrollbar">
-                <div class="max-w-7xl mx-auto flex gap-8">
-                    <button onclick="mudarAba('tab-mensalidades')" id="btn-tab-mensalidades" class="aba-item py-4 text-xs font-black uppercase tracking-widest tab-active whitespace-nowrap">👥 Mensalidades</button>
-                    
-                    <button onclick="mudarAba('tab-config-asaas')" id="btn-tab-config-asaas" class="aba-item py-4 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-cyan-600 hover:bg-cyan-50/50 px-3 rounded-t-xl transition-all whitespace-nowrap flex items-center gap-1.5 border-b-[3px] border-transparent hover:border-cyan-200">
-                        <span class="text-sm">💲</span> Conta Digital
+                <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3 w-full xl:w-auto">
+                    <span class="text-xl sm:text-2xl hidden sm:block">💰</span>
+                    <select id="filtro-mes" class="bg-slate-800 border border-slate-700 text-white text-xs sm:text-sm font-bold rounded-xl p-2 sm:p-2.5 outline-none cursor-pointer focus:border-cyan-500">
+                        <option value="01">Jan (01)</option><option value="02">Fev (02)</option><option value="03">Mar (03)</option><option value="04">Abr (04)</option><option value="05">Mai (05)</option><option value="06">Jun (06)</option><option value="07">Jul (07)</option><option value="08">Ago (08)</option><option value="09">Set (09)</option><option value="10">Out (10)</option><option value="11">Nov (11)</option><option value="12">Dez (12)</option>
+                    </select>
+                    <span class="font-black text-slate-500">/</span>
+                    <select id="filtro-ano" class="bg-slate-800 border border-slate-700 text-white text-xs sm:text-sm font-bold rounded-xl p-2 sm:p-2.5 outline-none cursor-pointer focus:border-cyan-500">
+                        <option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option>
+                    </select>
+                    <button onclick="carregarDados()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl text-xs transition-colors shrink-0">
+                        Carregar
                     </button>
-                    
-                    <button onclick="mudarAba('tab-dash')" id="btn-tab-dash" class="aba-item py-4 text-xs font-black uppercase tracking-widest text-slate-400 whitespace-nowrap">📊 Resumo Mês</button>
-                    <button onclick="mudarAba('tab-fluxo')" id="btn-tab-fluxo" class="aba-item py-4 text-xs font-black uppercase tracking-widest text-slate-400 whitespace-nowrap">📋 Despesas / Extras</button>
-                    <button onclick="mudarAba('tab-anual')" id="btn-tab-anual" class="aba-item py-4 text-xs font-black uppercase tracking-widest text-slate-400 whitespace-nowrap">📈 Análise Anual</button>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-center gap-3 w-full xl:w-auto">
+                    <div class="flex flex-wrap items-center justify-center bg-slate-800 p-1.5 rounded-xl border border-slate-700 shrink-0 gap-1 sm:gap-0">
+                        <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase px-2">No Prazo (R$)</span>
+                        <input type="text" id="config-prazo" oninput="mascaraMoeda(this)" class="w-14 sm:w-16 bg-slate-900 border border-slate-600 rounded-lg text-white text-center text-xs sm:text-sm font-bold p-1 outline-none focus:border-cyan-500" value="70,00">
+                        
+                        <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase px-2 sm:ml-2">Atraso (R$)</span>
+                        <input type="text" id="config-atraso" oninput="mascaraMoeda(this)" class="w-14 sm:w-16 bg-slate-900 border border-slate-600 rounded-lg text-rose-400 text-center text-xs sm:text-sm font-bold p-1 outline-none focus:border-rose-500" value="100,00">
+                        
+                        <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase px-2 sm:ml-2">Chave PIX</span>
+                        <input type="text" id="config-pix" placeholder="Sua Chave PIX..." class="w-20 sm:w-32 bg-slate-900 border border-slate-600 rounded-lg text-emerald-400 text-center text-xs sm:text-sm font-bold p-1 outline-none focus:border-emerald-500">
+                        
+                        <button id="btn-salvar-valores" onclick="salvarConfiguracaoGeral()" class="ml-1 sm:ml-2 bg-slate-700 hover:bg-slate-600 text-white p-1 sm:p-1.5 rounded-lg text-xs transition-colors" title="Salvar Valores">💾</button>
+                    </div>
+
+                    <button onclick="abrirModalRelatorio()" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-colors shrink-0 flex items-center justify-center shadow-sm">
+                        <span class="mr-2 text-base">📊</span> Gerar Relatório
+                    </button>
                 </div>
             </div>
 
-            <div class="flex-1 overflow-y-auto p-4 md:p-8">
-                <div class="max-w-7xl mx-auto space-y-6">
-
-                    <div id="tab-mensalidades" class="aba-content flex flex-col gap-6">
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            <div class="lg:col-span-2 bg-white p-6 card-premium flex justify-between items-center">
-                                <div class="flex gap-10">
-                                    <div><p class="text-[10px] font-black text-slate-400 uppercase">Recebido</p><p class="text-2xl font-black text-emerald-500" id="lbl-resumo-pago">R$ 0,00</p></div>
-                                    <div><p class="text-[10px] font-black text-slate-400 uppercase">Pendente</p><p class="text-2xl font-black text-rose-500" id="lbl-resumo-pendente">R$ 0,00</p></div>
-                                </div>
-                                <div class="relative w-48 hidden lg:block">
-                                    <input type="text" id="input-busca-mens" onkeyup="filtrarMensalidades()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-bold pl-10 shadow-inner" placeholder="Buscar aluno...">
-                                    <span class="absolute left-3 top-3.5 opacity-30">🔍</span>
-                                </div>
-                            </div>
-                            <button onclick="gerarFaturas()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-3xl shadow-xl transition-all uppercase text-xs tracking-widest py-6">⚡ Gerar Faturas do Mês</button>
-                        </div>
-
-                        <div class="card-premium overflow-hidden bg-white">
-                            <table class="w-full text-left border-collapse whitespace-nowrap">
-                                <thead>
-                                    <tr class="bg-slate-50 border-b border-slate-100 text-[10px] font-black uppercase text-slate-400">
-                                        <th class="px-6 py-4">Aluno</th>
-                                        <th class="px-6 py-4 text-center">Vencimento</th>
-                                        <th class="px-6 py-4 text-center">Status</th>
-                                        <th class="px-6 py-4 text-right">Valor</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tabela-mensalidades" class="divide-y divide-slate-50 text-sm"></tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div id="tab-config-asaas" class="aba-content hidden flex-col gap-6">
-                        <div class="max-w-4xl mx-auto w-full space-y-6">
-                            
-                            <div id="asaas-ativo-panel" class="hidden flex-col gap-6">
-                                
-                                <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
-                                    <div class="lg:col-span-3 card-premium p-8 relative overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800 text-white shadow-2xl">
-                                        <div class="relative z-10">
-                                            <p class="text-cyan-400 text-[10px] font-black uppercase tracking-widest mb-4">Saldo Disponível na Subconta</p>
-                                            <h3 class="text-5xl font-black tracking-tighter mb-6" id="asaas-saldo-display">R$ 0,00</h3>
-                                            <div class="flex items-center gap-6">
-                                                <div>
-                                                    <p class="text-slate-400 text-[9px] font-bold uppercase mb-1">A Compensar</p>
-                                                    <p class="text-sm font-bold text-slate-200" id="asaas-saldo-previsto">R$ 0,00</p>
-                                                </div>
-                                                <div class="h-8 w-[1px] bg-slate-700"></div>
-                                                <button onclick="carregarSaldoAsaas()" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all backdrop-blur-md border border-white/10 flex items-center gap-2">
-                                                    <span>🔄</span> Atualizar
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl"></div>
-                                    </div>
-
-                                    <div class="lg:col-span-2 card-premium p-6 flex flex-col bg-white border-l-4 border-l-purple-500 justify-between">
-                                        <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-3 flex items-center gap-2">
-                                            <span class="bg-purple-100 text-purple-600 p-1.5 rounded-lg">⚙️</span> Formas de Pagamento
-                                        </h4>
-                                        
-                                        <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl mb-3 shadow-sm">
-                                            <p class="text-[9px] font-black text-amber-700 uppercase tracking-widest mb-1 flex items-center gap-1"><span>⚠️</span> Prazos de Compensação</p>
-                                            <p class="text-[9px] text-amber-600 font-medium leading-tight">
-                                                <b>PIX:</b> Imediato. <b>Boleto:</b> até 3 dias úteis. <b>Cartão:</b> 30 dias para liberação na conta.
-                                            </p>
-                                        </div>
-                                        
-                                        <div class="space-y-2 relative z-10 flex-1">
-                                            <label class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200 opacity-70 cursor-not-allowed">
-                                                <div class="flex items-center gap-2"><span class="text-lg">⚡</span><div><p class="text-[10px] font-black text-slate-700">PIX (Obrigatório)</p></div></div>
-                                                <input type="checkbox" checked disabled class="w-4 h-4 rounded text-cyan-600 border-none">
-                                            </label>
-                                            <label class="flex items-center justify-between p-2.5 bg-white border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors shadow-sm">
-                                                <div class="flex items-center gap-2"><span class="text-lg">🏦</span><div><p class="text-[10px] font-black text-slate-700">Boleto Bancário</p></div></div>
-                                                <input type="checkbox" id="asaas-aceita-boleto" class="w-4 h-4 text-cyan-600 rounded border-slate-300 focus:ring-cyan-500">
-                                            </label>
-                                            <label class="flex items-center justify-between p-2.5 bg-white border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors shadow-sm">
-                                                <div class="flex items-center gap-2"><span class="text-lg">💳</span><div><p class="text-[10px] font-black text-slate-700">Cartão de Crédito</p></div></div>
-                                                <input type="checkbox" id="asaas-aceita-cartao" class="w-4 h-4 text-cyan-600 rounded border-slate-300 focus:ring-cyan-500">
-                                            </label>
-                                        </div>
-                                        <button onclick="salvarConfigPagamento()" id="btn-salvar-pagamentos" class="mt-4 bg-cyan-600 hover:bg-cyan-700 text-white text-[9px] font-black px-4 py-3 rounded-xl transition-colors uppercase tracking-widest w-full shadow-md">
-                                            💾 Salvar Preferências
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                    <div class="card-premium p-6 flex flex-col bg-white">
-                                        <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                            <span class="bg-cyan-100 text-cyan-600 p-2 rounded-lg">💸</span> Transferir / Sacar
-                                        </h4>
-                                        <form id="form-saque" onsubmit="event.preventDefault(); solicitarSaque();" class="space-y-4 flex-1 flex flex-col">
-                                            <div>
-                                                <div class="flex justify-between items-center mb-2">
-                                                    <label class="block text-[10px] font-black text-slate-400 uppercase ml-1">Valor do Saque (R$)</label>
-                                                    <button type="button" onclick="preencherSaldoTotal()" class="text-[9px] bg-cyan-100 text-cyan-700 font-black uppercase tracking-widest px-3 py-1.5 rounded-lg hover:bg-cyan-200 transition-all shadow-sm flex items-center gap-1 border border-cyan-200">
-                                                        <span>👇</span> Puxar Total
-                                                    </button>
-                                                </div>
-                                                <input type="text" id="saque-valor" oninput="mascaraMoeda(this)" required class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-black text-cyan-600 text-xl placeholder:text-slate-300 shadow-inner" placeholder="0,00">
-                                            </div>
-                                            <div class="grid grid-cols-1 gap-3">
-                                                <select id="saque-tipo-pix" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700 cursor-pointer shadow-sm"><option value="CPF">CPF</option><option value="CNPJ">CNPJ</option><option value="EMAIL">E-mail</option><option value="PHONE">Celular</option><option value="EVP">Chave Aleatória</option></select>
-                                                <input type="text" id="saque-chave-pix" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700 shadow-sm" placeholder="Sua Chave PIX...">
-                                            </div>
-                                            <button type="submit" id="btn-sacar-asaas" class="w-full mt-auto bg-slate-900 hover:bg-black text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest transition-all text-xs">
-                                                Efetuar Transferência
-                                            </button>
-                                        </form>
-                                    </div>
-
-                                    <div id="asaas-verificacao-panel" class="hidden card-premium p-6 border-l-[6px] border-l-cyan-500 bg-white">
-                                        <div class="flex items-start justify-between mb-6">
-                                            <div>
-                                                <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest">Identidade (KYC)</h4>
-                                                <p class="text-[10px] text-slate-500 font-medium mt-1 max-w-xs">Anexe fotos nítidas dos documentos para liberar saques e transferências PIX na sua conta.</p>
-                                            </div>
-                                            <span class="bg-cyan-50 text-cyan-600 p-2 rounded-xl text-lg">🛡️</span>
-                                        </div>
-
-                                        <div class="grid grid-cols-3 gap-2 mb-4">
-                                            <div class="flex flex-col gap-1">
-                                                <label class="text-[9px] font-black text-slate-400 uppercase text-center">Frente</label>
-                                                <div class="relative group">
-                                                    <input type="file" id="file-document-front" accept="image/*" class="hidden" onchange="previewFile(this, 'preview-front')">
-                                                    <label for="file-document-front" class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-cyan-400 hover:bg-cyan-50 transition-all overflow-hidden bg-slate-50">
-                                                        <div id="preview-front" class="flex flex-col items-center justify-center w-full h-full text-center group-hover:scale-105 transition-transform"><span class="text-xl">📇</span></div>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="flex flex-col gap-1">
-                                                <label class="text-[9px] font-black text-slate-400 uppercase text-center">Verso</label>
-                                                <div class="relative group">
-                                                    <input type="file" id="file-document-back" accept="image/*" class="hidden" onchange="previewFile(this, 'preview-back')">
-                                                    <label for="file-document-back" class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-cyan-400 hover:bg-cyan-50 transition-all overflow-hidden bg-slate-50">
-                                                        <div id="preview-back" class="flex flex-col items-center justify-center w-full h-full text-center group-hover:scale-105 transition-transform"><span class="text-xl">📑</span></div>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="flex flex-col gap-1">
-                                                <label class="text-[9px] font-black text-slate-400 uppercase text-center">Selfie</label>
-                                                <div class="relative group">
-                                                    <input type="file" id="file-selfie" accept="image/*" class="hidden" onchange="previewFile(this, 'preview-selfie')">
-                                                    <label for="file-selfie" class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-cyan-400 hover:bg-cyan-50 transition-all overflow-hidden bg-slate-50">
-                                                        <div id="preview-selfie" class="flex flex-col items-center justify-center w-full h-full text-center group-hover:scale-105 transition-transform"><span class="text-xl">🤳</span></div>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <button onclick="enviarDocumentosAsaas()" id="btn-enviar-docs" class="mt-auto bg-slate-900 hover:bg-black text-white text-[10px] font-black py-4 rounded-xl transition-all uppercase tracking-widest w-full shadow-md">
-                                            📤 Enviar para Análise
-                                        </button>
-                                    </div>
-                                </div>
-                            </div> <form id="asaas-form-panel" class="card-premium p-8 space-y-6 bg-white" onsubmit="event.preventDefault(); criarSubcontaAsaas();">
-                                <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl">
-                                    <p class="text-xs font-bold text-amber-700">⚠️ Para habilitar a emissão de cobranças, preencha os dados do responsável financeiro.</p>
-                                </div>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div class="md:col-span-2"><label class="text-[10px] font-black text-slate-400 uppercase ml-1">Nome Completo / Razão Social</label><input type="text" id="asaas-nome" required class="w-full p-3 bg-slate-50 font-bold"></div>
-                                    <div><label class="text-[10px] font-black text-slate-400 uppercase ml-1">CPF ou CNPJ</label><input type="text" id="asaas-cpf" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full p-3 bg-slate-50 font-bold"></div>
-                                    <div><label class="text-[10px] font-black text-slate-400 uppercase ml-1">Data de Nascimento</label><input type="date" id="asaas-nascimento" class="w-full p-3 bg-slate-50 font-bold"></div>
-                                    <div><label class="text-[10px] font-black text-slate-400 uppercase ml-1">E-mail de Contato</label><input type="email" id="asaas-email" required class="w-full p-3 bg-slate-50 font-bold"></div>
-                                    <div><label class="text-[10px] font-black text-slate-400 uppercase ml-1">Celular (DDD)</label><input type="text" id="asaas-celular" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full p-3 bg-slate-50 font-bold"></div>
-                                    <div class="md:col-span-2"><label class="text-[10px] font-black text-slate-400 uppercase ml-1">Renda Mensal Aproximada</label><input type="text" id="asaas-renda" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full p-3 bg-slate-50 font-bold"></div>
-                                </div>
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-slate-100 pt-6">
-                                    <div><label class="text-[10px] font-black text-slate-400 uppercase ml-1">CEP</label><input type="text" id="asaas-cep" onblur="buscarCEPAsaas(this.value)" oninput="mascaraCEP(this)" required maxlength="9" class="w-full p-3 bg-slate-50 font-bold"></div>
-                                    <div class="md:col-span-2"><label class="text-[10px] font-black text-slate-400 uppercase ml-1">Endereço</label><input type="text" id="asaas-end" required class="w-full p-3 bg-slate-50 font-bold"></div>
-                                    <div><label class="text-[10px] font-black text-slate-400 uppercase ml-1">Número</label><input type="text" id="asaas-num" required class="w-full p-3 bg-slate-50 font-bold"></div>
-                                    <div class="md:col-span-2"><label class="text-[10px] font-black text-slate-400 uppercase ml-1">Bairro</label><input type="text" id="asaas-bairro" required class="w-full p-3 bg-slate-50 font-bold"></div>
-                                </div>
-                                <button type="submit" id="btn-ativar-asaas-form" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest text-xs mt-4">🚀 Ativar Minha Conta Digital</button>
-                            </form>
-                        </div>
+            <div class="flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-10">
+                <div class="max-w-7xl mx-auto">
+                    
+                    <div class="flex border-b border-slate-200 mb-6 overflow-x-auto hide-scrollbar snap-x">
+                        <button onclick="mudarAba('tab-dash')" id="btn-tab-dash" class="aba-item py-4 px-4 sm:px-6 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all whitespace-nowrap snap-start">📊 Resumo Mês</button>
+                        <button onclick="mudarAba('tab-mensalidades')" id="btn-tab-mensalidades" class="aba-item py-4 px-4 sm:px-6 text-[10px] sm:text-xs font-black uppercase tracking-widest tab-active transition-all whitespace-nowrap snap-start">👥 Mensalidades</button>
+                        
+                        <button onclick="mudarAba('tab-config-asaas')" id="btn-tab-config-asaas" class="aba-item py-4 px-4 sm:px-6 text-[10px] sm:text-xs font-black uppercase tracking-widest text-cyan-600 bg-cyan-50/50 hover:bg-cyan-100 rounded-t-xl transition-all whitespace-nowrap snap-start flex items-center gap-1.5 border-b-[3px] border-transparent hover:border-cyan-200">
+                            <span class="text-sm">✨</span> Conta Digital
+                        </button>
+                        
+                        <button onclick="mudarAba('tab-fluxo')" id="btn-tab-fluxo" class="aba-item py-4 px-4 sm:px-6 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all whitespace-nowrap snap-start">📋 Despesas / Extras</button>
+                        <button onclick="mudarAba('tab-anual')" id="btn-tab-anual" class="aba-item py-4 px-4 sm:px-6 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all whitespace-nowrap snap-start">📈 Análise Anual</button>
                     </div>
 
                     <div id="tab-dash" class="aba-content hidden flex-col gap-6">
@@ -289,15 +114,263 @@
                          </div>
                     </div>
 
-                    <div id="tab-anual" class="aba-content hidden flex-col gap-6">
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                            <div class="bg-white p-6 card-premium text-center"><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Entradas (Ano)</p><h3 class="text-2xl font-black text-emerald-500 mt-2" id="ano-entradas">R$ 0,00</h3></div>
-                            <div class="bg-white p-6 card-premium text-center"><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Saídas (Ano)</p><h3 class="text-2xl font-black text-rose-500 mt-2" id="ano-saidas">R$ 0,00</h3></div>
-                            <div class="bg-slate-100 p-6 card-premium border-slate-200 text-center"><p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Saldo Acumulado</p><h3 class="text-2xl font-black text-slate-800 mt-2" id="ano-saldo">R$ 0,00</h3></div>
+                    <div id="tab-mensalidades" class="aba-content flex flex-col gap-6">
+                        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 card-premium">
+                            <div class="flex gap-6">
+                                <div><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Caixa Atual</p><p class="text-xl font-black text-emerald-500" id="lbl-resumo-pago">Recebido: R$ 0,00</p></div>
+                                <div><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Falta Receber</p><p class="text-xl font-black text-rose-400" id="lbl-resumo-pendente">A Receber: R$ 0,00</p></div>
+                            </div>
+                            
+                            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                                <div class="relative flex-1 sm:w-64">
+                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">🔍</div>
+                                    <input type="text" id="input-busca-mens" onkeyup="filtrarMensalidades()" class="bg-slate-50 border border-slate-200 text-slate-900 text-xs font-bold rounded-xl w-full pl-9 p-3 outline-none focus:border-cyan-500 transition-all" placeholder="Buscar atleta ou fatura...">
+                                </div>
+                                <button id="btn-gerar-faturas" onclick="gerarFaturas()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-black py-3 px-6 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest flex items-center justify-center shrink-0">
+                                    <span class="mr-2 text-base">⚡</span> Gerar Faturas
+                                </button>
+                            </div>
                         </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[350px]">
-                            <div class="bg-white p-4 card-premium"><canvas id="chartEvolucaoAno"></canvas></div>
-                            <div class="bg-white p-4 card-premium"><canvas id="chartAcumuladoAno"></canvas></div>
+
+                        <div class="bg-white card-premium overflow-hidden flex-1 min-h-[400px]">
+                            <div class="overflow-x-auto w-full h-full">
+                                <table class="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
+                                    <thead>
+                                        <tr class="bg-slate-50 border-b border-slate-100 text-slate-400">
+                                            <th class="px-4 py-4 text-[10px] font-black uppercase tracking-widest">Aluno</th>
+                                            <th class="px-4 py-4 text-[10px] font-black uppercase tracking-widest text-center">Vencimento</th>
+                                            <th class="px-4 py-4 text-[10px] font-black uppercase tracking-widest text-center">Bolsa</th>
+                                            <th class="px-4 py-4 text-[10px] font-black uppercase tracking-widest text-center">Status</th>
+                                            <th class="px-4 py-4 text-[10px] font-black uppercase tracking-widest text-right">Valor Total</th>
+                                            <th class="px-4 py-4 text-[10px] font-black uppercase tracking-widest text-center">Pago Em</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tabela-mensalidades" class="divide-y divide-slate-100 text-sm bg-white"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tab-config-asaas" class="aba-content hidden flex-col gap-6">
+                        <div class="bg-white card-premium p-6 md:p-8 max-w-4xl mx-auto w-full">
+                            
+                            <div class="flex items-center gap-4 mb-8 pb-6 border-b border-slate-100">
+                                <div class="w-16 h-16 bg-cyan-500 rounded-2xl flex items-center justify-center text-3xl shadow-lg shadow-cyan-500/30">💳</div>
+                                <div>
+                                    <h2 class="text-xl font-black text-slate-800">Conta Digital da Academia</h2>
+                                    <p class="text-xs font-bold text-slate-400 mt-1">Gestão de recebimentos via PIX, Boleto e Cartão com baixa automática no sistema.</p>
+                                </div>
+                            </div>
+
+                            <div id="asaas-ativo-panel" class="hidden py-4">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                                    
+                                    <div class="bg-slate-900 p-6 md:p-8 rounded-3xl shadow-xl border border-slate-800 text-left relative overflow-hidden flex flex-col justify-between">
+                                        <div class="absolute top-0 right-0 p-6 opacity-5 text-6xl pointer-events-none">💰</div>
+                                        <div>
+                                            <p class="text-[10px] font-black uppercase tracking-widest text-cyan-400 mb-1 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span> Saldo Disponível</p>
+                                            <h3 class="text-4xl md:text-5xl font-black text-white tracking-tight mb-2" id="asaas-saldo-display">R$ 0,00</h3>
+                                            <p class="text-xs text-slate-400 font-bold mb-4" id="asaas-saldo-previsto">A compensar: R$ 0,00</p>
+                                            <button onclick="carregarSaldoAsaas()" id="btn-atualizar-saldo" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-bold px-4 py-2 rounded-lg transition-colors border border-slate-700 flex items-center gap-2 w-max">
+                                                <span>🔄</span> Atualizar Saldo
+                                            </button>
+                                        </div>
+                                        <div class="mt-8 pt-4 border-t border-slate-800">
+                                            <p class="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-1">Código da Carteira (Wallet ID)</p>
+                                            <p class="font-mono text-xs font-bold text-slate-400 truncate" id="asaas-wallet-display">---</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-200 text-left flex flex-col">
+                                        <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-6 flex items-center gap-2">
+                                            <span class="bg-cyan-100 text-cyan-600 p-2 rounded-lg">💸</span> Transferir / Sacar
+                                        </h4>
+                                        <form id="form-saque" onsubmit="event.preventDefault(); solicitarSaque();" class="space-y-5 flex-1 flex flex-col">
+                                            <div>
+                                                <div class="flex justify-between items-center mb-2">
+                                                    <label class="block text-[10px] font-black text-slate-400 uppercase">Valor do Saque (R$)</label>
+                                                    
+                                                    <button type="button" onclick="preencherSaldoTotal()" class="text-[10px] bg-cyan-100 text-cyan-700 font-black uppercase tracking-widest px-4 py-1.5 rounded-xl hover:bg-cyan-200 transition-all shadow-sm flex items-center gap-1.5 border border-cyan-200">
+                                                        <span class="text-sm">👇</span> Puxar Total
+                                                    </button>
+                                                </div>
+                                                <input type="text" id="saque-valor" oninput="mascaraMoeda(this)" required class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-black text-cyan-600 text-xl" placeholder="0,00">
+                                            </div>
+                                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Tipo de Chave</label>
+                                                    <select id="saque-tipo-pix" required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700 cursor-pointer">
+                                                        <option value="CPF">CPF</option><option value="CNPJ">CNPJ</option><option value="EMAIL">E-mail</option><option value="PHONE">Celular</option><option value="EVP">Chave Aleatória</option>
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Sua Chave PIX</label>
+                                                    <input type="text" id="saque-chave-pix" required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700" placeholder="Chave de destino...">
+                                                </div>
+                                            </div>
+                                            <button type="submit" id="btn-sacar-asaas" class="w-full mt-auto bg-slate-900 hover:bg-black text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest transition-all text-xs">
+                                                Efetuar Transferência PIX
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <div class="mb-8 bg-white p-6 md:p-8 rounded-3xl shadow-lg border border-slate-200 border-l-4 border-l-cyan-500 relative overflow-hidden">
+                                    <div class="absolute top-0 right-0 p-4 opacity-5 text-6xl pointer-events-none">⚙️</div>
+                                    
+                                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4">
+                                        <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
+                                            <span class="bg-cyan-100 text-cyan-600 p-2 rounded-lg">⚙️</span> Formas de Pagamento
+                                        </h4>
+                                    </div>
+                                    
+                                    <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl mb-6 shadow-sm">
+                                        <p class="text-[10px] font-black text-amber-700 uppercase tracking-widest mb-1 flex items-center gap-1"><span>⚠️</span> Prazos de Compensação</p>
+                                        <p class="text-[10px] text-amber-600 font-medium leading-relaxed">
+                                            O <b>PIX</b> é creditado instantaneamente. O <b>Boleto Bancário</b> leva até <b>3 dias úteis</b> após o pagamento. Pagamentos via <b>Cartão de Crédito</b> levam <b>30 dias</b> para compor o seu saldo disponível.
+                                        </p>
+                                    </div>
+                                    
+                                    <div class="space-y-3 relative z-10">
+                                        <label class="flex items-center gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl cursor-not-allowed opacity-70">
+                                            <input type="checkbox" checked disabled class="w-5 h-5 text-cyan-600 rounded border-none cursor-not-allowed">
+                                            <div>
+                                                <p class="text-xs font-black text-slate-700">PIX (Obrigatório e Padrão)</p>
+                                                <p class="text-[10px] font-bold text-emerald-500">Liberação Imediata na conta</p>
+                                            </div>
+                                        </label>
+                                        
+                                        <label class="flex items-center gap-3 p-4 bg-white border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors shadow-sm">
+                                            <input type="checkbox" id="asaas-aceita-boleto" class="w-5 h-5 text-cyan-600 rounded border-slate-300 focus:ring-cyan-500">
+                                            <div>
+                                                <p class="text-xs font-black text-slate-700">Boleto Bancário</p>
+                                                <p class="text-[10px] font-bold text-amber-500">Liberação em 1 a 3 dias úteis</p>
+                                            </div>
+                                        </label>
+                                        
+                                        <label class="flex items-center gap-3 p-4 bg-white border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors shadow-sm">
+                                            <input type="checkbox" id="asaas-aceita-cartao" class="w-5 h-5 text-cyan-600 rounded border-slate-300 focus:ring-cyan-500">
+                                            <div>
+                                                <p class="text-xs font-black text-slate-700">Cartão de Crédito</p>
+                                                <p class="text-[10px] font-bold text-rose-500">Liberação em 30 dias</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <button onclick="salvarConfigPagamento()" id="btn-salvar-pagamentos" class="mt-5 bg-cyan-600 hover:bg-cyan-700 text-white text-[10px] font-bold px-6 py-3.5 rounded-xl transition-colors uppercase tracking-widest w-full sm:w-auto shadow-md">
+                                        💾 Salvar Preferências
+                                    </button>
+                                </div>
+                            </div>
+
+                            <form id="asaas-form-panel" class="space-y-6" onsubmit="event.preventDefault(); criarSubcontaAsaas();">
+                                <p class="text-xs font-bold text-amber-600 bg-amber-50 p-4 rounded-xl border border-amber-200">
+                                    ⚠️ Para garantir a sua segurança e obedecer às regras do Banco Central, preencha os dados do responsável financeiro da equipe para habilitarmos a emissão de cobranças e baixa de pagamentos automáticos.
+                                </p>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="md:col-span-2">
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome Completo / Razão Social</label>
+                                        <input type="text" id="asaas-nome" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CPF ou CNPJ (Apenas números)</label>
+                                        <input type="text" id="asaas-cpf" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Data de Nascimento (Se for CPF)</label>
+                                        <input type="date" id="asaas-nascimento" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">E-mail de Contato</label>
+                                        <input type="email" id="asaas-email" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Celular (Apenas números, com DDD)</label>
+                                        <input type="text" id="asaas-celular" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700" placeholder="Ex: 21999999999">
+                                    </div>
+                                    <div class="md:col-span-2">
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Renda / Faturamento Mensal Aproximado (R$)</label>
+                                        <input type="text" id="asaas-renda" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700" placeholder="Ex: 5000 (Apenas números)">
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-slate-100 pt-6">
+                                    <div class="col-span-1">
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CEP</label>
+                                        <input type="text" id="asaas-cep" onblur="buscarCEPAsaas(this.value)" oninput="mascaraCEP(this)" required maxlength="9" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700" placeholder="00000-000">
+                                    </div>
+                                    <div class="col-span-1 md:col-span-2">
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Endereço (Rua/Avenida)</label>
+                                        <input type="text" id="asaas-end" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                                    </div>
+                                    <div class="col-span-1">
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Número</label>
+                                        <input type="text" id="asaas-num" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                                    </div>
+                                    <div class="col-span-1 md:col-span-2">
+                                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Bairro</label>
+                                        <input type="text" id="asaas-bairro" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                                    </div>
+                                </div>
+
+                                <button type="submit" id="btn-ativar-asaas-form" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest transition-all mt-4 text-xs">
+                                    🚀 Ativar Minha Conta Digital
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div id="tab-fluxo" class="aba-content hidden flex-col gap-6">
+                        <div class="flex flex-col sm:flex-row gap-4 justify-end">
+                            <button onclick="abrirModalReceita()" class="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-6 rounded-xl shadow-md transition-all text-xs flex items-center justify-center uppercase tracking-widest">
+                                <span class="mr-2 text-base">📈</span> Nova Receita
+                            </button>
+                            <button onclick="abrirModalDespesa()" class="w-full sm:w-auto bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 px-6 rounded-xl shadow-md transition-all text-xs flex items-center justify-center uppercase tracking-widest">
+                                <span class="mr-2 text-base">📉</span> Nova Despesa
+                            </button>
+                        </div>
+
+                        <div class="bg-white card-premium overflow-hidden min-h-[400px]">
+                            <div class="overflow-x-auto w-full">
+                                <table class="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
+                                    <thead>
+                                        <tr class="bg-slate-900 border-b border-slate-800 text-white">
+                                            <th class="px-4 py-4 text-[10px] font-black uppercase tracking-widest">Data</th>
+                                            <th class="px-4 py-4 text-[10px] font-black uppercase tracking-widest">Descrição / Origem</th>
+                                            <th class="px-4 py-4 text-[10px] font-black uppercase tracking-widest text-center">Categoria</th>
+                                            <th class="px-4 py-4 text-[10px] font-black uppercase tracking-widest text-right">Valor</th>
+                                            <th class="px-4 py-4 text-[10px] font-black uppercase tracking-widest text-center">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tabela-fluxo" class="divide-y divide-slate-100 text-sm">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tab-anual" class="aba-content hidden flex-col gap-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
+                            <div class="bg-white p-5 md:p-6 card-premium text-center">
+                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Entradas (Ano)</p>
+                                <h3 class="text-2xl md:text-3xl font-black text-emerald-500 mt-2" id="ano-entradas">R$ 0,00</h3>
+                            </div>
+                            <div class="bg-white p-5 md:p-6 card-premium text-center">
+                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Saídas (Ano)</p>
+                                <h3 class="text-2xl md:text-3xl font-black text-rose-500 mt-2" id="ano-saidas">R$ 0,00</h3>
+                            </div>
+                            <div class="bg-gradient-to-br from-slate-100 to-slate-200 p-5 md:p-6 card-premium text-center border-slate-300">
+                                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Saldo Acumulado (YTD)</p>
+                                <h3 class="text-2xl md:text-3xl font-black text-slate-800 mt-2" id="ano-saldo">R$ 0,00</h3>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                            <div class="bg-white p-4 md:p-6 card-premium flex flex-col items-center justify-center relative min-h-[300px] md:min-h-[350px]">
+                                <canvas id="chartEvolucaoAno"></canvas>
+                            </div>
+                            <div class="bg-white p-4 md:p-6 card-premium flex flex-col items-center justify-center relative min-h-[300px] md:min-h-[350px]">
+                                <canvas id="chartAcumuladoAno"></canvas>
+                            </div>
                         </div>
                     </div>
 
@@ -308,87 +381,166 @@
 
     <div id="modal-acoes-wrapper" class="fixed inset-0 z-[200] bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity">
         <div id="painel-acoes-mensalidade" class="bg-white p-6 card-premium shadow-2xl w-full max-w-md relative max-h-[90vh] overflow-y-auto hide-scrollbar">
+            
             <button onclick="fecharModalAcoes()" class="absolute top-4 right-4 text-slate-400 hover:text-rose-500 text-3xl leading-none transition-colors">&times;</button>
+
             <h3 class="font-black text-slate-800 truncate mb-1 text-xl pr-8" id="acao-aluno-nome">Selecione uma fatura</h3>
             <p class="text-[10px] font-bold text-rose-500 uppercase mb-4 h-4" id="acao-alerta-divida"></p>
 
             <div class="grid grid-cols-2 gap-3 mb-6 border-b border-slate-100 pb-6">
                 <button onclick="gerarReciboPDF()" id="btn-recibo-lateral" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl text-xs flex items-center justify-center transition-colors shadow-sm"><span class="mr-2">📄</span> Baixar recibo</button>
-                <button id="btn-whats-lateral" onclick="enviarWhatsApp()" class="bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center transition-colors shadow-sm"><span class="mr-2">💬</span> Cobrar</button>
+                <button id="btn-whats-lateral" onclick="enviarWhatsApp()" class="bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center transition-colors shadow-sm">
+                    <span class="mr-2">💬</span> Cobrar
+                </button>
             </div>
 
             <div class="space-y-4 border-b border-slate-100 pb-6 mb-6">
                 <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">💸 Registrar Pagamento</h4>
                 <div class="flex gap-2">
                     <input type="date" id="acao-data-pag" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none">
+                    
                     <select id="acao-forma-pag" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed">
-                        <option value="PIX">PIX manual</option><option value="Dinheiro">Dinheiro</option><option value="PIX_ASAAS">PIX (Automático)</option><option value="CREDIT_CARD">Cartão de Crédito</option><option value="BOLETO">Boleto Bancário</option>
+                        <option value="PIX">PIX manual</option>
+                        <option value="Dinheiro">Dinheiro</option>
+                        <option value="PIX_ASAAS">PIX (Automático)</option>
+                        <option value="CREDIT_CARD">Cartão de Crédito</option>
+                        <option value="BOLETO">Boleto Bancário</option>
                     </select>
                 </div>
+                
                 <button id="btn-reg-pagamento" onclick="registrarPagamento()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest cursor-pointer">✅ Baixa Manual</button>
+                
                 <button id="btn-gerar-asaas" onclick="gerarLinkAsaasAdmin()" class="hidden w-full bg-cyan-500 hover:bg-cyan-600 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest cursor-pointer border border-cyan-600">💳 Gerar Link de Pagamento</button>
 
                 <div class="flex gap-3 mt-4">
-                    <button id="btn-desfazer-pag" onclick="cancelarPagamento()" class="flex-1 bg-slate-100 text-slate-400 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest cursor-not-allowed transition-colors">Desfazer</button>
-                    <button id="btn-excluir-pag" onclick="excluirPagamento()" class="flex-1 bg-rose-50 text-rose-500 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest hover:bg-rose-100 transition-colors">Excluir Fatura</button>
+                    <button id="btn-desfazer-pag" onclick="cancelarPagamento()" class="flex-1 bg-slate-100 text-slate-300 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest cursor-not-allowed transition-colors">Desfazer</button>
+                    <button id="btn-excluir-pag" onclick="excluirPagamento()" class="flex-1 bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest transition-colors">Excluir Fatura</button>
                 </div>
             </div>
 
             <div class="space-y-4">
                 <h4 class="text-[10px] font-black text-purple-500 uppercase tracking-widest">⚙️ Regras do Atleta</h4>
                 <div class="grid grid-cols-2 gap-3">
-                    <div><span class="block text-[10px] font-bold text-slate-500 mb-1">Bolsa (%)</span><select id="acao-bolsa" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 outline-none"><option value="0">0%</option><option value="10">10%</option><option value="20">20%</option><option value="25">25%</option><option value="50">50%</option><option value="75">75%</option><option value="100">100%</option></select></div>
-                    <div><span class="block text-[10px] font-bold text-slate-500 mb-1">Venc. (Dia)</span><select id="acao-venc" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 outline-none"></select></div>
+                    <div>
+                        <span class="block text-[10px] font-bold text-slate-500 mb-1">Bolsa (%)</span>
+                        <select id="acao-bolsa" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 outline-none">
+                            <option value="0">0%</option><option value="10">10%</option><option value="20">20%</option><option value="25">25%</option><option value="50">50%</option><option value="75">75%</option><option value="100">100%</option>
+                        </select>
+                    </div>
+                    <div>
+                        <span class="block text-[10px] font-bold text-slate-500 mb-1">Venc. (Dia)</span>
+                        <select id="acao-venc" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 outline-none"></select>
+                    </div>
                 </div>
-                <button id="btn-salvar-regras" onclick="salvarConfigAluno()" class="w-full bg-purple-50 hover:bg-purple-100 text-purple-700 font-black py-3 rounded-xl text-[10px] uppercase tracking-widest transition-colors shadow-sm">💾 Salvar Regras</button>
+                <button id="btn-salvar-regras" onclick="salvarConfigAluno()" class="w-full bg-purple-100 hover:bg-purple-200 text-purple-700 font-black py-3 rounded-xl text-[10px] uppercase tracking-widest transition-colors shadow-sm">💾 Salvar Regras</button>
             </div>
         </div>
     </div>
 
     <div id="modal-despesa" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-white card-premium shadow-2xl w-full max-w-md overflow-hidden">
-            <div class="bg-rose-500 p-5 text-white flex justify-between items-center"><h3 class="font-black uppercase text-sm tracking-widest"><span class="mr-2">📉</span> Registrar Despesa</h3><button onclick="fecharModalDespesa()" class="text-rose-200 hover:text-white text-2xl leading-none">&times;</button></div>
+            <div class="bg-rose-500 p-5 text-white flex justify-between items-center">
+                <h3 class="font-black uppercase text-sm tracking-widest"><span class="mr-2">📉</span> Registrar Despesa</h3>
+                <button onclick="fecharModalDespesa()" class="text-rose-200 hover:text-white text-2xl leading-none">&times;</button>
+            </div>
             <div class="p-6 space-y-4">
-                <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Descrição</label><input type="text" id="desp-desc" placeholder="Ex: Aluguel, Limpeza..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-rose-500 font-bold text-slate-700"></div>
-                <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Favorecido / Fornecedor</label><input type="text" id="desp-fonte" placeholder="A quem foi pago?" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none text-slate-700"></div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Descrição</label>
+                    <input type="text" id="desp-desc" placeholder="Ex: Aluguel, Limpeza..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-rose-500 font-bold text-slate-700">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Favorecido / Fornecedor</label>
+                    <input type="text" id="desp-fonte" placeholder="A quem foi pago?" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none text-slate-700">
+                </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Valor (R$)</label><input type="text" id="desp-valor" oninput="mascaraMoeda(this)" placeholder="0,00" class="w-full p-3 bg-rose-50 border border-rose-200 rounded-xl outline-none focus:ring-2 focus:ring-rose-200 font-black text-rose-700"></div>
-                    <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Data</label><input type="date" id="desp-data" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none text-slate-700 font-bold"></div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Valor (R$)</label>
+                        <input type="text" id="desp-valor" oninput="mascaraMoeda(this)" placeholder="0,00" class="w-full p-3 bg-rose-50 border border-rose-200 rounded-xl outline-none focus:ring-2 focus:ring-rose-200 font-black text-rose-700">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Data</label>
+                        <input type="date" id="desp-data" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none text-slate-700 font-bold">
+                    </div>
                 </div>
             </div>
-            <div class="p-5 bg-slate-50 border-t border-slate-100 flex gap-3"><button onclick="fecharModalDespesa()" class="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-200 rounded-xl">Cancelar</button><button id="btn-salvar-despesa" onclick="salvarDespesa()" class="flex-1 py-3 text-sm font-black text-white bg-rose-500 hover:bg-rose-600 rounded-xl shadow-lg uppercase transition-all">Salvar Saída</button></div>
+            <div class="p-5 bg-slate-50 border-t border-slate-100 flex gap-3">
+                <button onclick="fecharModalDespesa()" class="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-200 rounded-xl">Cancelar</button>
+                <button id="btn-salvar-despesa" onclick="salvarDespesa()" class="flex-1 py-3 text-sm font-black text-white bg-rose-500 hover:bg-rose-600 rounded-xl shadow-lg uppercase transition-all">Salvar Saída</button>
+            </div>
         </div>
     </div>
 
     <div id="modal-receita" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-white card-premium shadow-2xl w-full max-w-md overflow-hidden">
-            <div class="bg-emerald-500 p-5 text-white flex justify-between items-center"><h3 class="font-black uppercase text-sm tracking-widest"><span class="mr-2">📈</span> Registrar Receita Extra</h3><button onclick="fecharModalReceita()" class="text-emerald-200 hover:text-white text-2xl leading-none">&times;</button></div>
+            <div class="bg-emerald-500 p-5 text-white flex justify-between items-center">
+                <h3 class="font-black uppercase text-sm tracking-widest"><span class="mr-2">📈</span> Registrar Receita Extra</h3>
+                <button onclick="fecharModalReceita()" class="text-emerald-200 hover:text-white text-2xl leading-none">&times;</button>
+            </div>
             <div class="p-6 space-y-4">
-                <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Categoria da Receita</label><select id="rec-categoria" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none font-bold text-slate-700 cursor-pointer"><option value="Doação">Doação / Apoio Voluntário</option><option value="Seminário/Evento">Seminário / Evento</option><option value="Venda de Produtos">Venda de Produtos</option><option value="Patrocínio">Patrocínio</option><option value="Graduação">Graduação (Exame)</option><option value="Outros">Outras Receitas Extraordinárias</option></select></div>
-                <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Descrição</label><input type="text" id="rec-desc" placeholder="Detalhes da entrada..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none font-bold text-slate-700"></div>
-                <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Origem / Pagador</label><input type="text" id="rec-fonte" placeholder="Quem pagou?" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none text-slate-700"></div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Categoria da Receita</label>
+                    <select id="rec-categoria" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none font-bold text-slate-700 cursor-pointer">
+                        <option value="Doação">Doação / Apoio Voluntário</option>
+                        <option value="Seminário/Evento">Seminário / Evento</option>
+                        <option value="Venda de Produtos">Venda de Produtos</option>
+                        <option value="Patrocínio">Patrocínio</option>
+                        <option value="Graduação">Graduação (Exame)</option>
+                        <option value="Outros">Outras Receitas Extraordinárias</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Descrição</label>
+                    <input type="text" id="rec-desc" placeholder="Detalhes da entrada..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none font-bold text-slate-700">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Origem / Pagador</label>
+                    <input type="text" id="rec-fonte" placeholder="Quem pagou?" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none text-slate-700">
+                </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Valor (R$)</label><input type="text" id="rec-valor" oninput="mascaraMoeda(this)" placeholder="0,00" class="w-full p-3 bg-emerald-50 border border-emerald-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-200 font-black text-emerald-700"></div>
-                    <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Data</label><input type="date" id="rec-data" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none text-slate-700 font-bold"></div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Valor (R$)</label>
+                        <input type="text" id="rec-valor" oninput="mascaraMoeda(this)" placeholder="0,00" class="w-full p-3 bg-emerald-50 border border-emerald-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-200 font-black text-emerald-700">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Data</label>
+                        <input type="date" id="rec-data" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none text-slate-700 font-bold">
+                    </div>
                 </div>
             </div>
-            <div class="p-5 bg-slate-50 border-t border-slate-100 flex gap-3"><button onclick="fecharModalReceita()" class="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-200 rounded-xl">Cancelar</button><button id="btn-salvar-receita" onclick="salvarReceita()" class="flex-1 py-3 text-sm font-black text-white bg-emerald-500 hover:bg-emerald-600 rounded-xl shadow-lg uppercase transition-all">Salvar Entrada</button></div>
+            <div class="p-5 bg-slate-50 border-t border-slate-100 flex gap-3">
+                <button onclick="fecharModalReceita()" class="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-200 rounded-xl">Cancelar</button>
+                <button id="btn-salvar-receita" onclick="salvarReceita()" class="flex-1 py-3 text-sm font-black text-white bg-emerald-500 hover:bg-emerald-600 rounded-xl shadow-lg uppercase transition-all">Salvar Entrada</button>
+            </div>
         </div>
     </div>
 
     <div id="modal-relatorio" class="fixed inset-0 z-[300] bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4">
         <div class="bg-white card-premium shadow-2xl w-full max-w-sm overflow-hidden">
-            <div class="bg-amber-500 p-5 text-white flex justify-between items-center"><h3 class="font-black uppercase text-sm tracking-widest"><span class="mr-2">📑</span> Relatório Financeiro</h3><button onclick="fecharModalRelatorio()" class="text-amber-200 hover:text-white text-2xl leading-none">&times;</button></div>
+            <div class="bg-amber-500 p-5 text-white flex justify-between items-center">
+                <h3 class="font-black uppercase text-sm tracking-widest"><span class="mr-2">📑</span> Relatório Financeiro</h3>
+                <button onclick="fecharModalRelatorio()" class="text-amber-200 hover:text-white text-2xl leading-none">&times;</button>
+            </div>
             <div class="p-6 space-y-4">
                 <p class="text-sm font-bold text-slate-500 mb-4 text-center">Selecione o período de cálculo para gerar o PDF Oficial.</p>
-                <div class="flex items-center justify-between gap-2"><span class="text-xs font-bold text-slate-400 uppercase w-8">De:</span><select id="rel-mes-ini" class="p-2.5 bg-slate-50 border border-slate-200 rounded-lg outline-none font-bold text-slate-700 w-full"></select><select id="rel-ano-ini" class="p-2.5 bg-slate-50 border border-slate-200 rounded-lg outline-none font-bold text-slate-700 w-full"></select></div>
-                <div class="flex items-center justify-between gap-2"><span class="text-xs font-bold text-slate-400 uppercase w-8">Até:</span><select id="rel-mes-fim" class="p-2.5 bg-slate-50 border border-slate-200 rounded-lg outline-none font-bold text-slate-700 w-full"></select><select id="rel-ano-fim" class="p-2.5 bg-slate-50 border border-slate-200 rounded-lg outline-none font-bold text-slate-700 w-full"></select></div>
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-xs font-bold text-slate-400 uppercase w-8">De:</span>
+                    <select id="rel-mes-ini" class="p-2.5 bg-slate-50 border border-slate-200 rounded-lg outline-none font-bold text-slate-700 w-full"></select>
+                    <select id="rel-ano-ini" class="p-2.5 bg-slate-50 border border-slate-200 rounded-lg outline-none font-bold text-slate-700 w-full"></select>
+                </div>
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-xs font-bold text-slate-400 uppercase w-8">Até:</span>
+                    <select id="rel-mes-fim" class="p-2.5 bg-slate-50 border border-slate-200 rounded-lg outline-none font-bold text-slate-700 w-full"></select>
+                    <select id="rel-ano-fim" class="p-2.5 bg-slate-50 border border-slate-200 rounded-lg outline-none font-bold text-slate-700 w-full"></select>
+                </div>
             </div>
-            <div class="p-5 bg-slate-50 border-t border-slate-100"><button onclick="gerarPDFRelatorio()" id="btn-gerar-relatorio" class="w-full py-4 text-sm font-black text-white bg-amber-500 hover:bg-amber-600 rounded-xl shadow-lg uppercase tracking-widest transition-all">Baixar PDF Oficial</button></div>
+            <div class="p-5 bg-slate-50 border-t border-slate-100">
+                <button onclick="gerarPDFRelatorio()" id="btn-gerar-relatorio" class="w-full py-4 text-sm font-black text-white bg-amber-500 hover:bg-amber-600 rounded-xl shadow-lg uppercase tracking-widest transition-all">Baixar PDF Oficial</button>
+            </div>
         </div>
     </div>
 
     <script src="menu.js"></script>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -437,15 +589,15 @@
         }
 
         const acaoVenc = document.getElementById('acao-venc');
-        if(acaoVenc) { for(let i=1; i<=31; i++) { acaoVenc.appendChild(new Option(i, i)); } }
+        for(let i=1; i<=31; i++) { acaoVenc.appendChild(new Option(i, i)); }
 
         const mesesHtml = `<option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>`;
         const anosHtml = `<option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option>`;
         
-        if(document.getElementById('rel-mes-ini')) document.getElementById('rel-mes-ini').innerHTML = mesesHtml; document.getElementById('rel-mes-ini').value = "01";
-        if(document.getElementById('rel-mes-fim')) document.getElementById('rel-mes-fim').innerHTML = mesesHtml; document.getElementById('rel-mes-fim').value = "12";
-        if(document.getElementById('rel-ano-ini')) document.getElementById('rel-ano-ini').innerHTML = anosHtml; document.getElementById('rel-ano-ini').value = new Date().getFullYear().toString();
-        if(document.getElementById('rel-ano-fim')) document.getElementById('rel-ano-fim').innerHTML = anosHtml; document.getElementById('rel-ano-fim').value = new Date().getFullYear().toString();
+        document.getElementById('rel-mes-ini').innerHTML = mesesHtml; document.getElementById('rel-mes-ini').value = "01";
+        document.getElementById('rel-mes-fim').innerHTML = mesesHtml; document.getElementById('rel-mes-fim').value = "12";
+        document.getElementById('rel-ano-ini').innerHTML = anosHtml; document.getElementById('rel-ano-ini').value = new Date().getFullYear().toString();
+        document.getElementById('rel-ano-fim').innerHTML = anosHtml; document.getElementById('rel-ano-fim').value = new Date().getFullYear().toString();
 
         window.mascaraMoeda = function(elemento) {
             let valor = elemento.value.replace(/\D/g, ''); 
@@ -550,8 +702,6 @@
                     document.getElementById('config-prazo').value = floatToStr(equipeBaseConfig.prazo);
                     document.getElementById('config-atraso').value = floatToStr(equipeBaseConfig.atraso);
 
-                    // Inicializa na aba correta (Mensalidades primeiro)
-                    mudarAba('tab-mensalidades');
                     carregarDados();
                 } catch (error) { console.log(error); }
             } else window.location.href = "index.html";
@@ -604,7 +754,6 @@
                         document.getElementById('config-pix').value = equipeDados.chave_pix;
                     }
 
-                    // PREENCHIMENTO AUTOMÁTICO DO FORMULÁRIO ASAAS E DOS CHECKBOXES
                     document.getElementById('asaas-cpf').value = equipeDados.cpf_cnpj || equipeDados.cpf || equipeDados.cnpj || "";
                     document.getElementById('asaas-nome').value = equipeDados.nome_responsavel || equipeDados.nome_equipe || "";
                     document.getElementById('asaas-email').value = user.email || equipeDados.email || "";
@@ -624,7 +773,6 @@
                         }
 
                         carregarSaldoAsaas();
-                        // carregarHistoricoSaques();
                     } else {
                         document.getElementById('asaas-ativo-panel').classList.add('hidden');
                         document.getElementById('asaas-form-panel').classList.remove('hidden');
@@ -651,9 +799,6 @@
             finally { btn.innerHTML = origHTML; btn.disabled = false; }
         }
 
-        // =========================================================
-        // 🚀 VER SALDO E SOLICITAR SAQUE
-        // =========================================================
         window.carregarSaldoAsaas = async function() {
             if(!equipeDados || !equipeDados.asaas_api_key) return;
             
@@ -726,7 +871,6 @@
                     });
 
                     carregarSaldoAsaas(); 
-                    // carregarHistoricoSaques();
                 } else {
                     showToast("Erro do Banco: " + res.data.error, "error");
                 }
@@ -830,7 +974,6 @@
                         await addDoc(collection(db, "financeiro"), { equipe_id: uid, aluno_id: aluno.id, tipo: 'MENSALIDADE', status: status, valor: valor, mes_ano: mesAnoFiltro, descricao: `Mensalidade - ${aluno.nome}`, data_criacao: new Date().toISOString() });
                         geradas++;
 
-                        // 🚀 NOVO: ADICIONAMOS AS ESCOLHAS DO USUÁRIO AQUI NA FILA!
                         if (equipeDados && equipeDados.status_asaas === 'ATIVO' && status !== 'ISENTO') {
                             filaAsaas.push({
                                 alunoId: aluno.id,
@@ -995,21 +1138,20 @@
                     
                     if(contFluxo) contFluxo.innerHTML += `
                         <tr class="hover:bg-slate-50 transition-colors border-b border-slate-50">
-                            <td class="px-6 py-4 text-slate-500 text-xs">${new Date(f.data).toLocaleDateString('pt-BR')}</td>
+                            <td class="px-6 py-4 text-slate-500 text-xs font-bold">${new Date(f.data).toLocaleDateString('pt-BR')}</td>
                             <td class="px-6 py-4 whitespace-normal min-w-[200px]">
-                                <div class="font-bold text-slate-700 text-xs">${f.descricao}</div>
-                                <div class="text-[9px] text-slate-400 uppercase">${f.fonte || ''}</div>
+                                <div class="font-bold text-slate-700 text-sm">${f.descricao}</div>
+                                <div class="text-[9px] text-slate-400 uppercase font-black">${f.fonte || ''}</div>
                             </td>
-                            <td class="px-6 py-4 text-center"><span class="text-[8px] font-black px-2 py-1 rounded bg-slate-100 text-slate-500 uppercase tracking-widest">${icone} ${f.tipo}</span></td>
-                            <td class="px-6 py-4 text-right font-black text-xs ${corValor}">${sinal} R$ ${floatToStr(f.valor)}</td>
-                            <td class="px-6 py-4 text-center"><button onclick="excluirLancamento('${f.id}')" class="text-[10px] bg-rose-50 text-rose-500 px-3 py-1 rounded-lg hover:bg-rose-100 font-bold">Excluir</button></td>
+                            <td class="px-6 py-4 text-center"><span class="text-[9px] font-black px-3 py-1 rounded-full bg-slate-100 text-slate-500 uppercase tracking-widest">${icone} ${f.tipo}</span></td>
+                            <td class="px-6 py-4 text-right font-black text-sm ${corValor}">${sinal} R$ ${floatToStr(f.valor)}</td>
+                            <td class="px-6 py-4 text-center"><button onclick="excluirLancamento('${f.id}')" class="text-[10px] bg-rose-50 text-rose-500 px-4 py-2 rounded-xl hover:bg-rose-100 font-bold transition-colors">Excluir</button></td>
                         </tr>
                     `;
                 });
             }
         }
 
-        // 🚀 A MÁGICA DA FORMA DE PAGAMENTO ACONTECE AQUI
         window.abrirModalAcoes = function(alunoId, calcData) {
             const aluno = alunosCache.find(a => a.id === alunoId);
             alunoSelecionadoMens = { ...aluno, _calc: calcData };
@@ -1646,33 +1788,10 @@
             } catch (e) { showToast("Erro ao apagar.", "error"); }
         }
 
-        window.salvarConfigPagamento = async function() {
-            const aceitaBoleto = document.getElementById('asaas-aceita-boleto').checked;
-            const aceitaCartao = document.getElementById('asaas-aceita-cartao').checked;
-            
-            const btn = document.getElementById('btn-salvar-pagamentos');
-            const origTxt = btn.innerHTML;
-            btn.innerHTML = "⏳ Salvando..."; btn.disabled = true;
-
-            try {
-                await updateDoc(doc(db, "equipes", uid), {
-                    asaas_aceita_boleto: aceitaBoleto,
-                    asaas_aceita_cartao: aceitaCartao
-                });
-                equipeDados.asaas_aceita_boleto = aceitaBoleto;
-                equipeDados.asaas_aceita_cartao = aceitaCartao;
-                showToast("Preferências de pagamento atualizadas com sucesso!", "success");
-            } catch(e) {
-                showToast("Erro ao salvar preferências.", "error");
-            } finally {
-                btn.innerHTML = origTxt; btn.disabled = false;
-            }
-        }
-
-        // Inicialização garantida
-        window.onload = () => {
-            mudarAba('tab-mensalidades');
-        };
+        // ==========================================
+        // FLUXO DE CAIXA E DASHBOARD
+        // ==========================================
+        window.mudarAba('tab-dash'); // Inicia na aba Dashboard
 
     </script>
 </body>

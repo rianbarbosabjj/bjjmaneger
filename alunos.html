@@ -8,7 +8,6 @@
     <link rel="icon" type="image/png" href="logo_bjj_maneger.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
@@ -142,6 +141,7 @@
                 <button onclick="mudarAba('aba-contato')" id="btn-aba-contato" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">📍 Contato</button>
                 <button onclick="mudarAba('aba-admin')" id="btn-aba-admin" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚙️ Administrativo</button>
                 <button onclick="mudarAba('aba-lgpd')" id="btn-aba-lgpd" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚖️ LGPD</button>
+                <button onclick="mudarAba('aba-anamnese')" id="btn-aba-anamnese" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚕️ Saúde</button>
             </div>
 
             <div class="p-5 md:p-8 overflow-y-auto space-y-6 flex-1 bg-white hide-scrollbar">
@@ -341,6 +341,19 @@
                     </div>
                 </div>
 
+                <div id="aba-anamnese" class="aba-content hidden space-y-5">
+                    
+                    <div id="anamnese-vazia" class="hidden bg-slate-100 p-8 rounded-2xl text-center border border-slate-200">
+                        <span class="text-4xl block mb-3">⏳</span>
+                        <h4 class="text-slate-500 font-black uppercase tracking-widest text-sm">Ficha Pendente</h4>
+                        <p class="text-xs text-slate-400 mt-2">O aluno (ou responsável) ainda não preencheu a ficha de saúde e inclusão no Portal do Atleta.</p>
+                    </div>
+
+                    <div id="anamnese-preenchida" class="hidden space-y-4">
+                        </div>
+
+                </div>
+
             </div>
 
             <div class="p-4 md:p-6 bg-slate-50 border-t border-slate-200 flex flex-wrap justify-end gap-3 rounded-b-3xl shrink-0">
@@ -458,7 +471,8 @@
         let alunoEditandoId = null;
         let ficheiroFotoSelecionado = null;
 
-        const ordemDasAbas = ['aba-pessoal', 'aba-contato', 'aba-admin', 'aba-lgpd'];
+        // NOVO: Atualizamos as abas para incluir Anamnese
+        const ordemDasAbas = ['aba-pessoal', 'aba-contato', 'aba-admin', 'aba-lgpd', 'aba-anamnese'];
         let abaIndexAtual = 0;
 
         const selectVenc = document.getElementById('aluno-vencimento');
@@ -776,6 +790,138 @@
                 imgPreview.src = "";
                 imgPreview.classList.add('hidden');
                 placeholder.classList.remove('hidden');
+            }
+
+            // NOVA LÓGICA DA ANAMNESE: Popular os dados para o professor visualizar
+            const divVazia = document.getElementById('anamnese-vazia');
+            const divPreenchida = document.getElementById('anamnese-preenchida');
+
+            if (a.anamnese_preenchida && a.anamnese) {
+                divVazia.classList.add('hidden');
+                divPreenchida.classList.remove('hidden');
+                
+                const an = a.anamnese;
+                
+                // Funções de apoio para renderização visual das respostas
+                const boolText = (val) => val ? '<span class="text-emerald-600 font-black">SIM</span>' : '<span class="text-slate-400 font-bold">NÃO</span>';
+                const strText = (val) => val === 'Sim' ? '<span class="text-emerald-600 font-black">SIM</span>' : (val === 'Não' ? '<span class="text-slate-400 font-bold">NÃO</span>' : `<span class="text-slate-700 font-bold">${val || '-'}</span>`);
+                const textOrDash = (val) => val ? `<span class="text-slate-700 font-bold">${val}</span>` : '<span class="text-slate-400">-</span>';
+
+                const diags = [];
+                if(an.diagnostico?.tea) diags.push("TEA");
+                if(an.diagnostico?.tdah) diags.push("TDAH");
+                if(an.diagnostico?.def_intelectual) diags.push("Def. Intelectual");
+                if(an.diagnostico?.def_fisica) diags.push("Def. Física");
+                if(an.diagnostico?.def_visual) diags.push("Def. Visual");
+                if(an.diagnostico?.def_auditiva) diags.push("Def. Auditiva");
+                if(an.diagnostico?.transtorno_aprendizagem) diags.push("Trans. Aprendizagem");
+                if(an.diagnostico?.ansiedade_emocional) diags.push("Ansiedade/Emocional");
+                if(an.diagnostico?.outro) diags.push(an.diagnostico.outro);
+
+                const diagsText = diags.length > 0 ? diags.join(', ') : "Nenhuma diagnosticada";
+
+                divPreenchida.innerHTML = `
+                    <div class="bg-cyan-50/50 p-4 rounded-xl border border-cyan-100 flex justify-between items-center mb-4">
+                        <span class="text-[10px] font-black text-cyan-600 uppercase tracking-widest">Ficha de Saúde salva em:</span>
+                        <span class="text-xs font-bold text-cyan-800">${an.data_preenchimento ? new Date(an.data_preenchimento).toLocaleDateString('pt-BR') : 'Data não registrada'}</span>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-100 pb-2">Diagnóstico e Condição Especial</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="md:col-span-2">
+                                <p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Condições:</p>
+                                <p class="text-sm font-black ${diags.length > 0 ? 'text-rose-500' : 'text-emerald-500'}">${diagsText}</p>
+                            </div>
+                            <div>
+                                <p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Confirmado por Profissional?</p>
+                                <p class="text-sm">${strText(an.diagnostico?.confirmado)} ${an.diagnostico?.profissional ? '<span class="text-xs text-slate-500 font-medium">('+an.diagnostico.profissional+')</span>' : ''}</p>
+                            </div>
+                            <div>
+                                <p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Possui Laudo?</p>
+                                <p class="text-sm">${strText(an.diagnostico?.laudo)}</p>
+                            </div>
+                            <div class="md:col-span-2">
+                                <p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Uso de Medicação:</p>
+                                <p class="text-sm">${textOrDash(an.diagnostico?.medicacao)}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                            <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-100 pb-2">Desenvolvimento Motor</h4>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Anda com facilidade?</span> ${strText(an.motor?.anda_facilidade)}</div>
+                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Corre e salta bem?</span> ${strText(an.motor?.corre_salta)}</div>
+                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Dif. de equilíbrio?</span> ${strText(an.motor?.dificuldade_equilibrio)}</div>
+                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Dif. coordenação?</span> ${strText(an.motor?.dificuldade_coordenacao)}</div>
+                                <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1 mt-3">Órtese/Prótese/Apoio:</p><p class="text-xs">${textOrDash(an.motor?.usa_protese)}</p></div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                            <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-100 pb-2">Comunicação</h4>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Verbaliza?</span> ${strText(an.comunicacao?.verbal)}</div>
+                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Entende comandos?</span> ${strText(an.comunicacao?.entende_comandos)}</div>
+                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Ecolalia / Repetição?</span> ${strText(an.comunicacao?.ecolalia)}</div>
+                                <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1 mt-3">Comunicação Alternativa:</p><p class="text-xs">${textOrDash(an.comunicacao?.comunicacao_alternativa)}</p></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                            <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-100 pb-2">Comportamento</h4>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Agitado c/ estímulos?</span> ${strText(an.comportamento?.agitado_estimulos)}</div>
+                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Fuga ou Isolamento?</span> ${strText(an.comportamento?.fuga_isolamento)}</div>
+                                <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1 mt-3">Crises / Autolesão (Gatilhos):</p><p class="text-xs">${textOrDash(an.comportamento?.crises_agressividade)}</p></div>
+                                <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Fixações / Hiperfocos:</p><p class="text-xs">${textOrDash(an.comportamento?.fixacoes)}</p></div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                            <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-100 pb-2">Interação Social</h4>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Interage c/ colegas?</span> ${boolText(an.social?.interage_colegas)}</div>
+                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Participa em grupo?</span> ${boolText(an.social?.participa_grupo)}</div>
+                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Prefere individual?</span> ${boolText(an.social?.prefere_individual)}</div>
+                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Apoio p/ interagir?</span> ${boolText(an.social?.precisa_apoio)}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                            <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-100 pb-2">Aspectos Sensoriais</h4>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Sensibilidade a sons?</span> ${boolText(an.sensorial?.sons)}</div>
+                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Sensibilidade a toques?</span> ${boolText(an.sensorial?.toques)}</div>
+                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Seletividade alimentar?</span> ${boolText(an.sensorial?.alimentar)}</div>
+                                <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1 mt-3">Usa abafadores/recursos?</p><p class="text-xs">${textOrDash(an.sensorial?.recursos)}</p></div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                            <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-100 pb-2">Saúde e Cuidados</h4>
+                            <div class="space-y-3">
+                                <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Alergias / Restrições Alimentares:</p><p class="text-xs text-rose-500 font-bold">${textOrDash(an.saude?.alergias_restricoes)}</p></div>
+                                <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Terapias (Fono, TO, Fisio...):</p><p class="text-xs">${textOrDash(an.saude?.terapias)}</p></div>
+                                <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Cuidados na aula:</p><p class="text-xs">${textOrDash(an.saude?.cuidados_especificos)}</p></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-100 pb-2">Expectativas da Família</h4>
+                        <div class="space-y-3">
+                            <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">O que esperam do Jiu-Jitsu?</p><p class="text-xs font-medium text-slate-700 bg-slate-50 p-3 rounded-lg">${textOrDash(an.expectativas?.geral)}</p></div>
+                            <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Metas específicas:</p><p class="text-xs font-medium text-slate-700 bg-slate-50 p-3 rounded-lg">${textOrDash(an.expectativas?.metas)}</p></div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                divVazia.classList.remove('hidden');
+                divPreenchida.classList.add('hidden');
             }
             
             document.getElementById('btn-abrir-carteirinha').classList.remove('hidden');

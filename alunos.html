@@ -190,6 +190,23 @@
                             </select>
                         </div>
                         <input type="hidden" id="aluno-id-oculto">
+
+                        <div id="div-responsavel" class="hidden md:col-span-2 bg-white border border-slate-200 p-5 rounded-2xl shadow-sm mt-4">
+                            <h4 class="text-xs font-black text-slate-700 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                <span class="text-base">👨‍👩‍👦</span> Responsável Legal <span class="text-[9px] text-slate-400 font-medium normal-case tracking-normal">(Apenas para menores)</span>
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="md:col-span-2">
+                                    <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Nome do Responsável *</label>
+                                    <input type="text" id="aluno-resp-nome" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:bg-white focus:border-cyan-500 transition-all placeholder:font-normal uppercase" placeholder="NOME DA MÃE, PAI OU TUTOR...">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">CPF do Responsável *</label>
+                                    <input type="text" id="aluno-resp-cpf" maxlength="14" oninput="mascaraCPF(this)" placeholder="000.000.000-00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:bg-white focus:border-cyan-500 transition-all placeholder:font-normal">
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
@@ -242,23 +259,6 @@
                 </div>
 
                 <div id="aba-admin" class="aba-content hidden space-y-5">
-                    
-                    <div id="div-responsavel" class="hidden bg-blue-50 border border-blue-200 p-5 rounded-2xl mb-6 shadow-inner">
-                        <p class="text-xs text-blue-800 font-bold mb-4 flex items-center gap-2">
-                            <span class="text-lg">⚠️</span> Atleta Menor de Idade. Preenchimento do responsável é obrigatório.
-                        </p>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="md:col-span-2">
-                                <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Nome do Responsável Legal *</label>
-                                <input type="text" id="aluno-resp-nome" class="w-full p-3 bg-white border border-blue-200 rounded-xl uppercase font-bold text-slate-700 outline-none focus:border-cyan-500 transition-all">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">CPF do Responsável *</label>
-                                <input type="text" id="aluno-resp-cpf" maxlength="14" oninput="mascaraCPF(this)" placeholder="000.000.000-00" class="w-full p-3 bg-white border border-blue-200 rounded-xl outline-none focus:border-cyan-500 transition-all">
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                         <div>
                             <label class="block text-[10px] font-black text-cyan-600 uppercase mb-1">Bolsa / Desconto (%)</label>
@@ -471,7 +471,6 @@
         let alunoEditandoId = null;
         let ficheiroFotoSelecionado = null;
 
-        // NOVO: Atualizamos as abas para incluir Anamnese
         const ordemDasAbas = ['aba-pessoal', 'aba-contato', 'aba-admin', 'aba-lgpd', 'aba-anamnese'];
         let abaIndexAtual = 0;
 
@@ -792,7 +791,6 @@
                 placeholder.classList.remove('hidden');
             }
 
-            // NOVA LÓGICA DA ANAMNESE: Popular os dados para o professor visualizar
             const divVazia = document.getElementById('anamnese-vazia');
             const divPreenchida = document.getElementById('anamnese-preenchida');
 
@@ -802,7 +800,6 @@
                 
                 const an = a.anamnese;
                 
-                // Funções de apoio para renderização visual das respostas
                 const boolText = (val) => val ? '<span class="text-emerald-600 font-black">SIM</span>' : '<span class="text-slate-400 font-bold">NÃO</span>';
                 const strText = (val) => val === 'Sim' ? '<span class="text-emerald-600 font-black">SIM</span>' : (val === 'Não' ? '<span class="text-slate-400 font-bold">NÃO</span>' : `<span class="text-slate-700 font-bold">${val || '-'}</span>`);
                 const textOrDash = (val) => val ? `<span class="text-slate-700 font-bold">${val}</span>` : '<span class="text-slate-400">-</span>';

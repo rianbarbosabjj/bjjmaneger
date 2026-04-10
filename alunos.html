@@ -951,6 +951,10 @@
                 return showToast("Preencha os campos obrigatórios (*)", "error");
             }
 
+            if(!document.getElementById('lgpd-concordo').checked) {
+                return showToast("É necessário aceitar os Termos da LGPD.", "error");
+            }
+
             const btnSalvar = document.getElementById('btn-salvar-aluno');
             const textoOriginal = btnSalvar.innerHTML;
             btnSalvar.innerHTML = "⏳ SALVANDO...";
@@ -1156,8 +1160,22 @@
 
             const an = aluno.anamnese;
             const nome = aluno.nome || 'NÃO INFORMADO';
+            
+            // Verifica se é menor de idade para garantir que pega o responsável
+            let isMenor = false;
+            if (aluno.data_nascimento) {
+                const hoje = new Date();
+                const nasc = new Date(aluno.data_nascimento);
+                let idade = hoje.getFullYear() - nasc.getFullYear();
+                const mes = hoje.getMonth() - nasc.getMonth();
+                if (mes < 0 || (mes === 0 && hoje.getDate() < nasc.getDate())) idade--;
+                isMenor = idade < 18;
+            }
+
             const resp = aluno.nome_responsavel || '';
-            const assinante = (resp || nome).toUpperCase();
+            // Se for menor E tiver responsável, usa o responsável. Senão, usa o próprio aluno.
+            const assinante = (isMenor && resp) ? resp.toUpperCase() : nome.toUpperCase();
+            const tipoAssinante = (isMenor && resp) ? "RESPONSÁVEL LEGAL" : "ATLETA";
 
             let dataAtual = 'Data não registrada';
             if (an.data_preenchimento) {
@@ -1184,61 +1202,84 @@
             const diagsText = diags.length > 0 ? diags.join(', ') : "Nenhuma diagnosticada";
 
             const element = document.createElement('div');
+            // Layout super compactado para caber em 1 página
             element.innerHTML = `
-                <div style="font-family: Arial, sans-serif; padding: 40px; color: #333; line-height: 1.5; font-size: 14px;">
-                    <h1 style="text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 10px;">
+                <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; line-height: 1.3; font-size: 12px;">
+                    <h1 style="text-align: center; font-size: 16px; font-weight: bold; margin-bottom: 10px; border-bottom: 2px solid #333; padding-bottom: 5px;">
                         FICHA DE SAÚDE E INCLUSÃO (ANAMNESE)
                     </h1>
 
-                    <p><strong>ATLETA:</strong> ${nome}</p>
-                    ${resp ? `<p><strong>RESPONSÁVEL LEGAL:</strong> ${resp}</p>` : ''}
-                    <p><strong>DATA DE PREENCHIMENTO:</strong> ${dataAtual}</p>
-                    <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ccc;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <div><strong>ATLETA:</strong> ${nome.toUpperCase()}</div>
+                        <div><strong>DATA:</strong> ${dataAtual}</div>
+                    </div>
+                    ${resp ? `<div style="margin-bottom: 5px;"><strong>RESPONSÁVEL LEGAL:</strong> ${resp.toUpperCase()}</div>` : ''}
+                    <hr style="margin: 10px 0; border: 0; border-top: 1px solid #ccc;">
 
-                    <h2 style="font-size: 14px; font-weight: bold; margin-top: 15px; color: #0369a1;">1. DIAGNÓSTICO E CONDIÇÕES</h2>
-                    <p><strong>Condições:</strong> ${diagsText}</p>
-                    <p><strong>Confirmado por Profissional:</strong> ${strForm(an.diagnostico?.confirmado)} ${an.diagnostico?.profissional ? '('+an.diagnostico.profissional+')' : ''}</p>
-                    <p><strong>Possui Laudo:</strong> ${strForm(an.diagnostico?.laudo)}</p>
-                    <p><strong>Medicação:</strong> ${valOuDash(an.diagnostico?.medicacao)}</p>
+                    <h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">1. Diagnóstico e Condições</h2>
+                    <div style="margin-bottom: 5px;"><strong>Condições:</strong> ${diagsText}</div>
+                    <div style="display: flex; gap: 20px; margin-bottom: 5px;">
+                        <div><strong>Confirmado:</strong> ${strForm(an.diagnostico?.confirmado)} ${an.diagnostico?.profissional ? '('+an.diagnostico.profissional+')' : ''}</div>
+                        <div><strong>Laudo:</strong> ${strForm(an.diagnostico?.laudo)}</div>
+                    </div>
+                    <div style="margin-bottom: 5px;"><strong>Medicação:</strong> ${valOuDash(an.diagnostico?.medicacao)}</div>
 
-                    <h2 style="font-size: 14px; font-weight: bold; margin-top: 15px; color: #0369a1;">2. DESENVOLVIMENTO MOTOR</h2>
-                    <p><strong>Anda com facilidade:</strong> ${strForm(an.motor?.anda_facilidade)} | <strong>Corre e salta bem:</strong> ${strForm(an.motor?.corre_salta)}</p>
-                    <p><strong>Dif. de equilíbrio:</strong> ${strForm(an.motor?.dificuldade_equilibrio)} | <strong>Dif. coordenação:</strong> ${strForm(an.motor?.dificuldade_coordenacao)}</p>
-                    <p><strong>Órtese/Prótese/Apoio:</strong> ${valOuDash(an.motor?.usa_protese)}</p>
+                    <h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">2. Desenvolvimento Motor</h2>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span><strong>Anda fácil:</strong> ${strForm(an.motor?.anda_facilidade)}</span>
+                        <span><strong>Corre/Salta:</strong> ${strForm(an.motor?.corre_salta)}</span>
+                        <span><strong>Dif. Equilíbrio:</strong> ${strForm(an.motor?.dificuldade_equilibrio)}</span>
+                        <span><strong>Dif. Coordenação:</strong> ${strForm(an.motor?.dificuldade_coordenacao)}</span>
+                    </div>
+                    <div style="margin-bottom: 5px;"><strong>Órtese/Prótese/Apoio:</strong> ${valOuDash(an.motor?.usa_protese)}</div>
 
-                    <h2 style="font-size: 14px; font-weight: bold; margin-top: 15px; color: #0369a1;">3. COMUNICAÇÃO</h2>
-                    <p><strong>Verbaliza:</strong> ${strForm(an.comunicacao?.verbal)} | <strong>Entende comandos:</strong> ${strForm(an.comunicacao?.entende_comandos)}</p>
-                    <p><strong>Ecolalia/Repetição:</strong> ${strForm(an.comunicacao?.ecolalia)}</p>
-                    <p><strong>Comunicação Alternativa:</strong> ${valOuDash(an.comunicacao?.comunicacao_alternativa)}</p>
+                    <h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">3. Comunicação</h2>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span><strong>Verbaliza:</strong> ${strForm(an.comunicacao?.verbal)}</span>
+                        <span><strong>Entende Comandos:</strong> ${strForm(an.comunicacao?.entende_comandos)}</span>
+                        <span><strong>Ecolalia/Repetição:</strong> ${strForm(an.comunicacao?.ecolalia)}</span>
+                    </div>
+                    <div style="margin-bottom: 5px;"><strong>Comunicação Alternativa:</strong> ${valOuDash(an.comunicacao?.comunicacao_alternativa)}</div>
 
-                    <h2 style="font-size: 14px; font-weight: bold; margin-top: 15px; color: #0369a1;">4. COMPORTAMENTO E INTERAÇÃO SOCIAL</h2>
-                    <p><strong>Agitado c/ estímulos:</strong> ${strForm(an.comportamento?.agitado_estimulos)} | <strong>Fuga/Isolamento:</strong> ${strForm(an.comportamento?.fuga_isolamento)}</p>
-                    <p><strong>Crises/Autolesão (Gatilhos):</strong> ${valOuDash(an.comportamento?.crises_agressividade)}</p>
-                    <p><strong>Fixações/Hiperfocos:</strong> ${valOuDash(an.comportamento?.fixacoes)}</p>
-                    <p><strong>Interage c/ colegas:</strong> ${simNao(an.social?.interage_colegas)} | <strong>Participa em grupo:</strong> ${simNao(an.social?.participa_grupo)}</p>
-                    <p><strong>Prefere individual:</strong> ${simNao(an.social?.prefere_individual)} | <strong>Precisa de apoio:</strong> ${simNao(an.social?.precisa_apoio)}</p>
+                    <h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">4. Comportamento e Interação Social</h2>
+                    <div style="display: flex; gap: 20px; margin-bottom: 5px;">
+                        <span><strong>Agitado c/ estímulos:</strong> ${strForm(an.comportamento?.agitado_estimulos)}</span>
+                        <span><strong>Fuga/Isolamento:</strong> ${strForm(an.comportamento?.fuga_isolamento)}</span>
+                    </div>
+                    <div style="margin-bottom: 5px;"><strong>Crises/Autolesão (Gatilhos):</strong> ${valOuDash(an.comportamento?.crises_agressividade)}</div>
+                    <div style="margin-bottom: 5px;"><strong>Fixações/Hiperfocos:</strong> ${valOuDash(an.comportamento?.fixacoes)}</div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span><strong>Interage:</strong> ${simNao(an.social?.interage_colegas)}</span>
+                        <span><strong>Em Grupo:</strong> ${simNao(an.social?.participa_grupo)}</span>
+                        <span><strong>Individual:</strong> ${simNao(an.social?.prefere_individual)}</span>
+                        <span><strong>Apoio p/ Interagir:</strong> ${simNao(an.social?.precisa_apoio)}</span>
+                    </div>
 
-                    <h2 style="font-size: 14px; font-weight: bold; margin-top: 15px; color: #0369a1;">5. ASPECTOS SENSORIAIS E SAÚDE</h2>
-                    <p><strong>Sensibilidade (Sons):</strong> ${simNao(an.sensorial?.sons)} | <strong>(Toques):</strong> ${simNao(an.sensorial?.toques)} | <strong>Seletividade alimentar:</strong> ${simNao(an.sensorial?.alimentar)}</p>
-                    <p><strong>Usa abafadores/recursos:</strong> ${valOuDash(an.sensorial?.recursos)}</p>
-                    <p><strong>Alergias/Restrições:</strong> ${valOuDash(an.saude?.alergias_restricoes)}</p>
-                    <p><strong>Terapias:</strong> ${valOuDash(an.saude?.terapias)}</p>
-                    <p><strong>Cuidados na aula:</strong> ${valOuDash(an.saude?.cuidados_especificos)}</p>
+                    <h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">5. Sensoriais e Saúde</h2>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span><strong>Sens. a Sons:</strong> ${simNao(an.sensorial?.sons)}</span>
+                        <span><strong>Sens. a Toques:</strong> ${simNao(an.sensorial?.toques)}</span>
+                        <span><strong>Seletividade Alimentar:</strong> ${simNao(an.sensorial?.alimentar)}</span>
+                    </div>
+                    <div style="margin-bottom: 5px;"><strong>Usa abafadores/recursos:</strong> ${valOuDash(an.sensorial?.recursos)}</div>
+                    <div style="margin-bottom: 5px;"><strong>Alergias/Restrições:</strong> ${valOuDash(an.saude?.alergias_restricoes)}</div>
+                    <div style="margin-bottom: 5px;"><strong>Terapias:</strong> ${valOuDash(an.saude?.terapias)}</div>
+                    <div style="margin-bottom: 5px;"><strong>Cuidados na aula:</strong> ${valOuDash(an.saude?.cuidados_especificos)}</div>
 
-                    <h2 style="font-size: 14px; font-weight: bold; margin-top: 15px; color: #0369a1;">6. EXPECTATIVAS</h2>
-                    <p><strong>O que esperam do Jiu-Jitsu:</strong> ${valOuDash(an.expectativas?.geral)}</p>
-                    <p><strong>Metas específicas:</strong> ${valOuDash(an.expectativas?.metas)}</p>
+                    <h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">6. Expectativas</h2>
+                    <div style="margin-bottom: 5px;"><strong>O que esperam:</strong> ${valOuDash(an.expectativas?.geral)}</div>
+                    <div style="margin-bottom: 5px;"><strong>Metas específicas:</strong> ${valOuDash(an.expectativas?.metas)}</div>
 
-                    <div style="margin-top: 40px; border: 2px dashed #94a3b8; padding: 20px; border-radius: 10px; background-color: #f8fafc; font-family: 'Courier New', Courier, monospace;">
-                        <div style="text-align: center; margin-bottom: 15px;">
-                            <span style="background-color: #0ea5e9; color: white; padding: 5px 15px; font-family: Arial, sans-serif; font-weight: bold; font-size: 12px; border-radius: 20px; text-transform: uppercase;">
+                    <div style="margin-top: 15px; border: 1.5px dashed #94a3b8; padding: 15px; border-radius: 8px; background-color: #f8fafc; font-family: 'Courier New', Courier, monospace;">
+                        <div style="text-align: center; margin-bottom: 10px;">
+                            <span style="background-color: #0ea5e9; color: white; padding: 4px 12px; font-family: Arial, sans-serif; font-weight: bold; font-size: 11px; border-radius: 15px; text-transform: uppercase;">
                                 Validação de Assinatura Eletrônica
                             </span>
                         </div>
-                        <p style="margin: 8px 0; font-size: 13px;"><strong>ASSINANTE:</strong> ${assinante}</p>
-                        <p style="margin: 8px 0; font-size: 13px;"><strong>REGISTRO TEMPORAL:</strong> ${dataAtual}</p>
-                        <p style="margin: 8px 0; font-size: 13px;"><strong>CHAVE HASH (AUTENTICIDADE):</strong> <br><span style="word-break: break-all; color: #0369a1;">${hash}</span></p>
-                        <p style="margin-top: 15px; font-size: 10px; color: #64748b; text-align: center; font-family: Arial, sans-serif;">
+                        <p style="margin: 4px 0; font-size: 12px;"><strong>ASSINANTE (${tipoAssinante}):</strong> ${assinante}</p>
+                        <p style="margin: 4px 0; font-size: 12px;"><strong>REGISTRO TEMPORAL:</strong> ${dataAtual}</p>
+                        <p style="margin: 4px 0; font-size: 12px;"><strong>CHAVE HASH (AUTENTICIDADE):</strong> <span style="color: #0369a1;">${hash}</span></p>
+                        <p style="margin-top: 10px; font-size: 9px; color: #64748b; text-align: center; font-family: Arial, sans-serif;">
                             * Documento assinado eletronicamente via plataforma BJJ Manager. O assinante declara a veracidade das informações prestadas.
                         </p>
                     </div>
@@ -1246,7 +1287,7 @@
             `;
 
             const opt = {
-                margin:       10,
+                margin:       [5, 5, 5, 5],
                 filename:     `Ficha_Anamnese_${nome.replace(/\s+/g, '_')}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2 },

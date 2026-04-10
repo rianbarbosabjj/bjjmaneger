@@ -49,6 +49,18 @@
             clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
         }
         .custom-checkbox:checked::before { transform: scale(1); }
+
+        /* Estilo para a linha do tempo do histórico */
+        .timeline-line::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 11px;
+            width: 2px;
+            background: linear-gradient(to bottom, transparent, #334155 5%, #334155 95%, transparent);
+            z-index: 0;
+        }
     </style>
 </head>
 <body class="text-slate-200 overflow-x-hidden selection:bg-cyan-500 selection:text-white min-h-screen flex flex-col relative">
@@ -126,7 +138,7 @@
 
                         <div class="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden" style="z-index: 1;">
                             <img id="cart-equipe-watermark" src="" style="width: 140%; height: 140%; max-width: none; object-fit: contain; opacity: 0.15; filter: grayscale(100%);" class="hidden" crossorigin="anonymous">
-                            <div id="cart-equipe-watermark-fallback" style="font-size: 400px; opacity: 0.08;" class="leading-none font-black text-slate-800 hidden">E</div>
+                            <div id="cart-equipe-watermark-fallback" style="font-size: 400px; opacity: 0.10;" class="leading-none font-black text-slate-800 hidden">E</div>
                         </div>
 
                         <div class="absolute top-0 right-0 w-64 h-full bg-slate-200/40 skew-x-[-20deg] translate-x-10 z-0 pointer-events-none backdrop-blur-[1px]"></div>
@@ -223,6 +235,29 @@
                     
                     <div id="lista-faturas" class="divide-y divide-slate-700/30">
                         <div class="text-center p-6 text-slate-500 text-xs italic">A carregar histórico...</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="aba-historico" class="aluno-secao hidden transition-opacity duration-300 space-y-6">
+                <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl border border-slate-700 p-6 shadow-xl relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 text-8xl opacity-10">🥋</div>
+                    <h3 class="text-[10px] font-black text-cyan-500 uppercase tracking-widest mb-1 relative z-10">Faixa Atual</h3>
+                    <p id="hist-faixa-atual" class="text-2xl font-black text-white uppercase relative z-10">CARREGANDO...</p>
+                    <p id="hist-tempo-faixa" class="text-xs text-slate-400 font-medium mt-2 relative z-10">Calculando tempo...</p>
+                </div>
+
+                <div class="bg-slate-800/50 backdrop-blur-md rounded-3xl border border-slate-700 p-6 shadow-xl">
+                    <h3 class="text-xs font-black text-slate-300 uppercase tracking-widest mb-6 flex items-center gap-2"><span class="text-lg">📜</span> Histórico de Graduação</h3>
+                    <div id="lista-graduacoes" class="timeline-line relative space-y-6 pl-4">
+                        <div class="text-center p-4 text-slate-500 text-xs italic">Buscando histórico...</div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800/50 backdrop-blur-md rounded-3xl border border-slate-700 p-6 shadow-xl">
+                    <h3 class="text-xs font-black text-slate-300 uppercase tracking-widest mb-6 flex items-center gap-2"><span class="text-lg">🏆</span> Competições e Títulos</h3>
+                    <div id="lista-competicoes" class="space-y-3">
+                        <div class="text-center p-4 text-slate-500 text-xs italic">Buscando competições...</div>
                     </div>
                 </div>
             </section>
@@ -345,6 +380,10 @@
                 <span class="text-2xl mb-1 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)] transition-all transform scale-110">🪪</span>
                 <span class="text-[10px] font-black uppercase tracking-widest">Início</span>
             </button>
+            <button onclick="mudarAbaAluno('aba-historico')" id="nav-aba-historico" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
+                <span class="text-2xl mb-1 grayscale transition-all">📜</span>
+                <span class="text-[10px] font-bold uppercase tracking-widest">Histórico</span>
+            </button>
             <button onclick="mudarAbaAluno('aba-financeiro')" id="nav-aba-financeiro" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
                 <span class="text-2xl mb-1 grayscale transition-all">💰</span>
                 <span class="text-[10px] font-bold uppercase tracking-widest">Financeiro</span>
@@ -405,26 +444,18 @@
                     <p class="text-[10px] text-slate-400 font-bold uppercase mb-2">Possui alguma das condições abaixo?</p>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                         <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-med-asma" class="custom-checkbox"> Asma / Bronquite</label>
-                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-med-hipertensao" class="custom-checkbox"> Pressão Alta</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-med-hipertensao" class="custom-checkbox"> Pressão Alta (Hipertensão)</label>
                         <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-med-cardiopatia" class="custom-checkbox"> Problema Cardíaco</label>
                         <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-med-diabetes" class="custom-checkbox"> Diabetes</label>
-                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-med-epilepsia" class="custom-checkbox"> Epilepsia / Convulsões</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-med-epilepsia" class="custom-checkbox"> Convulsões / Epilepsia</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-med-articulacao" class="custom-checkbox"> Lesão Articular (Joelho, Ombro...)</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-med-hernia" class="custom-checkbox"> Hérnia de Disco / Coluna</label>
                         <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-med-desmaios" class="custom-checkbox"> Histórico de Desmaios</label>
                     </div>
-                    
-                    <h5 class="text-[10px] text-slate-500 font-bold uppercase mt-4 mb-2">Histórico Ortopédico e Físico</h5>
                     <div class="grid grid-cols-1 gap-4">
                         <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Sente dores nas articulações (joelho, ombro, quadril)?</label>
-                            <input type="text" id="ana-med-dores" placeholder="Ex: Não, ou Dor no joelho direito ao dobrar..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Problemas de Coluna (Hérnia de disco, escoliose, lombalgia)?</label>
-                            <input type="text" id="ana-med-coluna" placeholder="Ex: Não, ou Hérnia na lombar (L4-L5)..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm">
-                        </div>
-                        <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Cirurgias recentes ou Lesões prévias graves?</label>
-                            <input type="text" id="ana-med-cirurgias" placeholder="Ex: Não, ou Cirurgia no ligamento do ombro em 2022..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm">
+                            <input type="text" id="ana-med-cirurgias" placeholder="Ex: Não, ou Cirurgia no joelho em 2022..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm">
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Faz uso contínuo de algum medicamento?</label>
@@ -435,90 +466,77 @@
 
                 <div class="space-y-4 pt-4 border-t border-slate-800/50">
                     <h4 class="text-xs font-black text-rose-400 uppercase tracking-widest border-b border-slate-700/50 pb-2">2. Inclusão e Neurodivergência</h4>
+                    <p class="text-[10px] text-slate-500 font-bold mb-3 uppercase">Se não houver diagnóstico, pode deixar esta seção em branco.</p>
                     
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Possui algum diagnóstico de neurodivergência ou necessidade de inclusão?</label>
-                        <select id="ana-tem-neuro" onchange="toggleNeuro()" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-rose-500 font-bold text-sm cursor-pointer">
-                            <option value="Não" selected>Não</option>
-                            <option value="Sim">Sim, possui</option>
-                        </select>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-tea" class="custom-checkbox"> TEA (Autismo)</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-tdah" class="custom-checkbox"> TDAH</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-intelectual" class="custom-checkbox"> Deficiência Intelectual</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-fisica" class="custom-checkbox"> Deficiência Física/Motora</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-visual" class="custom-checkbox"> Deficiência Visual</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-auditiva" class="custom-checkbox"> Deficiência Auditiva</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-aprendizagem" class="custom-checkbox"> Trans. Aprendizagem</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-ansiedade" class="custom-checkbox"> Ansiedade/Emocional</label>
                     </div>
-
-                    <div id="div-neuro-detalhes" class="hidden space-y-6 mt-4">
-                        
+                    <div class="pt-2">
+                        <input type="text" id="ana-diag-outro" placeholder="Outro diagnóstico? Qual?" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-rose-500 transition-all font-bold text-sm">
+                    </div>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
                         <div>
-                            <p class="text-[10px] text-slate-500 font-bold mb-3 uppercase">Selecione as condições aplicáveis:</p>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-tea" class="custom-checkbox"> TEA (Autismo)</label>
-                                <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-tdah" class="custom-checkbox"> TDAH</label>
-                                <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-intelectual" class="custom-checkbox"> Deficiência Intelectual</label>
-                                <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-fisica" class="custom-checkbox"> Deficiência Física/Motora</label>
-                                <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-visual" class="custom-checkbox"> Deficiência Visual</label>
-                                <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-auditiva" class="custom-checkbox"> Deficiência Auditiva</label>
-                                <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-aprendizagem" class="custom-checkbox"> Trans. Aprendizagem</label>
-                                <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-ansiedade" class="custom-checkbox"> Ansiedade/Emocional</label>
-                            </div>
-                            <div class="pt-2">
-                                <input type="text" id="ana-diag-outro" placeholder="Outro diagnóstico? Qual?" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-rose-500 transition-all font-bold text-sm">
-                            </div>
-                            
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-                                <div>
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Confirmado por Médico?</label>
-                                    <select id="ana-diag-confirmado" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-rose-500 font-bold text-sm">
-                                        <option value="Não">Não</option><option value="Sim">Sim</option>
-                                    </select>
-                                </div>
-                                <div class="sm:col-span-2">
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Qual Especialidade?</label>
-                                    <input type="text" id="ana-diag-profissional" placeholder="Ex: Neuropediatra, Psicólogo..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-rose-500 transition-all font-bold text-sm">
-                                </div>
-                            </div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Confirmado por Médico?</label>
+                            <select id="ana-diag-confirmado" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-rose-500 font-bold text-sm">
+                                <option value="Não">Não</option><option value="Sim">Sim</option>
+                            </select>
                         </div>
-
-                        <div class="pt-4 border-t border-slate-800/50">
-                            <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Desenvolvimento e Comunicação</h4>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Dificuldade Motora / Equilíbrio?</label>
-                                    <select id="ana-mot-equilibrio" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold text-sm outline-none focus:border-cyan-500"><option value="Não">Não</option><option value="Sim">Sim</option></select>
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Entende comandos simples verbais?</label>
-                                    <select id="ana-com-comandos" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold text-sm outline-none focus:border-cyan-500"><option value="Sim">Sim</option><option value="Não">Não</option></select>
-                                </div>
-                            </div>
-                            <div class="mt-4">
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Usa comunicação alternativa (App, Pastas)?</label>
-                                <input type="text" id="ana-com-alternativa" placeholder="Ex: Não, ou PECS, Tablet..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm">
-                            </div>
-                        </div>
-
-                        <div class="pt-4 border-t border-slate-800/50">
-                            <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Comportamento e Sensorial</h4>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <label class="flex items-center gap-2 text-sm font-bold text-slate-300"><input type="checkbox" id="ana-sens-sons" class="custom-checkbox"> Sensibilidade a Barulho alto?</label>
-                                <label class="flex items-center gap-2 text-sm font-bold text-slate-300"><input type="checkbox" id="ana-sens-toques" class="custom-checkbox"> Sensibilidade a Toques/Abraços?</label>
-                                <label class="flex items-center gap-2 text-sm font-bold text-slate-300"><input type="checkbox" id="ana-comp-fuga" class="custom-checkbox"> Tendência a fugir/correr?</label>
-                                <label class="flex items-center gap-2 text-sm font-bold text-slate-300"><input type="checkbox" id="ana-soc-apoio" class="custom-checkbox"> Precisa de apoio p/ interagir?</label>
-                            </div>
-                            <div class="mt-4">
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Crises, agressividade ou autolesão? (Descreva gatilhos se houver)</label>
-                                <input type="text" id="ana-comp-crises" placeholder="Ex: Chora com muito barulho..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm">
-                            </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Qual Especialidade?</label>
+                            <input type="text" id="ana-diag-profissional" placeholder="Ex: Neuropediatra, Psicólogo..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-rose-500 transition-all font-bold text-sm">
                         </div>
                     </div>
                 </div>
 
-                <div class="space-y-4 pt-4 border-t border-slate-800/50">
-                    <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-700/50 pb-2">3. Avaliação Geral</h4>
+                <div class="space-y-4">
+                    <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-700/50 pb-2">3. Desenvolvimento e Comunicação</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Dificuldade Motora / Equilíbrio?</label>
+                            <select id="ana-mot-equilibrio" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold text-sm outline-none focus:border-cyan-500"><option value="Não">Não</option><option value="Sim">Sim</option></select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Entende comandos simples verbais?</label>
+                            <select id="ana-com-comandos" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold text-sm outline-none focus:border-cyan-500"><option value="Sim">Sim</option><option value="Não">Não</option></select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Usa comunicação alternativa (App, Pastas)?</label>
+                        <input type="text" id="ana-com-alternativa" placeholder="Ex: Não, ou PECS, Tablet..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm">
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-700/50 pb-2">4. Comportamento e Senses</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300"><input type="checkbox" id="ana-sens-sons" class="custom-checkbox"> Sensibilidade a Barulho alto?</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300"><input type="checkbox" id="ana-sens-toques" class="custom-checkbox"> Sensibilidade a Toques/Abraços?</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300"><input type="checkbox" id="ana-comp-fuga" class="custom-checkbox"> Tendência a fugir/correr?</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300"><input type="checkbox" id="ana-soc-apoio" class="custom-checkbox"> Precisa de apoio p/ interagir?</label>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Crises, agressividade ou autolesão? (Descreva gatilhos se houver)</label>
+                        <input type="text" id="ana-comp-crises" placeholder="Ex: Chora com muito barulho..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm">
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-700/50 pb-2">5. Avaliação Geral</h4>
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Alergias graves (Alimentar, Inseto, Remédio)?</label>
                         <input type="text" id="ana-sau-alergias" placeholder="Ex: Não, ou Amendoim..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm">
                     </div>
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">O que a família/aluno espera atingir com os treinos?</label>
-                        <textarea id="ana-exp-geral" rows="2" placeholder="Disciplina, emagrecimento, foco, condicionamento físico..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm resize-none"></textarea>
+                        <textarea id="ana-exp-geral" rows="2" placeholder="Disciplina, emagrecimento, foco, coordenação..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm resize-none"></textarea>
                     </div>
                 </div>
 
@@ -639,6 +657,7 @@
 
             const subtitulo = document.getElementById('subtitulo-secao');
             if(idAba === 'aba-carteirinha') subtitulo.innerText = "Sua identificação oficial e acesso à equipe.";
+            if(idAba === 'aba-historico') { subtitulo.innerText = "Sua jornada e conquistas no tatame."; carregarHistoricoAluno(); }
             if(idAba === 'aba-financeiro') subtitulo.innerText = "Controle de suas mensalidades e pagamentos.";
             if(idAba === 'aba-dados') { subtitulo.innerText = "Mantenha o seu cadastro atualizado."; preencherFormularioDados(); }
         }
@@ -704,17 +723,6 @@
             finally { btn.disabled = false; btn.innerHTML = "💾 Salvar Alterações"; }
         }
 
-        /* ----- ANAMNESE NOVA: Lógica do Toggle ----- */
-        window.toggleNeuro = function() {
-            const select = document.getElementById('ana-tem-neuro').value;
-            const div = document.getElementById('div-neuro-detalhes');
-            if (select === 'Sim') {
-                div.classList.remove('hidden');
-            } else {
-                div.classList.add('hidden');
-            }
-        }
-
         function verificarAnamnese() {
             if (!alunoLogado.anamnese_preenchida) {
                 document.getElementById('banner-anamnese').classList.remove('hidden'); document.getElementById('banner-anamnese').classList.add('flex');
@@ -744,8 +752,6 @@
             const btn = document.getElementById('btn-salvar-anamnese');
             btn.disabled = true; btn.innerHTML = "Salvando...";
 
-            const temNeuro = document.getElementById('ana-tem-neuro').value === 'Sim';
-
             const dadosAnamnese = {
                 medico: {
                     asma: document.getElementById('ana-med-asma').checked,
@@ -754,48 +760,61 @@
                     diabetes: document.getElementById('ana-med-diabetes').checked,
                     epilepsia: document.getElementById('ana-med-epilepsia').checked,
                     desmaios: document.getElementById('ana-med-desmaios').checked,
-                    dores_articulacoes: document.getElementById('ana-med-dores').value.trim(),
-                    problema_coluna: document.getElementById('ana-med-coluna').value.trim(),
                     cirurgias: document.getElementById('ana-med-cirurgias').value.trim(),
                     medicamentos: document.getElementById('ana-med-medicamentos').value.trim()
                 },
                 diagnostico: {
-                    possui_neurodivergencia: temNeuro,
-                    tea: temNeuro ? document.getElementById('ana-diag-tea').checked : false,
-                    tdah: temNeuro ? document.getElementById('ana-diag-tdah').checked : false,
-                    def_intelectual: temNeuro ? document.getElementById('ana-diag-intelectual').checked : false,
-                    def_fisica: temNeuro ? document.getElementById('ana-diag-fisica').checked : false,
-                    def_visual: temNeuro ? document.getElementById('ana-diag-visual').checked : false,
-                    def_auditiva: temNeuro ? document.getElementById('ana-diag-auditiva').checked : false,
-                    transtorno_aprendizagem: temNeuro ? document.getElementById('ana-diag-aprendizagem').checked : false,
-                    ansiedade_emocional: temNeuro ? document.getElementById('ana-diag-ansiedade').checked : false,
-                    outro: temNeuro ? document.getElementById('ana-diag-outro').value.trim() : '',
-                    confirmado: temNeuro ? document.getElementById('ana-diag-confirmado').value : 'Não',
-                    profissional: temNeuro ? document.getElementById('ana-diag-profissional').value.trim() : ''
+                    tea: document.getElementById('ana-diag-tea').checked,
+                    tdah: document.getElementById('ana-diag-tdah').checked,
+                    def_intelectual: document.getElementById('ana-diag-intelectual').checked,
+                    def_fisica: document.getElementById('ana-diag-fisica').checked,
+                    def_visual: document.getElementById('ana-diag-visual').checked,
+                    def_auditiva: document.getElementById('ana-diag-auditiva').checked,
+                    transtorno_aprendizagem: document.getElementById('ana-diag-aprendizagem').checked,
+                    ansiedade_emocional: document.getElementById('ana-diag-ansiedade').checked,
+                    outro: document.getElementById('ana-diag-outro').value.trim(),
+                    confirmado: document.getElementById('ana-diag-confirmado').value,
+                    profissional: document.getElementById('ana-diag-profissional').value.trim()
                 },
                 motor: {
-                    dificuldade_equilibrio: temNeuro ? document.getElementById('ana-mot-equilibrio').value : 'Não'
+                    anda_facilidade: document.getElementById('ana-mot-anda').value,
+                    corre_salta: document.getElementById('ana-mot-corre').value,
+                    dificuldade_equilibrio: document.getElementById('ana-mot-equilibrio').value,
+                    dificuldade_coordenacao: document.getElementById('ana-mot-coordenacao').value,
+                    usa_protese: document.getElementById('ana-mot-protese').value.trim()
                 },
                 comunicacao: {
-                    entende_comandos: temNeuro ? document.getElementById('ana-com-comandos').value : 'Sim',
-                    comunicacao_alternativa: temNeuro ? document.getElementById('ana-com-alternativa').value.trim() : ''
+                    verbal: document.getElementById('ana-com-verbal').value,
+                    entende_comandos: document.getElementById('ana-com-comandos').value,
+                    ecolalia: document.getElementById('ana-com-ecolalia').value,
+                    comunicacao_alternativa: document.getElementById('ana-com-alternativa').value.trim()
                 },
                 comportamento: {
-                    fuga_isolamento: temNeuro ? document.getElementById('ana-comp-fuga').checked : false,
-                    crises_agressividade: temNeuro ? document.getElementById('ana-comp-crises').value.trim() : ''
+                    agitado_estimulos: document.getElementById('ana-comp-agitado').value,
+                    fuga_isolamento: document.getElementById('ana-comp-fuga').value,
+                    crises_agressividade: document.getElementById('ana-comp-crises').value.trim(),
+                    fixacoes: document.getElementById('ana-comp-fixacao').value.trim()
                 },
                 social: {
-                    precisa_apoio: temNeuro ? document.getElementById('ana-soc-apoio').checked : false
+                    interage_colegas: document.getElementById('ana-soc-interage').checked,
+                    participa_grupo: document.getElementById('ana-soc-grupo').checked,
+                    prefere_individual: document.getElementById('ana-soc-individual').checked,
+                    precisa_apoio: document.getElementById('ana-soc-apoio').checked
                 },
                 sensorial: {
-                    sons: temNeuro ? document.getElementById('ana-sens-sons').checked : false,
-                    toques: temNeuro ? document.getElementById('ana-sens-toques').checked : false
+                    sons: document.getElementById('ana-sens-sons').checked,
+                    toques: document.getElementById('ana-sens-toques').checked,
+                    alimentar: document.getElementById('ana-sens-alimentar').checked,
+                    recursos: document.getElementById('ana-sens-recursos').value.trim()
                 },
                 saude: {
-                    alergias_restricoes: document.getElementById('ana-sau-alergias').value.trim()
+                    alergias_restricoes: document.getElementById('ana-sau-alergias').value.trim(),
+                    terapias: document.getElementById('ana-sau-terapias').value.trim(),
+                    cuidados_especificos: document.getElementById('ana-sau-cuidados').value.trim()
                 },
                 expectativas: {
-                    geral: document.getElementById('ana-exp-geral').value.trim()
+                    geral: document.getElementById('ana-exp-geral').value.trim(),
+                    metas: document.getElementById('ana-exp-metas').value.trim()
                 },
                 data_preenchimento: new Date().toISOString()
             };
@@ -846,6 +865,12 @@
             if (f.includes('preta')) return '#0F172A'; return '#cbd5e1'; 
         }
 
+        function getCorDoGrau(faixaTexto) {
+            const f = faixaTexto ? faixaTexto.toLowerCase() : '';
+            if (f.includes('preta')) return '#ef4444'; // Ponteira vermelha
+            return '#0f172a'; // Ponteira preta padrão
+        }
+
         function preencherCarteirinha() {
             const a = alunoLogado;
             if(equipeDados) {
@@ -876,6 +901,124 @@
             }
             const qrContainer = document.getElementById('cart-qr-code'); qrContainer.innerHTML = ''; 
             new QRCode(qrContainer, { text: window.location.origin + '/validar.html?mat=' + a.matricula, width: 64, height: 64, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.M });
+        }
+
+        /* --- HISTÓRICO ESPORTIVO --- */
+        window.carregarHistoricoAluno = async function() {
+            const divGrad = document.getElementById('lista-graduacoes');
+            const divComp = document.getElementById('lista-competicoes');
+            const faixaAtualTxt = document.getElementById('hist-faixa-atual');
+            const tempoAtualTxt = document.getElementById('hist-tempo-faixa');
+
+            divGrad.innerHTML = '<div class="text-center p-4 text-slate-500 text-xs italic">Buscando histórico...</div>';
+            divComp.innerHTML = '<div class="text-center p-4 text-slate-500 text-xs italic">Buscando competições...</div>';
+
+            const grau = alunoLogado.grau && alunoLogado.grau !== "Sem grau" ? ` ${alunoLogado.grau}` : "";
+            faixaAtualTxt.innerText = `${alunoLogado.faixa || 'BRANCA'}${grau}`;
+
+            // Puxar Graduações
+            try {
+                const qGrad = query(collection(db, "graduacoes"), where("aluno_id", "==", alunoLogado.id));
+                const snapGrad = await getDocs(qGrad);
+                let grads = [];
+                snapGrad.forEach(doc => grads.push({id: doc.id, ...doc.data()}));
+                
+                if (grads.length === 0) {
+                    divGrad.innerHTML = `
+                        <div class="relative flex items-start gap-4 mb-4">
+                            <div class="absolute left-[3px] w-2 h-2 rounded-full bg-cyan-500 mt-1 shadow-[0_0_8px_#06b6d4]"></div>
+                            <div class="ml-4">
+                                <p class="text-[10px] font-bold text-cyan-500">Faixa Inicial</p>
+                                <p class="text-sm font-black text-white">${alunoLogado.faixa || 'BRANCA'}${grau}</p>
+                            </div>
+                        </div>
+                    `;
+                    tempoAtualTxt.innerText = "Tempo não registrado no sistema.";
+                } else {
+                    grads.sort((a, b) => new Date(b.data) - new Date(a.data));
+                    
+                    // Calcula o tempo na faixa atual (a mais recente do array)
+                    const dataUltima = new Date(grads[0].data);
+                    const hoje = new Date();
+                    let meses = (hoje.getFullYear() - dataUltima.getFullYear()) * 12 + (hoje.getMonth() - dataUltima.getMonth());
+                    if (hoje.getDate() < dataUltima.getDate()) meses--;
+                    
+                    if (meses < 0) meses = 0;
+                    const anos = Math.floor(meses / 12);
+                    const mesesRestantes = meses % 12;
+                    
+                    let tempoStr = "";
+                    if (anos > 0) tempoStr += `${anos} ano${anos > 1 ? 's' : ''}`;
+                    if (anos > 0 && mesesRestantes > 0) tempoStr += ` e `;
+                    if (mesesRestantes > 0 || anos === 0) tempoStr += `${mesesRestantes} mes${mesesRestantes !== 1 ? 'es' : ''}`;
+                    
+                    tempoAtualTxt.innerText = `Nesta faixa há ${tempoStr}`;
+
+                    let gradHTML = '';
+                    grads.forEach((g, index) => {
+                        const cor = index === 0 ? "bg-cyan-500 shadow-[0_0_8px_#06b6d4]" : "bg-slate-600";
+                        const textoCor = index === 0 ? "text-cyan-400" : "text-slate-500";
+                        const dataFormatada = new Date(g.data).toLocaleDateString('pt-BR', {month: 'long', year: 'numeric'});
+                        
+                        gradHTML += `
+                            <div class="relative flex items-start gap-4 ${index !== grads.length -1 ? 'mb-6' : ''}">
+                                <div class="absolute left-[3px] w-2 h-2 rounded-full ${cor} mt-1.5 z-10"></div>
+                                <div class="ml-4">
+                                    <p class="text-[10px] font-bold ${textoCor} uppercase tracking-widest">${dataFormatada}</p>
+                                    <p class="text-sm font-black text-white">${g.faixa} ${g.grau && g.grau !== 'Sem grau' ? g.grau : ''}</p>
+                                    ${g.professor ? `<p class="text-[10px] text-slate-400 mt-0.5">Prof: ${g.professor}</p>` : ''}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    divGrad.innerHTML = gradHTML;
+                }
+            } catch(e) {
+                console.log("Erro graduacoes:", e);
+                divGrad.innerHTML = '<div class="text-center p-4 text-slate-500 text-xs">Histórico não disponível.</div>';
+                tempoAtualTxt.innerText = "Tempo não calculado.";
+            }
+
+            // Puxar Competições
+            try {
+                const qComp = query(collection(db, "competicoes"), where("aluno_id", "==", alunoLogado.id));
+                const snapComp = await getDocs(qComp);
+                let comps = [];
+                snapComp.forEach(doc => comps.push({id: doc.id, ...doc.data()}));
+
+                if (comps.length === 0) {
+                    divComp.innerHTML = '<div class="text-center p-8 text-slate-500 text-xs">Nenhuma competição registrada.</div>';
+                } else {
+                    comps.sort((a, b) => new Date(b.data) - new Date(a.data));
+                    let compHTML = '';
+                    comps.forEach(c => {
+                        let icone = '🏅';
+                        let corFundo = 'bg-slate-800 border-slate-700';
+                        if (c.colocacao && c.colocacao.includes('1')) { icone = '🥇'; corFundo = 'bg-amber-500/10 border-amber-500/30'; }
+                        else if (c.colocacao && c.colocacao.includes('2')) { icone = '🥈'; corFundo = 'bg-slate-300/10 border-slate-300/30'; }
+                        else if (c.colocacao && c.colocacao.includes('3')) { icone = '🥉'; corFundo = 'bg-orange-700/10 border-orange-700/30'; }
+
+                        const dataFormatada = new Date(c.data).toLocaleDateString('pt-BR');
+                        
+                        compHTML += `
+                            <div class="flex items-center gap-3 p-3 rounded-2xl border ${corFundo}">
+                                <div class="text-2xl">${icone}</div>
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-black text-white">${c.nome || c.campeonato}</h4>
+                                    <p class="text-[10px] text-slate-400 font-bold uppercase">${dataFormatada}</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-xs font-black text-white">${c.colocacao || 'Participou'}</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    divComp.innerHTML = compHTML;
+                }
+            } catch(e) {
+                console.log("Erro competicoes:", e);
+                divComp.innerHTML = '<div class="text-center p-4 text-slate-500 text-xs">Não foi possível carregar as competições.</div>';
+            }
         }
 
         async function convertImgToBase64(url) {

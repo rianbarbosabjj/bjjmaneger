@@ -23,6 +23,33 @@
         .pb-safe { padding-bottom: env(safe-area-inset-bottom, 20px); }
         
         .carteirinha-layer-1 { position: relative; z-index: 10; }
+
+        /* Estilização para o checkbox personalizado */
+        .custom-checkbox {
+            appearance: none;
+            background-color: #1e293b;
+            margin: 0;
+            font: inherit;
+            color: currentColor;
+            width: 1.15em;
+            height: 1.15em;
+            border: 1px solid #334155;
+            border-radius: 0.25em;
+            display: grid;
+            place-content: center;
+        }
+        .custom-checkbox::before {
+            content: "";
+            width: 0.65em;
+            height: 0.65em;
+            transform: scale(0);
+            transition: 120ms transform ease-in-out;
+            box-shadow: inset 1em 1em #06b6d4;
+            background-color: transform;
+            transform-origin: center;
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+        }
+        .custom-checkbox:checked::before { transform: scale(1); }
     </style>
 </head>
 <body class="text-slate-200 overflow-x-hidden selection:bg-cyan-500 selection:text-white min-h-screen flex flex-col relative">
@@ -365,54 +392,187 @@
     </div>
 
     <div id="modal-anamnese" class="fixed inset-0 bg-slate-950/90 backdrop-blur-sm hidden items-center justify-center z-[250] p-4">
-        <div class="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
-            <div class="bg-rose-600 p-5 text-white text-center shadow-inner">
-                <h3 class="font-black uppercase tracking-widest text-sm">⚕️ Ficha Médica e Segurança</h3>
-                <p class="text-[10px] mt-1 opacity-90">O preenchimento é obrigatório para treinar.</p>
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[95vh]">
+            <div class="bg-rose-600 p-5 text-white text-center shadow-inner shrink-0">
+                <h3 class="font-black uppercase tracking-widest text-sm">⚕️ Ficha de Saúde e Inclusão</h3>
+                <p class="text-[10px] mt-1 opacity-90">Para a segurança e melhor acompanhamento do aluno.</p>
             </div>
             
-            <div class="p-6 overflow-y-auto hide-scrollbar space-y-4">
-                <div>
-                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Tipo Sanguíneo</label>
-                    <select id="anamnese-sangue" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold">
-                        <option value="" disabled selected>Selecione...</option>
-                        <option value="A+">A+</option><option value="A-">A-</option>
-                        <option value="B+">B+</option><option value="B-">B-</option>
-                        <option value="AB+">AB+</option><option value="AB-">AB-</option>
-                        <option value="O+">O+</option><option value="O-">O-</option>
-                        <option value="Não Sei">Não sei</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Possui alguma alergia? (Medicamentos, insetos, etc)</label>
-                    <input type="text" id="anamnese-alergias" placeholder="Ex: Nenhuma, Dipirona, Poeira..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold">
-                </div>
-                <div>
-                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Uso de medicamentos contínuos?</label>
-                    <input type="text" id="anamnese-medicamentos" placeholder="Ex: Nenhum, Losartana..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold">
-                </div>
-                <div>
-                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Doenças crônicas ou lesões prévias? (Asma, Cirurgias...)</label>
-                    <textarea id="anamnese-condicoes" rows="2" placeholder="Ex: Nenhuma, Asma, Cirurgia no joelho em 2020..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold resize-none"></textarea>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-slate-700/50">
-                    <div class="col-span-1 md:col-span-2">
-                        <h4 class="text-[10px] font-black text-rose-400 uppercase tracking-widest mb-2">Contato de Emergência</h4>
+            <div class="p-6 overflow-y-auto hide-scrollbar space-y-8 flex-1">
+                
+                <div class="space-y-4">
+                    <h4 class="text-xs font-black text-cyan-400 uppercase tracking-widest border-b border-slate-700/50 pb-2">Diagnóstico ou Condição Especial</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-tea" class="custom-checkbox"> TEA</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-tdah" class="custom-checkbox"> TDAH</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-intelectual" class="custom-checkbox"> Def. Intelectual</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-fisica" class="custom-checkbox"> Def. Física/Motora</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-visual" class="custom-checkbox"> Def. Visual</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-auditiva" class="custom-checkbox"> Def. Auditiva</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-aprendizagem" class="custom-checkbox"> Trans. Aprendizagem</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-ansiedade" class="custom-checkbox"> Ansiedade/Emocional</label>
                     </div>
                     <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Nome do Contato</label>
-                        <input type="text" id="anamnese-emergencia-nome" placeholder="Nome" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold">
+                        <input type="text" id="ana-diag-outro" placeholder="Outro? Qual?" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm">
                     </div>
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Telefone</label>
-                        <input type="text" id="anamnese-emergencia-tel" oninput="mascaraTelefone(this)" placeholder="(00) 00000-0000" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold">
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Diag. Confirmado por Profissional?</label>
+                            <select id="ana-diag-confirmado" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 font-bold text-sm">
+                                <option value="Não">Não</option>
+                                <option value="Sim">Sim</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Qual Profissional?</label>
+                            <input type="text" id="ana-diag-profissional" placeholder="Ex: Neurologista, Psicólogo..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Faz uso de medicação?</label>
+                            <input type="text" id="ana-diag-medicacao" placeholder="Ex: Não, ou nome do remédio" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Possui laudo médico?</label>
+                            <select id="ana-diag-laudo" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 font-bold text-sm">
+                                <option value="Não">Não</option>
+                                <option value="Sim">Sim</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-xs font-black text-cyan-400 uppercase tracking-widest border-b border-slate-700/50 pb-2">Desenvolvimento Motor</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Anda com facilidade?</label>
+                            <select id="ana-mot-anda" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold text-sm outline-none focus:border-cyan-500"><option value="Sim">Sim</option><option value="Não">Não</option></select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Corre e salta com segurança?</label>
+                            <select id="ana-mot-corre" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold text-sm outline-none focus:border-cyan-500"><option value="Sim">Sim</option><option value="Não">Não</option></select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Dificuldade de equilíbrio?</label>
+                            <select id="ana-mot-equilibrio" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold text-sm outline-none focus:border-cyan-500"><option value="Não">Não</option><option value="Sim">Sim</option></select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Dificuldade com coordenação?</label>
+                            <select id="ana-mot-coordenacao" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold text-sm outline-none focus:border-cyan-500"><option value="Não">Não</option><option value="Sim">Sim</option></select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Usa órtese, prótese ou apoio?</label>
+                        <input type="text" id="ana-mot-protese" placeholder="Ex: Não, ou especificar qual" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm">
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-xs font-black text-cyan-400 uppercase tracking-widest border-b border-slate-700/50 pb-2">Comunicação e Compreensão</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Comunica-se verbalmente?</label>
+                            <select id="ana-com-verbal" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold text-sm outline-none focus:border-cyan-500"><option value="Sim">Sim</option><option value="Não">Não</option></select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Entende comandos simples?</label>
+                            <select id="ana-com-comandos" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold text-sm outline-none focus:border-cyan-500"><option value="Sim">Sim</option><option value="Não">Não</option></select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Ecolalia ou repetição de palavras?</label>
+                            <select id="ana-com-ecolalia" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold text-sm outline-none focus:border-cyan-500"><option value="Não">Não</option><option value="Sim">Sim</option></select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Comunicação alternativa (Gestos, Apps...)?</label>
+                        <input type="text" id="ana-com-alternativa" placeholder="Ex: Não, ou especificar qual" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm">
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-xs font-black text-cyan-400 uppercase tracking-widest border-b border-slate-700/50 pb-2">Comportamento e Interação</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Agitado com muitos estímulos?</label>
+                            <select id="ana-comp-agitado" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold text-sm outline-none focus:border-cyan-500"><option value="Não">Não</option><option value="Sim">Sim</option></select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Comportamentos de fuga/isolamento?</label>
+                            <select id="ana-comp-fuga" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold text-sm outline-none focus:border-cyan-500"><option value="Não">Não</option><option value="Sim">Sim</option></select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Crises de agressividade/autolesão? Gatilhos:</label>
+                            <input type="text" id="ana-comp-crises" placeholder="Ex: Não, ou Barulho alto..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Tem fixações ou hiperfocos? Quais:</label>
+                            <input type="text" id="ana-comp-fixacao" placeholder="Ex: Não, ou Dinossauros..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm">
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300"><input type="checkbox" id="ana-soc-interage" class="custom-checkbox"> Interage bem com colegas?</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300"><input type="checkbox" id="ana-soc-grupo" class="custom-checkbox"> Participa de atividades em grupo?</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300"><input type="checkbox" id="ana-soc-individual" class="custom-checkbox"> Prefere atividades individuais?</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300"><input type="checkbox" id="ana-soc-apoio" class="custom-checkbox"> Precisa de apoio para interagir?</label>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-xs font-black text-cyan-400 uppercase tracking-widest border-b border-slate-700/50 pb-2">Sensorial e Saúde Geral</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300"><input type="checkbox" id="ana-sens-sons" class="custom-checkbox"> Sensibilidade a sons?</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300"><input type="checkbox" id="ana-sens-toques" class="custom-checkbox"> Sensibilidade a toques?</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300"><input type="checkbox" id="ana-sens-alimentar" class="custom-checkbox"> Seletividade alimentar?</label>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Usa abafadores ou brinquedos sensoriais?</label>
+                        <input type="text" id="ana-sens-recursos" placeholder="Ex: Não, ou Abafador de ruídos" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Restrições alimentares ou alergias?</label>
+                        <input type="text" id="ana-sau-alergias" placeholder="Ex: Não, ou Amendoim, Poeira..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Faz Terapias? (Fono, TO, Fisio, Psicologia...)</label>
+                        <input type="text" id="ana-sau-terapias" placeholder="Ex: Não, ou Terapia Ocupacional..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Necessita de cuidados específicos na aula?</label>
+                        <input type="text" id="ana-sau-cuidados" placeholder="Ex: Não, ou Precisa beber água frequentemente" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm">
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-xs font-black text-cyan-400 uppercase tracking-widest border-b border-slate-700/50 pb-2">Expectativas</h4>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">O que a família espera da prática do Jiu-Jitsu?</label>
+                        <textarea id="ana-exp-geral" rows="2" placeholder="Sua resposta..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm resize-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Metas específicas (ex: disciplina, foco, sociabilização)?</label>
+                        <textarea id="ana-exp-metas" rows="2" placeholder="Sua resposta..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm resize-none"></textarea>
+                    </div>
+                </div>
+
+                <div class="bg-rose-500/10 border border-rose-500/30 p-4 rounded-xl mt-4">
+                    <label class="flex items-start gap-3 cursor-pointer">
+                        <input type="checkbox" id="ana-termo-aceite" class="custom-checkbox mt-1 shrink-0" onchange="validarTermoAnamnese()">
+                        <span class="text-xs text-rose-200 font-medium leading-relaxed">
+                            Declaro para os devidos fins que as respostas prestadas aqui são verdadeiras e poderão ser utilizadas para o planejamento inclusivo das aulas de Jiu-Jitsu.
+                        </span>
+                    </label>
+                </div>
+
             </div>
             
-            <div class="p-4 bg-slate-800 border-t border-slate-700 flex justify-between gap-3">
+            <div class="p-4 bg-slate-800 border-t border-slate-700 flex justify-between gap-3 shrink-0">
                 <button onclick="fecharModalAnamnese()" class="px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-bold text-xs uppercase tracking-widest transition">Depois</button>
-                <button onclick="salvarAnamnese()" id="btn-salvar-anamnese" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-black text-xs uppercase tracking-widest transition shadow-lg">Salvar Ficha</button>
+                <button onclick="salvarAnamnese()" id="btn-salvar-anamnese" disabled class="flex-1 bg-slate-600 text-slate-400 cursor-not-allowed rounded-xl font-black text-xs uppercase tracking-widest transition shadow-lg">Aceite o Termo</button>
             </div>
         </div>
     </div>
@@ -421,7 +581,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs, getDoc, doc, query, where, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
-        // NOVO IMPORT: Storage para a foto do aluno
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
         const firebaseConfig = {
@@ -436,7 +595,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const functions = getFunctions(app);
-        const storage = getStorage(app); // Inicializa Storage
+        const storage = getStorage(app);
 
         let alunoLogado = null;
         let equipeDados = null;
@@ -561,7 +720,6 @@
             }
         }
 
-        // NOVO: Exibir miniatura da foto antes de salvar
         window.previewImagem = function(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -578,7 +736,6 @@
         function preencherFormularioDados() {
             if(!alunoLogado) return;
             
-            // Preview da Foto atual
             if(alunoLogado.foto_url) {
                 const img = document.getElementById('edit-preview-foto');
                 img.src = alunoLogado.foto_url;
@@ -639,7 +796,6 @@
             }
 
             try {
-                // NOVO: Lógica para enviar a foto se houver uma nova selecionada
                 if (inputFoto.files && inputFoto.files[0]) {
                     btn.innerHTML = "⏳ Enviando Foto...";
                     const file = inputFoto.files[0];
@@ -657,7 +813,6 @@
                 showToast("Dados atualizados com sucesso!", "success");
                 document.getElementById('edit-senha').value = ""; 
                 
-                // Recarrega a foto na carteirinha e ajusta preview
                 preencherCarteirinha();
 
             } catch (error) {
@@ -669,7 +824,7 @@
             }
         }
 
-        // NOVAS FUNÇÕES: Anamnese
+        /* ----- ANAMNESE: Funções Novas ----- */
         function verificarAnamnese() {
             if (!alunoLogado.anamnese_preenchida) {
                 document.getElementById('banner-anamnese').classList.remove('hidden');
@@ -690,26 +845,86 @@
             document.getElementById('modal-anamnese').classList.remove('flex');
         }
 
-        window.salvarAnamnese = async function() {
-            const sangue = document.getElementById('anamnese-sangue').value;
-            const contatoNome = document.getElementById('anamnese-emergencia-nome').value.trim();
-            const contatoTel = document.getElementById('anamnese-emergencia-tel').value.trim();
+        window.validarTermoAnamnese = function() {
+            const check = document.getElementById('ana-termo-aceite').checked;
             const btn = document.getElementById('btn-salvar-anamnese');
-
-            if (!sangue || !contatoNome || !contatoTel) {
-                return showToast("Preencha ao menos o Tipo Sanguíneo e Contato de Emergência.");
+            if(check) {
+                btn.disabled = false;
+                btn.classList.remove('bg-slate-600', 'text-slate-400', 'cursor-not-allowed');
+                btn.classList.add('bg-rose-600', 'hover:bg-rose-500', 'text-white');
+                btn.innerText = "Salvar Ficha";
+            } else {
+                btn.disabled = true;
+                btn.classList.add('bg-slate-600', 'text-slate-400', 'cursor-not-allowed');
+                btn.classList.remove('bg-rose-600', 'hover:bg-rose-500', 'text-white');
+                btn.innerText = "Aceite o Termo";
             }
+        }
+
+        window.salvarAnamnese = async function() {
+            const btn = document.getElementById('btn-salvar-anamnese');
 
             btn.disabled = true;
             btn.innerHTML = "Salvando...";
 
+            // Montar o objeto completo com todos os dados da ficha
             const dadosAnamnese = {
-                tipo_sanguineo: sangue,
-                alergias: document.getElementById('anamnese-alergias').value.trim(),
-                medicamentos: document.getElementById('anamnese-medicamentos').value.trim(),
-                condicoes: document.getElementById('anamnese-condicoes').value.trim(),
-                contato_emergencia_nome: contatoNome,
-                contato_emergencia_telefone: contatoTel
+                diagnostico: {
+                    tea: document.getElementById('ana-diag-tea').checked,
+                    tdah: document.getElementById('ana-diag-tdah').checked,
+                    def_intelectual: document.getElementById('ana-diag-intelectual').checked,
+                    def_fisica: document.getElementById('ana-diag-fisica').checked,
+                    def_visual: document.getElementById('ana-diag-visual').checked,
+                    def_auditiva: document.getElementById('ana-diag-auditiva').checked,
+                    transtorno_aprendizagem: document.getElementById('ana-diag-aprendizagem').checked,
+                    ansiedade_emocional: document.getElementById('ana-diag-ansiedade').checked,
+                    outro: document.getElementById('ana-diag-outro').value.trim(),
+                    confirmado: document.getElementById('ana-diag-confirmado').value,
+                    profissional: document.getElementById('ana-diag-profissional').value.trim(),
+                    medicacao: document.getElementById('ana-diag-medicacao').value.trim(),
+                    laudo: document.getElementById('ana-diag-laudo').value
+                },
+                motor: {
+                    anda_facilidade: document.getElementById('ana-mot-anda').value,
+                    corre_salta: document.getElementById('ana-mot-corre').value,
+                    dificuldade_equilibrio: document.getElementById('ana-mot-equilibrio').value,
+                    dificuldade_coordenacao: document.getElementById('ana-mot-coordenacao').value,
+                    usa_protese: document.getElementById('ana-mot-protese').value.trim()
+                },
+                comunicacao: {
+                    verbal: document.getElementById('ana-com-verbal').value,
+                    entende_comandos: document.getElementById('ana-com-comandos').value,
+                    ecolalia: document.getElementById('ana-com-ecolalia').value,
+                    comunicacao_alternativa: document.getElementById('ana-com-alternativa').value.trim()
+                },
+                comportamento: {
+                    agitado_estimulos: document.getElementById('ana-comp-agitado').value,
+                    fuga_isolamento: document.getElementById('ana-comp-fuga').value,
+                    crises_agressividade: document.getElementById('ana-comp-crises').value.trim(),
+                    fixacoes: document.getElementById('ana-comp-fixacao').value.trim()
+                },
+                social: {
+                    interage_colegas: document.getElementById('ana-soc-interage').checked,
+                    participa_grupo: document.getElementById('ana-soc-grupo').checked,
+                    prefere_individual: document.getElementById('ana-soc-individual').checked,
+                    precisa_apoio: document.getElementById('ana-soc-apoio').checked
+                },
+                sensorial: {
+                    sons: document.getElementById('ana-sens-sons').checked,
+                    toques: document.getElementById('ana-sens-toques').checked,
+                    alimentar: document.getElementById('ana-sens-alimentar').checked,
+                    recursos: document.getElementById('ana-sens-recursos').value.trim()
+                },
+                saude: {
+                    alergias_restricoes: document.getElementById('ana-sau-alergias').value.trim(),
+                    terapias: document.getElementById('ana-sau-terapias').value.trim(),
+                    cuidados_especificos: document.getElementById('ana-sau-cuidados').value.trim()
+                },
+                expectativas: {
+                    geral: document.getElementById('ana-exp-geral').value.trim(),
+                    metas: document.getElementById('ana-exp-metas').value.trim()
+                },
+                data_preenchimento: new Date().toISOString()
             };
 
             try {
@@ -724,11 +939,11 @@
                 
                 fecharModalAnamnese();
                 verificarAnamnese();
-                showToast("Ficha de segurança salva!", "success");
+                showToast("Ficha Inclusiva salva com sucesso!", "success");
 
             } catch (error) {
-                showToast("Erro ao salvar anamnese.");
-            } finally {
+                console.error(error);
+                showToast("Erro ao salvar anamnese. Tente novamente.");
                 btn.disabled = false;
                 btn.innerHTML = "Salvar Ficha";
             }
@@ -776,7 +991,7 @@
 
             preencherCarteirinha();
             buscarFaturasResiliente();
-            verificarAnamnese(); // Checa se precisa exibir o banner de pendência
+            verificarAnamnese(); 
             
             setTimeout(ajustarZoomCarteirinha, 100);
         }

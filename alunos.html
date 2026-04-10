@@ -791,7 +791,6 @@
                 placeholder.classList.remove('hidden');
             }
 
-            // NOVA LÓGICA DA ANAMNESE: Popular os dados para o professor visualizar
             const divVazia = document.getElementById('anamnese-vazia');
             const divPreenchida = document.getElementById('anamnese-preenchida');
 
@@ -801,10 +800,18 @@
                 
                 const an = a.anamnese;
                 
-                // Funções de apoio para renderização visual das respostas
                 const boolText = (val) => val ? '<span class="text-emerald-600 font-black">SIM</span>' : '<span class="text-slate-400 font-bold">NÃO</span>';
                 const strText = (val) => val === 'Sim' ? '<span class="text-emerald-600 font-black">SIM</span>' : (val === 'Não' ? '<span class="text-slate-400 font-bold">NÃO</span>' : `<span class="text-slate-700 font-bold">${val || '-'}</span>`);
                 const textOrDash = (val) => val ? `<span class="text-slate-700 font-bold">${val}</span>` : '<span class="text-slate-400">-</span>';
+
+                const med = [];
+                if(an.medico?.asma) med.push("Asma/Bronquite");
+                if(an.medico?.hipertensao) med.push("Hipertensão");
+                if(an.medico?.cardiopatia) med.push("Cardiopatia");
+                if(an.medico?.diabetes) med.push("Diabetes");
+                if(an.medico?.epilepsia) med.push("Epilepsia");
+                if(an.medico?.desmaios) med.push("Desmaios");
+                const medText = med.length > 0 ? med.join(', ') : "Nenhuma relatada";
 
                 const diags = [];
                 if(an.diagnostico?.tea) diags.push("TEA");
@@ -816,8 +823,7 @@
                 if(an.diagnostico?.transtorno_aprendizagem) diags.push("Trans. Aprendizagem");
                 if(an.diagnostico?.ansiedade_emocional) diags.push("Ansiedade/Emocional");
                 if(an.diagnostico?.outro) diags.push(an.diagnostico.outro);
-
-                const diagsText = diags.length > 0 ? diags.join(', ') : "Nenhuma diagnosticada";
+                const diagsText = diags.length > 0 ? diags.join(', ') : "Nenhuma relatada";
                 
                 let dataFormatada = 'Data não registrada';
                 if(an.data_preenchimento) {
@@ -825,101 +831,62 @@
                     dataFormatada = dtObj.toLocaleDateString('pt-BR') + ' às ' + dtObj.toLocaleTimeString('pt-BR');
                 }
 
+                let htmlNeuro = '';
+                if (an.diagnostico?.possui_neurodivergencia || diags.length > 0) {
+                    htmlNeuro = `
+                        <div class="space-y-3">
+                            <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Diagnósticos:</p><p class="text-xs font-black text-rose-500">${diagsText}</p></div>
+                            <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Confirmado p/ Médico?</span> <span class="text-xs font-bold text-slate-700">${strText(an.diagnostico?.confirmado)}</span></div>
+                            <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Especialidade:</p><p class="text-xs">${textOrDash(an.diagnostico?.profissional)}</p></div>
+                            <h5 class="text-[10px] font-black text-slate-400 uppercase border-b border-slate-100 pb-1 mt-3">Desenvolvimento e Comunicação</h5>
+                            <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Dif. Coordenação / Equilíbrio?</span> ${strText(an.motor?.dificuldade_equilibrio)}</div>
+                            <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Entende comandos simples?</span> ${strText(an.comunicacao?.entende_comandos)}</div>
+                            <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1 mt-1">Comunicação Alternativa (App, Pastas):</p><p class="text-xs">${textOrDash(an.comunicacao?.comunicacao_alternativa)}</p></div>
+                            <h5 class="text-[10px] font-black text-slate-400 uppercase border-b border-slate-100 pb-1 mt-3">Comportamento e Senses</h5>
+                            <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Fuga ou Isolamento?</span> ${boolText(an.comportamento?.fuga_isolamento)}</div>
+                            <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Precisa apoio p/ interagir?</span> ${boolText(an.social?.precisa_apoio)}</div>
+                            <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Sensibilidade a sons?</span> ${boolText(an.sensorial?.sons)}</div>
+                            <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Sensibilidade a toques?</span> ${boolText(an.sensorial?.toques)}</div>
+                            <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1 mt-1">Crises / Autolesão (Gatilhos):</p><p class="text-xs">${textOrDash(an.comportamento?.crises_agressividade)}</p></div>
+                        </div>
+                    `;
+                } else {
+                    htmlNeuro = `
+                        <div class="flex flex-col items-center justify-center h-full py-4 text-slate-300">
+                            <span class="text-3xl mb-2">✅</span>
+                            <p class="text-xs font-black uppercase tracking-widest text-center">NÃO POSSUI</p>
+                        </div>
+                    `;
+                }
+
                 divPreenchida.innerHTML = `
                     <div class="bg-cyan-50/50 p-4 rounded-xl border border-cyan-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mb-4">
                         <span class="text-[10px] font-black text-cyan-600 uppercase tracking-widest">Ficha de Saúde salva em: <span class="text-cyan-800">${dataFormatada}</span></span>
                     </div>
 
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                        <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-100 pb-2">Diagnóstico e Condição Especial</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="md:col-span-2">
-                                <p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Condições:</p>
-                                <p class="text-sm font-black ${diags.length > 0 ? 'text-rose-500' : 'text-emerald-500'}">${diagsText}</p>
-                            </div>
-                            <div>
-                                <p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Confirmado por Profissional?</p>
-                                <p class="text-sm">${strText(an.diagnostico?.confirmado)} ${an.diagnostico?.profissional ? '<span class="text-xs text-slate-500 font-medium">('+an.diagnostico.profissional+')</span>' : ''}</p>
-                            </div>
-                            <div>
-                                <p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Possui Laudo?</p>
-                                <p class="text-sm">${strText(an.diagnostico?.laudo)}</p>
-                            </div>
-                            <div class="md:col-span-2">
-                                <p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Uso de Medicação:</p>
-                                <p class="text-sm">${textOrDash(an.diagnostico?.medicacao)}</p>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                            <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-100 pb-2">Desenvolvimento Motor</h4>
+                            <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-100 pb-2">1. Saúde Clínica / Ortopédica</h4>
                             <div class="space-y-3">
-                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Anda com facilidade?</span> ${strText(an.motor?.anda_facilidade)}</div>
-                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Corre e salta bem?</span> ${strText(an.motor?.corre_salta)}</div>
-                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Dif. de equilíbrio?</span> ${strText(an.motor?.dificuldade_equilibrio)}</div>
-                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Dif. coordenação?</span> ${strText(an.motor?.dificuldade_coordenacao)}</div>
-                                <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1 mt-3">Órtese/Prótese/Apoio:</p><p class="text-xs">${textOrDash(an.motor?.usa_protese)}</p></div>
+                                <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Condições:</p><p class="text-xs font-black ${med.length > 0 ? 'text-rose-500' : 'text-emerald-500'}">${medText}</p></div>
+                                <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Dores Articulares (Joelho, Ombro):</p><p class="text-xs text-rose-500 font-bold">${textOrDash(an.medico?.dores_articulacoes)}</p></div>
+                                <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Problemas de Coluna:</p><p class="text-xs text-rose-500 font-bold">${textOrDash(an.medico?.problema_coluna)}</p></div>
+                                <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Cirurgias/Lesões graves:</p><p class="text-xs">${textOrDash(an.medico?.cirurgias)}</p></div>
+                                <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Uso de Medicamentos:</p><p class="text-xs font-bold text-slate-700">${textOrDash(an.medico?.medicamentos)}</p></div>
                             </div>
                         </div>
-                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                            <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-100 pb-2">Comunicação</h4>
-                            <div class="space-y-3">
-                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Verbaliza?</span> ${strText(an.comunicacao?.verbal)}</div>
-                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Entende comandos?</span> ${strText(an.comunicacao?.entende_comandos)}</div>
-                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Ecolalia / Repetição?</span> ${strText(an.comunicacao?.ecolalia)}</div>
-                                <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1 mt-3">Comunicação Alternativa:</p><p class="text-xs">${textOrDash(an.comunicacao?.comunicacao_alternativa)}</p></div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                            <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-100 pb-2">Comportamento</h4>
-                            <div class="space-y-3">
-                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Agitado c/ estímulos?</span> ${strText(an.comportamento?.agitado_estimulos)}</div>
-                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Fuga ou Isolamento?</span> ${strText(an.comportamento?.fuga_isolamento)}</div>
-                                <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1 mt-3">Crises / Autolesão (Gatilhos):</p><p class="text-xs">${textOrDash(an.comportamento?.crises_agressividade)}</p></div>
-                                <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Fixações / Hiperfocos:</p><p class="text-xs">${textOrDash(an.comportamento?.fixacoes)}</p></div>
-                            </div>
-                        </div>
-                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                            <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-100 pb-2">Interação Social</h4>
-                            <div class="space-y-3">
-                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Interage c/ colegas?</span> ${boolText(an.social?.interage_colegas)}</div>
-                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Participa em grupo?</span> ${boolText(an.social?.participa_grupo)}</div>
-                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Prefere individual?</span> ${boolText(an.social?.prefere_individual)}</div>
-                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Apoio p/ interagir?</span> ${boolText(an.social?.precisa_apoio)}</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                            <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-100 pb-2">Aspectos Sensoriais</h4>
-                            <div class="space-y-3">
-                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Sensibilidade a sons?</span> ${boolText(an.sensorial?.sons)}</div>
-                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Sensibilidade a toques?</span> ${boolText(an.sensorial?.toques)}</div>
-                                <div class="flex justify-between items-center border-b border-slate-50 pb-2"><span class="text-xs text-slate-600 font-medium">Seletividade alimentar?</span> ${boolText(an.sensorial?.alimentar)}</div>
-                                <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1 mt-3">Usa abafadores/recursos?</p><p class="text-xs">${textOrDash(an.sensorial?.recursos)}</p></div>
-                            </div>
-                        </div>
-                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                            <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-100 pb-2">Saúde e Cuidados</h4>
-                            <div class="space-y-3">
-                                <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Alergias / Restrições Alimentares:</p><p class="text-xs text-rose-500 font-bold">${textOrDash(an.saude?.alergias_restricoes)}</p></div>
-                                <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Terapias (Fono, TO, Fisio...):</p><p class="text-xs">${textOrDash(an.saude?.terapias)}</p></div>
-                                <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Cuidados na aula:</p><p class="text-xs">${textOrDash(an.saude?.cuidados_especificos)}</p></div>
-                            </div>
+                            <h4 class="text-[10px] font-black text-rose-400 uppercase tracking-widest border-b border-slate-100 pb-2">2. Inclusão / Neurodivergência</h4>
+                            ${htmlNeuro}
                         </div>
                     </div>
 
                     <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                        <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-100 pb-2">Expectativas da Família</h4>
+                        <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-100 pb-2">3. Avaliação Geral</h4>
                         <div class="space-y-3">
-                            <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">O que esperam do Jiu-Jitsu?</p><p class="text-xs font-medium text-slate-700 bg-slate-50 p-3 rounded-lg">${textOrDash(an.expectativas?.geral)}</p></div>
-                            <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Metas específicas:</p><p class="text-xs font-medium text-slate-700 bg-slate-50 p-3 rounded-lg">${textOrDash(an.expectativas?.metas)}</p></div>
+                            <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Alergias graves:</p><p class="text-xs font-bold text-rose-500">${textOrDash(an.saude?.alergias_restricoes)}</p></div>
+                            <div><p class="text-[9px] text-slate-400 uppercase font-bold mb-1">O que esperam atingir com os treinos?</p><p class="text-xs font-medium text-slate-700 bg-slate-50 p-3 rounded-lg">${textOrDash(an.expectativas?.geral)}</p></div>
                         </div>
                     </div>
 
@@ -1189,6 +1156,15 @@
             const valOuDash = (val) => val ? val : '---';
             const strForm = (val) => (val === 'Sim' || val === 'Não') ? val.toUpperCase() : (val || '---');
 
+            const med = [];
+            if(an.medico?.asma) med.push("Asma/Bronquite");
+            if(an.medico?.hipertensao) med.push("Hipertensão");
+            if(an.medico?.cardiopatia) med.push("Cardiopatia");
+            if(an.medico?.diabetes) med.push("Diabetes");
+            if(an.medico?.epilepsia) med.push("Epilepsia");
+            if(an.medico?.desmaios) med.push("Desmaios");
+            const medText = med.length > 0 ? med.join(', ') : "Nenhuma relatada";
+
             const diags = [];
             if(an.diagnostico?.tea) diags.push("TEA");
             if(an.diagnostico?.tdah) diags.push("TDAH");
@@ -1199,10 +1175,34 @@
             if(an.diagnostico?.transtorno_aprendizagem) diags.push("Trans. Aprendizagem");
             if(an.diagnostico?.ansiedade_emocional) diags.push("Ansiedade/Emocional");
             if(an.diagnostico?.outro) diags.push(an.diagnostico.outro);
-            const diagsText = diags.length > 0 ? diags.join(', ') : "Nenhuma diagnosticada";
+            const diagsText = diags.length > 0 ? diags.join(', ') : "Nenhuma declarada";
+
+            const htmlNeurodivergencia = an.diagnostico?.possui_neurodivergencia ? `
+                <h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #e11d48; text-transform: uppercase;">2. Inclusão e Neurodivergência</h2>
+                <div style="margin-bottom: 5px;"><strong>Diagnósticos:</strong> ${diagsText}</div>
+                <div style="margin-bottom: 5px;"><strong>Confirmado p/ Médico:</strong> ${strForm(an.diagnostico?.confirmado)} ${an.diagnostico?.profissional ? '('+an.diagnostico.profissional+')' : ''}</div>
+                
+                <h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">3. Desenvolvimento Motor e Comunicação</h2>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span><strong>Dif. Equilíbrio:</strong> ${strForm(an.motor?.dificuldade_equilibrio)}</span>
+                    <span><strong>Entende Comandos:</strong> ${strForm(an.comunicacao?.entende_comandos)}</span>
+                </div>
+                <div style="margin-bottom: 5px;"><strong>Comunicação Alternativa:</strong> ${valOuDash(an.comunicacao?.comunicacao_alternativa)}</div>
+
+                <h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">4. Comportamento e Interação</h2>
+                <div style="display: flex; gap: 20px; margin-bottom: 5px;">
+                    <span><strong>Fuga/Isolamento:</strong> ${simNao(an.comportamento?.fuga_isolamento)}</span>
+                    <span><strong>Apoio p/ Interagir:</strong> ${simNao(an.social?.precisa_apoio)}</span>
+                    <span><strong>Sens. a Sons:</strong> ${simNao(an.sensorial?.sons)}</span>
+                    <span><strong>Sens. a Toques:</strong> ${simNao(an.sensorial?.toques)}</span>
+                </div>
+                <div style="margin-bottom: 5px;"><strong>Crises/Autolesão (Gatilhos):</strong> ${valOuDash(an.comportamento?.crises_agressividade)}</div>
+            ` : `
+                <h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #e11d48; text-transform: uppercase;">2. Inclusão e Neurodivergência</h2>
+                <div style="margin-bottom: 5px; color: #64748b;"><em>Não possui diagnósticos de neurodivergência ou necessidade de inclusão declarados.</em></div>
+            `;
 
             const element = document.createElement('div');
-            // Layout super compactado para caber em 1 página
             element.innerHTML = `
                 <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; line-height: 1.3; font-size: 12px;">
                     <h1 style="text-align: center; font-size: 16px; font-weight: bold; margin-bottom: 10px; border-bottom: 2px solid #333; padding-bottom: 5px;">
@@ -1216,59 +1216,18 @@
                     ${resp ? `<div style="margin-bottom: 5px;"><strong>RESPONSÁVEL LEGAL:</strong> ${resp.toUpperCase()}</div>` : ''}
                     <hr style="margin: 10px 0; border: 0; border-top: 1px solid #ccc;">
 
-                    <h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">1. Diagnóstico e Condições</h2>
-                    <div style="margin-bottom: 5px;"><strong>Condições:</strong> ${diagsText}</div>
-                    <div style="display: flex; gap: 20px; margin-bottom: 5px;">
-                        <div><strong>Confirmado:</strong> ${strForm(an.diagnostico?.confirmado)} ${an.diagnostico?.profissional ? '('+an.diagnostico.profissional+')' : ''}</div>
-                        <div><strong>Laudo:</strong> ${strForm(an.diagnostico?.laudo)}</div>
-                    </div>
-                    <div style="margin-bottom: 5px;"><strong>Medicação:</strong> ${valOuDash(an.diagnostico?.medicacao)}</div>
+                    <h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">1. Clínica e Ortopédica</h2>
+                    <div style="margin-bottom: 5px;"><strong>Condições:</strong> ${medText}</div>
+                    <div style="margin-bottom: 5px;"><strong>Dores Articulares (Joelho, Ombro...):</strong> ${valOuDash(an.medico?.dores_articulacoes)}</div>
+                    <div style="margin-bottom: 5px;"><strong>Problemas de Coluna:</strong> ${valOuDash(an.medico?.problema_coluna)}</div>
+                    <div style="margin-bottom: 5px;"><strong>Cirurgias/Lesões Prévias:</strong> ${valOuDash(an.medico?.cirurgias)}</div>
+                    <div style="margin-bottom: 5px;"><strong>Uso de Medicamentos:</strong> ${valOuDash(an.medico?.medicamentos)}</div>
 
-                    <h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">2. Desenvolvimento Motor</h2>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                        <span><strong>Anda fácil:</strong> ${strForm(an.motor?.anda_facilidade)}</span>
-                        <span><strong>Corre/Salta:</strong> ${strForm(an.motor?.corre_salta)}</span>
-                        <span><strong>Dif. Equilíbrio:</strong> ${strForm(an.motor?.dificuldade_equilibrio)}</span>
-                        <span><strong>Dif. Coordenação:</strong> ${strForm(an.motor?.dificuldade_coordenacao)}</span>
-                    </div>
-                    <div style="margin-bottom: 5px;"><strong>Órtese/Prótese/Apoio:</strong> ${valOuDash(an.motor?.usa_protese)}</div>
+                    ${htmlNeurodivergencia}
 
-                    <h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">3. Comunicação</h2>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                        <span><strong>Verbaliza:</strong> ${strForm(an.comunicacao?.verbal)}</span>
-                        <span><strong>Entende Comandos:</strong> ${strForm(an.comunicacao?.entende_comandos)}</span>
-                        <span><strong>Ecolalia/Repetição:</strong> ${strForm(an.comunicacao?.ecolalia)}</span>
-                    </div>
-                    <div style="margin-bottom: 5px;"><strong>Comunicação Alternativa:</strong> ${valOuDash(an.comunicacao?.comunicacao_alternativa)}</div>
-
-                    <h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">4. Comportamento e Interação Social</h2>
-                    <div style="display: flex; gap: 20px; margin-bottom: 5px;">
-                        <span><strong>Agitado c/ estímulos:</strong> ${strForm(an.comportamento?.agitado_estimulos)}</span>
-                        <span><strong>Fuga/Isolamento:</strong> ${strForm(an.comportamento?.fuga_isolamento)}</span>
-                    </div>
-                    <div style="margin-bottom: 5px;"><strong>Crises/Autolesão (Gatilhos):</strong> ${valOuDash(an.comportamento?.crises_agressividade)}</div>
-                    <div style="margin-bottom: 5px;"><strong>Fixações/Hiperfocos:</strong> ${valOuDash(an.comportamento?.fixacoes)}</div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                        <span><strong>Interage:</strong> ${simNao(an.social?.interage_colegas)}</span>
-                        <span><strong>Em Grupo:</strong> ${simNao(an.social?.participa_grupo)}</span>
-                        <span><strong>Individual:</strong> ${simNao(an.social?.prefere_individual)}</span>
-                        <span><strong>Apoio p/ Interagir:</strong> ${simNao(an.social?.precisa_apoio)}</span>
-                    </div>
-
-                    <h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">5. Sensoriais e Saúde</h2>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                        <span><strong>Sens. a Sons:</strong> ${simNao(an.sensorial?.sons)}</span>
-                        <span><strong>Sens. a Toques:</strong> ${simNao(an.sensorial?.toques)}</span>
-                        <span><strong>Seletividade Alimentar:</strong> ${simNao(an.sensorial?.alimentar)}</span>
-                    </div>
-                    <div style="margin-bottom: 5px;"><strong>Usa abafadores/recursos:</strong> ${valOuDash(an.sensorial?.recursos)}</div>
-                    <div style="margin-bottom: 5px;"><strong>Alergias/Restrições:</strong> ${valOuDash(an.saude?.alergias_restricoes)}</div>
-                    <div style="margin-bottom: 5px;"><strong>Terapias:</strong> ${valOuDash(an.saude?.terapias)}</div>
-                    <div style="margin-bottom: 5px;"><strong>Cuidados na aula:</strong> ${valOuDash(an.saude?.cuidados_especificos)}</div>
-
-                    <h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">6. Expectativas</h2>
-                    <div style="margin-bottom: 5px;"><strong>O que esperam:</strong> ${valOuDash(an.expectativas?.geral)}</div>
-                    <div style="margin-bottom: 5px;"><strong>Metas específicas:</strong> ${valOuDash(an.expectativas?.metas)}</div>
+                    <h2 style="font-size: 13px; font-weight: bold; margin: 10px 0 5px 0; color: #0369a1; text-transform: uppercase;">5. Avaliação Geral</h2>
+                    <div style="margin-bottom: 5px;"><strong>Alergias graves:</strong> ${valOuDash(an.saude?.alergias_restricoes)}</div>
+                    <div style="margin-bottom: 5px;"><strong>O que esperam dos treinos:</strong> ${valOuDash(an.expectativas?.geral)}</div>
 
                     <div style="margin-top: 15px; border: 1.5px dashed #94a3b8; padding: 15px; border-radius: 8px; background-color: #f8fafc; font-family: 'Courier New', Courier, monospace;">
                         <div style="text-align: center; margin-bottom: 10px;">

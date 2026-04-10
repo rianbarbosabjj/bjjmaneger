@@ -22,10 +22,7 @@
         
         .pb-safe { padding-bottom: env(safe-area-inset-bottom, 20px); }
         
-        .carteirinha-layer-1 {
-            position: relative;
-            z-index: 10;
-        }
+        .carteirinha-layer-1 { position: relative; z-index: 10; }
     </style>
 </head>
 <body class="text-slate-200 overflow-x-hidden selection:bg-cyan-500 selection:text-white min-h-screen flex flex-col relative">
@@ -70,6 +67,11 @@
 
     <div id="tela-portal" class="hidden flex-col w-full flex-1 relative z-10 h-full">
         
+        <div id="banner-anamnese" class="hidden bg-rose-600 text-white p-3 text-center text-xs font-bold flex-col sm:flex-row items-center justify-center gap-3 z-50 shadow-md">
+            <span class="flex items-center gap-2"><span class="text-lg">⚠️</span> Ação Obrigatória: Preencha sua ficha de saúde (Anamnese) para treinar com segurança.</span>
+            <button onclick="abrirModalAnamnese()" class="bg-white text-rose-600 px-4 py-1.5 rounded-full text-[10px] uppercase font-black tracking-widest hover:bg-rose-100 transition shadow-sm shrink-0">Preencher Agora</button>
+        </div>
+
         <header class="pt-8 pb-4 px-6 flex justify-between items-center max-w-3xl mx-auto w-full shrink-0">
             <div class="flex items-center gap-3">
                 <img id="logo-equipe-topo" src="logo_bjj_maneger.png" alt="Logo" class="h-10 w-auto filter drop-shadow-lg">
@@ -93,75 +95,73 @@
                     </h2>
                 </div>
 
-<div id="cart-wrapper" class="w-full overflow-x-auto hide-scrollbar pb-2 pt-2 -mx-4 px-4 sm:px-0 flex justify-start sm:justify-center transition-all duration-300 origin-top">
-    
-    <div id="carteirinha" class="relative bg-white rounded-2xl shadow-2xl border border-slate-200 flex text-slate-800 font-sans w-full max-w-[600px] shrink-0 box-border overflow-hidden" style="width: 600px; min-width: 600px; height: 380px; min-height: 380px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+                <div id="cart-wrapper" class="w-full overflow-x-auto hide-scrollbar pb-2 pt-2 -mx-4 px-4 sm:px-0 flex justify-start sm:justify-center transition-all duration-300 origin-top">
+                    <div id="carteirinha" class="relative bg-white rounded-2xl shadow-2xl border border-slate-200 flex text-slate-800 font-sans w-full max-w-[600px] shrink-0 box-border overflow-hidden" style="width: 600px; min-width: 600px; height: 380px; min-height: 380px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
 
-        <div class="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden" style="z-index: 1;">
-            <img id="cart-equipe-watermark" src="" style="width: 140%; height: 140%; max-width: none; object-fit: contain; opacity: 0.15; filter: grayscale(100%);" class="hidden" crossorigin="anonymous">
-            <div id="cart-equipe-watermark-fallback" style="font-size: 400px; opacity: 0.10;" class="leading-none font-black text-slate-800 hidden">E</div>
-        </div>
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden" style="z-index: 1;">
+                            <img id="cart-equipe-watermark" src="" style="width: 140%; height: 140%; max-width: none; object-fit: contain; opacity: 0.15; filter: grayscale(100%);" class="hidden" crossorigin="anonymous">
+                            <div id="cart-equipe-watermark-fallback" style="font-size: 400px; opacity: 0.10;" class="leading-none font-black text-slate-800 hidden">E</div>
+                        </div>
 
-        <div class="absolute top-0 right-0 w-64 h-full bg-slate-200/40 skew-x-[-20deg] translate-x-10 z-0 pointer-events-none backdrop-blur-[1px]"></div>
-        <div class="absolute bottom-0 left-0 w-full h-1/3 bg-slate-300/30 skew-y-[-5deg] origin-bottom-right z-0 pointer-events-none backdrop-blur-[1px]"></div>
+                        <div class="absolute top-0 right-0 w-64 h-full bg-slate-200/40 skew-x-[-20deg] translate-x-10 z-0 pointer-events-none backdrop-blur-[1px]"></div>
+                        <div class="absolute bottom-0 left-0 w-full h-1/3 bg-slate-300/30 skew-y-[-5deg] origin-bottom-right z-0 pointer-events-none backdrop-blur-[1px]"></div>
 
-        <div class="flex-1 p-5 md:p-6 flex flex-col z-10 w-[65%] relative">
-            <div class="flex items-center gap-4 mb-4 md:mb-6">
-                <div class="h-14 w-14 md:h-16 md:w-16 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-sm shrink-0 overflow-hidden">
-                    <img id="cart-equipe-logo" src="" class="h-full w-full object-contain p-1.5 hidden" crossorigin="anonymous">
-                    <div id="cart-equipe-fallback" class="text-3xl font-black text-slate-700 hidden">E</div>
-                </div>
-                <div class="flex flex-col justify-center">
-                    <h2 id="cart-equipe-nome" class="text-lg md:text-xl font-black uppercase tracking-tight text-slate-800 leading-none break-words max-w-[240px]">NOME DA EQUIPE</h2>
-                    <p class="text-[9px] text-slate-500 uppercase tracking-widest font-bold mt-1.5">Identificação Oficial</p>
-                </div>
-            </div>
+                        <div class="flex-1 p-5 md:p-6 flex flex-col z-10 w-[65%] relative">
+                            <div class="flex items-center gap-4 mb-4 md:mb-6">
+                                <div class="h-14 w-14 md:h-16 md:w-16 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-sm shrink-0 overflow-hidden">
+                                    <img id="cart-equipe-logo" src="" class="h-full w-full object-contain p-1.5 hidden" crossorigin="anonymous">
+                                    <div id="cart-equipe-fallback" class="text-3xl font-black text-slate-700 hidden">E</div>
+                                </div>
+                                <div class="flex flex-col justify-center">
+                                    <h2 id="cart-equipe-nome" class="text-lg md:text-xl font-black uppercase tracking-tight text-slate-800 leading-none break-words max-w-[240px]">NOME DA EQUIPE</h2>
+                                    <p class="text-[9px] text-slate-500 uppercase tracking-widest font-bold mt-1.5">Identificação Oficial</p>
+                                </div>
+                            </div>
 
-            <div class="grid grid-cols-2 gap-y-3 gap-x-4 w-full mt-auto mb-2 md:mb-4">
-                <div class="col-span-2 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-cyan-500 shadow-sm px-3 py-1.5 flex flex-col justify-center overflow-hidden">
-                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Nome do Atleta</p>
-                    <p id="cart-aluno-nome-txt" class="text-xs md:text-[13px] font-black uppercase text-slate-800 leading-relaxed pb-1 whitespace-nowrap overflow-hidden text-ellipsis">ALUNO NOME</p>
-                </div>
-                
-                <div class="relative overflow-hidden col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm pr-3 py-1.5 rounded-md shadow-sm pl-5 border border-slate-200 flex flex-col justify-center">
-                    <div id="cart-faixa-border" class="absolute top-0 left-0 w-2.5 h-full bg-slate-300 border-r border-slate-200/50 rounded-l-md"></div>
-                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5 relative z-10">Faixa / Graduação</p>
-                    <p id="cart-aluno-faixa-texto" class="text-[10px] md:text-xs font-black uppercase text-slate-800 relative z-10 leading-relaxed pb-1 whitespace-nowrap overflow-hidden text-ellipsis">BRANCA</p>
-                </div>
+                            <div class="grid grid-cols-2 gap-y-3 gap-x-4 w-full mt-auto mb-2 md:mb-4">
+                                <div class="col-span-2 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-cyan-500 shadow-sm px-3 py-1.5 flex flex-col justify-center overflow-hidden">
+                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Nome do Atleta</p>
+                                    <p id="cart-aluno-nome-txt" class="text-xs md:text-[13px] font-black uppercase text-slate-800 leading-relaxed pb-1 whitespace-nowrap overflow-hidden text-ellipsis">ALUNO NOME</p>
+                                </div>
+                                
+                                <div class="relative overflow-hidden col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm pr-3 py-1.5 rounded-md shadow-sm pl-5 border border-slate-200 flex flex-col justify-center">
+                                    <div id="cart-faixa-border" class="absolute top-0 left-0 w-2.5 h-full bg-slate-300 border-r border-slate-200/50 rounded-l-md"></div>
+                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5 relative z-10">Faixa / Graduação</p>
+                                    <p id="cart-aluno-faixa-texto" class="text-[10px] md:text-xs font-black uppercase text-slate-800 relative z-10 leading-relaxed pb-1 whitespace-nowrap overflow-hidden text-ellipsis">BRANCA</p>
+                                </div>
 
-                <div class="col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-1.5 flex flex-col justify-center overflow-hidden">
-                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Nascimento</p>
-                    <p id="cart-aluno-nascimento-txt" class="text-[10px] md:text-xs font-bold text-slate-800 leading-relaxed pb-1 whitespace-nowrap overflow-hidden text-ellipsis">00/00/0000</p>
-                </div>
-                
-                <div class="col-span-1 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-1.5 flex flex-col justify-center overflow-hidden">
-                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Matrícula</p>
-                    <p id="cart-aluno-matricula-txt" class="text-[10px] md:text-xs font-mono font-black text-slate-800 tracking-widest leading-relaxed pb-1 whitespace-nowrap overflow-hidden text-ellipsis">00000</p>
-                </div>
+                                <div class="col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-1.5 flex flex-col justify-center overflow-hidden">
+                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Nascimento</p>
+                                    <p id="cart-aluno-nascimento-txt" class="text-[10px] md:text-xs font-bold text-slate-800 leading-relaxed pb-1 whitespace-nowrap overflow-hidden text-ellipsis">00/00/0000</p>
+                                </div>
+                                
+                                <div class="col-span-1 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-1.5 flex flex-col justify-center overflow-hidden">
+                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Matrícula</p>
+                                    <p id="cart-aluno-matricula-txt" class="text-[10px] md:text-xs font-mono font-black text-slate-800 tracking-widest leading-relaxed pb-1 whitespace-nowrap overflow-hidden text-ellipsis">00000</p>
+                                </div>
 
-                <div class="col-span-1 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-1.5 flex flex-col justify-center overflow-hidden">
-                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Validade</p>
-                    <p id="cart-aluno-validade-txt" class="text-[10px] md:text-xs font-black text-slate-800 tracking-wider leading-relaxed pb-1 whitespace-nowrap overflow-hidden text-ellipsis">2026</p>
-                </div>
-            </div>
-        </div>
+                                <div class="col-span-1 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-1.5 flex flex-col justify-center overflow-hidden">
+                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Validade</p>
+                                    <p id="cart-aluno-validade-txt" class="text-[10px] md:text-xs font-black text-slate-800 tracking-wider leading-relaxed pb-1 whitespace-nowrap overflow-hidden text-ellipsis">2026</p>
+                                </div>
+                            </div>
+                        </div>
 
-        <div class="w-[35%] max-w-[200px] p-5 md:p-6 flex flex-col items-center justify-between z-10 bg-slate-100/50 border-l border-slate-200 backdrop-blur-sm relative">
-            <div class="w-full aspect-[3/4] bg-white rounded-lg border-[3px] border-white overflow-hidden shadow-md flex items-center justify-center relative">
-                <img id="cart-aluno-foto-modal" src="" class="w-full h-full object-cover hidden" crossorigin="anonymous">
-                <span id="cart-aluno-foto-fallback-modal" class="text-5xl font-black text-slate-300">?</span>
-            </div>
-            
-            <div class="w-16 h-16 bg-white p-1.5 rounded-lg mt-auto shadow-sm border border-slate-200 flex items-center justify-center">
-                <div id="cart-qr-code" class="w-full h-full bg-white flex items-center justify-center"></div>
-            </div>
-        </div>
+                        <div class="w-[35%] max-w-[200px] p-5 md:p-6 flex flex-col items-center justify-between z-10 bg-slate-100/50 border-l border-slate-200 backdrop-blur-sm relative">
+                            <div class="w-full aspect-[3/4] bg-white rounded-lg border-[3px] border-white overflow-hidden shadow-md flex items-center justify-center relative">
+                                <img id="cart-aluno-foto-modal" src="" class="w-full h-full object-cover hidden" crossorigin="anonymous">
+                                <span id="cart-aluno-foto-fallback-modal" class="text-5xl font-black text-slate-300">?</span>
+                            </div>
+                            
+                            <div class="w-16 h-16 bg-white p-1.5 rounded-lg mt-auto shadow-sm border border-slate-200 flex items-center justify-center">
+                                <div id="cart-qr-code" class="w-full h-full bg-white flex items-center justify-center"></div>
+                            </div>
+                        </div>
 
-        <div class="absolute bottom-3 left-5 md:left-6 z-20 flex items-center gap-2 bg-white px-2 py-1 rounded shadow-sm border border-slate-100 opacity-90">
-            <img src="logo_bjj_maneger.png" class="h-3.5 w-auto grayscale" crossorigin="anonymous">
-            <span class="text-[7px] font-bold tracking-widest text-slate-600 uppercase relative top-px">Emitido por BJJ Manager | maneger.bjjdigital.com.br</span>
-        </div>
-        
+                        <div class="absolute bottom-3 left-5 md:left-6 z-20 flex items-center gap-2 bg-white px-2 py-1 rounded shadow-sm border border-slate-100 opacity-90">
+                            <img src="logo_bjj_maneger.png" class="h-3.5 w-auto grayscale" crossorigin="anonymous">
+                            <span class="text-[7px] font-bold tracking-widest text-slate-600 uppercase relative top-px">Emitido por BJJ Manager | maneger.bjjdigital.com.br</span>
+                        </div>
                     </div>
                 </div>
 
@@ -203,6 +203,19 @@
 
             <section id="aba-dados" class="aluno-secao hidden transition-opacity duration-300">
                 <div class="bg-slate-800/80 backdrop-blur-md rounded-3xl border border-slate-700 p-6 shadow-xl space-y-6">
+                    
+                    <div class="flex flex-col items-center justify-center pb-6 border-b border-slate-700/50">
+                        <div class="relative w-24 h-24 rounded-full border-2 border-cyan-500 bg-slate-900 shadow-lg flex items-center justify-center overflow-hidden group">
+                            <img id="edit-preview-foto" src="" class="w-full h-full object-cover hidden z-10" />
+                            <span id="edit-fallback-foto" class="text-3xl font-black text-slate-600 z-0">?</span>
+                            <div class="absolute inset-0 bg-black/50 z-20 hidden group-hover:flex items-center justify-center transition-all cursor-pointer">
+                                <span class="text-xl">📷</span>
+                            </div>
+                            <input type="file" id="input-foto" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-30" onchange="previewImagem(this)">
+                        </div>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-3">Toque para alterar a foto</p>
+                    </div>
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pb-6 border-b border-slate-700/50">
                         <div>
                             <label class="block text-[10px] font-black text-slate-500 uppercase mb-1.5">Nome Oficial</label>
@@ -301,7 +314,7 @@
             </section>
         </main>
 
-        <nav class="fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-xl border-t border-slate-800 flex justify-around px-2 pt-2 pb-safe z-50">
+        <nav class="fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-xl border-t border-slate-800 flex justify-around px-2 pt-2 pb-safe z-40">
             <button onclick="mudarAbaAluno('aba-carteirinha')" id="nav-aba-carteirinha" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-cyan-400 transition-colors">
                 <span class="text-2xl mb-1 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)] transition-all transform scale-110">🪪</span>
                 <span class="text-[10px] font-black uppercase tracking-widest">Início</span>
@@ -351,10 +364,65 @@
         </div>
     </div>
 
+    <div id="modal-anamnese" class="fixed inset-0 bg-slate-950/90 backdrop-blur-sm hidden items-center justify-center z-[250] p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-rose-600 p-5 text-white text-center shadow-inner">
+                <h3 class="font-black uppercase tracking-widest text-sm">⚕️ Ficha Médica e Segurança</h3>
+                <p class="text-[10px] mt-1 opacity-90">O preenchimento é obrigatório para treinar.</p>
+            </div>
+            
+            <div class="p-6 overflow-y-auto hide-scrollbar space-y-4">
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Tipo Sanguíneo</label>
+                    <select id="anamnese-sangue" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold">
+                        <option value="" disabled selected>Selecione...</option>
+                        <option value="A+">A+</option><option value="A-">A-</option>
+                        <option value="B+">B+</option><option value="B-">B-</option>
+                        <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                        <option value="O+">O+</option><option value="O-">O-</option>
+                        <option value="Não Sei">Não sei</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Possui alguma alergia? (Medicamentos, insetos, etc)</label>
+                    <input type="text" id="anamnese-alergias" placeholder="Ex: Nenhuma, Dipirona, Poeira..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Uso de medicamentos contínuos?</label>
+                    <input type="text" id="anamnese-medicamentos" placeholder="Ex: Nenhum, Losartana..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Doenças crônicas ou lesões prévias? (Asma, Cirurgias...)</label>
+                    <textarea id="anamnese-condicoes" rows="2" placeholder="Ex: Nenhuma, Asma, Cirurgia no joelho em 2020..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold resize-none"></textarea>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-slate-700/50">
+                    <div class="col-span-1 md:col-span-2">
+                        <h4 class="text-[10px] font-black text-rose-400 uppercase tracking-widest mb-2">Contato de Emergência</h4>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Nome do Contato</label>
+                        <input type="text" id="anamnese-emergencia-nome" placeholder="Nome" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Telefone</label>
+                        <input type="text" id="anamnese-emergencia-tel" oninput="mascaraTelefone(this)" placeholder="(00) 00000-0000" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-4 bg-slate-800 border-t border-slate-700 flex justify-between gap-3">
+                <button onclick="fecharModalAnamnese()" class="px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-bold text-xs uppercase tracking-widest transition">Depois</button>
+                <button onclick="salvarAnamnese()" id="btn-salvar-anamnese" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-black text-xs uppercase tracking-widest transition shadow-lg">Salvar Ficha</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs, getDoc, doc, query, where, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
+        // NOVO IMPORT: Storage para a foto do aluno
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
@@ -368,6 +436,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const functions = getFunctions(app);
+        const storage = getStorage(app); // Inicializa Storage
 
         let alunoLogado = null;
         let equipeDados = null;
@@ -378,7 +447,7 @@
             const toast = document.createElement('div');
             const bgColor = type === 'success' ? 'bg-emerald-500' : 'bg-rose-500';
             const icon = type === 'success' ? '✅' : '🚨';
-            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transform transition-all duration-300 translate-x-full opacity-0 flex items-center gap-3 font-bold text-sm z-50 pointer-events-auto max-w-sm`;
+            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transform transition-all duration-300 translate-x-full opacity-0 flex items-center gap-3 font-bold text-sm z-[9999] pointer-events-auto max-w-sm`;
             toast.innerHTML = `<span class="text-xl">${icon}</span> <span class="flex-1">${message}</span>`;
             container.appendChild(toast);
             setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 10);
@@ -492,9 +561,31 @@
             }
         }
 
+        // NOVO: Exibir miniatura da foto antes de salvar
+        window.previewImagem = function(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('edit-preview-foto');
+                    img.src = e.target.result;
+                    img.classList.remove('hidden');
+                    document.getElementById('edit-fallback-foto').classList.add('hidden');
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
         function preencherFormularioDados() {
             if(!alunoLogado) return;
             
+            // Preview da Foto atual
+            if(alunoLogado.foto_url) {
+                const img = document.getElementById('edit-preview-foto');
+                img.src = alunoLogado.foto_url;
+                img.classList.remove('hidden');
+                document.getElementById('edit-fallback-foto').classList.add('hidden');
+            }
+
             document.getElementById('edit-nome').value = alunoLogado.nome || '';
             document.getElementById('edit-cpf').value = alunoLogado.cpf || '';
             
@@ -518,6 +609,7 @@
             const email = document.getElementById('edit-email').value.trim().toLowerCase();
             const novaSenha = document.getElementById('edit-senha').value;
             const btn = document.getElementById('btn-salvar-dados');
+            const inputFoto = document.getElementById('input-foto');
 
             if(!tel || !email) return showToast("Telefone e E-mail são obrigatórios.");
 
@@ -547,6 +639,16 @@
             }
 
             try {
+                // NOVO: Lógica para enviar a foto se houver uma nova selecionada
+                if (inputFoto.files && inputFoto.files[0]) {
+                    btn.innerHTML = "⏳ Enviando Foto...";
+                    const file = inputFoto.files[0];
+                    const fotoRef = ref(storage, `alunos_fotos/${alunoLogado.id}_${Date.now()}`);
+                    await uploadBytes(fotoRef, file);
+                    const fotoUrl = await getDownloadURL(fotoRef);
+                    dadosAtualizados.foto_url = fotoUrl;
+                }
+
                 await updateDoc(doc(db, "alunos", alunoLogado.id), dadosAtualizados);
                 
                 alunoLogado = { ...alunoLogado, ...dadosAtualizados };
@@ -554,6 +656,9 @@
                 
                 showToast("Dados atualizados com sucesso!", "success");
                 document.getElementById('edit-senha').value = ""; 
+                
+                // Recarrega a foto na carteirinha e ajusta preview
+                preencherCarteirinha();
 
             } catch (error) {
                 console.error("Erro ao atualizar", error);
@@ -561,6 +666,71 @@
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = "💾 Salvar Alterações";
+            }
+        }
+
+        // NOVAS FUNÇÕES: Anamnese
+        function verificarAnamnese() {
+            if (!alunoLogado.anamnese_preenchida) {
+                document.getElementById('banner-anamnese').classList.remove('hidden');
+                document.getElementById('banner-anamnese').classList.add('flex');
+            } else {
+                document.getElementById('banner-anamnese').classList.add('hidden');
+                document.getElementById('banner-anamnese').classList.remove('flex');
+            }
+        }
+
+        window.abrirModalAnamnese = function() {
+            document.getElementById('modal-anamnese').classList.remove('hidden');
+            document.getElementById('modal-anamnese').classList.add('flex');
+        }
+
+        window.fecharModalAnamnese = function() {
+            document.getElementById('modal-anamnese').classList.add('hidden');
+            document.getElementById('modal-anamnese').classList.remove('flex');
+        }
+
+        window.salvarAnamnese = async function() {
+            const sangue = document.getElementById('anamnese-sangue').value;
+            const contatoNome = document.getElementById('anamnese-emergencia-nome').value.trim();
+            const contatoTel = document.getElementById('anamnese-emergencia-tel').value.trim();
+            const btn = document.getElementById('btn-salvar-anamnese');
+
+            if (!sangue || !contatoNome || !contatoTel) {
+                return showToast("Preencha ao menos o Tipo Sanguíneo e Contato de Emergência.");
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = "Salvando...";
+
+            const dadosAnamnese = {
+                tipo_sanguineo: sangue,
+                alergias: document.getElementById('anamnese-alergias').value.trim(),
+                medicamentos: document.getElementById('anamnese-medicamentos').value.trim(),
+                condicoes: document.getElementById('anamnese-condicoes').value.trim(),
+                contato_emergencia_nome: contatoNome,
+                contato_emergencia_telefone: contatoTel
+            };
+
+            try {
+                await updateDoc(doc(db, "alunos", alunoLogado.id), {
+                    anamnese: dadosAnamnese,
+                    anamnese_preenchida: true
+                });
+
+                alunoLogado.anamnese = dadosAnamnese;
+                alunoLogado.anamnese_preenchida = true;
+                localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoLogado));
+                
+                fecharModalAnamnese();
+                verificarAnamnese();
+                showToast("Ficha de segurança salva!", "success");
+
+            } catch (error) {
+                showToast("Erro ao salvar anamnese.");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = "Salvar Ficha";
             }
         }
 
@@ -606,6 +776,7 @@
 
             preencherCarteirinha();
             buscarFaturasResiliente();
+            verificarAnamnese(); // Checa se precisa exibir o banner de pendência
             
             setTimeout(ajustarZoomCarteirinha, 100);
         }
@@ -638,34 +809,25 @@
             const a = alunoLogado;
             
             if(equipeDados) {
-                // MUDEI AQUI: de equipeDados.nome para equipeDados.nome_equipe
                 document.getElementById('cart-equipe-nome').innerText = (equipeDados.nome_equipe || "Sua Equipe").toUpperCase();
                 
-                // Logo Pequena
                 const imgL = document.getElementById('cart-equipe-logo');
                 const fallL = document.getElementById('cart-equipe-fallback');
-                
-                // Marca d'água
                 const waterL = document.getElementById('cart-equipe-watermark');
                 const waterFall = document.getElementById('cart-equipe-watermark-fallback');
                 
-                // MUDEI AQUI: de equipeDados.logo para equipeDados.url_logo
                 if(equipeDados.url_logo) {
-                    // MUDEI AQUI: de equipeDados.logo para equipeDados.url_logo
                     imgL.src = equipeDados.url_logo; 
                     imgL.classList.remove('hidden'); 
                     fallL.classList.add('hidden');
                     
                     if(waterL) {
-                        // MUDEI AQUI: de equipeDados.logo para equipeDados.url_logo
                         waterL.src = equipeDados.url_logo; 
                         waterL.classList.remove('hidden');
                     }
                     if(waterFall) waterFall.classList.add('hidden');
                 } else {
-                    // MUDEI AQUI: de equipeDados.nome para equipeDados.nome_equipe
                     const letra = (equipeDados.nome_equipe || "E").charAt(0).toUpperCase();
-                    
                     fallL.innerText = letra; 
                     fallL.classList.remove('hidden'); 
                     imgL.classList.add('hidden');
@@ -679,16 +841,13 @@
             }
 
             document.getElementById('cart-aluno-nome-txt').innerText = a.nome;
-            
             const grau = a.grau && a.grau !== "Sem grau" ? ` - ${a.grau}` : "";
             document.getElementById('cart-aluno-faixa-texto').innerText = ((a.faixa || 'BRANCA') + grau).toUpperCase();
-            
             document.getElementById('cart-aluno-matricula-txt').innerText = a.matricula || '0000';
             document.getElementById('cart-aluno-nascimento-txt').innerText = a.data_nascimento ? a.data_nascimento.split('-').reverse().join('/') : '--/--/----';
             
             const anoAtual = new Date().getFullYear();
             document.getElementById('cart-aluno-validade-txt').innerText = `DEZ / ${anoAtual}`;
-            
             document.getElementById('cart-faixa-border').style.background = getCorFaixaDupla(a.faixa);
 
             if(a.foto_url) {
@@ -729,7 +888,6 @@
 
         async function gerarCanvasCarteirinha() {
             const elementoBase = document.getElementById('carteirinha');
-            
             const divClone = document.createElement('div');
             divClone.style.position = 'absolute';
             divClone.style.top = '-9999px';
@@ -741,7 +899,6 @@
             divClone.style.backgroundColor = '#ffffff';
 
             const clone = elementoBase.cloneNode(true);
-            
             clone.classList.remove('mx-auto', 'shadow-2xl', 'w-full', 'max-w-[600px]', 'aspect-[1.58/1]', 'shrink-0', 'mt-4'); 
             clone.style.margin = '0';
             clone.style.transform = 'none';
@@ -825,17 +982,10 @@
             try {
                 const canvas = await gerarCanvasCarteirinha();
                 const imgData = canvas.toDataURL('image/png');
-
                 const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF({
-                    orientation: 'landscape',
-                    unit: 'mm',
-                    format: [85.6, 54] 
-                });
-
+                const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [85.6, 54] });
                 pdf.addImage(imgData, 'PNG', 0, 0, 85.6, 54);
                 pdf.save(`Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.pdf`);
-                
                 showToast("PDF baixado com sucesso!", "success");
             } catch(e) {
                 console.error(e);
@@ -855,17 +1005,10 @@
                 const canvas = await gerarCanvasCarteirinha();
                 canvas.toBlob(async (blob) => {
                     const file = new File([blob], `Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.png`, { type: "image/png" });
-
                     if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
                         try {
-                            await navigator.share({
-                                title: 'Carteirinha BJJ',
-                                text: 'Minha carteirinha oficial',
-                                files: [file]
-                            });
-                        } catch {
-                            // User cancelled
-                        }
+                            await navigator.share({ title: 'Carteirinha BJJ', text: 'Minha carteirinha oficial', files: [file] });
+                        } catch { /* User cancelled */ }
                     } else {
                         const url = URL.createObjectURL(blob);
                         window.open(`https://wa.me/?text=Minha carteirinha oficial`, '_blank');
@@ -881,7 +1024,6 @@
         async function buscarFaturasResiliente() {
             const lista = document.getElementById('lista-faturas');
             if(!lista) return;
-            
             lista.innerHTML = '<div class="text-center p-6 text-slate-500 text-xs italic">A carregar mensalidades...</div>';
             
             let faturasMensalidade = [];
@@ -889,32 +1031,23 @@
             try {
                 const qEquipe = query(collection(db, "financeiro"), where("equipe_id", "==", alunoLogado.equipe_id));
                 const snapEquipe = await getDocs(qEquipe);
-                
                 snapEquipe.forEach(doc => {
                     const data = doc.data();
                     if (data.aluno_id === alunoLogado.id && (data.tipo === 'MENSALIDADE' || !data.tipo)) {
                         faturasMensalidade.push({ id: doc.id, ...data });
                     }
                 });
-
             } catch(erroFinanceiro) {
-                console.warn("Sem permissão na coleção 'financeiro'. A tentar coleção antiga 'faturas'...", erroFinanceiro);
-                
                 try {
                     const qFaturas = query(collection(db, "faturas"), where("aluno_id", "==", alunoLogado.id));
                     const snapFaturas = await getDocs(qFaturas);
-                    snapFaturas.forEach(doc => {
-                        faturasMensalidade.push({ id: doc.id, ...doc.data() });
-                    });
+                    snapFaturas.forEach(doc => { faturasMensalidade.push({ id: doc.id, ...doc.data() }); });
                 } catch(erroFaturas) {
-                    console.error("Bloqueado totalmente pelas Regras de Segurança do Firebase.", erroFaturas);
-                    
                     lista.innerHTML = `
                         <div class="bg-rose-50/10 border border-rose-500/30 p-5 rounded-2xl m-4 text-center">
                             <span class="text-3xl mb-2 block">🔒</span>
                             <h4 class="text-rose-400 font-black text-sm mb-1">Acesso Bloqueado</h4>
                             <p class="text-slate-400 text-[10px] leading-relaxed mb-3">O banco de dados recusou a leitura das suas faturas devido às regras de segurança atuais.</p>
-                            <p class="text-rose-300 text-[9px] font-bold uppercase tracking-widest">Peça ao administrador para atualizar as "Rules" do Firebase.</p>
                         </div>
                     `;
                     return;
@@ -939,8 +1072,7 @@
                 let mesStr = "", anoStr = "";
                 if(fat.mes_ano && String(fat.mes_ano).includes('-')) {
                     const partes = String(fat.mes_ano).split('-');
-                    anoStr = partes[0];
-                    mesStr = partes[1];
+                    anoStr = partes[0]; mesStr = partes[1];
                 }
 
                 const diaVenc = alunoLogado.dia_vencimento || 10;
@@ -954,33 +1086,21 @@
 
                 let statusAtual = fat.status || 'PENDENTE';
                 if (statusAtual === 'PENDENTE') {
-                    const hoje = new Date(); 
-                    hoje.setHours(0,0,0,0);
-                    if (dataVencimento && hoje > dataVencimento) {
-                        statusAtual = 'ATRASADO';
-                    }
+                    const hoje = new Date(); hoje.setHours(0,0,0,0);
+                    if (dataVencimento && hoje > dataVencimento) statusAtual = 'ATRASADO';
                 }
 
                 const isPago = statusAtual === 'PAGO';
                 const isAtrasado = statusAtual === 'ATRASADO';
                 const isIsento = statusAtual === 'ISENTO';
                 
-                let icone = '⏳';
-                let corTexto = 'text-cyan-400';
-                let statusLabel = 'Pendente';
-                let textoStatusBtn = 'Pagar';
+                let icone = '⏳'; let corTexto = 'text-cyan-400'; let statusLabel = 'Pendente'; let textoStatusBtn = 'Pagar';
                 
-                if(isPago) {
-                    icone = '✅'; corTexto = 'text-emerald-400'; statusLabel = 'Pago';
-                } else if(isAtrasado) {
-                    icone = '🚨'; corTexto = 'text-rose-400'; statusLabel = 'Atrasado';
-                } else if(isIsento) {
-                    icone = '⭐'; corTexto = 'text-blue-400'; statusLabel = 'Isento';
-                }
+                if(isPago) { icone = '✅'; corTexto = 'text-emerald-400'; statusLabel = 'Pago'; }
+                else if(isAtrasado) { icone = '🚨'; corTexto = 'text-rose-400'; statusLabel = 'Atrasado'; }
+                else if(isIsento) { icone = '⭐'; corTexto = 'text-blue-400'; statusLabel = 'Isento'; }
 
-                if(fat.link_pagamento && !isPago && !isIsento) {
-                    textoStatusBtn = 'Pagar (Cartão/Pix)';
-                }
+                if(fat.link_pagamento && !isPago && !isIsento) textoStatusBtn = 'Pagar (Cartão/Pix)';
 
                 let btnHtml = '';
                 if(isPago) {
@@ -1017,13 +1137,9 @@
                     </div>
                 `;
             });
-            
             lista.innerHTML = faturasHTML;
         }
 
-        // ==========================================
-        // FUNÇÃO DE PAGAMENTO INTELIGENTE (BÁSICO VS PRO)
-        // ==========================================
         window.abrirPagamento = async function(faturaId) {
             const fat = faturasCache.find(f => f.id === faturaId);
             if (!fat) return showToast("Fatura não encontrada.", "error");
@@ -1031,10 +1147,7 @@
             const temPlanoAsaas = equipeDados && equipeDados.plano_asaas === true;
 
             if (temPlanoAsaas) {
-                if (fat.link_pagamento) {
-                    window.open(fat.link_pagamento, '_blank');
-                    return;
-                }
+                if (fat.link_pagamento) { window.open(fat.link_pagamento, '_blank'); return; }
 
                 showToast("⏳ Gerando link de pagamento seguro...", "success");
                 const btnPagamento = document.getElementById(`btn-pagar-${faturaId}`);
@@ -1048,10 +1161,7 @@
                 try {
                     const gerarCobranca = httpsCallable(functions, 'gerarCobrancaAsaas');
                     const resultado = await gerarCobranca({
-                        alunoId: alunoLogado.id, 
-                        valor: fat.valor,      
-                        mesAno: fat.mes_ano,   
-                        descricao: `Mensalidade Jiu-Jitsu - Ref: ${fat.mes_ano}`
+                        alunoId: alunoLogado.id, valor: fat.valor, mesAno: fat.mes_ano, descricao: `Mensalidade Jiu-Jitsu - Ref: ${fat.mes_ano}`
                     });
 
                     if (resultado.data.success) {
@@ -1062,7 +1172,6 @@
                         showToast("❌ Erro ao gerar cobrança: " + resultado.data.error, "error");
                     }
                 } catch (error) {
-                    console.error("Erro na requisição:", error);
                     showToast("🚨 Falha na conexão com o servidor financeiro.", "error");
                 } finally {
                     if(btnPagamento) {
@@ -1074,8 +1183,7 @@
                 let mesStr = "", anoStr = "";
                 if(fat.mes_ano && String(fat.mes_ano).includes('-')) {
                     const partes = fat.mes_ano.split('-');
-                    anoStr = partes[0];
-                    mesStr = partes[1];
+                    anoStr = partes[0]; mesStr = partes[1];
                 }
                 const tituloMes = (mesStr && anoStr) ? `${mesStr}/${anoStr}` : 'Atual';
 
@@ -1103,9 +1211,7 @@
 
         window.copiarPix = function() {
             const input = document.getElementById('pix-codigo');
-            if(input.value === "Chave PIX não configurada pelo professor.") {
-                return showToast("Não há chave para copiar.", "error");
-            }
+            if(input.value === "Chave PIX não configurada pelo professor.") return showToast("Não há chave para copiar.", "error");
             input.select();
             input.setSelectionRange(0, 99999);
             navigator.clipboard.writeText(input.value);

@@ -43,33 +43,39 @@
     <div id="tela-login" class="relative z-10 flex-1 flex items-center justify-center p-4 min-h-screen">
         <div class="w-full max-w-md bg-slate-800/80 backdrop-blur-xl border border-slate-700 p-8 rounded-3xl shadow-2xl">
             <div class="text-center mb-8">
-                <img src="logo_bjj_maneger.png" class="h-20 mx-auto mb-4">
+                <img src="logo_bjj_maneger.png" class="h-20 mx-auto mb-4 drop-shadow-[0_0_15px_rgba(6,182,212,0.4)]">
                 <h2 class="text-2xl font-black text-white uppercase tracking-wider">Portal do Atleta</h2>
             </div>
             <form onsubmit="event.preventDefault(); fazerLoginAluno();" class="space-y-5">
                 <input type="email" id="login-email" required class="w-full px-5 py-4 bg-slate-900 border border-slate-700 rounded-2xl text-white outline-none focus:border-cyan-500" placeholder="E-mail">
                 <input type="password" id="login-senha" required class="w-full px-5 py-4 bg-slate-900 border border-slate-700 rounded-2xl text-white outline-none focus:border-cyan-500" placeholder="Senha">
-                <button type="submit" id="btn-login" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-4 rounded-2xl uppercase tracking-widest text-xs transition-all">Entrar no Tatame</button>
+                <button type="submit" id="btn-login" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-4 rounded-2xl uppercase tracking-widest text-xs transition-all shadow-lg">Entrar no Tatame</button>
             </form>
         </div>
     </div>
 
     <div id="tela-portal" class="hidden flex-col w-full flex-1 relative z-10 h-full">
+        
+        <div id="banner-anamnese" class="hidden bg-rose-600 text-white p-3 text-center text-xs font-bold flex-col sm:flex-row items-center justify-center gap-3 z-50">
+            <span>⚠️ Ação Obrigatória: Preencha sua ficha de saúde.</span>
+            <button onclick="abrirModalAnamnese()" class="bg-white text-rose-600 px-4 py-1 rounded-full font-black text-[10px] uppercase">Preencher Agora</button>
+        </div>
+
         <header class="pt-8 pb-4 px-6 flex justify-between items-center max-w-3xl mx-auto w-full">
-            <img id="logo-equipe-topo" src="logo_bjj_maneger.png" class="h-10">
+            <img id="logo-equipe-topo" src="logo_bjj_maneger.png" class="h-10 drop-shadow-lg">
             <button onclick="sairDoPortal()" class="text-[10px] font-black uppercase text-slate-400 bg-slate-800/50 px-3 py-1.5 rounded-lg border border-slate-700/50">Sair 🚪</button>
         </header>
 
         <main class="flex-1 max-w-3xl w-full mx-auto px-4 sm:px-6 pb-28 overflow-y-auto hide-scrollbar space-y-6">
             <div class="pt-2">
                 <h1 class="text-3xl font-black text-white">Oss, <span id="nome-saudacao" class="text-cyan-400">Atleta</span>!</h1>
-                <p id="subtitulo-secao" class="text-sm text-slate-400 mt-1 font-medium">Carregando informações...</p>
+                <p id="subtitulo-secao" class="text-sm text-slate-400 mt-1 font-medium italic">Sua identificação oficial e acesso à equipe.</p>
             </div>
 
             <section id="aba-carteirinha" class="aluno-secao block space-y-4">
                 <div id="cart-wrapper" class="w-full overflow-x-auto hide-scrollbar py-2 -mx-4 px-4 sm:px-0 flex justify-center">
                     <div id="carteirinha" class="relative bg-white rounded-2xl shadow-2xl border border-slate-200 flex text-slate-800 w-[600px] h-[380px] shrink-0 overflow-hidden" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
-                         <div class="flex-1 p-6 flex flex-col z-10 relative">
+                        <div class="flex-1 p-6 flex flex-col z-10 relative">
                             <div class="flex items-center gap-4 mb-6">
                                 <div class="h-16 w-16 bg-white rounded-full flex items-center justify-center border border-slate-200 overflow-hidden">
                                     <img id="cart-equipe-logo" src="" class="h-full w-full object-contain p-1 hidden">
@@ -77,29 +83,34 @@
                                 </div>
                                 <h2 id="cart-equipe-nome" class="text-xl font-black uppercase text-slate-800 truncate max-w-[240px]">EQUIPE</h2>
                             </div>
-                            <div class="grid grid-cols-2 gap-3 mt-auto">
-                                <div class="col-span-2 bg-white/90 rounded-md border-l-4 border-cyan-500 p-2">
-                                    <p class="text-[8px] text-slate-400 uppercase font-bold">Nome</p>
-                                    <p id="cart-aluno-nome-txt" class="text-xs font-black uppercase truncate">--</p>
+                            <div class="grid grid-cols-2 gap-3 mt-auto mb-4">
+                                <div class="col-span-2 bg-white/90 border-l-4 border-cyan-500 p-2 rounded shadow-sm">
+                                    <p class="text-[8px] text-slate-400 uppercase font-bold">Nome do Atleta</p>
+                                    <p id="cart-aluno-nome-txt" class="text-sm font-black uppercase truncate">--</p>
                                 </div>
-                                <div class="bg-white/90 rounded-md border-l-4 border-slate-400 p-2">
-                                    <p class="text-[8px] text-slate-400 uppercase font-bold">Graduação</p>
-                                    <p id="cart-aluno-faixa-texto" class="text-[10px] font-black uppercase">--</p>
+                                <div class="bg-white/90 border-l-4 border-slate-300 p-2 rounded shadow-sm relative overflow-hidden">
+                                    <div id="cart-faixa-border" class="absolute left-0 top-0 w-1 h-full"></div>
+                                    <p class="text-[8px] text-slate-400 uppercase font-bold pl-1">Graduação</p>
+                                    <p id="cart-aluno-faixa-texto" class="text-[10px] font-black uppercase pl-1">--</p>
                                 </div>
-                                <div class="bg-white/90 rounded-md border-l-4 border-slate-400 p-2">
-                                    <p class="text-[8px] text-slate-400 uppercase font-bold">Validade</p>
-                                    <p id="cart-aluno-validade-txt" class="text-[10px] font-black uppercase">2026</p>
+                                <div class="bg-white/90 border-l-4 border-slate-300 p-2 rounded shadow-sm">
+                                    <p class="text-[8px] text-slate-400 uppercase font-bold">Matrícula</p>
+                                    <p id="cart-aluno-matricula-txt" class="text-[10px] font-black uppercase">0000</p>
                                 </div>
                             </div>
-                         </div>
-                         <div class="w-[35%] bg-slate-100/50 border-l border-slate-200 p-6 flex flex-col items-center justify-between">
+                        </div>
+                        <div class="w-[35%] bg-slate-100/50 border-l border-slate-200 p-6 flex flex-col items-center justify-between z-10 backdrop-blur-sm">
                             <div class="w-full aspect-[3/4] bg-white rounded-lg border-2 border-white overflow-hidden shadow-md flex items-center justify-center">
                                 <img id="cart-aluno-foto-modal" class="w-full h-full object-cover hidden">
                                 <span id="cart-aluno-foto-fallback-modal" class="text-5xl font-black text-slate-300">?</span>
                             </div>
-                            <div id="cart-qr-code" class="w-16 h-16 bg-white p-1 rounded-lg"></div>
-                         </div>
+                            <div id="cart-qr-code" class="w-16 h-16 bg-white p-1 rounded shadow-inner"></div>
+                        </div>
                     </div>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-3 max-w-[600px] mx-auto">
+                    <button onclick="baixarCarteirinhaPNG()" class="flex-1 bg-emerald-600 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest">Baixar PNG</button>
+                    <button onclick="baixarCarteirinhaPDF()" class="flex-1 bg-rose-600 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest">Baixar PDF</button>
                 </div>
             </section>
 
@@ -108,13 +119,13 @@
                     <div class="flex items-center gap-4">
                         <div id="cor-faixa-atual-circulo" class="w-12 h-12 rounded-full border-2 border-slate-900 shadow-xl"></div>
                         <div>
-                            <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest">Faixa Atual</p>
-                            <p id="txt-faixa-atual" class="text-sm font-black text-white uppercase italic">--</p>
+                            <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest">Tempo na Faixa</p>
+                            <p id="txt-tempo-na-faixa" class="text-cyan-400 font-black text-sm">Calculando...</p>
                         </div>
                     </div>
                     <div class="text-right">
-                        <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest">Tempo de Permanência</p>
-                        <p id="txt-tempo-na-faixa" class="text-cyan-400 font-black text-sm">--</p>
+                        <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest">Graduação Atual</p>
+                        <p id="txt-faixa-atual" class="text-sm font-black text-white uppercase italic">--</p>
                     </div>
                 </div>
 
@@ -130,22 +141,23 @@
             </section>
 
             <section id="aba-financeiro" class="aluno-secao hidden">
-                <div class="bg-slate-800/40 rounded-3xl border border-slate-700/50 overflow-hidden">
-                    <div id="lista-faturas" class="divide-y divide-slate-700/30"></div>
-                </div>
+                <div id="lista-faturas" class="bg-slate-800/40 rounded-3xl border border-slate-700/50 divide-y divide-slate-700/30"></div>
             </section>
 
             <section id="aba-dados" class="aluno-secao hidden">
                 <div class="bg-slate-800/80 p-6 rounded-3xl border border-slate-700 space-y-6">
                     <div class="text-center">
-                        <div class="w-24 h-24 rounded-full border-2 border-cyan-500 bg-slate-900 mx-auto overflow-hidden">
+                        <div class="w-24 h-24 rounded-full border-2 border-cyan-500 mx-auto overflow-hidden relative bg-slate-900 flex items-center justify-center">
                             <img id="edit-preview-foto" class="w-full h-full object-cover hidden">
-                            <span id="edit-fallback-foto" class="text-3xl text-slate-600 leading-[96px]">?</span>
+                            <span id="edit-fallback-foto" class="text-3xl text-slate-600 font-black">?</span>
+                            <input type="file" id="input-foto" accept="image/*" onchange="previewImagem(this)" class="absolute inset-0 opacity-0 cursor-pointer">
                         </div>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase mt-2">Toque para alterar a foto</p>
                     </div>
-                    <input type="text" id="edit-tel" placeholder="WhatsApp" class="w-full p-4 bg-slate-900 border border-slate-700 rounded-xl text-white outline-none">
-                    <button onclick="salvarMeusDados()" id="btn-salvar-dados" class="w-full bg-cyan-600 py-4 rounded-xl font-black uppercase text-xs">Salvar Alterações</button>
+                    <div class="space-y-4">
+                        <input type="text" id="edit-tel" placeholder="WhatsApp" class="w-full p-4 bg-slate-900 border border-slate-700 rounded-xl text-white outline-none">
+                        <input type="password" id="edit-senha" placeholder="Nova Senha (opcional)" class="w-full p-4 bg-slate-900 border border-slate-700 rounded-xl text-white outline-none">
+                    </div>
+                    <button onclick="salvarMeusDados()" id="btn-salvar-dados" class="w-full bg-cyan-600 py-4 rounded-xl font-black uppercase text-xs shadow-lg">Salvar Alterações</button>
                 </div>
             </section>
         </main>
@@ -187,41 +199,60 @@
         let alunoLogado = null;
         let equipeDados = null;
 
-        // --- FUNÇÕES DE INTERFACE ---
-        window.showToast = function(m, t='error'){ /* sua lógica de toast */ console.log(m); }
-        window.sairDoPortal = () => { localStorage.removeItem('bjj_aluno_auth'); window.location.reload(); }
+        // --- SISTEMA DE LOGIN E INÍCIO ---
+        window.fazerLoginAluno = async function() {
+            const email = document.getElementById('login-email').value.trim().toLowerCase();
+            const senha = document.getElementById('login-senha').value;
+            try {
+                const q = query(collection(db, "alunos"), where("email", "==", email), where("senha_portal", "==", senha));
+                const snap = await getDocs(q);
+                if (snap.empty) { alert("Dados incorretos."); return; }
+                alunoLogado = { id: snap.docs[0].id, ...snap.docs[0].data() };
+                localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoLogado));
+                iniciarPortal();
+            } catch(e) { alert("Erro de conexão."); }
+        }
+
+        window.iniciarPortal = async function() {
+            document.getElementById('tela-login').classList.add('hidden');
+            document.getElementById('tela-portal').classList.replace('hidden', 'flex');
+            document.getElementById('nome-saudacao').innerText = alunoLogado.nome.split(' ')[0].toUpperCase();
+            
+            // Buscar dados da Equipe
+            const eqSnap = await getDoc(doc(db, "equipes", alunoLogado.equipe_id));
+            if(eqSnap.exists()) {
+                equipeDados = eqSnap.data();
+                preencherCarteirinha();
+            }
+            buscarFaturas();
+        }
 
         window.mudarAbaAluno = function(id) {
             document.querySelectorAll('.aluno-secao').forEach(el => el.classList.replace('block', 'hidden'));
             document.getElementById(id).classList.replace('hidden', 'block');
-            
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.replace('text-cyan-400', 'text-slate-500'));
-            document.getElementById('nav-' + id).classList.replace('text-slate-500', 'text-cyan-400');
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.replace('text-cyan-400', 'text-slate-500');
+                btn.querySelector('span:last-child').classList.replace('font-black', 'font-bold');
+            });
+            document.getElementById('nav-'+id).classList.replace('text-slate-500', 'text-cyan-400');
+            document.getElementById('nav-'+id).querySelector('span:last-child').classList.replace('font-bold', 'font-black');
 
-            if(id === 'aba-curriculo') {
-                document.getElementById('subtitulo-secao').innerText = "Sua trajetória marcial e conquistas.";
-                buscarCurriculoAluno();
-            }
-            if(id === 'aba-carteirinha') document.getElementById('subtitulo-secao').innerText = "Identificação oficial e acesso.";
+            if(id === 'aba-curriculo') buscarCurriculoAluno();
         }
 
-        // --- LÓGICA DE DADOS ---
+        // --- LÓGICA DO HISTÓRICO (HISTÓRICO) ---
         async function buscarCurriculoAluno() {
-            const divGrad = document.getElementById('lista-graduacoes');
-            const divComp = document.getElementById('lista-competicoes');
-            divGrad.innerHTML = "Carregando...";
-            divComp.innerHTML = "Carregando...";
+            const divG = document.getElementById('lista-graduacoes');
+            const divC = document.getElementById('lista-competicoes');
+            divG.innerHTML = "<p class='text-xs text-slate-500 italic'>Buscando linha do tempo...</p>";
+            divC.innerHTML = "<p class='text-xs text-slate-500 italic'>Buscando medalhas...</p>";
 
             try {
-                // Queries corrigidas
                 const qG = query(collection(db, "graduacoes"), where("aluno_id", "==", alunoLogado.id));
                 const qC = query(collection(db, "competicoes"), where("aluno_id", "==", alunoLogado.id));
-
                 const [snapG, snapC] = await Promise.all([getDocs(qG), getDocs(qC)]);
 
-                // 1. GRADUAÇÕES E TEMPO
-                let grads = [];
-                snapG.forEach(d => grads.push(d.data()));
+                let grads = []; snapG.forEach(d => grads.push(d.data()));
                 grads.sort((a,b) => new Date(b.data) - new Date(a.data));
 
                 if(grads.length > 0) {
@@ -229,67 +260,53 @@
                     document.getElementById('txt-faixa-atual').innerText = `${atual.faixa} - ${atual.grau || 'Sem grau'}`;
                     document.getElementById('cor-faixa-atual-circulo').style.background = getCorFaixaDupla(atual.faixa);
                     document.getElementById('txt-tempo-na-faixa').innerText = calcularTempo(atual.data);
-
-                    divGrad.innerHTML = grads.map(g => `
+                    
+                    divG.innerHTML = grads.map(g => `
                         <div class="relative pl-8">
                             <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full border-2 border-slate-900" style="background: ${getCorFaixaDupla(g.faixa)}"></div>
                             <div class="bg-slate-800/50 p-3 rounded-2xl border border-slate-700/30">
-                                <p class="text-[10px] font-black text-cyan-400 uppercase">${new Date(g.data + 'T12:00:00').toLocaleDateString('pt-BR')}</p>
-                                <p class="text-sm font-bold text-white uppercase">${g.faixa} <span class="text-slate-400 text-xs">- ${g.grau || ''}</span></p>
+                                <p class="text-[10px] font-black text-cyan-400 uppercase">${g.data.split('-').reverse().join('/')}</p>
+                                <p class="text-sm font-bold text-white uppercase">${g.faixa} - ${g.grau || ''}</p>
                             </div>
-                        </div>
-                    `).join('');
-                } else {
-                    divGrad.innerHTML = "<p class='text-xs text-slate-500 italic'>Nenhum registro.</p>";
-                }
+                        </div>`).join('');
+                } else { divG.innerHTML = "<p class='text-xs text-slate-500 italic'>Nenhum registro encontrado.</p>"; }
 
-                // 2. COMPETIÇÕES
-                let comps = [];
-                snapC.forEach(d => comps.push(d.data()));
+                let comps = []; snapC.forEach(d => comps.push(d.data()));
                 comps.sort((a,b) => new Date(b.data) - new Date(a.data));
 
                 if(comps.length > 0) {
-                    divComp.innerHTML = comps.map(c => {
+                    divC.innerHTML = comps.map(c => {
                         const col = (c.colocacao || "").toLowerCase();
                         let med = "🥋"; let cor = "text-slate-400";
                         if(col.includes("1º") || col.includes("ouro")) { med="🥇"; cor="text-yellow-400"; }
                         else if(col.includes("2º") || col.includes("prata")) { med="🥈"; cor="text-slate-300"; }
                         else if(col.includes("3º") || col.includes("bronze")) { med="🥉"; cor="text-orange-500"; }
-
                         return `
                         <div class="flex items-center gap-4 bg-slate-800/50 p-4 rounded-2xl border border-slate-700/30">
                             <div class="text-2xl ${cor}">${med}</div>
                             <div class="flex-1 overflow-hidden">
-                                <p class="text-[10px] font-black text-slate-400 uppercase">${new Date(c.data + 'T12:00:00').toLocaleDateString('pt-BR')}</p>
+                                <p class="text-[10px] font-black text-slate-400 uppercase">${c.data.split('-').reverse().join('/')}</p>
                                 <p class="text-sm font-bold text-white truncate">${c.nome_evento}</p>
-                                <p class="text-[10px] text-slate-500 italic">${c.categoria || ''} • ${c.peso || ''}kg</p>
                             </div>
-                            <span class="text-[10px] font-black bg-slate-900 px-2 py-1 rounded text-cyan-400 border border-slate-700 uppercase">${c.colocacao || 'Part.'}</span>
+                            <span class="text-[10px] font-black bg-slate-900 px-2 py-1 rounded text-cyan-400 uppercase">${c.colocacao || 'Part.'}</span>
                         </div>`;
                     }).join('');
-                } else {
-                    divComp.innerHTML = "<p class='text-xs text-slate-500 italic'>Nenhuma medalha registrada.</p>";
-                }
-
-            } catch(e) { 
-                console.error(e); 
-                divGrad.innerHTML = "Erro ao carregar dados."; 
-            }
+                } else { divC.innerHTML = "<p class='text-xs text-slate-500 italic'>Nenhum campeonato registrado.</p>"; }
+            } catch(e) { divG.innerHTML = "<p class='text-rose-500 text-xs'>Erro ao carregar dados.</p>"; }
         }
 
-        function calcularTempo(data) {
-            const d1 = new Date(data + 'T12:00:00');
+        // --- AUXILIARES ---
+        function calcularTempo(dataStr) {
+            const d1 = new Date(dataStr + 'T12:00:00');
             const d2 = new Date();
             let meses = (d2.getFullYear() - d1.getFullYear()) * 12 + (d2.getMonth() - d1.getMonth());
             if (d2.getDate() < d1.getDate()) meses--;
-            
             const anos = Math.floor(meses / 12);
-            const mesesRest = meses % 12;
-            
-            let res = [];
-            if(anos > 0) res.push(`${anos} ano${anos>1?'s':''}`);
-            if(mesesRest > 0) res.push(`${mesesRest} m${mesesRest>1?'eses':'ês'}`);
-            return res.join(' e ') || "Menos de 1 mês";
+            const mRest = meses % 12;
+            let partes = [];
+            if(anos > 0) partes.push(`${anos} ano${anos>1?'s':''}`);
+            if(mRest > 0) partes.push(`${mRest} m${mRest>1?'eses':'ês'}`);
+            return partes.join(' e ') || "Recém graduado";
         }
 
         function getCorFaixaDupla(faixa) {
@@ -309,23 +326,36 @@
             if (f.includes('preta')) return '#0F172A'; return '#cbd5e1'; 
         }
 
-        async function iniciarPortal() {
-            document.getElementById('tela-login').classList.add('hidden');
-            document.getElementById('tela-portal').classList.remove('hidden');
-            document.getElementById('tela-portal').classList.add('flex');
-            document.getElementById('nome-saudacao').innerText = alunoLogado.nome.split(' ')[0];
-            
-            // Preenche carteirinha inicial
-            document.getElementById('cart-aluno-nome-txt').innerText = alunoLogado.nome;
-            document.getElementById('cart-aluno-faixa-texto').innerText = `${alunoLogado.faixa} - ${alunoLogado.grau || ''}`;
-            
-            // QR Code
-            const qrContainer = document.getElementById('cart-qr-code'); qrContainer.innerHTML = ''; 
-            new QRCode(qrContainer, { text: alunoLogado.matricula, width: 64, height: 64 });
+        function preencherCarteirinha() {
+            document.getElementById('cart-equipe-nome').innerText = equipeDados.nome_equipe.toUpperCase();
+            if(equipeDados.url_logo) { document.getElementById('cart-equipe-logo').src = equipeDados.url_logo; document.getElementById('cart-equipe-logo').classList.remove('hidden'); document.getElementById('cart-equipe-fallback').classList.add('hidden'); }
+            document.getElementById('cart-aluno-nome-txt').innerText = alunoLogado.nome.toUpperCase();
+            document.getElementById('cart-aluno-faixa-texto').innerText = `${alunoLogado.faixa} - ${alunoLogado.grau || ''}`.toUpperCase();
+            document.getElementById('cart-aluno-matricula-txt').innerText = alunoLogado.matricula || '0000';
+            document.getElementById('cart-faixa-border').style.background = getCorFaixaDupla(alunoLogado.faixa);
+            if(alunoLogado.foto_url) { document.getElementById('cart-aluno-foto-modal').src = alunoLogado.foto_url; document.getElementById('cart-aluno-foto-modal').classList.remove('hidden'); document.getElementById('cart-aluno-foto-fallback-modal').classList.add('hidden'); }
+            const qrC = document.getElementById('cart-qr-code'); qrC.innerHTML = ''; new QRCode(qrC, { text: alunoLogado.matricula, width: 64, height: 64 });
+        }
+
+        // Restante das funções de financeiro e dados (originais do seu código)...
+        async function buscarFaturas() {
+            const list = document.getElementById('lista-faturas');
+            const q = query(collection(db, "financeiro"), where("aluno_id", "==", alunoLogado.id));
+            const snap = await getDocs(q);
+            list.innerHTML = snap.empty ? "<p class='p-8 text-center text-slate-500 text-xs'>Sem faturas.</p>" : "";
+            snap.forEach(doc => {
+                const fat = doc.data();
+                const isPago = fat.status === 'PAGO';
+                list.innerHTML += `<div class="p-4 flex justify-between items-center bg-slate-800/20">
+                    <div><p class="text-sm font-bold text-white">Mês ${fat.mes_ano || '--'}</p><p class="text-[10px] text-slate-500 uppercase">Vencimento: ${fat.vencimento || '--'}</p></div>
+                    <div class="text-right"><p class="text-sm font-black ${isPago?'text-emerald-400':'text-rose-400'}">R$ ${fat.valor || '0,00'}</p><span class="text-[9px] font-black uppercase">${fat.status}</span></div>
+                </div>`;
+            });
         }
 
         const sessao = localStorage.getItem('bjj_aluno_auth');
         if(sessao) { alunoLogado = JSON.parse(sessao); iniciarPortal(); }
+
     </script>
 </body>
 </html>

@@ -1,544 +1,173 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Turmas | BJJ Manager</title>
-    
-    <link rel="icon" type="image/png" href="logo_bjj_maneger.png">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
-        
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
-    </style>
-</head>
-<body class="flex flex-col h-[100dvh] overflow-hidden text-slate-800 bg-[#F8FAFC]">
+async function buscarMuralEHorarios() {
+            const divAvisos = document.getElementById('lista-avisos');
+            const divHorarios = document.getElementById('lista-horarios');
 
-    <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
-
-    <div id="interface-sistema" class="flex-1 flex w-full h-full relative overflow-hidden">
-        
-        <main class="flex-1 flex flex-col h-full overflow-hidden relative">
-            
-            <div class="flex-1 overflow-hidden p-4 md:p-8 pb-20 md:pb-8 flex flex-col md:flex-row gap-6 max-w-7xl mx-auto w-full h-full">
-                
-                <div id="painel-lista" class="w-full md:w-1/3 flex flex-col h-full gap-4 shrink-0 overflow-y-auto hide-scrollbar">
+            // --- BLOCO 1: BUSCAR AVISOS/MENSAGENS ---
+            if(divAvisos) {
+                try {
+                    const qAvisos = query(collection(db, "mensagens"), where("equipe_id", "==", alunoLogado.equipe_id));
+                    const snapAvisos = await getDocs(qAvisos);
+                    let avisos = []; 
                     
-                    <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-5 md:p-6 shrink-0">
-                        <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
-                            <div class="flex items-center gap-2">
-                                <span class="text-xl">🕒</span>
-                                <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm" id="titulo-form">Nova Turma</h3>
-                            </div>
-                        </div>
+                    const hojeIso = new Date().toISOString();
+
+                    snapAvisos.forEach(doc => {
+                        const av = doc.data();
+                        if (av.status === 'inativo') return;
+                        if (av.data_expiracao && av.data_expiracao < hojeIso) return; 
                         
-                        <div class="space-y-3">
-                            <div>
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome (Ex: Infantil / Adulto)</label>
-                                <input type="text" id="turma-nome" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700 uppercase">
-                            </div>
-                            
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Idade Min.</label>
-                                    <input type="number" id="turma-idade-min" placeholder="Ex: 4" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all text-slate-700 font-bold">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Idade Max.</label>
-                                    <input type="number" id="turma-idade-max" placeholder="Ex: 10" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all text-slate-700 font-bold">
-                                </div>
-                            </div>
+                        avisos.push(av);
+                    });
+                    
+                    avisos.sort((a,b) => {
+                        let dateA = a.data_envio ? new Date(a.data_envio).getTime() : 0; 
+                        let dateB = b.data_envio ? new Date(b.data_envio).getTime() : 0; 
+                        return dateB - dateA;
+                    });
 
-                            <div>
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Dias de Treino</label>
-                                <input type="text" id="turma-dias" placeholder="Ex: Segundas e Quartas" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all text-slate-700 font-bold text-xs">
-                            </div>
+                    if(avisos.length > 0) {
+                        divAvisos.innerHTML = avisos.map(av => {
+                            let corBorda = 'border-slate-600/50';
+                            let corIcone = 'text-cyan-400';
+                            let icone = '📌';
 
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Hora Início</label>
-                                    <input type="time" id="turma-hora-inicio" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all text-slate-700 font-bold">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Hora Fim</label>
-                                    <input type="time" id="turma-hora-fim" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all text-slate-700 font-bold">
-                                </div>
-                            </div>
-                            
-                            <div class="flex gap-2 mt-4">
-                                <button onclick="cancelarEdicaoTurma()" id="btn-cancelar-turma" class="hidden flex-1 bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold py-2.5 px-3 rounded-xl transition-all text-xs">Cancelar</button>
-                                <button onclick="salvarTurma()" id="btn-salvar-turma" class="flex-[2] bg-cyan-500 hover:bg-cyan-600 text-white font-black py-2.5 px-3 rounded-xl shadow-md transition-all uppercase tracking-widest text-xs">➕ Criar Turma</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <button onclick="autoDistribuirAlunos()" class="bg-purple-600 hover:bg-purple-700 text-white font-black py-3 px-4 rounded-2xl shadow-sm transition-all flex items-center justify-center text-sm shrink-0 group">
-                        <span class="mr-2 text-lg group-hover:animate-pulse">🤖</span> Distribuição Automática
-                    </button>
-
-                    <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex-1 flex flex-col min-h-[250px] overflow-hidden">
-                        <div class="p-4 border-b border-slate-100 bg-slate-50 shrink-0">
-                            <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest">Turmas Cadastradas</h3>
-                        </div>
-                        <div class="flex-1 overflow-y-auto hide-scrollbar p-2" id="lista-turmas">
-                            <div class="text-center text-slate-400 text-sm mt-5">Carregando turmas...</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="painel-detalhe" class="w-full md:w-2/3 hidden flex-col h-full gap-4 md:gap-6 overflow-hidden">
-                    <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-4 md:p-6 flex flex-col shrink-0">
-                        <div class="flex items-center gap-3 sm:gap-4 mb-2">
-                            <button onclick="voltarLista()" class="md:hidden flex items-center justify-center w-10 h-10 bg-slate-100 text-slate-500 rounded-full hover:bg-slate-200 shrink-0 shadow-sm">🔙</button>
-                            <div class="flex-1 overflow-hidden">
-                                <h2 class="text-xl md:text-3xl font-black text-slate-800 truncate" id="turma-nome-detalhe">Nome da Turma</h2>
-                            </div>
-                            <div class="text-right shrink-0">
-                                <div id="turma-horario-badge" class="px-3 py-1.5 rounded-lg text-[10px] font-black uppercase bg-cyan-50 text-cyan-700 border border-cyan-200 shadow-sm inline-block">--</div>
-                                <div id="turma-idade-badge" class="block text-[9px] font-bold text-slate-400 uppercase mt-1">--</div>
-                            </div>
-                        </div>
-                        <p class="text-xs font-bold text-slate-500 md:ml-14" id="turma-contagem">Matriculados: 0</p>
-                    </div>
-
-                    <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex-1 flex flex-col overflow-hidden relative">
-                        <div class="p-4 md:p-5 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row gap-3 items-center shrink-0">
-                            <div class="flex-1 w-full">
-                                <select id="combo-add-aluno" class="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer shadow-sm">
-                                    <option value="">Selecione um atleta...</option>
-                                </select>
-                            </div>
-                            <button onclick="adicionarAlunoNaTurma()" class="w-full sm:w-auto bg-[#10B981] hover:bg-emerald-600 text-white font-black py-3 px-6 rounded-xl shadow-md transition-all uppercase tracking-widest text-xs">Adicionar Atleta</button>
-                        </div>
-                        <div class="flex-1 overflow-y-auto p-2 md:p-4 hide-scrollbar bg-slate-50/30" id="lista-matriculados"></div>
-                    </div>
-                </div>
-
-                <div id="painel-vazio" class="hidden md:flex w-full md:w-2/3 h-full flex-col items-center justify-center bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl text-center p-10">
-                    <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center text-4xl shadow-sm border border-slate-100 mb-4">🗓️</div>
-                    <h3 class="text-xl font-black text-slate-700 mb-2">Gestão de Turmas</h3>
-                    <p class="text-slate-400 text-sm max-w-sm">Selecione uma turma ao lado ou crie uma nova para gerenciar os atletas.</p>
-                </div>
-
-            </div>
-        </main>
-    </div>
-
-    <div id="modal-trocar" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col">
-            <div class="bg-slate-900 p-4 text-white font-black uppercase tracking-widest text-sm">🔄 Trocar de Turma</div>
-            <div class="p-6 space-y-4">
-                <p class="text-sm text-slate-500">Transferir <span id="lbl-atleta-troca" class="font-black text-cyan-600"></span> para:</p>
-                <select id="select-nova-turma" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:border-cyan-500"></select>
-            </div>
-            <div class="p-4 bg-slate-50 border-t border-slate-200 flex gap-2">
-                <button onclick="fecharModalTrocar()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold py-3 rounded-xl transition-all text-xs uppercase tracking-widest">Cancelar</button>
-                <button onclick="confirmarTroca()" class="flex-1 bg-cyan-500 hover:bg-cyan-600 text-white font-black py-3 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest">Confirmar</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="menu.js"></script>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where, updateDoc, deleteDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
-            authDomain: "bjj-maneger.firebaseapp.com",
-            projectId: "bjj-maneger",
-            storageBucket: "bjj-maneger.firebasestorage.app",
-            messagingSenderId: "415548255893",
-            appId: "1:415548255893:web:61186696fe097be870759c"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        let uid = null;
-        let teamId = null; 
-        let alunosCache = [];
-        let turmasCache = [];
-        let turmaSelecionada = null;
-        let turmaEditandoId = null;
-        let alunoParaTrocaId = null;
-        let equipeDados = { nome: "Sua Equipe", logo: "" };
-
-        window.showToast = function(message, type = 'error') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            const bgColor = type === 'success' ? 'bg-emerald-500' : 'bg-rose-500';
-            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transition-all duration-300 transform translate-x-0 font-bold text-sm z-50 pointer-events-auto`;
-            toast.innerText = message;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 4500);
-        }
-
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const limparAcessando = () => {
-                    const aside = document.querySelector('aside');
-                    if (aside) {
-                        const elementos = aside.querySelectorAll('p, span, h4');
-                        elementos.forEach(el => {
-                            if (el.innerText.includes('carregando') || el.innerText.includes('rianbarbosa')) {
-                                el.innerText = user.email;
+                            if (av.urgencia === 'urgente') {
+                                corBorda = 'border-rose-500/50';
+                                corIcone = 'text-rose-400';
+                                icone = '🚨';
+                            } else if (av.urgencia === 'importante') {
+                                corBorda = 'border-amber-500/50';
+                                corIcone = 'text-amber-400';
+                                icone = '⚠️';
                             }
-                            if (el.innerText.includes('ACESSANDO')) {
-                                el.innerText = 'ADMINISTRADOR';
-                                el.classList.remove('animate-pulse');
-                                el.style.opacity = "1";
+
+                            return `<div class="bg-slate-900/50 p-4 rounded-2xl border ${corBorda} shadow-sm shrink-0"><div class="flex items-center gap-2 mb-2"><span class="text-sm ${corIcone}">${icone}</span><h4 class="text-xs font-black text-white uppercase">${av.titulo || 'Aviso'}</h4></div><p class="text-[11px] text-slate-300 leading-relaxed">${av.conteudo || ''}</p></div>`;
+                        }).join('');
+                    } else { 
+                        divAvisos.innerHTML = "<div class='text-xs text-slate-500 italic flex h-full items-center justify-center'>Nenhum recado no momento.</div>"; 
+                    }
+                } catch (error) { 
+                    console.error("Erro Avisos:", error);
+                    divAvisos.innerHTML = "<div class='text-[10px] text-rose-500 text-center bg-rose-500/10 p-2 rounded-lg'>Erro ao carregar avisos.</div>"; 
+                }
+            }
+
+            // --- BLOCO 2: BUSCAR HORÁRIOS (DIRETO DAS TURMAS) ---
+            if(divHorarios) {
+                try {
+                    const qTurmas = query(collection(db, "turmas"), where("equipe_id", "==", alunoLogado.equipe_id));
+                    const snapTurmas = await getDocs(qTurmas); 
+                    let turmas = []; 
+                    
+                    snapTurmas.forEach(doc => {
+                        const t = doc.data();
+                        turmas.push({
+                            nome: t.nome_turma || t.nome || t.titulo || 'Treino',
+                            dias_array: Array.isArray(t.dias_semana) ? t.dias_semana : [], // NOVO FORMATO ARRAY
+                            hora: t.hora_inicio || t.horario || '--:--',
+                            isMinhaTurma: (t.alunos_ids && t.alunos_ids.includes(alunoLogado.id))
+                        });
+                    });
+
+                    // FUNÇÃO PARA CALCULAR PRÓXIMA DATA
+                    function getProximoTreino(diasArray, horaInicio) {
+                        if(!diasArray || diasArray.length === 0 || !horaInicio || horaInicio === '--:--') return null;
+                        const agora = new Date();
+                        const diaHoje = agora.getDay();
+                        const partesHora = horaInicio.split(':');
+                        if(partesHora.length !== 2) return null;
+                        const hora = parseInt(partesHora[0]);
+                        const min = parseInt(partesHora[1]);
+
+                        let menorDifDias = 99;
+                        let dataAlvo = null;
+
+                        diasArray.forEach(d => {
+                            let dif = d - diaHoje;
+                            if(dif < 0) dif += 7;
+                            
+                            // Se for hoje, verifica se já passou do horário
+                            if(dif === 0) {
+                                const dataHojeTeste = new Date(agora);
+                                dataHojeTeste.setHours(hora, min, 0, 0);
+                                if(agora > dataHojeTeste) {
+                                    dif = 7; // Próxima semana
+                                }
+                            }
+                            
+                            if(dif < menorDifDias) {
+                                menorDifDias = dif;
+                                const proxDate = new Date(agora);
+                                proxDate.setDate(agora.getDate() + dif);
+                                proxDate.setHours(hora, min, 0, 0);
+                                dataAlvo = proxDate;
                             }
                         });
+                        return dataAlvo;
                     }
-                };
 
-                limparAcessando();
-                setTimeout(limparAcessando, 600);
+                    const nomesDias = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 
-                const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
-                if (mestreDoc.exists()) { 
-                    teamId = user.uid; 
-                } else {
-                    const colabDoc = await getDoc(doc(db, "colaboradores", user.uid));
-                    if (colabDoc.exists()) teamId = colabDoc.data().equipe_id;
-                }
+                    // Aplica o cálculo em todas as turmas
+                    turmas.forEach(t => {
+                        t.proximaSessao = getProximoTreino(t.dias_array, t.hora);
+                    });
 
-                if (teamId) {
-                    uid = teamId;
-                    await carregarDadosEquipe();
-                    await carregarAlunos(); 
-                    await carregarTurmas();
-                    limparInativosDasTurmas(); 
-                }
-            } else { window.location.href = "index.html"; }
-        });
+                    // Verifica se o aluno tem turmas dele. Se tiver, filtra SÓ as dele. Senão, mostra todas.
+                    let temTurmaAtleta = turmas.some(t => t.isMinhaTurma);
+                    let turmasExibidas = temTurmaAtleta ? turmas.filter(t => t.isMinhaTurma) : turmas;
 
-        async function carregarDadosEquipe() {
-            const eqSnap = await getDoc(doc(db, "equipes", teamId));
-            if (eqSnap.exists()) {
-                const d = eqSnap.data();
-                equipeDados.nome = d.nome_equipe || d.nome || "Sua Equipe";
-                equipeDados.logo = d.url_logo || "";
-                
-                const elNomeEquipeMenu = document.querySelector('aside h2') || document.getElementById('nome-equipe');
-                if(elNomeEquipeMenu) elNomeEquipeMenu.innerText = equipeDados.nome.toUpperCase();
+                    // Ordena as turmas pela próxima sessão cronologicamente!
+                    turmasExibidas.sort((a,b) => (a.proximaSessao || 0) - (b.proximaSessao || 0));
 
-                const elLogoMenu = document.getElementById('logo-equipe-menu') || document.getElementById('container-logo') || document.querySelector('aside div[class*="bg-cyan-"], aside div[class*="bg-blue-"]');
-                if (elLogoMenu) {
-                    if (equipeDados.logo) {
-                        elLogoMenu.style.background = 'transparent';
-                        elLogoMenu.innerHTML = `<img src="${equipeDados.logo}" class="w-full h-full object-cover rounded-xl shadow-md" alt="Logo">`;
-                    } else {
-                        elLogoMenu.style.background = '';
-                        elLogoMenu.innerHTML = `<span class="text-white font-black text-2xl">${equipeDados.nome.charAt(0).toUpperCase()}</span>`;
+                    if(turmasExibidas.length > 0) {
+                        divHorarios.innerHTML = turmasExibidas.map(t => {
+                            let labelDia = '--';
+                            let iconeDia = '📅';
+                            let corDia = 'text-slate-400';
+                            
+                            if(t.proximaSessao) {
+                                const hoje = new Date();
+                                const prox = t.proximaSessao;
+                                
+                                const isHoje = hoje.getDate() === prox.getDate() && hoje.getMonth() === prox.getMonth() && hoje.getFullYear() === prox.getFullYear();
+                                
+                                const amanha = new Date();
+                                amanha.setDate(hoje.getDate() + 1);
+                                const isAmanha = amanha.getDate() === prox.getDate() && amanha.getMonth() === prox.getMonth();
+                                
+                                if(isHoje) {
+                                    labelDia = 'HOJE';
+                                    iconeDia = '🟢';
+                                    corDia = 'text-emerald-400 font-black tracking-widest';
+                                } else if(isAmanha) {
+                                    labelDia = 'AMANHÃ';
+                                    iconeDia = '🟡';
+                                    corDia = 'text-amber-400 font-black tracking-widest';
+                                } else {
+                                    labelDia = nomesDias[prox.getDay()];
+                                    corDia = 'text-indigo-300 font-bold';
+                                }
+                            }
+                            
+                            return `
+                                <div class="flex items-center justify-between bg-slate-900/50 p-3 rounded-xl border border-slate-700/50 shrink-0 mb-2 transition-colors">
+                                    <div>
+                                        <p class="text-[11px] font-black text-indigo-200 uppercase truncate pr-2">${t.nome}</p>
+                                        <p class="text-[9px] uppercase ${corDia} mt-0.5">${iconeDia} ${labelDia}</p>
+                                    </div>
+                                    <div class="text-right shrink-0 flex flex-col items-end">
+                                        <span class="text-xs font-black text-white bg-slate-800 px-2 py-1 rounded-lg border border-slate-600 shadow-inner">${t.hora}</span>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    } else { 
+                        divHorarios.innerHTML = "<div class='text-xs text-slate-500 italic flex h-full items-center justify-center'>Nenhuma turma para exibir.</div>"; 
                     }
+                } catch (error) {
+                    console.error("Erro Horários/Turmas:", error);
+                    divHorarios.innerHTML = "<div class='text-[10px] text-rose-500 text-center bg-rose-500/10 p-2 rounded-lg'>Erro ao carregar a grade de treinos.</div>"; 
                 }
             }
         }
-
-        function getEstiloFaixa(faixa) {
-            const faixasInfo = {
-                'Branca': 'background-color: #ffffff',
-                'Cinza e branca': 'background: linear-gradient(135deg, #94a3b8 50%, #ffffff 50%)',
-                'Cinza': 'background-color: #94a3b8',
-                'Cinza e preta': 'background: linear-gradient(135deg, #94a3b8 50%, #000000 50%)',
-                'Amarela e branca': 'background: linear-gradient(135deg, #eab308 50%, #ffffff 50%)',
-                'Amarela': 'background-color: #eab308',
-                'Amarela e preta': 'background: linear-gradient(135deg, #eab308 50%, #000000 50%)',
-                'Laranja e branca': 'background: linear-gradient(135deg, #f97316 50%, #ffffff 50%)',
-                'Laranja': 'background-color: #f97316',
-                'Laranja e preta': 'background: linear-gradient(135deg, #f97316 50%, #000000 50%)',
-                'Verde e branca': 'background: linear-gradient(135deg, #22c55e 50%, #ffffff 50%)',
-                'Verde': 'background-color: #22c55e',
-                'Verde e preta': 'background: linear-gradient(135deg, #22c55e 50%, #000000 50%)',
-                'Azul': 'background-color: #3b82f6',
-                'Roxa': 'background-color: #a855f7',
-                'Marrom': 'background-color: #78350f',
-                'Preta': 'background-color: #000000',
-                'Coral': 'background: linear-gradient(135deg, #ef4444 50%, #000000 50%)',
-                'Vermelha': 'background-color: #dc2626'
-            };
-            const f = faixa ? faixa.charAt(0).toUpperCase() + faixa.slice(1).toLowerCase().trim() : 'Branca';
-            return faixasInfo[f] || 'background-color: #cbd5e1';
-        }
-
-        function calcularIdadeNum(data) {
-            if (!data) return -1;
-            const dt = data.includes('-') ? new Date(data.split('-')[0], data.split('-')[1]-1, data.split('-')[2]) : new Date(data);
-            if(isNaN(dt.getTime())) return -1;
-            const hoje = new Date();
-            let idade = hoje.getFullYear() - dt.getFullYear();
-            if (hoje.getMonth() < dt.getMonth() || (hoje.getMonth() === dt.getMonth() && hoje.getDate() < dt.getDate())) idade--;
-            return idade;
-        }
-
-        function formatarRegraIdade(min, max) {
-            if(!min && (!max || max === 999)) return "Idade: Livre";
-            if(min && (!max || max === 999)) return `Idade: ${min}+ anos`;
-            if(!min && max) return `Idade: Até ${max} anos`;
-            return `Idade: ${min} a ${max} anos`;
-        }
-
-        async function limparInativosDasTurmas() {
-            const q = query(collection(db, "alunos"), where("equipe_id", "==", uid), where("status", "==", "INATIVO"));
-            const snap = await getDocs(q);
-            const idsInativos = snap.docs.map(d => d.id);
-            if (idsInativos.length === 0) return;
-            for (let t of turmasCache) {
-                const novosIds = (t.alunos_ids || []).filter(id => !idsInativos.includes(id));
-                if (novosIds.length !== (t.alunos_ids || []).length) {
-                    await updateDoc(doc(db, "turmas", t.id), { alunos_ids: novosIds });
-                    t.alunos_ids = novosIds;
-                }
-            }
-            renderizarTurmas();
-        }
-
-        async function carregarAlunos() {
-            const q = query(collection(db, "alunos"), where("equipe_id", "==", uid), where("status", "==", "ATIVO"));
-            const snap = await getDocs(q);
-            alunosCache = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => a.nome.localeCompare(b.nome));
-        }
-
-        async function carregarTurmas() {
-            const q = query(collection(db, "turmas"), where("equipe_id", "==", uid));
-            const snap = await getDocs(q);
-            turmasCache = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => a.nome.localeCompare(b.nome));
-            renderizarTurmas();
-        }
-
-        function renderizarTurmas() {
-            const container = document.getElementById('lista-turmas');
-            container.innerHTML = turmasCache.length === 0 ? "<p class='text-center p-5 text-slate-400 text-xs'>Nenhuma turma criada.</p>" : "";
-            
-            turmasCache.forEach(t => {
-                const div = document.createElement('div');
-                div.className = "p-3 mb-3 bg-white border border-slate-100 rounded-xl hover:border-cyan-300 transition-all flex flex-col gap-2 group shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)]";
-                
-                div.innerHTML = `
-                    <div class="flex items-center justify-between cursor-pointer" onclick="selecionarTurma('${t.id}')">
-                        <div>
-                            <h4 class='font-black text-xs uppercase text-slate-800 group-hover:text-cyan-600 transition-colors'>${t.nome}</h4>
-                            <p class='text-[9px] text-slate-400 font-bold mt-0.5'>${t.dias_semana || '--'} | ${t.hora_inicio || '--'} às ${t.hora_fim || '--'}</p>
-                        </div>
-                        <div class='bg-cyan-50 text-cyan-600 text-[10px] font-black px-2 py-1 rounded-lg border border-cyan-100 shadow-sm'>
-                            👥 ${(t.alunos_ids||[]).length}
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-2 pt-2 border-t border-slate-50 mt-1">
-                        <button onclick="editarTurma('${t.id}')" class="flex-1 bg-slate-50 hover:bg-amber-50 text-slate-500 hover:text-amber-600 text-[9px] font-black py-2 rounded-lg transition-colors flex items-center justify-center gap-1 uppercase tracking-widest border border-transparent hover:border-amber-200">✏️ Editar</button>
-                        <button onclick="excluirTurma('${t.id}')" class="flex-1 bg-slate-50 hover:bg-rose-50 text-slate-500 hover:text-rose-600 text-[9px] font-black py-2 rounded-lg transition-colors flex items-center justify-center gap-1 uppercase tracking-widest border border-transparent hover:border-rose-200">🗑️ Excluir</button>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        window.salvarTurma = async function() {
-            const nome = document.getElementById('turma-nome').value.toUpperCase().trim();
-            const min = parseInt(document.getElementById('turma-idade-min').value) || 0;
-            const max = parseInt(document.getElementById('turma-idade-max').value) || 999;
-            const dias = document.getElementById('turma-dias').value.trim();
-            const hora_inicio = document.getElementById('turma-hora-inicio').value;
-            const hora_fim = document.getElementById('turma-hora-fim').value;
-
-            if (!nome) return showToast("Nome da turma é obrigatório", "error");
-            
-            const btn = document.getElementById('btn-salvar-turma');
-            btn.disabled = true; btn.innerHTML = "⏳ Salvando...";
-
-            try {
-                const dados = { 
-                    nome: nome, 
-                    dias_semana: dias, 
-                    hora_inicio: hora_inicio, 
-                    hora_fim: hora_fim,
-                    idade_min: min, 
-                    idade_max: max 
-                };
-
-                if (turmaEditandoId) {
-                    await updateDoc(doc(db, "turmas", turmaEditandoId), dados);
-                    showToast("Turma atualizada!", "success");
-                } else {
-                    await addDoc(collection(db, "turmas"), { ...dados, equipe_id: uid, alunos_ids: [] });
-                    showToast("Turma criada!", "success");
-                }
-                
-                cancelarEdicaoTurma(); 
-                carregarTurmas();
-                
-            } catch (e) { 
-                showToast("Erro ao salvar", "error"); 
-            } finally {
-                btn.disabled = false; btn.innerHTML = "➕ Criar Turma";
-            }
-        }
-
-        window.editarTurma = function(id) {
-            const t = turmasCache.find(x => x.id === id);
-            if(!t) return;
-            turmaEditandoId = id;
-            document.getElementById('turma-nome').value = t.nome || "";
-            document.getElementById('turma-idade-min').value = t.idade_min || "";
-            document.getElementById('turma-idade-max').value = t.idade_max || "";
-            document.getElementById('turma-dias').value = t.dias_semana || t.dias || "";
-            document.getElementById('turma-hora-inicio').value = t.hora_inicio || "";
-            document.getElementById('turma-hora-fim').value = t.hora_fim || "";
-
-            document.getElementById('titulo-form').innerText = "✏️ Editar Turma";
-            document.getElementById('btn-salvar-turma').innerText = "💾 Salvar";
-            document.getElementById('btn-cancelar-turma').classList.remove('hidden');
-        }
-
-        window.excluirTurma = async function(id) {
-            if(!confirm("Tem certeza que deseja excluir esta turma? Os alunos não serão excluídos, apenas ficarão sem turma associada.")) return;
-            try {
-                await deleteDoc(doc(db, "turmas", id));
-                showToast("Turma excluída com sucesso!", "success");
-                if (turmaSelecionada && turmaSelecionada.id === id) voltarLista();
-                carregarTurmas();
-            } catch(e) {
-                showToast("Erro ao excluir.", "error");
-            }
-        }
-
-        window.cancelarEdicaoTurma = () => {
-            turmaEditandoId = null;
-            document.querySelectorAll('#painel-lista input').forEach(i => i.value = "");
-            document.getElementById('titulo-form').innerHTML = "Nova Turma";
-            document.getElementById('btn-salvar-turma').innerText = "➕ Criar Turma";
-            document.getElementById('btn-cancelar-turma').classList.add('hidden');
-        }
-
-        window.selecionarTurma = (id) => {
-            turmaSelecionada = turmasCache.find(t => t.id === id);
-            document.getElementById('painel-vazio').classList.add('hidden');
-            document.getElementById('painel-detalhe').classList.remove('hidden');
-            document.getElementById('painel-detalhe').classList.add('flex');
-            document.getElementById('painel-lista').classList.add('hidden', 'md:flex');
-            
-            document.getElementById('turma-nome-detalhe').innerText = turmaSelecionada.nome;
-            document.getElementById('turma-horario-badge').innerText = `${turmaSelecionada.dias_semana || '--'} | ${turmaSelecionada.hora_inicio || '--'} às ${turmaSelecionada.hora_fim || '--'}`;
-            document.getElementById('turma-idade-badge').innerText = formatarRegraIdade(turmaSelecionada.idade_min, turmaSelecionada.idade_max);
-            
-            atualizarUIAlunosDaTurma();
-        }
-
-        window.voltarLista = () => {
-            document.getElementById('painel-lista').classList.remove('hidden');
-            document.getElementById('painel-detalhe').classList.add('hidden');
-            turmaSelecionada = null;
-        }
-
-        function atualizarUIAlunosDaTurma() {
-            if(!turmaSelecionada) return;
-            const ids = turmaSelecionada.alunos_ids || [];
-            document.getElementById('turma-contagem').innerText = `Matriculados: ${ids.length}`;
-            
-            const combo = document.getElementById('combo-add-aluno');
-            combo.innerHTML = '<option value="">Selecionar atleta para matricular...</option>';
-            alunosCache.filter(a => !ids.includes(a.id)).forEach(a => combo.add(new Option(a.nome, a.id)));
-            
-            const container = document.getElementById('lista-matriculados');
-            container.innerHTML = ids.length === 0 ? "<p class='text-center mt-10 text-slate-400 text-sm italic'>Nenhum atleta nesta turma.</p>" : "";
-            
-            alunosCache.filter(a => ids.includes(a.id)).forEach(al => {
-                const item = document.createElement('div');
-                item.className = "p-3 mb-2 bg-white border border-slate-200 rounded-xl flex items-center justify-between shadow-sm hover:shadow-md transition-shadow";
-                item.innerHTML = `
-                    <div class='flex items-center gap-3'>
-                        <div class='w-8 h-8 rounded-full border border-slate-300 shadow-inner shrink-0' style='${getEstiloFaixa(al.faixa)}'></div>
-                        <div class='overflow-hidden pr-2'>
-                            <h4 class='font-black text-xs text-slate-800 truncate'>${al.nome}</h4>
-                            <p class='text-[9px] text-slate-400 uppercase font-medium mt-0.5 truncate'>${al.faixa} • ${calcularIdadeNum(al.data_nascimento)} anos</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-2 shrink-0">
-                        <button onclick="abrirModalTrocar('${al.id}', '${al.nome.replace(/'/g, "\\'")}')" class='text-[10px] bg-cyan-50 hover:bg-cyan-100 text-cyan-600 border border-cyan-200 px-3 py-1.5 rounded-lg font-bold transition-colors shadow-sm' title="Mover para outra turma">🔄</button>
-                        <button onclick="removerAlunoDaTurma('${al.id}')" class='text-[10px] bg-rose-50 hover:bg-rose-100 text-rose-500 border border-rose-200 px-3 py-1.5 rounded-lg font-bold transition-colors shadow-sm' title="Remover da turma">❌</button>
-                    </div>
-                `;
-                container.appendChild(item);
-            });
-        }
-
-        window.adicionarAlunoNaTurma = async () => {
-            const id = document.getElementById('combo-add-aluno').value;
-            if(!id) return;
-            await updateDoc(doc(db, "turmas", turmaSelecionada.id), { alunos_ids: arrayUnion(id) });
-            turmaSelecionada.alunos_ids.push(id);
-            showToast("Atleta matriculado com sucesso!", "success"); 
-            atualizarUIAlunosDaTurma(); 
-            carregarTurmas();
-        }
-
-        window.removerAlunoDaTurma = async function(alunoId) {
-            if(!confirm("Remover este atleta da turma?")) return;
-            try {
-                await updateDoc(doc(db, "turmas", turmaSelecionada.id), { alunos_ids: arrayRemove(alunoId) });
-                turmaSelecionada.alunos_ids = turmaSelecionada.alunos_ids.filter(id => id !== alunoId);
-                showToast("Atleta removido da turma!", "success");
-                atualizarUIAlunosDaTurma();
-                carregarTurmas();
-            } catch(e) {
-                showToast("Erro ao remover.", "error");
-            }
-        }
-
-        window.abrirModalTrocar = (id, nome) => {
-            alunoParaTrocaId = id;
-            document.getElementById('lbl-atleta-troca').innerText = nome;
-            const s = document.getElementById('select-nova-turma');
-            s.innerHTML = '';
-            turmasCache.filter(t => t.id !== turmaSelecionada.id).forEach(t => s.add(new Option(t.nome, t.id)));
-            document.getElementById('modal-trocar').classList.remove('hidden');
-            document.getElementById('modal-trocar').classList.add('flex');
-        }
-
-        window.fecharModalTrocar = () => document.getElementById('modal-trocar').classList.add('hidden');
-
-        window.confirmarTroca = async () => {
-            const novaId = document.getElementById('select-nova-turma').value;
-            await updateDoc(doc(db, "turmas", turmaSelecionada.id), { alunos_ids: arrayRemove(alunoParaTrocaId) });
-            await updateDoc(doc(db, "turmas", novaId), { alunos_ids: arrayUnion(alunoParaTrocaId) });
-            showToast("Transferido com sucesso!", "success"); 
-            fecharModalTrocar(); 
-            carregarTurmas(); 
-            voltarLista();
-        }
-
-        window.autoDistribuirAlunos = async () => {
-            if(!confirm("O robô vai distribuir os alunos pelas regras de idade de cada turma. Continuar?")) return;
-            let count = 0;
-            for(let al of alunosCache) {
-                let idade = calcularIdadeNum(al.data_nascimento);
-                if(idade === -1) continue;
-                for(let t of turmasCache) {
-                    if(idade >= (t.idade_min||0) && idade <= (t.idade_max||999)) {
-                        // Evita adicionar se já estiver
-                        if (!(t.alunos_ids && t.alunos_ids.includes(al.id))) {
-                            await updateDoc(doc(db, "turmas", t.id), { alunos_ids: arrayUnion(al.id) });
-                            count++;
-                        }
-                    }
-                }
-            }
-            showToast(`${count} matrículas realizadas!`, "success"); 
-            carregarTurmas();
-        }
-    </script>
-</body>
-</html>

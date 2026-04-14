@@ -137,26 +137,27 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                    <div class="card-premium p-5 relative overflow-hidden">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                    
+                    <div class="card-premium p-5 relative overflow-hidden flex flex-col h-80">
                         <div class="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 blur-[40px] rounded-full pointer-events-none"></div>
-                        <div class="relative z-10">
-                            <h3 class="text-[10px] font-black text-amber-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <div class="relative z-10 flex flex-col h-full">
+                            <h3 class="text-[10px] font-black text-amber-400 uppercase tracking-widest mb-4 flex items-center gap-2 shrink-0">
                                 <span class="text-base drop-shadow-[0_0_5px_rgba(245,158,11,0.5)]">📢</span> Mural de Recados
                             </h3>
-                            <div id="lista-avisos" class="space-y-3">
+                            <div id="lista-avisos" class="space-y-3 flex-1 overflow-y-auto hide-scrollbar pb-2 pr-1">
                                 <div class="text-center p-4 text-slate-500 text-xs italic">Buscando recados...</div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card-premium p-5 relative overflow-hidden">
+                    <div class="card-premium p-5 relative overflow-hidden flex flex-col h-80">
                         <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 blur-[40px] rounded-full pointer-events-none"></div>
-                        <div class="relative z-10">
-                            <h3 class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <div class="relative z-10 flex flex-col h-full">
+                            <h3 class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-4 flex items-center gap-2 shrink-0">
                                 <span class="text-base drop-shadow-[0_0_5px_rgba(99,102,241,0.5)]">⏰</span> Próximos Treinos
                             </h3>
-                            <div id="lista-horarios" class="space-y-2">
+                            <div id="lista-horarios" class="space-y-2 flex-1 overflow-y-auto hide-scrollbar pb-2 pr-1">
                                 <div class="text-center p-4 text-slate-500 text-xs italic">Buscando horários...</div>
                             </div>
                         </div>

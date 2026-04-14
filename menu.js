@@ -39,7 +39,7 @@ function carregarMenu() {
                 <a href="alunos.html" class="${classDesktop('alunos.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'alunos.html' ? 'drop-shadow-md' : 'opacity-70'}">🥋</span> Alunos</a>
                 <a href="turmas.html" class="${classDesktop('turmas.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'turmas.html' ? 'drop-shadow-md' : 'opacity-70'}">🗓️</span> Turmas</a>
                 
-                <a href="loja.html" class="${classDesktop('loja.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'loja.html' ? 'drop-shadow-md' : 'opacity-70'}">🛒</span> Loja Virtual</a>
+                <a href="loja.html" class="${classDesktop('loja.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'loja.html' ? 'drop-shadow-md' : 'opacity-70'}">🛒</span> Vitrine Virtual</a>
                 
                 <div class="px-5 pt-4 pb-2">
                     <p class="text-[10px] font-black text-slate-600 uppercase tracking-widest">Acadêmico</p>

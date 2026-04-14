@@ -1036,7 +1036,15 @@
             }
         }
 
-async function buscarMuralEHorarios() {
+Com certeza! Substituir pedaços de código às vezes pode ser confuso, então é muito melhor ter a função inteira já perfeitinha para você só copiar e colar.
+
+Aqui está a função buscarMuralEHorarios completa e atualizada para o seu arquivo portal_aluno.html. Ela já tem a regra que oculta os recados automaticamente quando a data de expiração for ultrapassada.
+
+Basta apagar a sua função buscarMuralEHorarios inteira e colar essa no lugar:
+
+JavaScript
+
+        async function buscarMuralEHorarios() {
             const divAvisos = document.getElementById('lista-avisos');
             const divHorarios = document.getElementById('lista-horarios');
 
@@ -1046,7 +1054,20 @@ async function buscarMuralEHorarios() {
                     const qAvisos = query(collection(db, "mensagens"), where("equipe_id", "==", alunoLogado.equipe_id));
                     const snapAvisos = await getDocs(qAvisos);
                     let avisos = []; 
-                    snapAvisos.forEach(doc => avisos.push(doc.data()));
+                    
+                    // Pega a data/hora atual no padrão ISO (para comparar com o banco de dados)
+                    const hojeIso = new Date().toISOString();
+
+                    snapAvisos.forEach(doc => {
+                        const av = doc.data();
+                        
+                        // REGRA DE EXPIRAÇÃO: Se o aviso tem uma data limite e essa data já passou (ficou menor que hoje), o aviso é ignorado.
+                        if (av.data_expiracao && av.data_expiracao < hojeIso) {
+                            return; // Pula este aviso (não adiciona na lista)
+                        }
+                        
+                        avisos.push(av);
+                    });
                     
                     avisos.sort((a,b) => {
                         let dateA = a.data_envio ? new Date(a.data_envio).getTime() : 0; 
@@ -1101,7 +1122,6 @@ async function buscarMuralEHorarios() {
                 }
             }
         }
-
         function calcularTempo(tempoMilissegundos) {
             if (!tempoMilissegundos) return "--";
             const d1 = new Date(tempoMilissegundos); const d2 = new Date();

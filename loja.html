@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Loja Virtual | BJJ Manager</title>
+    
+    <link rel="icon" type="image/png" href="logo_bjj_maneger.png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
+        
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="flex flex-col h-[100dvh] overflow-hidden text-slate-800 bg-[#F8FAFC]">
+
+    <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
+    <div id="interface-sistema" class="flex-1 flex w-full h-full relative overflow-hidden">
+        
+        <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+            
+            <div class="flex items-center justify-between p-6 pb-0 max-w-7xl mx-auto w-full shrink-0">
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Loja da Equipa</h2>
+                    <p class="text-xs text-slate-500 font-medium mt-1">Gira os produtos que os alunos podem encomendar</p>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-hidden p-4 md:p-6 flex flex-col md:flex-row gap-6 max-w-7xl mx-auto w-full h-full">
+                
+                <div class="w-full md:w-1/3 flex flex-col h-full gap-4 shrink-0 overflow-y-auto hide-scrollbar">
+                    
+                    <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-5 md:p-6 shrink-0 relative overflow-hidden">
+                        <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3 relative z-10">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xl drop-shadow-sm">🛒</span>
+                                <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm" id="titulo-form">Novo Produto</h3>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4 relative z-10">
+                            
+                            <div class="flex flex-col items-center justify-center">
+                                <div class="relative w-32 h-32 rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 hover:bg-slate-100 transition-colors flex items-center justify-center overflow-hidden group cursor-pointer mb-2">
+                                    <img id="preview-foto-produto" src="" class="w-full h-full object-contain hidden z-10 bg-white" />
+                                    <span id="icone-foto-fallback" class="text-3xl text-slate-400 z-0 group-hover:scale-110 transition-transform">📸</span>
+                                    <input type="file" id="produto-foto" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-20" onchange="previewImagemProduto(this)">
+                                </div>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Toque para adicionar foto</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome do Produto</label>
+                                <input type="text" id="produto-nome" placeholder="Ex: Rash Guard, Kimono, T-Shirt..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Preço de Venda (R$)</label>
+                                <input type="number" id="produto-valor" step="0.01" placeholder="Ex: 150.00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 transition-all text-emerald-700 font-black">
+                            </div>
+
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Status do Produto</label>
+                                <select id="produto-status" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">
+                                    <option value="ATIVO">🟢 Disponível na Loja</option>
+                                    <option value="INATIVO">🔴 Oculto / Esgotado</option>
+                                </select>
+                            </div>
+                            
+                            <div class="flex gap-2 mt-4 pt-2 border-t border-slate-100">
+                                <button onclick="cancelarEdicaoProduto()" id="btn-cancelar-produto" class="hidden flex-1 bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold py-3 px-3 rounded-xl transition-all text-xs uppercase tracking-widest">Cancelar</button>
+                                <button onclick="salvarProduto()" id="btn-salvar-produto" class="flex-[2] bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 px-3 rounded-xl shadow-lg shadow-emerald-500/30 transition-transform transform hover:-translate-y-0.5 uppercase tracking-widest text-xs">💾 Guardar Produto</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full md:w-2/3 flex flex-col h-full bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-4 md:p-5 border-b border-slate-100 bg-slate-50 flex items-center justify-between shrink-0">
+                        <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest">A tua Montra</h3>
+                        <span class="text-[10px] bg-slate-200 text-slate-500 px-2 py-1 rounded-md font-bold uppercase tracking-widest">O que os alunos veem</span>
+                    </div>
+                    
+                    <div class="flex-1 overflow-y-auto p-4 md:p-6 hide-scrollbar bg-slate-50/50">
+                        <div id="lista-produtos" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            <div class="col-span-full text-center text-slate-400 text-sm mt-10 italic">A carregar produtos...</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script src="menu.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
+            authDomain: "bjj-maneger.firebaseapp.com",
+            projectId: "bjj-maneger",
+            storageBucket: "bjj-maneger.firebasestorage.app",
+            messagingSenderId: "415548255893",
+            appId: "1:415548255893:web:61186696fe097be870759c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        let uid = null;
+        let teamId = null; 
+        let produtosCache = [];
+        let produtoEditandoId = null;
+        let fotoProdutoEditandoURL = null; // Guarda a URL antiga se for edição
+
+        window.showToast = function(message, type = 'error') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-emerald-500' : 'bg-rose-500';
+            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transition-all duration-300 transform translate-x-0 font-bold text-sm z-50 pointer-events-auto`;
+            toast.innerText = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4500);
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const limparAcessando = () => {
+                    const aside = document.querySelector('aside');
+                    if (aside) {
+                        const elementos = aside.querySelectorAll('p, span, h4');
+                        elementos.forEach(el => {
+                            if (el.innerText.includes('carregando') || el.innerText.includes('rianbarbosa')) el.innerText = user.email;
+                            if (el.innerText.includes('ACESSANDO')) {
+                                el.innerText = 'ADMINISTRADOR';
+                                el.classList.remove('animate-pulse');
+                                el.style.opacity = "1";
+                            }
+                        });
+                    }
+                };
+                limparAcessando(); setTimeout(limparAcessando, 600);
+
+                const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
+                if (mestreDoc.exists()) { teamId = user.uid; } 
+                else {
+                    const colabDoc = await getDoc(doc(db, "colaboradores", user.uid));
+                    if (colabDoc.exists()) teamId = colabDoc.data().equipe_id;
+                }
+
+                if (teamId) {
+                    uid = teamId;
+                    await carregarProdutos();
+                }
+            } else { window.location.href = "index.html"; }
+        });
+
+        window.previewImagemProduto = function(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('preview-foto-produto');
+                    img.src = e.target.result;
+                    img.classList.remove('hidden');
+                    document.getElementById('icone-foto-fallback').classList.add('hidden');
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        };
+
+        async function carregarProdutos() {
+            const container = document.getElementById('lista-produtos');
+            try {
+                const q = query(collection(db, "produtos"), where("equipe_id", "==", uid));
+                const snap = await getDocs(q);
+                produtosCache = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => a.nome.localeCompare(b.nome));
+                renderizarProdutos();
+            } catch (error) {
+                container.innerHTML = "<div class='col-span-full text-center p-6 text-rose-500 text-xs italic bg-rose-50 rounded-xl'>Erro ao carregar loja.</div>";
+            }
+        }
+
+        function renderizarProdutos() {
+            const container = document.getElementById('lista-produtos');
+            container.innerHTML = produtosCache.length === 0 ? "<div class='col-span-full text-center p-10 text-slate-400 text-sm'>Nenhum produto cadastrado na tua loja.</div>" : "";
+            
+            produtosCache.forEach(p => {
+                const precoFormatado = p.valor ? parseFloat(p.valor).toFixed(2).replace('.', ',') : "0,00";
+                const img = p.imagem_url || 'https://via.placeholder.com/150?text=Sem+Foto';
+                
+                // Estilo dependendo se está ativo ou não
+                const bgStatus = p.status === 'ATIVO' ? 'bg-white' : 'bg-slate-100 grayscale-[50%] opacity-70';
+                const badgeStatus = p.status === 'ATIVO' 
+                    ? '<span class="absolute top-2 right-2 bg-emerald-500 text-white text-[8px] font-black px-2 py-0.5 rounded uppercase tracking-widest shadow-sm">Na Loja</span>'
+                    : '<span class="absolute top-2 right-2 bg-slate-500 text-white text-[8px] font-black px-2 py-0.5 rounded uppercase tracking-widest shadow-sm">Oculto</span>';
+
+                const card = document.createElement('div');
+                card.className = `flex flex-col border border-slate-200 rounded-2xl overflow-hidden shadow-sm group hover:shadow-md transition-shadow ${bgStatus} relative`;
+                
+                card.innerHTML = `
+                    ${badgeStatus}
+                    <div class="aspect-square bg-white border-b border-slate-100 p-3 flex items-center justify-center overflow-hidden">
+                        <img src="${img}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300">
+                    </div>
+                    <div class="p-3 flex flex-col flex-1">
+                        <h4 class="text-[11px] font-black text-slate-800 uppercase tracking-wide truncate mb-1" title="${p.nome}">${p.nome}</h4>
+                        <p class="text-sm font-black text-emerald-600 mb-3">R$ ${precoFormatado}</p>
+                        
+                        <div class="mt-auto grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                            <button onclick="editarProduto('${p.id}')" class="bg-slate-100 hover:bg-cyan-50 text-slate-500 hover:text-cyan-600 border border-slate-200 hover:border-cyan-200 rounded-lg py-1.5 text-[9px] font-black uppercase transition-colors">Editar</button>
+                            <button onclick="excluirProduto('${p.id}', '${p.imagem_url || ''}')" class="bg-slate-100 hover:bg-rose-50 text-slate-500 hover:text-rose-600 border border-slate-200 hover:border-rose-200 rounded-lg py-1.5 text-[9px] font-black uppercase transition-colors">Excluir</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        window.salvarProduto = async function() {
+            const nome = document.getElementById('produto-nome').value.trim();
+            const valor = parseFloat(document.getElementById('produto-valor').value);
+            const status = document.getElementById('produto-status').value;
+            const inputFoto = document.getElementById('produto-foto');
+
+            if (!nome || isNaN(valor)) return showToast("Preenche o nome e o preço corretamente.", "error");
+            
+            const btn = document.getElementById('btn-salvar-produto');
+            btn.disabled = true; btn.innerHTML = "⏳ A Guardar...";
+
+            try {
+                let dados = { 
+                    nome: nome, 
+                    valor: valor, 
+                    status: status 
+                };
+
+                // Se escolheu uma imagem nova, faz upload
+                if (inputFoto.files && inputFoto.files[0]) {
+                    btn.innerHTML = "⏳ A enviar foto...";
+                    const fotoRef = ref(storage, `loja_fotos/${uid}_${Date.now()}`);
+                    await uploadBytes(fotoRef, inputFoto.files[0]);
+                    dados.imagem_url = await getDownloadURL(fotoRef);
+
+                    // Se estivermos a editar e já existia foto, apagamos a foto antiga para não gastar espaço
+                    if (produtoEditandoId && fotoProdutoEditandoURL) {
+                        try {
+                            const refAntiga = ref(storage, fotoProdutoEditandoURL);
+                            await deleteObject(refAntiga);
+                        } catch(e) { console.log("Não foi possível apagar foto antiga."); }
+                    }
+                }
+
+                if (produtoEditandoId) {
+                    await updateDoc(doc(db, "produtos", produtoEditandoId), dados);
+                    showToast("Produto atualizado com sucesso!", "success");
+                } else {
+                    await addDoc(collection(db, "produtos"), { ...dados, equipe_id: uid, data_criacao: new Date().toISOString() });
+                    showToast("Produto adicionado à loja!", "success");
+                }
+                
+                cancelarEdicaoProduto(); 
+                carregarProdutos();
+                
+            } catch (e) { 
+                showToast("Erro ao guardar o produto.", "error"); 
+                console.error(e);
+            } finally {
+                btn.disabled = false; btn.innerHTML = "💾 Guardar Produto";
+            }
+        }
+
+        window.editarProduto = function(id) {
+            const p = produtosCache.find(x => x.id === id);
+            if(!p) return;
+            produtoEditandoId = id;
+            fotoProdutoEditandoURL = p.imagem_url || null; // Guarda caso ele mude a imagem
+
+            document.getElementById('produto-nome').value = p.nome || "";
+            document.getElementById('produto-valor').value = p.valor || "";
+            document.getElementById('produto-status').value = p.status || "ATIVO";
+
+            const imgPreview = document.getElementById('preview-foto-produto');
+            const iconFallback = document.getElementById('icone-foto-fallback');
+            
+            if(p.imagem_url) {
+                imgPreview.src = p.imagem_url;
+                imgPreview.classList.remove('hidden');
+                iconFallback.classList.add('hidden');
+            } else {
+                imgPreview.src = "";
+                imgPreview.classList.add('hidden');
+                iconFallback.classList.remove('hidden');
+            }
+
+            document.getElementById('titulo-form').innerText = "✏️ Editar Produto";
+            document.getElementById('btn-cancelar-produto').classList.remove('hidden');
+        }
+
+        window.excluirProduto = async function(id, imagemUrl) {
+            if(!confirm("Tem a certeza que desejas excluir este produto da loja? Esta ação não pode ser desfeita.")) return;
+            try {
+                await deleteDoc(doc(db, "produtos", id));
+                
+                // Tenta apagar a imagem no storage para poupar espaço
+                if(imagemUrl) {
+                    try {
+                        const refImg = ref(storage, imagemUrl);
+                        await deleteObject(refImg);
+                    } catch(e) { console.log("Imagem antiga não encontrada no storage."); }
+                }
+
+                showToast("Produto excluído!", "success");
+                if (produtoEditandoId === id) cancelarEdicaoProduto();
+                carregarProdutos();
+            } catch(e) {
+                showToast("Erro ao excluir.", "error");
+            }
+        }
+
+        window.cancelarEdicaoProduto = () => {
+            produtoEditandoId = null;
+            fotoProdutoEditandoURL = null;
+            document.getElementById('produto-nome').value = "";
+            document.getElementById('produto-valor').value = "";
+            document.getElementById('produto-status').value = "ATIVO";
+            document.getElementById('produto-foto').value = "";
+            
+            document.getElementById('preview-foto-produto').src = "";
+            document.getElementById('preview-foto-produto').classList.add('hidden');
+            document.getElementById('icone-foto-fallback').classList.remove('hidden');
+
+            document.getElementById('titulo-form').innerHTML = "Novo Produto";
+            document.getElementById('btn-cancelar-produto').classList.add('hidden');
+        }
+
+    </script>
+</body>
+</html>

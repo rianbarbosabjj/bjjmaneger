@@ -368,8 +368,11 @@
         let valPrazo = 70.0;
         let valAtraso = 100.0;
         let pagRapidoDados = null; 
+        
+        // VARIÁVEIS GLOBAIS PARA MENSAGENS
+        let mensagensCache = [];
+        let mensagemEditandoId = null;
 
-        // --- SISTEMA DE TOASTS ---
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -387,6 +390,14 @@
 
         // --- CONTROLE MODAL DE MENSAGENS COM ABAS ---
         window.switchMsgTab = function(tab) {
+            if(tab === 'nova' && !mensagemEditandoId) {
+                document.getElementById('tab-btn-msg-nova').innerText = "Novo Aviso";
+                document.getElementById('btn-enviar-msg').innerHTML = "Publicar Aviso";
+            }
+            if(tab === 'lista') {
+                cancelarEdicaoMensagem(); // Limpa o formulário quando vai pra lista
+            }
+            
             ['nova', 'lista'].forEach(t => {
                 document.getElementById('tab-msg-' + t).classList.add('hidden');
                 document.getElementById('tab-msg-' + t).classList.remove('flex', 'flex-col', 'block');
@@ -409,18 +420,61 @@
             btnAtivo.className = "flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-indigo-600 border-b-2 border-indigo-500 transition-colors whitespace-nowrap";
         };
 
+        window.cancelarEdicaoMensagem = function() {
+            mensagemEditandoId = null;
+            document.getElementById('msg-titulo').value = '';
+            document.getElementById('msg-conteudo').value = '';
+            document.getElementById('msg-validade').value = '';
+            document.querySelector('input[name="msg-urgencia"][value="normal"]').checked = true;
+            document.getElementById('btn-enviar-msg').innerHTML = "Publicar Aviso";
+            document.getElementById('tab-btn-msg-nova').innerText = "Novo Aviso";
+        };
+
         window.abrirModalMensagem = function() {
             document.getElementById('modal-mensagem').classList.remove('hidden');
             document.getElementById('modal-mensagem').classList.add('flex');
-            document.getElementById('msg-titulo').value = '';
-            document.getElementById('msg-conteudo').value = '';
-            document.getElementById('msg-validade').value = ''; 
+            cancelarEdicaoMensagem(); 
             switchMsgTab('nova');
         };
 
         window.fecharModalMensagem = function() {
             document.getElementById('modal-mensagem').classList.add('hidden');
             document.getElementById('modal-mensagem').classList.remove('flex');
+        };
+
+        window.editarMensagemEquipe = function(msgId) {
+            const msg = mensagensCache.find(m => m.id === msgId);
+            if (!msg) return;
+
+            mensagemEditandoId = msgId;
+            document.getElementById('msg-titulo').value = msg.titulo || '';
+            document.getElementById('msg-conteudo').value = msg.conteudo || '';
+            
+            if (msg.data_expiracao) {
+                document.getElementById('msg-validade').value = msg.data_expiracao.split('T')[0];
+            } else {
+                document.getElementById('msg-validade').value = '';
+            }
+
+            const r = document.querySelector(`input[name="msg-urgencia"][value="${msg.urgencia || 'normal'}"]`);
+            if (r) r.checked = true;
+
+            document.getElementById('btn-enviar-msg').innerHTML = "Salvar Alterações";
+            document.getElementById('tab-btn-msg-nova').innerText = "Editar Aviso";
+            
+            // Esconde todas e mostra a Aba Nova diretamente sem disparar a função switch
+            ['nova', 'lista'].forEach(t => {
+                document.getElementById('tab-msg-' + t).classList.add('hidden');
+                document.getElementById('tab-msg-' + t).classList.remove('flex', 'flex-col', 'block');
+                document.getElementById('tab-btn-msg-' + t).className = "flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors whitespace-nowrap";
+            });
+
+            document.getElementById('tab-msg-nova').classList.remove('hidden');
+            document.getElementById('tab-msg-nova').classList.add('block');
+            document.getElementById('btn-enviar-msg').style.display = 'block';
+            
+            const btnAtivo = document.getElementById('tab-btn-msg-nova');
+            btnAtivo.className = "flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-indigo-600 border-b-2 border-indigo-500 transition-colors whitespace-nowrap";
         };
 
         window.enviarMensagemEquipe = async function() {
@@ -447,24 +501,37 @@
             btn.innerHTML = "A enviar...";
 
             try {
-                await addDoc(collection(db, "mensagens"), {
-                    equipe_id: uid,
-                    titulo: titulo,
-                    conteudo: conteudo,
-                    urgencia: urgenciaSelecionada,
-                    data_envio: new Date().toISOString(),
-                    data_expiracao: dataExpiracaoIso,
-                    status: 'ativo'
-                });
+                if (mensagemEditandoId) {
+                    await updateDoc(doc(db, "mensagens", mensagemEditandoId), {
+                        titulo: titulo,
+                        conteudo: conteudo,
+                        urgencia: urgenciaSelecionada,
+                        data_expiracao: dataExpiracaoIso
+                    });
+                    showToast("Aviso atualizado com sucesso!", "success");
+                } else {
+                    await addDoc(collection(db, "mensagens"), {
+                        equipe_id: uid,
+                        titulo: titulo,
+                        conteudo: conteudo,
+                        urgencia: urgenciaSelecionada,
+                        data_envio: new Date().toISOString(),
+                        data_expiracao: dataExpiracaoIso,
+                        status: 'ativo'
+                    });
+                    showToast("Aviso publicado com sucesso!", "success");
+                }
                 
-                showToast("Aviso publicado com sucesso!", "success");
-                document.getElementById('msg-titulo').value = '';
-                document.getElementById('msg-conteudo').value = '';
-                switchMsgTab('lista'); // Muda direto para a lista de ativos
+                cancelarEdicaoMensagem();
+                switchMsgTab('lista'); 
                 
             } catch (error) {
                 console.error(error);
-                showToast("Erro ao publicar aviso.", "error");
+                if (error.code === 'permission-denied') {
+                    showToast("Erro de Permissão! Verifique as regras do Firestore.", "error");
+                } else {
+                    showToast("Erro ao salvar aviso. Tente novamente.", "error");
+                }
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = "Publicar Aviso";
@@ -490,6 +557,7 @@
                 snap.forEach(doc => msgs.push({ id: doc.id, ...doc.data() }));
                 
                 msgs.sort((a,b) => new Date(b.data_envio || 0) - new Date(a.data_envio || 0));
+                mensagensCache = msgs; // Salva no cache
 
                 let html = '';
                 msgs.forEach(msg => {
@@ -498,7 +566,6 @@
                     if (msg.urgencia === 'importante') { cor = 'bg-amber-50 border-amber-200 text-amber-700'; icone = '⚠️'; }
                     if (msg.urgencia === 'urgente') { cor = 'bg-rose-50 border-rose-200 text-rose-700'; icone = '🚨'; }
 
-                    // Formata a data limite para algo legível
                     let dataLim = "Sem expiração";
                     if (msg.data_expiracao) {
                         const dl = new Date(msg.data_expiracao);
@@ -506,15 +573,20 @@
                     }
 
                     html += `
-                        <div class="p-4 rounded-xl border shadow-sm relative ${cor} group">
-                            <div class="pr-10">
+                        <div class="p-4 rounded-xl border shadow-sm relative ${cor} group pr-24">
+                            <div>
                                 <h4 class="text-xs font-black uppercase mb-1 flex items-center gap-1"><span>${icone}</span> ${msg.titulo}</h4>
                                 <p class="text-[10px] opacity-80 mb-2 truncate">${msg.conteudo}</p>
                                 <span class="text-[8px] font-bold uppercase tracking-widest opacity-60">Expira: ${dataLim}</span>
                             </div>
-                            <button onclick="excluirMensagemEquipe('${msg.id}')" class="absolute top-1/2 -translate-y-1/2 right-4 w-8 h-8 flex items-center justify-center bg-white border border-rose-100 hover:bg-rose-500 hover:border-rose-500 rounded-lg text-rose-500 hover:text-white shadow-sm transition-all" title="Excluir Aviso">
-                                🗑️
-                            </button>
+                            <div class="absolute top-1/2 -translate-y-1/2 right-3 flex gap-1.5 opacity-100 transition-opacity">
+                                <button onclick="editarMensagemEquipe('${msg.id}')" class="w-8 h-8 flex items-center justify-center bg-white border border-slate-200 hover:bg-amber-500 hover:border-amber-500 rounded-lg text-slate-400 hover:text-white shadow-sm transition-all" title="Editar Aviso">
+                                    ✏️
+                                </button>
+                                <button onclick="excluirMensagemEquipe('${msg.id}')" class="w-8 h-8 flex items-center justify-center bg-white border border-rose-100 hover:bg-rose-500 hover:border-rose-500 rounded-lg text-rose-500 hover:text-white shadow-sm transition-all" title="Excluir Aviso">
+                                    🗑️
+                                </button>
+                            </div>
                         </div>
                     `;
                 });

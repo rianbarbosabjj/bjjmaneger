@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -5,30 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Dashboard | BJJ Manager</title>
     
+    <meta property="og:title" content="Painel Administrativo | BJJ Manager">
+    <meta property="og:description" content="Gestão inteligente para sua equipe de Jiu-Jitsu.">
+    <meta property="og:image" content="https://maneger.bjjdigital.com.br/logo_bjj_maneger.png">
+    <meta property="og:type" content="website">
+    
     <link rel="icon" type="image/png" href="logo_bjj_maneger.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
         
-        .card-premium {
-            background: white;
-            border: 1px solid rgba(226, 232, 240, 0.8);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.02), 0 4px 6px -4px rgba(0, 0, 0, 0.02);
-            border-radius: 24px;
-        }
-
-        .tab-active { border-bottom: 3px solid #06B6D4; color: #06B6D4 !important; font-weight: 800; }
-        
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        input, select { border-radius: 12px; border: 1px solid #E2E8F0; transition: all 0.2s; outline: none; }
-        input:focus, select:focus { border-color: #06B6D4; box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.1); }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
     </style>
 </head>
 <body class="flex h-[100dvh] overflow-hidden text-slate-800 bg-[#F8FAFC] hidden" id="body-content">
@@ -37,322 +33,112 @@
 
     <div id="tela-bloqueio" class="fixed inset-0 bg-slate-900 z-[90] hidden flex-col items-center justify-center p-6 text-center">
         <div class="bg-slate-800 p-8 rounded-3xl shadow-2xl max-w-md w-full border border-rose-500/30">
-            <div class="w-20 h-20 bg-rose-500/20 text-rose-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 shadow-[0_0_20px_rgba(244,63,94,0.3)]">🔒</div>
+            <div class="w-20 h-20 bg-rose-500/20 text-rose-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 shadow-[0_0_20px_rgba(244,63,94,0.3)]">
+                🔒
+            </div>
             <h2 class="text-2xl font-black text-white mb-2 uppercase tracking-tight">Acesso Suspenso</h2>
-            <p class="text-slate-400 text-sm mb-8 leading-relaxed">A assinatura desta equipe encontra-se bloqueada. Por favor, regularize a situação financeira para restaurar o acesso ao sistema.</p>
-            <a href="https://wa.me/5521981716074?text=Olá! Minha conta no BJJ Manager foi suspensa e gostaria de regularizar o acesso da minha equipe." target="_blank" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-xl transition-all flex items-center justify-center gap-2 uppercase tracking-widest text-xs shadow-lg shadow-emerald-500/30 mb-4"><span>📱</span> Falar com o Suporte</a>
-            <button onclick="sairDoSistema()" class="text-slate-500 hover:text-white text-xs font-bold uppercase tracking-widest transition-colors">Sair do Sistema</button>
+            <p class="text-slate-400 text-sm mb-8 leading-relaxed">
+                A assinatura desta equipe encontra-se bloqueada. Por favor, regularize a situação financeira para restaurar o acesso ao sistema.
+            </p>
+            <a href="https://wa.me/5521981716074?text=Olá! Minha conta no BJJ Manager foi suspensa e gostaria de regularizar o acesso da minha equipe." target="_blank" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-xl transition-all flex items-center justify-center gap-2 uppercase tracking-widest text-xs shadow-lg shadow-emerald-500/30 mb-4">
+                <span>📱</span> Falar com o Suporte
+            </a>
+            <button onclick="sairDoSistema()" class="text-slate-500 hover:text-white text-xs font-bold uppercase tracking-widest transition-colors">
+                Sair do Sistema
+            </button>
         </div>
     </div>
 
     <div id="interface-sistema" class="flex w-full h-full relative">
+        
         <main class="flex-1 flex flex-col h-full overflow-hidden relative">
-            
-            <div class="bg-slate-900 text-white p-4 shrink-0 flex flex-col xl:flex-row justify-between items-center gap-4 z-10 shadow-md">
-                <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3 w-full xl:w-auto">
-                    <span class="text-xl sm:text-2xl hidden sm:block">💰</span>
-                    <select id="filtro-mes" class="bg-slate-800 border-none text-white text-xs sm:text-sm font-bold rounded-xl p-2 cursor-pointer"></select>
-                    <select id="filtro-ano" class="bg-slate-800 border-none text-white text-xs sm:text-sm font-bold rounded-xl p-2 cursor-pointer"></select>
-                    <button onclick="carregarDados()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-xl text-xs transition-colors shrink-0">Carregar</button>
-                </div>
-
-                <div class="flex flex-wrap items-center justify-center gap-3 w-full xl:w-auto">
-                    <div class="flex flex-wrap items-center justify-center bg-slate-800 p-1.5 rounded-xl border border-slate-700 shrink-0 gap-1 sm:gap-0">
-                        <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase px-2">Prazo</span>
-                        <input type="text" id="config-prazo" oninput="mascaraMoeda(this)" class="w-14 sm:w-16 bg-slate-900 border-none rounded-lg text-white text-center text-xs font-bold p-1" value="70,00">
-                        <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase px-2 sm:ml-2">Atraso</span>
-                        <input type="text" id="config-atraso" oninput="mascaraMoeda(this)" class="w-14 sm:w-16 bg-slate-900 border-none rounded-lg text-rose-400 text-center text-xs font-bold p-1" value="100,00">
-                        <button onclick="salvarConfiguracaoGeral()" class="ml-1 sm:ml-2 bg-slate-700 hover:bg-slate-600 text-white p-1 sm:p-1.5 rounded-lg text-xs transition-colors">💾</button>
+            <div class="flex-1 overflow-y-auto p-5 md:p-8 pb-24 md:pb-10">
+                <div class="max-w-7xl mx-auto">
+                    
+                    <div class="flex justify-center mb-6 md:mb-8">
+                        <img id="img-topo-equipe" src="topo_curriculo.png" alt="Logo da Equipe" class="h-20 md:h-24 object-contain drop-shadow-sm" onerror="this.style.display='none'">
                     </div>
-                    <button onclick="abrirModalRelatorio()" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded-xl text-xs shadow-sm">📊 Relatório PDF</button>
-                </div>
-            </div>
 
-            <div class="flex-none p-5 md:p-8 bg-[#F8FAFC]">
-                <div class="max-w-7xl mx-auto flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-                    <div class="flex items-center gap-4">
-                        <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-sm overflow-hidden" id="container-logo">
-                            <span class="text-xl font-black text-slate-400">?</span>
-                        </div>
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 md:mb-8">
                         <div>
-                            <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight uppercase" id="nome-equipe">Equipe</h2>
-                            <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Gestão Administrativa</p>
+                            <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Visão Geral</h2>
+                            <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Sua equipe na palma da mão</p>
                         </div>
-                    </div>
-                    <div class="flex flex-wrap gap-2 md:gap-3 justify-center sm:justify-start">
-                        <button onclick="abrirModalAviso()" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-4 rounded-xl shadow-md transition-all flex items-center text-xs"><span class="mr-2">📢</span> Novo Recado</button>
-                        <button onclick="abrirModalConfig()" id="btn-config-equipe" class="hidden bg-slate-700 hover:bg-slate-800 text-white font-bold py-2.5 px-4 rounded-xl shadow-md transition-all flex items-center text-xs"><span class="mr-2">⚙️</span> Configurar Equipe</button>
-                        <a href="cadastro.html" class="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2.5 px-4 rounded-xl shadow-md transition-all flex items-center text-xs"><span class="mr-2">➕</span> Novo Aluno</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white border-b border-slate-200 px-4 md:px-8 overflow-x-auto hide-scrollbar">
-                <div class="max-w-7xl mx-auto flex gap-8">
-                    <button onclick="mudarAba('tab-mensalidades')" id="btn-tab-mensalidades" class="aba-item py-4 text-[10px] sm:text-xs font-black uppercase tracking-widest tab-active transition-all whitespace-nowrap">👥 Mensalidades</button>
-                    <button onclick="mudarAba('tab-config-asaas')" id="btn-tab-config-asaas" class="aba-item py-4 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-cyan-600 hover:bg-cyan-50 px-3 rounded-t-xl transition-all whitespace-nowrap flex items-center gap-1.5">
-                        <span class="text-sm">💲</span> Conta Digital
-                    </button>
-                    <button onclick="mudarAba('tab-dash')" id="btn-tab-dash" class="aba-item py-4 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all whitespace-nowrap">📊 Resumo Mês</button>
-                    <button onclick="mudarAba('tab-fluxo')" id="btn-tab-fluxo" class="aba-item py-4 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all whitespace-nowrap">📋 Despesas / Extras</button>
-                    <button onclick="mudarAba('tab-anual')" id="btn-tab-anual" class="aba-item py-4 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all whitespace-nowrap">📈 Análise Anual</button>
-                </div>
-            </div>
-
-            <div class="flex-1 overflow-y-auto p-4 md:p-8 pb-24">
-                <div class="max-w-7xl mx-auto space-y-6">
-
-                    <div id="tab-mensalidades" class="aba-content flex flex-col gap-6">
-                        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-6 card-premium">
-                            <div class="flex gap-8">
-                                <div><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Caixa Atual</p><p class="text-2xl font-black text-emerald-500" id="lbl-resumo-pago">R$ 0,00</p></div>
-                                <div><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Falta Receber</p><p class="text-2xl font-black text-rose-400" id="lbl-resumo-pendente">R$ 0,00</p></div>
-                            </div>
-                            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                                <div class="relative flex-1 sm:w-64">
-                                    <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">🔍</div>
-                                    <input type="text" id="input-busca-mens" onkeyup="filtrarMensalidades()" class="bg-slate-50 border-none rounded-xl w-full pl-10 p-4 text-xs font-bold shadow-inner" placeholder="Buscar aluno...">
-                                </div>
-                                <button onclick="gerarFaturas()" id="btn-gerar-faturas" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 px-8 rounded-2xl shadow-lg transition-all text-xs uppercase tracking-widest flex items-center justify-center shrink-0">
-                                    <span class="mr-2 text-base">⚡</span> Gerar Faturas do Mês
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="card-premium bg-white overflow-hidden flex-1 min-h-[400px]">
-                            <div class="overflow-x-auto w-full h-full">
-                                <table class="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
-                                    <thead>
-                                        <tr class="bg-slate-50 border-b border-slate-100 text-slate-400">
-                                            <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest">Aluno</th>
-                                            <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-center">Vencimento</th>
-                                            <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-center">Bolsa</th>
-                                            <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-center">Status</th>
-                                            <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-right">Valor</th>
-                                            <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-center">Pago Em</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tabela-mensalidades" class="divide-y divide-slate-50 text-sm">
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="tab-config-asaas" class="aba-content hidden flex-col gap-6">
-                        <div class="max-w-5xl mx-auto w-full space-y-6">
-                            
-                            <div class="flex items-center gap-4 px-2">
-                                <div>
-                                    <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Recebimento Digital</h2>
-                                    <p class="text-slate-500 font-medium mt-1">Gestão inteligente de PIX, Cartão e Boletos via Asaas.</p>
-                                </div>
-                            </div>
-
-                            <div id="asaas-ativo-panel" class="hidden flex-col gap-6">
-                                
-                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                    <div class="card-premium p-8 bg-white border-t-4 border-t-purple-500">
-                                        <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                            <span class="bg-purple-100 text-purple-600 p-2 rounded-lg">⚙️</span> Métodos Aceitos
-                                        </h4>
-                                        <p class="text-[11px] text-slate-400 font-bold mb-4">Escolha quais formas de pagamento estarão nos links automáticos.</p>
-
-                                        <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl mb-6 shadow-sm">
-                                            <p class="text-[10px] font-black text-amber-700 uppercase tracking-widest mb-1 flex items-center gap-1"><span>⚠️</span> Prazos de Compensação</p>
-                                            <p class="text-[10px] text-amber-600 font-medium leading-relaxed">
-                                                O <b>PIX</b> cai na hora. O <b>Boleto</b> compensa em até 3 dias úteis. O <b>Cartão de Crédito</b> leva 30 dias para liberar o saldo na sua conta.
-                                            </p>
-                                        </div>
-
-                                        <div class="space-y-3 mb-6">
-                                            <label class="flex items-center justify-between p-3.5 bg-slate-50 rounded-xl border border-slate-200 opacity-70 cursor-not-allowed">
-                                                <span class="text-xs font-black text-slate-700">⚡ PIX (Sempre Ativo)</span>
-                                                <input type="checkbox" checked disabled class="w-5 h-5 rounded text-cyan-600 border-none">
-                                            </label>
-                                            <label class="flex items-center justify-between p-3.5 bg-white border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-all shadow-sm">
-                                                <span class="text-xs font-bold text-slate-700">🏦 Boleto Bancário</span>
-                                                <input type="checkbox" id="asaas-aceita-boleto" class="w-5 h-5 rounded text-cyan-600 border-slate-300">
-                                            </label>
-                                            <label class="flex items-center justify-between p-3.5 bg-white border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-all shadow-sm">
-                                                <span class="text-xs font-bold text-slate-700">💳 Cartão de Crédito</span>
-                                                <input type="checkbox" id="asaas-aceita-cartao" class="w-5 h-5 rounded text-cyan-600 border-slate-300">
-                                            </label>
-                                        </div>
-                                        <button onclick="salvarConfigPagamento()" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-black py-4 rounded-2xl shadow-lg uppercase tracking-widest text-xs transition-all">Salvar Preferências</button>
-                                    </div>
-
-                                    <div class="flex flex-col gap-6">
-                                        <div class="card-premium p-8 bg-gradient-to-br from-slate-900 to-slate-800 text-white relative overflow-hidden flex-1 shadow-2xl">
-                                            <div class="relative z-10">
-                                                <p class="text-cyan-400 text-[10px] font-black uppercase tracking-widest mb-4">Saldo Disponível na Subconta</p>
-                                                <h3 class="text-5xl font-black tracking-tighter mb-6" id="asaas-saldo-display">R$ 0,00</h3>
-                                                <div class="flex items-center gap-6">
-                                                    <div>
-                                                        <p class="text-slate-400 text-[9px] font-bold uppercase mb-1">A Compensar</p>
-                                                        <p class="text-sm font-bold text-slate-200" id="asaas-saldo-previsto">R$ 0,00</p>
-                                                    </div>
-                                                    <div class="h-8 w-[1px] bg-slate-700"></div>
-                                                    <button onclick="carregarSaldoAsaas()" id="btn-atualizar-saldo" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all border border-white/10 flex items-center gap-2">
-                                                        <span>🔄</span> Atualizar
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <div class="mt-8 pt-4 border-t border-slate-700 relative z-10 flex justify-between items-center">
-                                                <div>
-                                                    <p class="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-1">Código Wallet ID</p>
-                                                    <p class="font-mono text-xs font-bold text-slate-400 truncate" id="asaas-wallet-display">---</p>
-                                                </div>
-                                                <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest">Ativo</span>
-                                            </div>
-                                            <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                    <div class="card-premium p-8 bg-white flex flex-col border-t-4 border-t-emerald-500">
-                                        <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-6 flex items-center gap-2">
-                                            <span class="bg-emerald-100 text-emerald-600 p-2 rounded-lg">💸</span> Transferir / Sacar
-                                        </h4>
-                                        <form id="form-saque" onsubmit="event.preventDefault(); solicitarSaque();" class="space-y-5 flex-1 flex flex-col">
-                                            <div>
-                                                <div class="flex justify-between items-center mb-2">
-                                                    <label class="block text-[10px] font-black text-slate-400 uppercase ml-1">Valor do Saque (R$)</label>
-                                                    <button type="button" onclick="preencherSaldoTotal()" class="text-[10px] bg-cyan-100 text-cyan-800 font-black uppercase tracking-widest px-4 py-2 rounded-xl hover:bg-cyan-200 transition-all shadow-sm border border-cyan-300 flex items-center gap-1.5">
-                                                        <span class="text-sm">👇</span> Puxar Total
-                                                    </button>
-                                                </div>
-                                                <input type="text" id="saque-valor" oninput="mascaraMoeda(this)" required class="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-cyan-200 font-black text-cyan-600 text-3xl shadow-inner placeholder:text-slate-300" placeholder="0,00">
-                                            </div>
-                                            <div class="grid grid-cols-1 gap-3">
-                                                <select id="saque-tipo-pix" required class="w-full p-4 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-cyan-200 font-bold text-slate-700 shadow-sm cursor-pointer"><option value="CPF">CPF</option><option value="CNPJ">CNPJ</option><option value="EMAIL">E-mail</option><option value="PHONE">Celular</option><option value="EVP">Chave Aleatória</option></select>
-                                                <input type="text" id="saque-chave-pix" required class="w-full p-4 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-cyan-200 font-bold text-slate-700 shadow-sm" placeholder="Chave de Destino...">
-                                            </div>
-                                            <button type="submit" id="btn-sacar-asaas" class="w-full mt-auto bg-slate-900 hover:bg-black text-white font-black py-5 rounded-2xl shadow-lg uppercase tracking-widest transition-all text-xs">
-                                                Efetuar Transferência PIX
-                                            </button>
-                                        </form>
-                                    </div>
-
-                                    <div id="asaas-verificacao-panel" class="hidden card-premium p-8 border-t-4 border-t-slate-500 bg-white flex flex-col justify-between">
-                                        <div class="flex items-start justify-between mb-6">
-                                            <div>
-                                                <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest">Identidade (KYC)</h4>
-                                                <p class="text-[10px] text-slate-500 font-medium mt-1 max-w-xs">Anexe fotos nítidas dos documentos para liberar saques e transferências PIX na sua conta.</p>
-                                            </div>
-                                            <span class="bg-slate-100 text-slate-600 p-3 rounded-2xl text-xl">🛡️</span>
-                                        </div>
-
-                                        <div class="grid grid-cols-3 gap-3 mb-6">
-                                            <div class="flex flex-col gap-2">
-                                                <label class="text-[9px] font-black text-slate-400 uppercase text-center">Frente</label>
-                                                <div class="relative group">
-                                                    <input type="file" id="file-document-front" accept="image/*" class="hidden" onchange="previewFile(this, 'preview-front')">
-                                                    <label for="file-document-front" class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-slate-200 rounded-2xl cursor-pointer hover:border-cyan-400 hover:bg-cyan-50 transition-all overflow-hidden bg-slate-50">
-                                                        <div id="preview-front" class="flex flex-col items-center justify-center w-full h-full text-center group-hover:scale-105 transition-transform"><span class="text-2xl mb-1">📇</span><span class="text-[8px] font-black text-slate-400">UPLOAD</span></div>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="flex flex-col gap-2">
-                                                <label class="text-[9px] font-black text-slate-400 uppercase text-center">Verso</label>
-                                                <div class="relative group">
-                                                    <input type="file" id="file-document-back" accept="image/*" class="hidden" onchange="previewFile(this, 'preview-back')">
-                                                    <label for="file-document-back" class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-slate-200 rounded-2xl cursor-pointer hover:border-cyan-400 hover:bg-cyan-50 transition-all overflow-hidden bg-slate-50">
-                                                        <div id="preview-back" class="flex flex-col items-center justify-center w-full h-full text-center group-hover:scale-105 transition-transform"><span class="text-2xl mb-1">📑</span><span class="text-[8px] font-black text-slate-400">UPLOAD</span></div>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="flex flex-col gap-2">
-                                                <label class="text-[9px] font-black text-slate-400 uppercase text-center">Selfie</label>
-                                                <div class="relative group">
-                                                    <input type="file" id="file-selfie" accept="image/*" class="hidden" onchange="previewFile(this, 'preview-selfie')">
-                                                    <label for="file-selfie" class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-slate-200 rounded-2xl cursor-pointer hover:border-cyan-400 hover:bg-cyan-50 transition-all overflow-hidden bg-slate-50">
-                                                        <div id="preview-selfie" class="flex flex-col items-center justify-center w-full h-full text-center group-hover:scale-105 transition-transform"><span class="text-2xl mb-1">🤳</span><span class="text-[8px] font-black text-slate-400">UPLOAD</span></div>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <button onclick="enviarDocumentosAsaas()" id="btn-enviar-docs" class="mt-auto bg-slate-900 hover:bg-black text-white text-[10px] font-black py-4 rounded-2xl transition-all uppercase tracking-widest w-full shadow-md">
-                                            📤 Enviar para Análise do Banco
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div class="card-premium p-8 bg-white overflow-hidden mt-6">
-                                    <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-6 flex items-center gap-2">
-                                        <span class="bg-slate-100 text-slate-600 p-2 rounded-lg">📜</span> Histórico de Transferências
-                                    </h4>
-                                    <div class="overflow-x-auto w-full">
-                                        <table class="w-full text-left border-collapse whitespace-nowrap min-w-[600px]">
-                                            <thead>
-                                                <tr class="bg-slate-50 border-b border-slate-100 text-slate-400">
-                                                    <th class="px-4 py-4 text-[10px] font-black uppercase tracking-widest">Data</th>
-                                                    <th class="px-4 py-4 text-[10px] font-black uppercase tracking-widest text-right">Valor</th>
-                                                    <th class="px-4 py-4 text-[10px] font-black uppercase tracking-widest text-center">Destino (Chave)</th>
-                                                    <th class="px-4 py-4 text-[10px] font-black uppercase tracking-widest text-center">Status</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="tabela-saques" class="divide-y divide-slate-50 text-sm">
-                                                <tr><td colspan="4" class="text-center p-6 text-slate-400 text-xs font-bold">Nenhum saque realizado.</td></tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-
-                            </div> <form id="asaas-form-panel" class="card-premium p-8 space-y-6 bg-white" onsubmit="event.preventDefault(); criarSubcontaAsaas();">
-                                <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl">
-                                    <p class="text-xs font-bold text-amber-700">⚠️ Para habilitar a emissão de cobranças, preencha os dados do responsável financeiro.</p>
-                                </div>
-                                <h4 class="text-lg font-black text-slate-800">Ativação da Conta Digital</h4>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                    <div class="md:col-span-2"><label class="text-[10px] font-black text-slate-400 uppercase ml-1">Nome Completo / Razão Social</label><input type="text" id="asaas-nome" required class="w-full p-4 bg-slate-50 border-none rounded-xl font-bold"></div>
-                                    <div><label class="text-[10px] font-black text-slate-400 uppercase ml-1">CPF ou CNPJ</label><input type="text" id="asaas-cpf" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full p-4 bg-slate-50 border-none rounded-xl font-bold"></div>
-                                    <div><label class="text-[10px] font-black text-slate-400 uppercase ml-1">Data de Nascimento</label><input type="date" id="asaas-nascimento" class="w-full p-4 bg-slate-50 border-none rounded-xl font-bold"></div>
-                                    <div><label class="text-[10px] font-black text-slate-400 uppercase ml-1">E-mail de Contato</label><input type="email" id="asaas-email" required class="w-full p-4 bg-slate-50 border-none rounded-xl font-bold"></div>
-                                    <div><label class="text-[10px] font-black text-slate-400 uppercase ml-1">Celular (DDD)</label><input type="text" id="asaas-celular" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full p-4 bg-slate-50 border-none rounded-xl font-bold"></div>
-                                    <div class="md:col-span-2"><label class="text-[10px] font-black text-slate-400 uppercase ml-1">Renda Mensal Aproximada</label><input type="text" id="asaas-renda" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full p-4 bg-slate-50 border-none rounded-xl font-bold"></div>
-                                </div>
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 border-t border-slate-100 pt-6">
-                                    <div><label class="text-[10px] font-black text-slate-400 uppercase ml-1">CEP</label><input type="text" id="asaas-cep" onblur="buscarCEPAsaas(this.value)" oninput="mascaraCEP(this)" required maxlength="9" class="w-full p-4 bg-slate-50 border-none rounded-xl font-bold"></div>
-                                    <div class="md:col-span-2"><label class="text-[10px] font-black text-slate-400 uppercase ml-1">Endereço</label><input type="text" id="asaas-end" required class="w-full p-4 bg-slate-50 border-none rounded-xl font-bold"></div>
-                                    <div><label class="text-[10px] font-black text-slate-400 uppercase ml-1">Número</label><input type="text" id="asaas-num" required class="w-full p-4 bg-slate-50 border-none rounded-xl font-bold"></div>
-                                    <div class="md:col-span-2"><label class="text-[10px] font-black text-slate-400 uppercase ml-1">Bairro</label><input type="text" id="asaas-bairro" required class="w-full p-4 bg-slate-50 border-none rounded-xl font-bold"></div>
-                                </div>
-                                <button type="submit" id="btn-ativar-asaas-form" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-5 rounded-2xl shadow-lg uppercase tracking-widest text-xs mt-4 transition-all">🚀 Ativar Minha Conta Digital</button>
-                            </form>
-                        </div>
-                    </div>
-
-                    <div id="tab-dash" class="aba-content hidden flex-col gap-6">
                         
-                        <div id="painel-metricas" class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-2">
-                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-cyan-500 flex flex-col justify-center">
+                        <div class="flex flex-wrap gap-2 md:gap-3 justify-center sm:justify-start">
+                            <button id="btn-config-equipe" onclick="abrirModalConfig()" class="hidden bg-slate-700 hover:bg-slate-800 text-white font-bold py-2.5 px-3 md:px-4 rounded-xl shadow-md transition-all flex items-center text-xs md:text-sm">
+                                <span class="mr-1 md:mr-2">⚙️</span> <span class="hidden sm:inline">Configurar Equipe</span>
+                            </button>
+                            
+                            <a href="cadastro.html" class="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2.5 px-3 md:px-4 rounded-xl shadow-md transition-all flex items-center text-xs md:text-sm">
+                                <span class="mr-1 md:mr-2">➕</span> <span class="hidden sm:inline">Novo Aluno</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div id="painel-onboarding" class="hidden">
+                        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                            <div class="bg-gradient-to-r from-cyan-500 to-blue-600 p-8 md:p-12 text-center relative overflow-hidden">
+                                <div class="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9IiNmZmYiLz48L3N2Zz4=')]"></div>
+                                <span class="text-6xl mb-4 block relative z-10">🥋</span>
+                                <h2 class="text-2xl md:text-4xl font-black text-white mb-2 relative z-10 tracking-tight">Bem-vindo ao BJJ Manager!</h2>
+                                <p class="text-cyan-100 md:text-lg font-medium max-w-2xl mx-auto relative z-10">O seu tatame digital está pronto. Não encontrei nenhum atleta matriculado na sua equipa ainda. Siga os 3 passos abaixo para começar a utilizar o sistema em pleno.</p>
+                            </div>
+                            
+                            <div class="p-6 md:p-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div class="bg-slate-50 border border-slate-100 rounded-2xl p-6 flex flex-col h-full hover:-translate-y-1 transition-transform">
+                                    <div class="w-12 h-12 bg-slate-800 text-white rounded-xl flex items-center justify-center text-xl font-black mb-4 shadow-md">1</div>
+                                    <h3 class="font-black text-slate-800 uppercase tracking-widest text-xs mb-2">Configure a Equipa</h3>
+                                    <p class="text-xs text-slate-500 leading-relaxed mb-6 flex-1">Adicione a sua logo oficial, configure os valores padrão da mensalidade e convide os seus professores (co-administradores).</p>
+                                    <button onclick="abrirModalConfig()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-widest transition-colors">⚙️ Configurações</button>
+                                </div>
+                                
+                                <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-6 flex flex-col h-full hover:-translate-y-1 transition-transform">
+                                    <div class="w-12 h-12 bg-indigo-500 text-white rounded-xl flex items-center justify-center text-xl font-black mb-4 shadow-md">2</div>
+                                    <h3 class="font-black text-indigo-900 uppercase tracking-widest text-xs mb-2">Crie as Turmas</h3>
+                                    <p class="text-xs text-indigo-700/80 leading-relaxed mb-6 flex-1">Registe os horários de treinos (ex: "Adulto Noite", "Kids") para poder organizar e separar os seus alunos de forma inteligente.</p>
+                                    <a href="turmas.html" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-widest transition-colors text-center block">🗓️ Criar Turmas</a>
+                                </div>
+
+                                <div class="bg-cyan-50 border border-cyan-100 rounded-2xl p-6 flex flex-col h-full hover:-translate-y-1 transition-transform">
+                                    <div class="w-12 h-12 bg-cyan-500 text-white rounded-xl flex items-center justify-center text-xl font-black mb-4 shadow-md">3</div>
+                                    <h3 class="font-black text-cyan-900 uppercase tracking-widest text-xs mb-2">Matricule Atletas</h3>
+                                    <p class="text-xs text-cyan-700/80 leading-relaxed mb-6 flex-1">Adicione os seus alunos. O sistema irá gerar imediatamente as mensalidades, as carteirinhas digitais e o raio-X da sua equipa.</p>
+                                    <a href="cadastro.html" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-widest transition-colors text-center block">➕ Novo Aluno</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="painel-metricas" class="hidden">
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-cyan-500 flex flex-col justify-center hover:-translate-y-1 transition-transform">
                                 <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">Alunos Ativos</h3>
                                 <p class="text-2xl md:text-3xl font-black text-slate-800" id="card-ativos">⏳</p>
                             </div>
-                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-emerald-500 flex flex-col justify-center">
+                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-emerald-500 flex flex-col justify-center hover:-translate-y-1 transition-transform">
                                 <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1" id="lbl-receita">Caixa do Mês</h3>
                                 <p class="text-xl md:text-2xl font-black text-emerald-600 truncate" id="card-receitas">⏳</p>
                             </div>
-                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-amber-500 flex flex-col justify-center">
+                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-amber-500 flex flex-col justify-center hover:-translate-y-1 transition-transform">
                                 <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">A Receber</h3>
                                 <p class="text-xl md:text-2xl font-black text-amber-500 truncate" id="card-inadimplencia">⏳</p>
                             </div>
-                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-rose-500 flex flex-col justify-center">
+                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-rose-500 flex flex-col justify-center hover:-translate-y-1 transition-transform">
                                 <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">Despesas (Mês)</h3>
                                 <p class="text-xl md:text-2xl font-black text-rose-500 truncate" id="card-despesas">⏳</p>
                             </div>
                         </div>
 
-                        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-5 md:p-6 mb-2">
+                        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-5 md:p-6 mb-6">
                             <h3 class="font-black text-slate-800 uppercase tracking-widest text-xs mb-4 border-b border-slate-100 pb-3">🥋 Raio-X da Equipe (Ativos)</h3>
                             <div class="flex flex-wrap gap-3" id="grid-faixas">
                                 <span class="text-slate-400 text-sm">Calculando faixas...</span>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            
                             <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-80">
                                 <div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-3xl shrink-0">
                                     <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">🎂</span> Aniversariantes do Mês</h3>
@@ -361,6 +147,7 @@
                                     <div class="text-center text-slate-400 text-sm mt-5">A procurar festas...</div>
                                 </div>
                             </div>
+
                             <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-80">
                                 <div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-3xl shrink-0">
                                     <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">👥</span> Faixas por Turma</h3>
@@ -369,6 +156,7 @@
                                     <div class="text-center text-slate-400 text-sm mt-5">A mapear turmas...</div>
                                 </div>
                             </div>
+
                             <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-80">
                                 <div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-3xl flex justify-between items-center shrink-0">
                                     <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">⚠️</span> Atenção Financeira</h3>
@@ -377,179 +165,107 @@
                                     <div class="text-center text-slate-400 text-sm mt-5">A calcular mensalidades...</div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[350px]">
-                            <div class="bg-white p-6 card-premium flex flex-col items-center justify-center relative"><canvas id="chartBalancoMes"></canvas></div>
-                            <div class="bg-white p-6 card-premium flex flex-col items-center justify-center relative"><canvas id="chartOrigemMes"></canvas></div>
-                        </div>
-                    </div>
-
-                    <div id="tab-fluxo" class="aba-content hidden flex-col gap-6">
-                        <div class="flex flex-col sm:flex-row gap-4 justify-end">
-                            <button onclick="abrirModalReceita()" class="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-6 rounded-2xl shadow-md transition-all text-xs flex items-center justify-center uppercase tracking-widest">
-                                <span class="mr-2 text-base">📈</span> Nova Receita Extra
-                            </button>
-                            <button onclick="abrirModalDespesa()" class="w-full sm:w-auto bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 px-6 rounded-2xl shadow-md transition-all text-xs flex items-center justify-center uppercase tracking-widest">
-                                <span class="mr-2 text-base">📉</span> Nova Despesa
-                            </button>
-                        </div>
-
-                        <div class="bg-white card-premium overflow-hidden min-h-[400px]">
-                            <div class="overflow-x-auto w-full">
-                                <table class="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
-                                    <thead>
-                                        <tr class="bg-slate-900 border-b border-slate-800 text-white">
-                                            <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest">Data</th>
-                                            <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest">Descrição / Origem</th>
-                                            <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-center">Categoria</th>
-                                            <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-right">Valor</th>
-                                            <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-center">Ações</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tabela-fluxo" class="divide-y divide-slate-100 text-sm">
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="tab-anual" class="aba-content hidden flex-col gap-6">
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                            <div class="bg-white p-6 card-premium text-center">
-                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Entradas (Ano)</p>
-                                <h3 class="text-2xl md:text-3xl font-black text-emerald-500 mt-2" id="ano-entradas">R$ 0,00</h3>
-                            </div>
-                            <div class="bg-white p-6 card-premium text-center">
-                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Saídas (Ano)</p>
-                                <h3 class="text-2xl md:text-3xl font-black text-rose-500 mt-2" id="ano-saidas">R$ 0,00</h3>
-                            </div>
-                            <div class="bg-slate-100 p-6 card-premium border-slate-200 text-center">
-                                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Saldo Acumulado (YTD)</p>
-                                <h3 class="text-2xl md:text-3xl font-black text-slate-800 mt-2" id="ano-saldo">R$ 0,00</h3>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[400px]">
-                            <div class="bg-white p-4 card-premium flex flex-col items-center justify-center relative"><canvas id="chartEvolucaoAno"></canvas></div>
-                            <div class="bg-white p-4 card-premium flex flex-col items-center justify-center relative"><canvas id="chartAcumuladoAno"></canvas></div>
                         </div>
                     </div>
 
                 </div>
             </div>
+
         </main>
     </div>
 
-    <div id="modal-acoes-wrapper" class="fixed inset-0 z-[200] bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity">
-        <div id="painel-acoes-mensalidade" class="bg-white p-8 card-premium shadow-2xl w-full max-w-md relative max-h-[90vh] overflow-y-auto hide-scrollbar">
-            <button onclick="fecharModalAcoes()" class="absolute top-6 right-6 text-slate-400 hover:text-rose-500 text-2xl leading-none transition-colors">&times;</button>
-            <h3 class="font-black text-slate-800 truncate mb-1 text-2xl pr-8" id="acao-aluno-nome">Selecione uma fatura</h3>
-            <p class="text-[10px] font-bold text-rose-500 uppercase mb-6 h-4" id="acao-alerta-divida"></p>
-
-            <div class="grid grid-cols-2 gap-4 mb-6 border-b border-slate-100 pb-6">
-                <button onclick="gerarReciboPDF()" id="btn-recibo-lateral" class="bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold py-4 rounded-2xl text-xs flex items-center justify-center transition-colors shadow-sm">📄 Recibo PDF</button>
-                <button id="btn-whats-lateral" onclick="enviarWhatsApp()" class="bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold py-4 rounded-2xl text-xs flex items-center justify-center transition-colors shadow-md">💬 Cobrar</button>
+    <div id="modal-config-equipe" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-slate-800 p-4 text-white font-black uppercase tracking-widest text-sm flex justify-between items-center shrink-0">
+                <span>⚙️ Configurar Equipe</span>
+                <button onclick="fecharModalConfig()" class="text-slate-400 hover:text-white text-xl leading-none">&times;</button>
+            </div>
+            
+            <div class="flex border-b border-slate-200 shrink-0 overflow-x-auto hide-scrollbar">
+                <button id="tab-btn-dados" onclick="switchConfigTab('dados')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-cyan-600 border-b-2 border-cyan-500 transition-colors whitespace-nowrap">Dados</button>
+                <button id="tab-btn-colabs" onclick="switchConfigTab('colabs')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors whitespace-nowrap">Equipe Técnica</button>
+                <button id="tab-btn-convites" onclick="switchConfigTab('convites')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors whitespace-nowrap">Convites</button>
             </div>
 
-            <div class="space-y-4 border-b border-slate-100 pb-6 mb-6">
-                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">💸 Registrar Pagamento</h4>
-                <div class="flex gap-2">
-                    <input type="date" id="acao-data-pag" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none">
-                    <select id="acao-forma-pag" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed">
-                        <option value="PIX">PIX manual</option><option value="Dinheiro">Dinheiro</option><option value="PIX_ASAAS">PIX (Automático)</option><option value="CREDIT_CARD">Cartão de Crédito</option><option value="BOLETO">Boleto Bancário</option>
-                    </select>
-                </div>
-                <button id="btn-reg-pagamento" onclick="registrarPagamento()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest cursor-pointer">✅ Baixa Manual</button>
-                <button id="btn-gerar-asaas" onclick="gerarLinkAsaasAdmin()" class="hidden w-full bg-cyan-500 hover:bg-cyan-600 text-white font-black py-3.5 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest cursor-pointer border border-cyan-600">💳 Gerar Link Digital</button>
-
-                <div class="flex gap-3 mt-4">
-                    <button id="btn-desfazer-pag" onclick="cancelarPagamento()" class="flex-1 bg-slate-50 border border-slate-200 text-slate-400 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-colors">Desfazer</button>
-                    <button id="btn-excluir-pag" onclick="excluirPagamento()" class="flex-1 bg-rose-50 text-rose-500 font-bold py-3 rounded-xl text-[10px] uppercase tracking-widest hover:bg-rose-100 transition-colors">Excluir Fatura</button>
-                </div>
-            </div>
-
-            <div class="space-y-4">
-                <h4 class="text-[10px] font-black text-purple-500 uppercase tracking-widest">⚙️ Regras do Atleta</h4>
-                <div class="grid grid-cols-2 gap-3">
-                    <div><span class="block text-[10px] font-bold text-slate-500 mb-1 ml-1">Bolsa (%)</span><select id="acao-bolsa" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 outline-none"><option value="0">0%</option><option value="10">10%</option><option value="20">20%</option><option value="25">25%</option><option value="50">50%</option><option value="75">75%</option><option value="100">100%</option></select></div>
-                    <div><span class="block text-[10px] font-bold text-slate-500 mb-1 ml-1">Venc. (Dia)</span><select id="acao-venc" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 outline-none"></select></div>
-                </div>
-                <button id="btn-salvar-regras" onclick="salvarConfigAluno()" class="w-full bg-purple-50 hover:bg-purple-100 text-purple-700 font-black py-3 rounded-xl text-[10px] uppercase tracking-widest transition-colors shadow-sm">💾 Salvar Regras</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-despesa" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-white card-premium shadow-2xl w-full max-w-md overflow-hidden">
-            <div class="bg-rose-500 p-6 text-white flex justify-between items-center"><h3 class="font-black uppercase text-sm tracking-widest"><span class="mr-2">📉</span> Registrar Despesa</h3><button onclick="fecharModalDespesa()" class="text-rose-200 hover:text-white text-2xl leading-none">&times;</button></div>
-            <div class="p-8 space-y-5">
-                <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Descrição</label><input type="text" id="desp-desc" placeholder="Ex: Aluguel, Limpeza..." class="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-rose-200 font-bold text-slate-700"></div>
-                <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Favorecido / Fornecedor</label><input type="text" id="desp-fonte" placeholder="A quem foi pago?" class="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-rose-200 text-slate-700"></div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Valor (R$)</label><input type="text" id="desp-valor" oninput="mascaraMoeda(this)" placeholder="0,00" class="w-full p-4 bg-rose-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-rose-200 font-black text-rose-700"></div>
-                    <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Data</label><input type="date" id="desp-data" class="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-rose-200 text-slate-700 font-bold"></div>
-                </div>
-            </div>
-            <div class="p-6 bg-slate-50 border-t border-slate-100 flex gap-4"><button onclick="fecharModalDespesa()" class="flex-1 py-4 text-xs font-bold text-slate-500 hover:bg-slate-200 rounded-2xl">Cancelar</button><button id="btn-salvar-despesa" onclick="salvarDespesa()" class="flex-1 py-4 text-xs font-black text-white bg-rose-500 hover:bg-rose-600 rounded-2xl shadow-lg uppercase transition-all">Salvar Saída</button></div>
-        </div>
-    </div>
-
-    <div id="modal-receita" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-white card-premium shadow-2xl w-full max-w-md overflow-hidden">
-            <div class="bg-emerald-500 p-6 text-white flex justify-between items-center"><h3 class="font-black uppercase text-sm tracking-widest"><span class="mr-2">📈</span> Registrar Receita Extra</h3><button onclick="fecharModalReceita()" class="text-emerald-200 hover:text-white text-2xl leading-none">&times;</button></div>
-            <div class="p-8 space-y-5">
+            <div id="tab-dados" class="p-6 flex-1 overflow-y-auto space-y-4">
                 <div>
-                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Categoria da Receita</label>
-                    <select id="rec-categoria" class="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-emerald-200 font-bold text-slate-700 cursor-pointer">
-                        <option value="Doação">Doação / Apoio Voluntário</option><option value="Seminário/Evento">Seminário / Evento</option><option value="Venda de Produtos">Venda de Produtos</option><option value="Patrocínio">Patrocínio</option><option value="Graduação">Graduação (Exame)</option><option value="Outros">Outras Receitas Extraordinárias</option>
-                    </select>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome da Equipe</label>
+                    <input type="text" id="config-nome-equipe" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700 uppercase">
                 </div>
-                <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Descrição</label><input type="text" id="rec-desc" placeholder="Detalhes da entrada..." class="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-emerald-200 font-bold text-slate-700"></div>
-                <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Origem / Pagador</label><input type="text" id="rec-fonte" placeholder="Quem pagou?" class="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-emerald-200 text-slate-700"></div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Valor (R$)</label><input type="text" id="rec-valor" oninput="mascaraMoeda(this)" placeholder="0,00" class="w-full p-4 bg-emerald-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-emerald-300 font-black text-emerald-700"></div>
-                    <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Data</label><input type="date" id="rec-data" class="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-emerald-200 text-slate-700 font-bold"></div>
+                
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Alterar Logo (Opcional)</label>
+                    <input type="file" id="config-logo" accept="image/png, image/jpeg" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-cyan-50 file:text-cyan-600 hover:file:bg-cyan-100 transition-all cursor-pointer">
+                    <p class="text-[9px] text-slate-400 mt-1">Formatos: JPG ou PNG. Máximo: 2MB.</p>
                 </div>
             </div>
-            <div class="p-6 bg-slate-50 border-t border-slate-100 flex gap-4"><button onclick="fecharModalReceita()" class="flex-1 py-4 text-xs font-bold text-slate-500 hover:bg-slate-200 rounded-2xl">Cancelar</button><button id="btn-salvar-receita" onclick="salvarReceita()" class="flex-1 py-4 text-xs font-black text-white bg-emerald-500 hover:bg-emerald-600 rounded-2xl shadow-lg uppercase transition-all">Salvar Entrada</button></div>
-        </div>
-    </div>
 
-    <div id="modal-relatorio" class="fixed inset-0 z-[300] bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4">
-        <div class="bg-white card-premium shadow-2xl w-full max-w-sm overflow-hidden">
-            <div class="bg-amber-500 p-6 text-white flex justify-between items-center"><h3 class="font-black uppercase text-sm tracking-widest"><span class="mr-2">📑</span> Relatório Financeiro</h3><button onclick="fecharModalRelatorio()" class="text-amber-200 hover:text-white text-2xl leading-none">&times;</button></div>
-            <div class="p-8 space-y-6">
-                <p class="text-sm font-bold text-slate-500 mb-2 text-center">Selecione o período de cálculo para gerar o PDF Oficial.</p>
-                <div class="flex items-center justify-between gap-3"><span class="text-xs font-black text-slate-400 uppercase w-8">De:</span><select id="rel-mes-ini" class="p-3 bg-slate-50 border-none rounded-xl outline-none font-bold text-slate-700 w-full"></select><select id="rel-ano-ini" class="p-3 bg-slate-50 border-none rounded-xl outline-none font-bold text-slate-700 w-full"></select></div>
-                <div class="flex items-center justify-between gap-3"><span class="text-xs font-black text-slate-400 uppercase w-8">Até:</span><select id="rel-mes-fim" class="p-3 bg-slate-50 border-none rounded-xl outline-none font-bold text-slate-700 w-full"></select><select id="rel-ano-fim" class="p-3 bg-slate-50 border-none rounded-xl outline-none font-bold text-slate-700 w-full"></select></div>
+            <div id="tab-colabs" class="hidden p-6 flex-1 overflow-y-auto flex-col space-y-4">
+                <p class="text-[11px] text-slate-500 font-medium leading-relaxed">Adicione o e-mail de co-administrador para que eles tenham acesso instantâneo ao sistema da sua equipe.</p>
+                <div class="flex gap-2">
+                    <input type="email" id="novo-colab-email" placeholder="E-mail do co-administrador..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none text-sm focus:border-indigo-500 font-medium">
+                    <button onclick="adicionarColaborador()" class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest shrink-0 transition-colors shadow-sm">Adicionar</button>
+                </div>
+                <div class="border-t border-slate-100 pt-4 mt-2 flex-1">
+                    <h4 class="text-[10px] font-black text-slate-400 uppercase mb-3">Colaboradores Ativos</h4>
+                    <div id="lista-colaboradores" class="space-y-2">
+                        <div class="text-center text-slate-400 text-xs italic py-4">Carregando equipe...</div>
+                    </div>
+                </div>
             </div>
-            <div class="p-6 bg-slate-50 border-t border-slate-100"><button onclick="gerarPDFRelatorio()" id="btn-gerar-relatorio" class="w-full py-4 text-xs font-black text-white bg-amber-500 hover:bg-amber-600 rounded-2xl shadow-lg uppercase tracking-widest transition-all">Baixar PDF Oficial</button></div>
+
+            <div id="tab-convites" class="hidden p-6 flex-1 overflow-y-auto flex-col space-y-6">
+                <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
+                    <h4 class="text-xs font-black text-indigo-700 uppercase mb-1 flex items-center"><span class="mr-2 text-base">👥</span> Para Co-Adminsitrador(a) / Auxiliares</h4>
+                    <p class="text-[10px] text-indigo-500/80 font-medium mb-3 leading-relaxed">Compartilhe este link. Ao se cadastrarem, eles entrarão automaticamente como Co-Administradores.</p>
+                    <div class="flex gap-2">
+                        <input type="text" id="link-convite-prof" readonly class="w-full p-2.5 bg-white border border-indigo-200 rounded-lg text-[10px] text-slate-600 font-mono outline-none">
+                        <button onclick="copiarLink('link-convite-prof')" class="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-2.5 rounded-lg text-[10px] font-black uppercase shrink-0 transition-colors shadow-sm">Copiar</button>
+                    </div>
+                </div>
+                <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
+                    <h4 class="text-xs font-black text-emerald-700 uppercase mb-1 flex items-center"><span class="mr-2 text-base">🥋</span> Para Alunos</h4>
+                    <p class="text-[10px] text-emerald-500/80 font-medium mb-3 leading-relaxed">Envie no grupo do WhatsApp. Os alunos preenchem os próprios dados e caem direto na sua lista.</p>
+                    <div class="flex gap-2">
+                        <input type="text" id="link-convite-aluno" readonly class="w-full p-2.5 bg-white border border-emerald-200 rounded-lg text-[10px] text-slate-600 font-mono outline-none">
+                        <button onclick="copiarLink('link-convite-aluno')" class="bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-2.5 rounded-lg text-[10px] font-black uppercase shrink-0 transition-colors shadow-sm">Copiar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-5 bg-slate-50 border-t border-slate-100 flex gap-3 shrink-0">
+                <button onclick="fecharModalConfig()" class="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-200 rounded-xl transition-colors">Fechar</button>
+                <button id="btn-salvar-config" onclick="salvarConfigEquipe()" class="flex-1 py-3 text-sm font-black text-white bg-cyan-500 hover:bg-cyan-600 rounded-xl shadow-lg uppercase tracking-widest transition-transform transform hover:-translate-y-0.5">Salvar Dados</button>
+            </div>
         </div>
     </div>
 
     <div id="modal-pagamento-rapido" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col card-premium border-none">
-            <div class="bg-emerald-500 p-5 text-white font-black uppercase tracking-widest text-sm flex items-center justify-between shadow-inner">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col">
+            <div class="bg-emerald-500 p-4 text-white font-black uppercase tracking-widest text-sm flex items-center justify-between">
                 <span>✅ Registro Rápido</span>
                 <button onclick="fecharModalPagamentoRapido()" class="text-emerald-200 hover:text-white text-2xl leading-none">&times;</button>
             </div>
-            <div class="p-8 space-y-5">
-                <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 text-center shadow-sm">
-                    <p class="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-1">Atleta</p>
+            <div class="p-6 space-y-4">
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 text-center">
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-widest mb-1">Atleta</p>
                     <h3 id="lbl-pag-rapido-nome" class="font-black text-slate-800 text-lg truncate">--</h3>
-                    <p class="text-[9px] text-slate-400 mt-3 uppercase tracking-widest font-bold">Valor da Mensalidade</p>
-                    <p id="lbl-pag-rapido-valor" class="font-black text-emerald-600 text-2xl">R$ 0,00</p>
+                    <p class="text-[10px] text-slate-400 mt-2 uppercase">Valor da Mensalidade</p>
+                    <p id="lbl-pag-rapido-valor" class="font-black text-emerald-600 text-xl">R$ 0,00</p>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Como foi pago?</label>
-                    <select id="select-pag-rapido-forma" class="w-full p-4 bg-slate-50 border-none rounded-xl font-bold text-slate-700 focus:ring-2 focus:ring-emerald-200 outline-none transition-all cursor-pointer shadow-inner">
-                        <option value="PIX">PIX</option><option value="Dinheiro">Dinheiro</option><option value="Cartão">Cartão</option>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Como foi pago?</label>
+                    <select id="select-pag-rapido-forma" class="w-full p-3.5 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-emerald-500 outline-none transition-all cursor-pointer shadow-sm">
+                        <option value="PIX">PIX</option>
+                        <option value="Dinheiro">Dinheiro</option>
+                        <option value="Cartão">Cartão</option>
                     </select>
                 </div>
             </div>
-            <div class="p-5 bg-slate-50 border-t border-slate-100 flex gap-4">
-                <button onclick="fecharModalPagamentoRapido()" class="flex-1 bg-white hover:bg-slate-200 text-slate-600 font-bold py-4 rounded-2xl transition-all text-[10px] uppercase tracking-widest shadow-sm border border-slate-200">Cancelar</button>
-                <button onclick="confirmarPagamentoRapido()" id="btn-confirma-pag-rapido" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-md transition-all uppercase tracking-widest text-[10px] flex items-center justify-center border border-emerald-400">
+            <div class="p-4 bg-slate-50 border-t border-slate-200 flex gap-3">
+                <button onclick="fecharModalPagamentoRapido()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold py-3 rounded-xl transition-all text-xs uppercase tracking-widest">Cancelar</button>
+                <button onclick="confirmarPagamentoRapido()" id="btn-confirma-pag-rapido" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 rounded-xl shadow-md transition-all uppercase tracking-widest text-xs flex items-center justify-center">
                     Confirmar
                 </button>
             </div>
@@ -562,7 +278,8 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
+        // Importando as funções do Storage, incluindo o deleteObject
+        import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
@@ -576,80 +293,633 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const functions = getFunctions(app);
-
-        let uid = null;
-        let equipeNomeGlobal = "PROJETO RESGATE";
-        let equipeLogoGlobal = null; 
-        let equipeDados = null;
-        let equipeBaseConfig = { prazo: 70.0, atraso: 100.0, chave_pix: "" };
-        let alunosCache = [];
-        let financeiroMesCache = [];
-        let financeiroAnoCache = []; 
-        let alunoSelecionadoMens = null;
-
+        const storage = getStorage(app);
+        
+        let uid = null;        
+        let nomeEquipeAtual = "";
+        let logoEquipeAnterior = ""; // Nova variável para guardar a logo antiga
+        
         let valPrazo = 70.0;
         let valAtraso = 100.0;
-        let pagRapidoDados = null;
+        let pagRapidoDados = null; 
 
-        let chartBalancoMes = null;
-        let chartOrigemMes = null;
-        let chartEvolucaoAno = null;
-        let chartAcumuladoAno = null;
-
+        // --- SISTEMA DE TOASTS ---
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : (type === 'info' ? 'bg-blue-500' : 'bg-slate-800'));
+            const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : 'bg-slate-800');
             const icon = type === 'success' ? '✅' : (type === 'error' ? '🚨' : 'ℹ️');
             toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transform transition-all duration-300 translate-x-full opacity-0 flex items-center gap-3 font-bold text-sm z-50 pointer-events-auto max-w-sm`;
             toast.innerHTML = `<span class="text-xl">${icon}</span> <span class="flex-1">${message}</span>`;
             container.appendChild(toast);
             setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 10);
-            setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4500);
+            setTimeout(() => {
+                toast.classList.add('translate-x-full', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 4500);
         }
 
-        // NOVO RECADO MODAL
-        window.abrirModalAviso = function() {
-            document.getElementById('modal-aviso').classList.remove('hidden');
-            document.getElementById('modal-aviso').classList.add('flex');
-        }
-        window.fecharModalAviso = function() {
-            document.getElementById('modal-aviso').classList.add('hidden');
-            document.getElementById('modal-aviso').classList.remove('flex');
-            document.getElementById('form-aviso').reset();
-        }
-        window.salvarAviso = async function() {
-            const titulo = document.getElementById('aviso-titulo').value.trim();
-            const mensagem = document.getElementById('aviso-mensagem').value.trim();
-            const tipo = document.getElementById('aviso-tipo').value;
-            const btn = document.getElementById('btn-salvar-aviso');
+        // --- CONTROLE DE ABAS NO MODAL ---
+        window.switchConfigTab = function(tab) {
+            ['dados', 'colabs', 'convites'].forEach(t => {
+                document.getElementById('tab-' + t).classList.add('hidden');
+                document.getElementById('tab-' + t).classList.remove('flex', 'flex-col');
+                document.getElementById('tab-btn-' + t).className = "flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors whitespace-nowrap";
+            });
 
-            if (!titulo || !mensagem) return showToast("Preencha o título e a mensagem.", "error");
+            const abaAtiva = document.getElementById('tab-' + tab);
+            abaAtiva.classList.remove('hidden');
+            if(tab === 'dados') abaAtiva.classList.add('block');
+            else abaAtiva.classList.add('flex', 'flex-col'); 
 
-            const origTxt = btn.innerHTML;
-            btn.innerHTML = "⏳ Enviando...";
+            const btnAtivo = document.getElementById('tab-btn-' + tab);
+            const btnSalvar = document.getElementById('btn-salvar-config');
+
+            if (tab === 'dados') {
+                btnAtivo.className = "flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-cyan-600 border-b-2 border-cyan-500 transition-colors whitespace-nowrap";
+                btnSalvar.style.display = 'block';
+            } else if (tab === 'colabs') {
+                btnAtivo.className = "flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-indigo-600 border-b-2 border-indigo-500 transition-colors whitespace-nowrap";
+                btnSalvar.style.display = 'none';
+                carregarColaboradores();
+            } else if (tab === 'convites') {
+                btnAtivo.className = "flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-emerald-600 border-b-2 border-emerald-500 transition-colors whitespace-nowrap";
+                btnSalvar.style.display = 'none';
+                gerarLinksConvite();
+            }
+        };
+
+        window.gerarLinksConvite = function() {
+            if(!uid) return;
+            let baseUrl = window.location.origin; 
+            document.getElementById('link-convite-prof').value = `${baseUrl}/cadastro_externo.html?tipo=prof&equipe=${uid}`;
+            document.getElementById('link-convite-aluno').value = `${baseUrl}/cadastro_externo.html?tipo=aluno&equipe=${uid}`;
+        };
+
+        window.copiarLink = function(idInput) {
+            const input = document.getElementById(idInput);
+            input.select();
+            input.setSelectionRange(0, 99999); 
+            navigator.clipboard.writeText(input.value).then(() => {
+                showToast("Link copiado! Cole no WhatsApp ou envie para a pessoa.", "success");
+            });
+        };
+
+        window.abrirModalConfig = function() {
+            const modal = document.getElementById('modal-config-equipe');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.getElementById('config-nome-equipe').value = nomeEquipeAtual;
+            document.getElementById('config-logo').value = ""; // Limpa input file
+            switchConfigTab('dados'); 
+        };
+
+        window.fecharModalConfig = function() {
+            const modal = document.getElementById('modal-config-equipe');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        // --- LÓGICA DA EQUIPE TÉCNICA (COLABORADORES) ---
+        window.carregarColaboradores = async function() {
+            const listaEl = document.getElementById('lista-colaboradores');
+            listaEl.innerHTML = '<div class="text-center text-slate-400 text-xs italic py-4">Carregando equipe...</div>';
+            try {
+                const q = query(collection(db, "colaboradores"), where("equipe_id", "==", uid));
+                const snap = await getDocs(q);
+                if (snap.empty) {
+                    listaEl.innerHTML = '<div class="text-center text-slate-400 text-xs py-4">Nenhum colaborador adicionado.</div>';
+                    return;
+                }
+                let html = '';
+                snap.forEach(doc => {
+                    html += `
+                        <div class="flex items-center justify-between p-3 bg-slate-50 border border-slate-100 rounded-xl shadow-sm">
+                            <span class="text-sm font-bold text-slate-700 truncate pr-2">${doc.data().email}</span>
+                            <button onclick="removerColaborador('${doc.id}')" class="text-rose-500 hover:bg-rose-100 p-1.5 rounded-lg transition-colors">🗑️</button>
+                        </div>
+                    `;
+                });
+                listaEl.innerHTML = html;
+            } catch (e) { listaEl.innerHTML = '<div class="text-center text-rose-500 text-xs py-4">Erro.</div>'; }
+        };
+
+        window.adicionarColaborador = async function() {
+            const emailInput = document.getElementById('novo-colab-email');
+            const email = emailInput.value.trim().toLowerCase();
+            if(!email || !email.includes('@')) return showToast("Digite um e-mail válido!", "error");
+            try {
+                await addDoc(collection(db, "colaboradores"), { email: email, equipe_id: uid, data_cadastro: new Date().toISOString() });
+                emailInput.value = '';
+                showToast("Co-Administrador adicionado!", "success");
+                carregarColaboradores();
+            } catch (e) { showToast("Erro ao adicionar.", "error"); }
+        };
+
+        window.removerColaborador = async function(docId) {
+            if(!confirm("Remover o acesso deste co-administrador?")) return;
+            try {
+                await deleteDoc(doc(db, "colaboradores", docId));
+                showToast("Acesso removido.", "success");
+                carregarColaboradores();
+            } catch (e) { showToast("Erro ao remover.", "error"); }
+        };
+
+        // --- AUTENTICAÇÃO E VERIFICAÇÃO DE BLOQUEIO ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                let isSuper = false;
+                try {
+                    const superSnap = await getDoc(doc(db, "super_admins", user.uid));
+                    if (superSnap.exists()) isSuper = true;
+                } catch(e) { isSuper = false; }
+
+                try {
+                    let isImpersonating = false;
+
+                    if (isSuper) {
+                        const equipeImpersonada = sessionStorage.getItem('admin_impersonate');
+                        if (equipeImpersonada) {
+                            uid = equipeImpersonada; 
+                            isImpersonating = true;
+                            
+                            // INJEÇÃO DO BOTÃO DE SUPORTE DISCRETO NO MENU LATERAL
+                            setTimeout(() => {
+                                const aside = document.querySelector('aside');
+                                if (aside) {
+                                    const btnSairSuporte = document.createElement('button');
+                                    btnSairSuporte.onclick = sairModoSuporte;
+                                    btnSairSuporte.className = "mx-4 mb-2 bg-rose-500/10 border border-rose-500/20 text-rose-500 hover:bg-rose-500 hover:text-white font-black text-[9px] uppercase tracking-widest py-2.5 rounded-xl transition-all flex items-center justify-center gap-2";
+                                    btnSairSuporte.innerHTML = "<span>🚨 MODO SUPORTE (SAIR)</span>";
+                                    
+                                    const botoesNoMenu = Array.from(aside.querySelectorAll('button, a'));
+                                    const btnSairOriginal = botoesNoMenu.find(el => el.textContent.toUpperCase().includes('SAIR'));
+                                    
+                                    if (btnSairOriginal && btnSairOriginal.parentNode) {
+                                        btnSairOriginal.parentNode.insertBefore(btnSairSuporte, btnSairOriginal);
+                                    } else {
+                                        aside.appendChild(btnSairSuporte);
+                                    }
+                                }
+                            }, 800);
+                        }
+                    }
+
+                    if (!isImpersonating) {
+                        uid = user.uid;
+                        const docMestre = await getDoc(doc(db, "equipes", uid));
+                        if (!docMestre.exists()) {
+                            const colabSnap = await getDoc(doc(db, "colaboradores", uid));
+                            if(colabSnap.exists()) {
+                                uid = colabSnap.data().equipe_id;
+                            }
+                        }
+                    }
+
+                    document.getElementById('body-content').classList.remove('hidden');
+                    
+                    const emailLogado = document.getElementById('email-logado');
+                    if (emailLogado) emailLogado.innerText = user.email;
+
+                    const docSnap = await getDoc(doc(db, "equipes", uid));
+                    let dadosEquipe = null;
+                    
+                    if (docSnap.exists()) {
+                        const lblCargo = document.getElementById('lbl-cargo');
+                        if(lblCargo) lblCargo.innerText = (isSuper && isImpersonating) ? "SUPER ADMIN (SUPORTE)" : "Mestre / Administrador";
+                        document.getElementById('btn-config-equipe').classList.remove('hidden');
+                        dadosEquipe = docSnap.data();
+                    } else {
+                        const colabSnap2 = await getDoc(doc(db, "colaboradores", user.uid));
+                        if(colabSnap2.exists()) {
+                            const lblCargo = document.getElementById('lbl-cargo');
+                            if(lblCargo) lblCargo.innerText = "Co-Administrador";
+                            const equipeMestreSnap = await getDoc(doc(db, "equipes", uid));
+                            if(equipeMestreSnap.exists()) dadosEquipe = equipeMestreSnap.data();
+                        }
+                    }
+
+                    if (dadosEquipe) {
+                        // 🔒 TRAVA DE SEGURANÇA (Verifica se está bloqueado)
+                        if (dadosEquipe.status_plano === 'BLOQUEADO' && !isImpersonating) {
+                            document.getElementById('interface-sistema').classList.add('hidden');
+                            document.getElementById('tela-bloqueio').classList.remove('hidden');
+                            document.getElementById('tela-bloqueio').classList.add('flex');
+                            return; // Para tudo por aqui
+                        }
+
+                        nomeEquipeAtual = dadosEquipe.nome_equipe;
+                        
+                        // Guardar a URL da logo atual na memória
+                        if(dadosEquipe.url_logo) {
+                            logoEquipeAnterior = dadosEquipe.url_logo;
+                        }
+
+                        if (dadosEquipe.valor_prazo) valPrazo = parseFloat(dadosEquipe.valor_prazo);
+                        if (dadosEquipe.valor_atraso) valAtraso = parseFloat(dadosEquipe.valor_atraso);
+
+                        const elNomeEquipe = document.getElementById('nome-equipe') || document.getElementById('lbl-equipe');
+                        if(elNomeEquipe) elNomeEquipe.innerText = nomeEquipeAtual.toUpperCase();
+
+                        const elLogo = document.getElementById('container-logo');
+                        const imgTopo = document.getElementById('img-topo-equipe');
+
+                        if (dadosEquipe.url_logo) {
+                            if (elLogo) {
+                                elLogo.style.background = 'transparent';
+                                elLogo.innerHTML = `<img src="${dadosEquipe.url_logo}" class="w-full h-full object-cover" alt="Logo">`;
+                            }
+                            if (imgTopo) imgTopo.src = dadosEquipe.url_logo;
+                        } else {
+                            if (elLogo) {
+                                elLogo.style.background = ''; 
+                                elLogo.innerHTML = nomeEquipeAtual.charAt(0).toUpperCase();
+                            }
+                        }
+                    }
+                    
+                    carregarDashboard();
+
+                } catch (error) { console.log(error); }
+                
+            } else { window.location.href = "index.html"; }
+        });
+
+        window.sairModoSuporte = function() {
+            sessionStorage.removeItem('admin_impersonate');
+            window.location.href = "super_admin.html";
+        };
+
+        // --- REGISTRO RÁPIDO DE PAGAMENTO ---
+        window.pagamentoRapido = function(alunoId, nomeAluno, valor, faturaId) {
+            pagRapidoDados = { alunoId, nomeAluno, valor, faturaId };
+            document.getElementById('lbl-pag-rapido-nome').innerText = nomeAluno;
+            document.getElementById('lbl-pag-rapido-valor').innerText = `R$ ${valor.toFixed(2).replace('.', ',')}`;
+            document.getElementById('select-pag-rapido-forma').value = "PIX"; 
+            document.getElementById('modal-pagamento-rapido').classList.remove('hidden');
+            document.getElementById('modal-pagamento-rapido').classList.add('flex');
+        };
+
+        window.fecharModalPagamentoRapido = function() {
+            pagRapidoDados = null;
+            document.getElementById('modal-pagamento-rapido').classList.add('hidden');
+            document.getElementById('modal-pagamento-rapido').classList.remove('flex');
+        };
+
+        window.confirmarPagamentoRapido = async function() {
+            if (!pagRapidoDados) return;
+
+            const formaEscolhida = document.getElementById('select-pag-rapido-forma').value;
+            const { alunoId, nomeAluno, valor, faturaId } = pagRapidoDados;
+            
+            const btn = document.getElementById('btn-confirma-pag-rapido');
             btn.disabled = true;
+            btn.innerHTML = "⏳ Processando...";
+
+            const dataHoje = new Date().toISOString().split('T')[0];
+            const dataHojeCompleta = new Date();
+            const mesAno = `${dataHojeCompleta.getFullYear()}-${String(dataHojeCompleta.getMonth() + 1).padStart(2, '0')}`;
 
             try {
-                await addDoc(collection(db, "avisos"), { equipe_id: uid, titulo: titulo, mensagem: mensagem, tipo: tipo, data_criacao: new Date().toISOString() });
-                showToast("Recado enviado aos alunos com sucesso!", "success");
-                fecharModalAviso();
-            } catch (error) { showToast("Erro ao enviar recado.", "error"); } finally { btn.innerHTML = origTxt; btn.disabled = false; }
+                if (faturaId) {
+                    await updateDoc(doc(db, "financeiro", faturaId), {
+                        status: 'PAGO', data: dataHoje, forma_pagamento: formaEscolhida, valor: valor
+                    });
+                } else {
+                    await addDoc(collection(db, "financeiro"), {
+                        equipe_id: uid, aluno_id: alunoId, tipo: 'MENSALIDADE', status: 'PAGO',
+                        valor: valor, mes_ano: mesAno, descricao: `Mensalidade - ${nomeAluno}`,
+                        data_criacao: new Date().toISOString(), data: dataHoje, forma_pagamento: formaEscolhida
+                    });
+                }
+                
+                fecharModalPagamentoRapido();
+                showToast("Pagamento registrado!", "success");
+                carregarDashboard(); 
+            } catch (e) {
+                showToast("Erro ao registrar.", "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = "Confirmar";
+            }
+        };
+
+        function obterEstiloFaixa(faixa) {
+            const faixasInfo = {
+                'Branca': 'background-color: #ffffff',
+                'Cinza e branca': 'background: linear-gradient(135deg, #94a3b8 50%, #ffffff 50%)',
+                'Cinza': 'background-color: #94a3b8',
+                'Cinza e preta': 'background: linear-gradient(135deg, #94a3b8 50%, #000000 50%)',
+                'Amarela e branca': 'background: linear-gradient(135deg, #eab308 50%, #ffffff 50%)',
+                'Amarela': 'background-color: #eab308',
+                'Amarela e preta': 'background: linear-gradient(135deg, #eab308 50%, #000000 50%)',
+                'Laranja e branca': 'background: linear-gradient(135deg, #f97316 50%, #ffffff 50%)',
+                'Laranja': 'background-color: #f97316',
+                'Laranja e preta': 'background: linear-gradient(135deg, #f97316 50%, #000000 50%)',
+                'Verde e branca': 'background: linear-gradient(135deg, #22c55e 50%, #ffffff 50%)',
+                'Verde': 'background-color: #22c55e',
+                'Verde e preta': 'background: linear-gradient(135deg, #22c55e 50%, #000000 50%)',
+                'Azul': 'background-color: #3b82f6',
+                'Roxa': 'background-color: #a855f7',
+                'Marrom': 'background-color: #78350f',
+                'Preta': 'background-color: #000000',
+                'Coral': 'background: linear-gradient(135deg, #ef4444 50%, #000000 50%)',
+                'Vermelha': 'background-color: #dc2626'
+            };
+            
+            const faixaNormalizada = faixa ? faixa.charAt(0).toUpperCase() + faixa.slice(1).toLowerCase().trim() : 'Branca';
+            
+            return faixasInfo[faixaNormalizada] || 'background-color: #cbd5e1'; 
         }
 
-        const acaoVenc = document.getElementById('acao-venc');
-        if(acaoVenc) { for(let i=1; i<=31; i++) { acaoVenc.appendChild(new Option(i, i)); } }
+        // --- CARREGAMENTO PRINCIPAL DO DASHBOARD ---
+        async function carregarDashboard() {
+            try {
+                const turmasQuery = query(collection(db, "turmas"), where("equipe_id", "==", uid));
+                const turmasSnap = await getDocs(turmasQuery);
+                
+                let turmasMap = {};
+                let alunoParaTurmas = {}; 
+                
+                turmasSnap.forEach((doc) => {
+                    const t = doc.data();
+                    const nomeDaTurma = t.nome_turma || t.nome || t.titulo || "Turma sem nome";
+                    if (!turmasMap[nomeDaTurma]) turmasMap[nomeDaTurma] = [];
+                    if (t.alunos_ids && Array.isArray(t.alunos_ids)) {
+                        t.alunos_ids.forEach(alunoId => {
+                            if (!alunoParaTurmas[alunoId]) alunoParaTurmas[alunoId] = [];
+                            alunoParaTurmas[alunoId].push(nomeDaTurma);
+                        });
+                    }
+                });
 
-        const mesesHtml = `<option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>`;
-        const anosHtml = `<option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option>`;
-        
-        if(document.getElementById('rel-mes-ini')) document.getElementById('rel-mes-ini').innerHTML = mesesHtml; document.getElementById('rel-mes-ini').value = "01";
-        if(document.getElementById('rel-mes-fim')) document.getElementById('rel-mes-fim').innerHTML = mesesHtml; document.getElementById('rel-mes-fim').value = "12";
-        if(document.getElementById('rel-ano-ini')) document.getElementById('rel-ano-ini').innerHTML = anosHtml; document.getElementById('rel-ano-ini').value = new Date().getFullYear().toString();
-        if(document.getElementById('rel-ano-fim')) document.getElementById('rel-ano-fim').innerHTML = anosHtml; document.getElementById('rel-ano-fim').value = new Date().getFullYear().toString();
+                const dataHoje = new Date();
+                const mesAtual = dataHoje.getMonth() + 1; 
+                const anoAtual = dataHoje.getFullYear();
+                const diaHoje = dataHoje.getDate();
+                const mesAnoFiltro = `${anoAtual}-${String(mesAtual).padStart(2, '0')}`;
 
-        const m1 = document.getElementById('filtro-mes');
-        const a1 = document.getElementById('filtro-ano');
-        if(m1) { m1.innerHTML = mesesHtml; const h = new Date(); m1.value = String(h.getMonth()+1).padStart(2,'0'); }
-        if(a1)
+                let caixaDoMes = 0;
+                let despesasDoMes = 0;
+                let faturasDoMes = {}; 
+
+                try {
+                    const financeiroQuery = query(collection(db, "financeiro"), where("equipe_id", "==", uid), where("mes_ano", "==", mesAnoFiltro));
+                    const financeiroSnap = await getDocs(financeiroQuery);
+                    financeiroSnap.forEach((doc) => {
+                        const mov = doc.data();
+                        if (mov.tipo === 'MENSALIDADE') {
+                            faturasDoMes[mov.aluno_id] = { status: mov.status, id: doc.id };
+                            if (mov.status === 'PAGO') caixaDoMes += parseFloat(mov.valor || 0);
+                        } else if (mov.tipo === 'RECEITA') {
+                            caixaDoMes += parseFloat(mov.valor || 0);
+                        } else if (mov.tipo === 'DESPESA') {
+                            despesasDoMes += parseFloat(mov.valor || 0);
+                        }
+                    });
+                } catch(err) { console.error("Erro ao buscar financeiro do dashboard", err); }
+
+                const alunosQuery = query(collection(db, "alunos"), where("equipe_id", "==", uid));
+                const alunosSnap = await getDocs(alunosQuery);
+                
+                let ativos = 0, valorAtrasado = 0;
+                let faixasCount = {}, aniversariantesHTML = '', pendenciasHTML = '';
+
+                alunosSnap.forEach((doc) => {
+                    const aluno = doc.data();
+                    const alunoId = doc.id;
+                    let statusAluno = String(aluno.status || 'ativo').toLowerCase().trim();
+
+                    if (statusAluno === 'ativo') {
+                        ativos++;
+                        let faixa = aluno.faixa ? aluno.faixa.charAt(0).toUpperCase() + aluno.faixa.slice(1).toLowerCase().trim() : 'Branca';
+                        faixasCount[faixa] = (faixasCount[faixa] || 0) + 1;
+
+                        if (aluno.data_nascimento) {
+                            let mesNiver = null, diaNiver = null;
+                            if (typeof aluno.data_nascimento === 'string') {
+                                const partes = aluno.data_nascimento.split('-');
+                                if (partes.length >= 3) { mesNiver = parseInt(partes[1], 10); diaNiver = parseInt(partes[2], 10); }
+                            } else if (aluno.data_nascimento.toDate) {
+                                const dataNasc = aluno.data_nascimento.toDate();
+                                mesNiver = dataNasc.getMonth() + 1; diaNiver = dataNasc.getDate();
+                            }
+
+                            if (mesNiver === mesAtual) {
+                                aniversariantesHTML += `
+                                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100 mb-2 shadow-sm">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-black text-xs">${diaNiver}</div>
+                                            <span class="text-sm font-bold text-slate-700 truncate w-32">${aluno.nome || 'Aluno'}</span>
+                                        </div>
+                                        <span class="text-[9px] uppercase font-black text-slate-500 bg-white px-2 py-1 rounded-md border border-slate-200">${faixa}</span>
+                                    </div>
+                                `;
+                            }
+                        }
+
+                        let turmasDoAluno = alunoParaTurmas[alunoId] || [aluno.turma_id || "SEM TURMA DEFINIDA"];
+                        if(turmasDoAluno.length === 0 || turmasDoAluno[0] === undefined) turmasDoAluno = ["SEM TURMA DEFINIDA"];
+
+                        turmasDoAluno.forEach(nomeTurma => {
+                            if (!turmasMap[nomeTurma]) turmasMap[nomeTurma] = [];
+                            turmasMap[nomeTurma].push({ nome: aluno.nome || 'Aluno', faixa: faixa });
+                        });
+
+                        // ATENÇÃO FINANCEIRA
+                        let isAlerta = false, msgAlerta = '', tema = 'rose'; 
+                        const diaVenc = parseInt(aluno.dia_vencimento, 10);
+                        const statusFaturaObj = faturasDoMes[alunoId]; 
+                        const statusFatura = statusFaturaObj ? statusFaturaObj.status : null;
+
+                        if (statusFatura !== 'PAGO' && statusFatura !== 'ISENTO' && parseInt(aluno.bolsa_perc || 0) !== 100) {
+                            if (!isNaN(diaVenc) && diaVenc > 0 && diaVenc <= 31) {
+                                if (diaVenc < diaHoje) { isAlerta = true; msgAlerta = `Venceu dia ${diaVenc}`; tema = 'rose'; } 
+                                else if (diaVenc >= diaHoje && diaVenc <= diaHoje + 10) { isAlerta = true; msgAlerta = diaVenc === diaHoje ? `Vence HOJE` : `Vence dia ${diaVenc}`; tema = 'amber'; }
+                            }
+                        }
+
+                        if (isAlerta) {
+                            const bolsa = aluno.bolsa_perc || 0;
+                            let valorDaDivida = (tema === 'rose' ? valAtraso : valPrazo) * (1 - bolsa/100);
+                            valorAtrasado += valorDaDivida; 
+
+                            const cssBg = tema === 'rose' ? 'bg-rose-50' : 'bg-amber-50';
+                            const cssBorder = tema === 'rose' ? 'border-rose-100' : 'border-amber-100';
+                            const cssTextLight = tema === 'rose' ? 'text-rose-500' : 'text-amber-500';
+                            const cssTextDark = tema === 'rose' ? 'text-rose-600' : 'text-amber-600';
+                            const idSafe = statusFaturaObj ? `'${statusFaturaObj.id}'` : 'null';
+
+                            pendenciasHTML += `
+                                <div class="flex items-center justify-between p-3 ${cssBg} rounded-xl border ${cssBorder} mb-2 shadow-sm">
+                                    <div class="flex-1 overflow-hidden pr-2">
+                                        <p class="text-sm font-bold text-slate-800 truncate">${aluno.nome || 'Aluno'}</p>
+                                        <p class="text-[9px] uppercase font-black ${cssTextLight} mt-0.5">${msgAlerta}</p>
+                                    </div>
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <span class="text-xs font-black ${cssTextDark}">${valorDaDivida > 0 ? 'R$ ' + valorDaDivida.toFixed(2).replace('.', ',') : '-'}</span>
+                                        <button onclick="pagamentoRapido('${alunoId}', '${(aluno.nome||'').replace(/'/g, "\\'")}', ${valorDaDivida}, ${idSafe})" class="bg-white hover:bg-emerald-100 text-emerald-500 border border-emerald-200 p-1.5 rounded-lg transition-colors flex items-center justify-center shadow-sm">
+                                            ✅
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    }
+                });
+
+                // ========================================================================
+                // 🚀 A MÁGICA DO ONBOARDING
+                // ========================================================================
+                const painelMetricas = document.getElementById('painel-metricas');
+                const painelOnboarding = document.getElementById('painel-onboarding');
+
+                if (ativos === 0) {
+                    painelMetricas.classList.add('hidden');
+                    painelOnboarding.classList.remove('hidden');
+                } else {
+                    painelMetricas.classList.remove('hidden');
+                    painelOnboarding.classList.add('hidden');
+
+                    document.getElementById('card-ativos').innerText = ativos;
+                    document.getElementById('card-receitas').innerText = `R$ ${caixaDoMes.toFixed(2).replace('.', ',')}`;
+                    document.getElementById('card-inadimplencia').innerText = `R$ ${valorAtrasado.toFixed(2).replace('.', ',')}`;
+                    document.getElementById('card-despesas').innerText = `R$ ${despesasDoMes.toFixed(2).replace('.', ',')}`;
+
+                    const gridFaixas = document.getElementById('grid-faixas');
+                    gridFaixas.innerHTML = ''; 
+                    if (Object.keys(faixasCount).length === 0) {
+                        gridFaixas.innerHTML = '<span class="text-slate-400 text-sm font-medium">Nenhum aluno ativo mapeado.</span>';
+                    } else {
+                        for (const [faixa, qtd] of Object.entries(faixasCount)) {
+                            const estiloCss = obterEstiloFaixa(faixa);
+                            gridFaixas.innerHTML += `
+                                <div class="bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-sm">
+                                    <span class="w-3 h-3 rounded-full border border-slate-300 shadow-inner" style="${estiloCss}"></span>
+                                    <span class="text-xs font-bold text-slate-700">${faixa}: <span class="text-slate-900">${qtd}</span></span>
+                                </div>
+                            `;
+                        }
+                    }
+
+                    document.getElementById('lista-niver').innerHTML = aniversariantesHTML || `
+                        <div class="flex flex-col items-center justify-center h-full text-slate-400 mt-8">
+                            <span class="text-2xl mb-2">🎈</span><p class="text-sm font-medium">Nenhum aniversariante este mês</p>
+                        </div>
+                    `;
+
+                    document.getElementById('lista-pendencias').innerHTML = pendenciasHTML || `
+                        <div class="flex flex-col items-center justify-center h-full text-slate-400 mt-8">
+                            <span class="text-2xl mb-2">✅</span><p class="text-sm font-medium">Nenhuma pendência financeira!</p>
+                        </div>
+                    `;
+
+                    let turmasHTML = '';
+                    for (const [turmaNome, alunosDaTurma] of Object.entries(turmasMap)) {
+                        if (turmaNome === "SEM TURMA DEFINIDA" && alunosDaTurma.length === 0) continue;
+                        alunosDaTurma.sort((a, b) => a.nome.localeCompare(b.nome));
+
+                        let listaAlunosHTML = '';
+                        if (alunosDaTurma.length === 0) {
+                            listaAlunosHTML = `<p class="text-[10px] text-slate-400 text-center italic py-2">Turma Vazia</p>`;
+                        } else {
+                            for (const al of alunosDaTurma) {
+                                const estiloCss = obterEstiloFaixa(al.faixa);
+                                listaAlunosHTML += `
+                                    <div class="flex justify-between items-center bg-white p-2.5 rounded-xl border border-slate-100 mb-1.5 shadow-sm">
+                                        <span class="text-[11px] font-bold text-slate-700 truncate pr-2 w-[65%]">${al.nome}</span>
+                                        <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-slate-50 border border-slate-200 text-[9px] font-bold text-slate-600 shadow-sm shrink-0">
+                                            <span class="w-2 h-2 rounded-full shadow-inner border border-slate-200" style="${estiloCss}"></span>${al.faixa}
+                                        </span>
+                                    </div>
+                                `;
+                            }
+                        }
+
+                        const bgHeaderTurma = turmaNome === "SEM TURMA DEFINIDA" ? "bg-amber-100/50 border-amber-200" : "bg-slate-50 border-slate-200";
+                        const iconeTurma = turmaNome === "SEM TURMA DEFINIDA" ? "⚠️" : "🥋";
+                        const corTextoTurma = turmaNome === "SEM TURMA DEFINIDA" ? "text-amber-800" : "text-slate-600";
+
+                        turmasHTML += `
+                            <div class="p-3 ${bgHeaderTurma} rounded-2xl border mb-4 shadow-sm">
+                                <h4 class="text-[10px] font-black ${corTextoTurma} uppercase tracking-widest mb-3 flex items-center gap-2 border-b border-slate-200/60 pb-2">
+                                    <span class="text-base">${iconeTurma}</span> ${turmaNome}
+                                    <span class="ml-auto bg-slate-800 text-white px-1.5 py-0.5 rounded text-[9px]">${alunosDaTurma.length}</span>
+                                </h4>
+                                <div class="flex flex-col max-h-48 overflow-y-auto hide-scrollbar">${listaAlunosHTML}</div>
+                            </div>
+                        `;
+                    }
+                    
+                    document.getElementById('lista-turmas').innerHTML = turmasHTML || `
+                        <div class="flex flex-col items-center justify-center h-full text-slate-400 mt-8">
+                            <span class="text-2xl mb-2">🥋</span><p class="text-sm font-medium">Nenhuma turma mapeada</p>
+                        </div>
+                    `;
+                }
+
+            } catch (error) { console.error(error); }
+        }
+
+        // --- SALVAR DADOS DA EQUIPE COM LIMPEZA DE LOGO ANTIGA ---
+        window.salvarConfigEquipe = async function() {
+            const btn = document.getElementById('btn-salvar-config');
+            const novoNome = document.getElementById('config-nome-equipe').value.trim();
+            const arquivoLogo = document.getElementById('config-logo').files[0];
+
+            if (!novoNome) return showToast("O nome da equipe não pode ficar em branco.", "error");
+            btn.disabled = true; btn.innerHTML = "Processando...";
+
+            try {
+                let updates = { nome_equipe: novoNome };
+                
+                // Se escolheu uma nova foto
+                if (arquivoLogo) {
+                    
+                    // 1. Apaga a logo antiga se existir
+                    if (logoEquipeAnterior) {
+                        try {
+                            // Extrai o caminho do arquivo no Firebase Storage a partir da URL
+                            // Nota: Isto assume que a imagem foi carregada usando a nossa estrutura padrão.
+                            const refLogoAntiga = ref(storage, logoEquipeAnterior);
+                            await deleteObject(refLogoAntiga);
+                            console.log("Logo antiga apagada do Storage.");
+                        } catch (errorDelete) {
+                            console.log("Aviso: Não foi possível apagar a logo antiga (pode já ter sido apagada ou URL externa).");
+                        }
+                    }
+
+                    // 2. Faz o Upload da Nova Logo
+                    const timestamp = new Date().getTime();
+                    const caminhoRef = ref(storage, `equipes_logos/${uid}_${timestamp}_${arquivoLogo.name}`);
+                    await uploadBytes(caminhoRef, arquivoLogo);
+                    updates.url_logo = await getDownloadURL(caminhoRef);
+                }
+                
+                await updateDoc(doc(db, "equipes", uid), updates);
+                showToast("Equipe atualizada!", "success");
+                setTimeout(() => window.location.reload(), 1500);
+            } catch (error) {
+                console.error(error);
+                showToast("Erro ao atualizar.", "error");
+                btn.disabled = false; btn.innerHTML = "Salvar Dados";
+            }
+        };
+
+        window.sairDoSistema = () => signOut(auth).then(() => window.location.href = "index.html");
+    </script>
+    
+    <script>
+        // Oculta a div gigante do menu.js silenciosamente (Corrigido para não esconder o sistema!)
+        const radarSuporte = setInterval(() => {
+            Array.from(document.body.children).forEach(el => {
+                // Procura a div do menu.js, mas IGNORA a interface do sistema
+                if (el.tagName === 'DIV' && el.id !== 'interface-sistema' && (el.textContent || '').toUpperCase().includes('MODO SUPORTE ATIVADO')) {
+                    el.style.display = 'none'; // Esconde apenas o monstro vermelho
+                    clearInterval(radarSuporte);
+                }
+            });
+        }, 200);
+    </script>
+</body>
+</html>

@@ -189,9 +189,15 @@
             <div class="p-6 flex-1 overflow-y-auto space-y-4">
                 <p class="text-[11px] text-slate-500 font-medium leading-relaxed mb-2">Este aviso aparecerá no portal digital de todos os alunos ativos da sua equipe.</p>
                 
-                <div>
-                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Título do Aviso</label>
-                    <input type="text" id="msg-titulo" placeholder="Ex: Treino de Feriado" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 font-bold text-slate-700">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Título do Aviso</label>
+                        <input type="text" id="msg-titulo" placeholder="Ex: Feriado" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 font-bold text-slate-700">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Exibir até (Opcional)</label>
+                        <input type="date" id="msg-validade" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 font-bold text-slate-600 cursor-pointer">
+                    </div>
                 </div>
 
                 <div>
@@ -224,6 +230,7 @@
             </div>
         </div>
     </div>
+    
     <div id="modal-config-equipe" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
             <div class="bg-slate-800 p-4 text-white font-black uppercase tracking-widest text-sm flex justify-between items-center shrink-0">
@@ -367,12 +374,12 @@
             }, 4500);
         }
 
-        // --- CONTROLE MODAL DE MENSAGENS (NOVO) ---
-        window.abrirModalMensagem = function() {
+ window.abrirModalMensagem = function() {
             document.getElementById('modal-mensagem').classList.remove('hidden');
             document.getElementById('modal-mensagem').classList.add('flex');
             document.getElementById('msg-titulo').value = '';
             document.getElementById('msg-conteudo').value = '';
+            document.getElementById('msg-validade').value = ''; // Limpa a data ao abrir
         };
 
         window.fecharModalMensagem = function() {
@@ -380,18 +387,24 @@
             document.getElementById('modal-mensagem').classList.remove('flex');
         };
 
-window.enviarMensagemEquipe = async function() {
+        window.enviarMensagemEquipe = async function() {
             const titulo = document.getElementById('msg-titulo').value.trim();
             const conteudo = document.getElementById('msg-conteudo').value.trim();
-            // Captura o valor do botão de rádio selecionado
             const urgenciaSelecionada = document.querySelector('input[name="msg-urgencia"]:checked').value;
+            const dataValidade = document.getElementById('msg-validade').value; // Pegando a data escolhida
             
             if (!titulo || !conteudo) {
                 return showToast("Preencha o título e a mensagem!", "error");
             }
 
             if (!uid) {
-                return showToast("Erro: ID da equipe não encontrado. Atualize a página.", "error");
+                return showToast("Erro: ID da equipe não encontrado.", "error");
+            }
+
+            // Calcula o final do dia da data escolhida para expirar
+            let dataExpiracaoIso = null;
+            if (dataValidade) {
+                dataExpiracaoIso = new Date(dataValidade + 'T23:59:59').toISOString();
             }
 
             const btn = document.getElementById('btn-enviar-msg');
@@ -403,21 +416,20 @@ window.enviarMensagemEquipe = async function() {
                     equipe_id: uid,
                     titulo: titulo,
                     conteudo: conteudo,
-                    urgencia: urgenciaSelecionada, // Salvando a urgência no banco
+                    urgencia: urgenciaSelecionada,
                     data_envio: new Date().toISOString(),
+                    data_expiracao: dataExpiracaoIso, // Salvando a data de validade
                     status: 'ativo'
                 });
                 
                 showToast("Aviso enviado para a equipe!", "success");
                 fecharModalMensagem();
             } catch (error) {
-                console.error("ERRO FIREBASE:", error);
-                
-                // Retorno específico caso seja problema de regras de segurança
+                console.error(error);
                 if (error.code === 'permission-denied') {
                     showToast("Erro de Permissão! Verifique as regras do Firestore.", "error");
                 } else {
-                    showToast("Erro ao enviar. Pressione F12 para ver o console.", "error");
+                    showToast("Erro ao enviar. Tente novamente.", "error");
                 }
             } finally {
                 btn.disabled = false;

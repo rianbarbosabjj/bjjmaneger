@@ -83,7 +83,7 @@
                             
                             <div class="flex gap-2 mt-4 pt-2 border-t border-slate-100">
                                 <button onclick="cancelarEdicaoProduto()" id="btn-cancelar-produto" class="hidden flex-1 bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold py-3 px-3 rounded-xl transition-all text-xs uppercase tracking-widest">Cancelar</button>
-                                <button onclick="salvarProduto()" id="btn-salvar-produto" class="flex-[2] bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 px-3 rounded-xl shadow-lg shadow-emerald-500/30 transition-transform transform hover:-translate-y-0.5 uppercase tracking-widest text-xs">💾 Guardar</button>
+                                <button onclick="salvarProduto()" id="btn-salvar-produto" class="flex-[2] bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 px-3 rounded-xl shadow-lg shadow-emerald-500/30 transition-transform transform hover:-translate-y-0.5 uppercase tracking-widest text-xs">💾 Salvar</button>
                             </div>
                         </div>
                     </div>
@@ -333,7 +333,7 @@
             if (imagensUrlsExistentes.length === 0 && novosArquivosImagem.length === 0) return showToast("Adiciona pelo menos uma foto.", "error");
             
             const btn = document.getElementById('btn-salvar-produto');
-            btn.disabled = true; btn.innerHTML = "⏳ A Guardar...";
+            btn.disabled = true; btn.innerHTML = "⏳ Salvando...";
 
             try {
                 let dados = { 
@@ -379,10 +379,10 @@
                 carregarProdutos();
                 
             } catch (e) { 
-                showToast("Erro ao guardar o produto.", "error"); 
+                showToast("Erro ao salvar o produto.", "error"); 
                 console.error(e);
             } finally {
-                btn.disabled = false; btn.innerHTML = "💾 Guardar";
+                btn.disabled = false; btn.innerHTML = "💾 Salvar";
             }
         }
 

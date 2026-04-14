@@ -363,12 +363,18 @@
             document.getElementById('modal-mensagem').classList.remove('flex');
         };
 
-        window.enviarMensagemEquipe = async function() {
+window.enviarMensagemEquipe = async function() {
             const titulo = document.getElementById('msg-titulo').value.trim();
             const conteudo = document.getElementById('msg-conteudo').value.trim();
+            // Captura o valor do botão de rádio selecionado
+            const urgenciaSelecionada = document.querySelector('input[name="msg-urgencia"]:checked').value;
             
             if (!titulo || !conteudo) {
                 return showToast("Preencha o título e a mensagem!", "error");
+            }
+
+            if (!uid) {
+                return showToast("Erro: ID da equipe não encontrado. Atualize a página.", "error");
             }
 
             const btn = document.getElementById('btn-enviar-msg');
@@ -380,6 +386,7 @@
                     equipe_id: uid,
                     titulo: titulo,
                     conteudo: conteudo,
+                    urgencia: urgenciaSelecionada, // Salvando a urgência no banco
                     data_envio: new Date().toISOString(),
                     status: 'ativo'
                 });
@@ -387,8 +394,14 @@
                 showToast("Aviso enviado para a equipe!", "success");
                 fecharModalMensagem();
             } catch (error) {
-                console.error(error);
-                showToast("Erro ao enviar mensagem.", "error");
+                console.error("ERRO FIREBASE:", error);
+                
+                // Retorno específico caso seja problema de regras de segurança
+                if (error.code === 'permission-denied') {
+                    showToast("Erro de Permissão! Verifique as regras do Firestore.", "error");
+                } else {
+                    showToast("Erro ao enviar. Pressione F12 para ver o console.", "error");
+                }
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = "Enviar Aviso";

@@ -626,13 +626,27 @@
             try {
                 const q = query(collection(db, "alunos"), where("email", "==", email), where("senha_portal", "==", senha));
                 const snap = await getDocs(q);
-                if (snap.empty) { showToast("E-mail ou senha incorretos."); btn.disabled = false; btn.innerText = "Entrar no Tatame"; } 
+                if (snap.empty) { 
+                    showToast("E-mail ou senha incorretos."); 
+                    btn.disabled = false; btn.innerText = "Entrar no Tatame"; 
+                } 
                 else {
                     alunoLogado = { id: snap.docs[0].id, ...snap.docs[0].data() };
                     localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoLogado));
                     iniciarPortal();
                 }
-            } catch (error) { showToast("Erro ao conectar com o servidor."); btn.disabled = false; btn.innerText = "Entrar no Tatame"; }
+            } catch (error) { 
+                console.error("ERRO LOGIN:", error);
+                
+                // Trata especificamente o erro de regras do Firestore para ajudar na manutenção
+                if (error.code === 'permission-denied') {
+                    showToast("Erro de Permissão no Firebase! Verifique as regras (Passo 1).");
+                } else {
+                    showToast("Erro ao conectar com o servidor."); 
+                }
+                
+                btn.disabled = false; btn.innerText = "Entrar no Tatame"; 
+            }
         }
 
         window.sairDoPortal = function() { localStorage.removeItem('bjj_aluno_auth'); window.location.reload(); }
@@ -844,7 +858,7 @@
             preencherCarteirinha(); buscarFaturasResiliente(); verificarAnamnese(); 
             setTimeout(ajustarZoomCarteirinha, 100);
             
-            // 🚀 NOVA INCLUSÃO PARA O MURAL (SE NÃO CARREGAR ERRO)
+            // 🚀 INCLUSÃO PARA O MURAL (ATUALIZADO)
             buscarMuralEHorarios();
             buscarCurriculoAluno();
             atualizarWidgetMensalidade();
@@ -993,9 +1007,6 @@
         window.fecharModalPix = function() { document.getElementById('modal-pix').classList.add('hidden'); document.getElementById('modal-pix').classList.remove('flex'); }
         window.copiarPix = function() { const input = document.getElementById('pix-codigo'); if(input.value === "Chave PIX não configurada pelo professor.") return showToast("Não há chave para copiar.", "error"); input.select(); input.setSelectionRange(0, 99999); navigator.clipboard.writeText(input.value); showToast("Chave PIX copiada para a área de transferência!", "success"); }
 
-        // ==========================================
-        // FUNÇÕES RESTAURADAS PARA A HOME E O CURRÍCULO
-        // ==========================================
         function atualizarWidgetMensalidade() {
             const elValor = document.getElementById('home-proxima-fatura-valor');
             const elVenc = document.getElementById('home-proxima-fatura-venc');
@@ -1036,36 +1047,23 @@
             }
         }
 
-Com certeza! Substituir pedaços de código às vezes pode ser confuso, então é muito melhor ter a função inteira já perfeitinha para você só copiar e colar.
-
-Aqui está a função buscarMuralEHorarios completa e atualizada para o seu arquivo portal_aluno.html. Ela já tem a regra que oculta os recados automaticamente quando a data de expiração for ultrapassada.
-
-Basta apagar a sua função buscarMuralEHorarios inteira e colar essa no lugar:
-
-JavaScript
-
         async function buscarMuralEHorarios() {
             const divAvisos = document.getElementById('lista-avisos');
             const divHorarios = document.getElementById('lista-horarios');
 
-            // --- BLOCO 1: BUSCAR AVISOS/MENSAGENS ---
             if(divAvisos) {
                 try {
                     const qAvisos = query(collection(db, "mensagens"), where("equipe_id", "==", alunoLogado.equipe_id));
                     const snapAvisos = await getDocs(qAvisos);
                     let avisos = []; 
                     
-                    // Pega a data/hora atual no padrão ISO (para comparar com o banco de dados)
                     const hojeIso = new Date().toISOString();
 
                     snapAvisos.forEach(doc => {
                         const av = doc.data();
-                        
-                        // REGRA DE EXPIRAÇÃO: Se o aviso tem uma data limite e essa data já passou (ficou menor que hoje), o aviso é ignorado.
                         if (av.data_expiracao && av.data_expiracao < hojeIso) {
-                            return; // Pula este aviso (não adiciona na lista)
+                            return; 
                         }
-                        
                         avisos.push(av);
                     });
                     
@@ -1102,7 +1100,6 @@ JavaScript
                 }
             }
 
-            // --- BLOCO 2: BUSCAR HORÁRIOS ---
             if(divHorarios) {
                 try {
                     const qHorarios = query(collection(db, "horarios"), where("equipe_id", "==", alunoLogado.equipe_id));
@@ -1122,6 +1119,64 @@ JavaScript
                 }
             }
         }
+
+        async function buscarCurriculoAluno() {
+            const divG = document.getElementById('timeline-graduacoes'); const divC = document.getElementById('lista-competicoes'); const divStatusFaixa = document.getElementById('status-faixa-atual');
+            if (!divG || !divC) return;
+            divG.innerHTML = "<p class='text-xs text-slate-500 italic text-center'>Buscando linha do tempo...</p>"; divC.innerHTML = "<p class='text-xs text-slate-500 italic text-center'>Buscando medalhas...</p>";
+
+            try {
+                const qGrad = query(collection(db, "graduacoes"), where("equipe_id", "==", alunoLogado.equipe_id), where("aluno_id", "==", alunoLogado.id));
+                const qComp = query(collection(db, "competicoes"), where("equipe_id", "==", alunoLogado.equipe_id), where("aluno_id", "==", alunoLogado.id));
+                const [snapGrad, snapComp] = await Promise.all([getDocs(qGrad), getDocs(qComp)]);
+                let gradCache = []; snapGrad.forEach(doc => gradCache.push(doc.data()));
+                let compCache = []; snapComp.forEach(doc => compCache.push(doc.data()));
+
+                const getTempoOrdenacao = (val) => { if (!val) return 0; if (typeof val.toDate === 'function') return val.toDate().getTime(); if (val.seconds) return val.seconds * 1000; const d = new Date(val); return isNaN(d.getTime()) ? 0 : d.getTime(); };
+                gradCache.sort((a, b) => getTempoOrdenacao(b.data) - getTempoOrdenacao(a.data));
+                compCache.sort((a, b) => getTempoOrdenacao(b.data) - getTempoOrdenacao(a.data));
+
+                const formatarDataBR = (dataStr) => {
+                    if(!dataStr) return "--";
+                    if(typeof dataStr === 'string' && dataStr.includes('-')) { const p = dataStr.split('-'); if(p.length >= 3) return `${p[2]}/${p[1]}/${p[0]}`; }
+                    if(dataStr && typeof dataStr.toDate === 'function') { return dataStr.toDate().toLocaleDateString('pt-BR'); }
+                    return String(dataStr);
+                };
+
+                if(gradCache.length > 0) {
+                    const atual = gradCache[0];
+                    if(divStatusFaixa) divStatusFaixa.classList.remove('hidden');
+                    if(document.getElementById('nome-faixa-atual')) document.getElementById('nome-faixa-atual').innerText = `${atual.faixa} - ${atual.grau || 'Sem grau'}`;
+                    if(document.getElementById('cor-faixa-atual-badge')) document.getElementById('cor-faixa-atual-badge').style.background = getCorFaixaDupla(atual.faixa);
+                    if(document.getElementById('tempo-faixa-atual')) document.getElementById('tempo-faixa-atual').innerText = calcularTempo(getTempoOrdenacao(atual.data));
+                    
+                    divG.innerHTML = gradCache.map((g, index) => `
+                        <div class="relative pl-6 sm:pl-8 group">
+                            <div class="absolute -left-[9px] top-3 w-4 h-4 rounded-full border-[3px] border-slate-900 shadow-[0_0_10px_rgba(0,0,0,0.8)] group-hover:scale-125 transition-transform duration-300 z-10" style="background: ${getCorFaixaDupla(g.faixa)}"></div>
+                            <div class="bg-slate-800/40 hover:bg-slate-800/80 p-3.5 sm:p-4 rounded-2xl border border-slate-700/40 transition-all duration-300 shadow-sm hover:shadow-md group-hover:-translate-y-1">
+                                <div class="flex justify-between items-start mb-1.5"><span class="text-[9px] font-black text-cyan-400 uppercase tracking-widest bg-cyan-500/10 px-2 py-0.5 rounded-md border border-cyan-500/20">${formatarDataBR(g.data)}</span>${index === 0 ? '<span class="text-[8px] font-black text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md uppercase tracking-widest border border-emerald-500/20 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.3)]">Atual</span>' : ''}</div>
+                                <p class="text-xs sm:text-sm font-black text-white uppercase tracking-wide">${g.faixa} <span class="text-slate-400 text-[10px] sm:text-xs font-medium normal-case tracking-normal ml-1">• ${g.grau || 'Sem grau'}</span></p>
+                            </div>
+                        </div>`).join('');
+                } else { if(divStatusFaixa) divStatusFaixa.classList.add('hidden'); divG.innerHTML = "<p class='text-xs text-slate-500 italic text-center'>Nenhum registro encontrado.</p>"; }
+
+                if(compCache.length > 0) {
+                    divC.innerHTML = compCache.map(c => {
+                        const col = (c.colocacao || "").toLowerCase(); let med = "🥋"; let textCol = "text-slate-400"; let borderGlow = "border-slate-700/50"; let bgGlow = "bg-slate-900";
+                        if(col.includes("1º") || col.includes("ouro")) { med="🥇"; textCol="text-yellow-400"; borderGlow="border-yellow-500/30"; bgGlow="bg-yellow-500/10"; } 
+                        else if(col.includes("2º") || col.includes("prata")) { med="🥈"; textCol="text-slate-200"; borderGlow="border-slate-300/30"; bgGlow="bg-slate-300/10"; } 
+                        else if(col.includes("3º") || col.includes("bronze")) { med="🥉"; textCol="text-orange-400"; borderGlow="border-orange-500/30"; bgGlow="bg-orange-500/10"; }
+                        
+                        return `<div class="flex items-center gap-3 sm:gap-4 bg-slate-800/40 hover:bg-slate-800/80 p-4 rounded-2xl border border-slate-700/40 transition-all duration-300 group hover:-translate-y-1 shadow-sm hover:shadow-md"><div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center ${bgGlow} ${borderGlow} border shadow-inner shrink-0 group-hover:scale-110 transition-transform duration-300 text-xl sm:text-2xl ${textCol}">${med}</div><div class="flex-1 overflow-hidden"><p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-0.5">${formatarDataBR(c.data)}</p><p class="text-xs sm:text-sm font-black text-white truncate leading-tight">${c.nome_evento}</p><p class="text-[9px] sm:text-[10px] font-medium text-slate-400 mt-0.5 truncate">${c.categoria || 'Geral'} • ${c.peso || '--'}kg</p></div><div class="shrink-0"><span class="text-[9px] sm:text-[10px] font-black ${bgGlow} px-2 py-1.5 sm:px-3 sm:py-2 rounded-lg ${textCol} border ${borderGlow} uppercase tracking-widest flex items-center justify-center text-center shadow-sm">${c.colocacao || 'Part.'}</span></div></div>`;
+                    }).join('');
+                } else { divC.innerHTML = "<p class='text-xs text-slate-500 italic text-center'>Nenhum campeonato registrado.</p>"; }
+                
+            } catch (err) {
+                divG.innerHTML = `<p class='text-rose-500 text-[10px] text-center p-2 bg-rose-500/10 rounded-lg'>Erro Técnico</p>`;
+                divC.innerHTML = `<p class='text-rose-500 text-[10px] text-center p-2 bg-rose-500/10 rounded-lg'>Erro Técnico</p>`;
+            }
+        }
+
         function calcularTempo(tempoMilissegundos) {
             if (!tempoMilissegundos) return "--";
             const d1 = new Date(tempoMilissegundos); const d2 = new Date();

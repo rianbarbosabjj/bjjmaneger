@@ -19,9 +19,9 @@
         
         /* 🎨 DESIGN MODERN CORPORATE PARA O PORTAL */
         .card-premium {
-            background: rgba(30, 41, 59, 0.7); /* slate-800 com opacidade */
+            background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(51, 65, 85, 0.5); /* slate-700 */
+            border: 1px solid rgba(51, 65, 85, 0.5);
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
             border-radius: 24px;
         }
@@ -141,7 +141,6 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    
                     <div class="card-premium p-5 relative overflow-hidden flex flex-col h-72">
                         <div class="absolute bottom-0 right-0 w-32 h-32 bg-amber-500/10 blur-[40px] rounded-full pointer-events-none"></div>
                         <div class="relative z-10 flex flex-col h-full">
@@ -166,7 +165,19 @@
                             </button>
                         </div>
                     </div>
+                </div>
+            </section>
 
+            <section id="aba-loja" class="aluno-secao hidden transition-opacity duration-300 space-y-6">
+                <div class="card-premium p-5 sm:p-6">
+                    <div class="flex items-center justify-between mb-6 border-b border-slate-700/50 pb-3">
+                        <h3 class="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                            <span class="text-lg">🛒</span> Loja Oficial
+                        </h3>
+                    </div>
+                    <div id="lista-produtos" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        <div class="text-center col-span-2 text-slate-500 text-xs italic py-10">Buscando produtos...</div>
+                    </div>
                 </div>
             </section>
 
@@ -409,23 +420,27 @@
         <nav class="fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-xl border-t border-slate-800 flex justify-around px-1 pt-2 pb-safe z-40">
             <button onclick="mudarAbaAluno('aba-inicio')" id="nav-aba-inicio" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-cyan-400 transition-colors">
                 <span class="text-xl sm:text-2xl mb-1 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)] transition-all transform scale-110">🏠</span>
-                <span class="text-[9px] font-black uppercase tracking-wider text-center">Início</span>
+                <span class="text-[8px] sm:text-[9px] font-black uppercase tracking-wider text-center">Início</span>
+            </button>
+            <button onclick="mudarAbaAluno('aba-loja')" id="nav-aba-loja" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
+                <span class="text-xl sm:text-2xl mb-1 grayscale transition-all">🛒</span>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-center">Loja</span>
             </button>
             <button onclick="mudarAbaAluno('aba-carteirinha')" id="nav-aba-carteirinha" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
                 <span class="text-xl sm:text-2xl mb-1 grayscale transition-all">🪪</span>
-                <span class="text-[9px] font-bold uppercase tracking-wider text-center">Identidade</span>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-center">Cartão</span>
             </button>
             <button onclick="mudarAbaAluno('aba-curriculo')" id="nav-aba-curriculo" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
                 <span class="text-xl sm:text-2xl mb-1 grayscale transition-all">📜</span>
-                <span class="text-[9px] font-bold uppercase tracking-wider text-center">Histórico</span>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-center">Histórico</span>
             </button>
             <button onclick="mudarAbaAluno('aba-financeiro')" id="nav-aba-financeiro" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
                 <span class="text-xl sm:text-2xl mb-1 grayscale transition-all">💰</span>
-                <span class="text-[9px] font-bold uppercase tracking-wider text-center">Financeiro</span>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-center">Finanças</span>
             </button>
             <button onclick="mudarAbaAluno('aba-dados')" id="nav-aba-dados" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
                 <span class="text-xl sm:text-2xl mb-1 grayscale transition-all">⚙️</span>
-                <span class="text-[9px] font-bold uppercase tracking-wider text-center">Ajustes</span>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-center">Perfil</span>
             </button>
         </nav>
     </div>
@@ -565,7 +580,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, getDoc, doc, query, where, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, getDoc, doc, query, where, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
@@ -681,6 +696,7 @@
 
             const subtitulo = document.getElementById('subtitulo-secao');
             if(idAba === 'aba-inicio') { subtitulo.innerText = "Fique por dentro das novidades da equipe."; buscarMuralEHorarios(); }
+            if(idAba === 'aba-loja') { subtitulo.innerText = "Adquira equipamentos e materiais da equipe."; carregarLoja(); }
             if(idAba === 'aba-carteirinha') { subtitulo.innerText = "Sua identificação oficial e acesso à equipe."; }
             if(idAba === 'aba-financeiro') { subtitulo.innerText = "Controle de suas mensalidades e pagamentos."; }
             if(idAba === 'aba-curriculo') { subtitulo.innerText = "Sua trajetória marcial, graduações e medalhas."; buscarCurriculoAluno(); }
@@ -863,7 +879,6 @@
             preencherCarteirinha(); buscarFaturasResiliente(); verificarAnamnese(); 
             setTimeout(ajustarZoomCarteirinha, 100);
             
-            // 🚀 INCLUSÃO PARA O MURAL (ATUALIZADO)
             buscarMuralEHorarios();
             buscarCurriculoAluno();
             atualizarWidgetMensalidade();
@@ -1068,11 +1083,78 @@
             }
         }
 
-async function buscarMuralEHorarios() {
+        async function carregarLoja() {
+            const container = document.getElementById('lista-produtos');
+            if (!container) return;
+            try {
+                const q = query(collection(db, "produtos"), where("equipe_id", "==", alunoLogado.equipe_id), where("status", "==", "ATIVO"));
+                const snap = await getDocs(q);
+                if (snap.empty) {
+                    container.innerHTML = "<div class='col-span-2 text-center p-6 text-slate-500 text-xs italic'>Nenhum produto disponível no momento.</div>";
+                    return;
+                }
+                let html = '';
+                snap.forEach(doc => {
+                    const p = doc.data();
+                    const preco = p.valor ? parseFloat(p.valor).toFixed(2).replace('.', ',') : "0,00";
+                    const img = p.imagem_url || 'https://via.placeholder.com/150?text=Produto';
+                    const zap = equipeDados.telefone_whatsapp || '';
+                    const msg = encodeURIComponent(`Olá! Gostaria de comprar o produto: ${p.nome}`);
+                    const link = zap ? `https://wa.me/55${zap.replace(/\D/g,'')}?text=${msg}` : '#';
+
+                    html += `
+                        <div class="bg-slate-800/40 border border-slate-700/50 rounded-2xl overflow-hidden flex flex-col group">
+                            <div class="aspect-square bg-white relative overflow-hidden p-2 flex items-center justify-center">
+                                <img src="${img}" class="w-full h-full object-contain group-hover:scale-110 transition-transform">
+                            </div>
+                            <div class="p-3 flex flex-col flex-1">
+                                <h4 class="text-[10px] font-black text-white uppercase tracking-widest mb-1 truncate">${p.nome}</h4>
+                                <p class="text-xs font-black text-emerald-400 mb-3">R$ ${preco}</p>
+                                <a href="${link}" target="_blank" class="mt-auto w-full bg-cyan-600 hover:bg-cyan-500 text-white text-center py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-colors shadow-md">Comprar</a>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            } catch(e) {
+                container.innerHTML = "<div class='col-span-2 text-center text-rose-500 text-xs bg-rose-500/10 p-2 rounded-lg'>Erro ao carregar produtos.</div>";
+            }
+        }
+
+        window.registrarCheckin = async function(turmaId, nomeTurma) {
+            try {
+                const hoje = new Date().toISOString().split('T')[0];
+                
+                const q = query(collection(db, "checkins"), 
+                    where("aluno_id", "==", alunoLogado.id), 
+                    where("data", "==", hoje)
+                );
+                const snap = await getDocs(q);
+                
+                if (!snap.empty) {
+                    showToast("Você já fez check-in hoje!", "error");
+                    return;
+                }
+
+                await addDoc(collection(db, "checkins"), {
+                    aluno_id: alunoLogado.id,
+                    aluno_nome: alunoLogado.nome,
+                    equipe_id: alunoLogado.equipe_id,
+                    turma_id: turmaId,
+                    turma_nome: nomeTurma,
+                    data: hoje,
+                    timestamp: new Date().toISOString()
+                });
+                showToast("Check-in realizado com sucesso! Oss!", "success");
+            } catch(e) {
+                showToast("Erro ao registrar check-in.", "error");
+            }
+        }
+
+        async function buscarMuralEHorarios() {
             const divAvisos = document.getElementById('lista-avisos');
             const divHorarios = document.getElementById('lista-horarios');
 
-            // --- BLOCO 1: BUSCAR AVISOS/MENSAGENS ---
             if(divAvisos) {
                 try {
                     const qAvisos = query(collection(db, "mensagens"), where("equipe_id", "==", alunoLogado.equipe_id));
@@ -1122,14 +1204,12 @@ async function buscarMuralEHorarios() {
                 }
             }
 
-            // --- BLOCO 2: BUSCAR HORÁRIOS (INTELIGENTE E CRONOLÓGICO) ---
             if(divHorarios) {
                 try {
                     const qTurmas = query(collection(db, "turmas"), where("equipe_id", "==", alunoLogado.equipe_id));
                     const snapTurmas = await getDocs(qTurmas); 
                     let turmas = []; 
 
-                    // Tradutor de turmas antigas ("Seg/Qua" vira [1, 3])
                     function extrairDiasLegado(str) {
                         if (!str) return [];
                         const s = str.toLowerCase();
@@ -1147,11 +1227,9 @@ async function buscarMuralEHorarios() {
                     snapTurmas.forEach(doc => {
                         const t = doc.data();
                         
-                        // 1. Resolve o Nome (Prioriza 'nome' salvo no banco)
                         let nomeOriginal = t.nome || t.nome_turma || t.titulo;
                         if (!nomeOriginal || nomeOriginal.trim() === '') nomeOriginal = 'Treino';
 
-                        // 2. Resolve os Dias (Novos ou Antigos)
                         let diasArray = [];
                         if (Array.isArray(t.dias_semana) && t.dias_semana.length > 0) {
                             diasArray = t.dias_semana;
@@ -1161,13 +1239,13 @@ async function buscarMuralEHorarios() {
                             diasArray = extrairDiasLegado(t.dias);
                         }
 
-                        // 3. Resolve o Horário (Pega apenas o horário inicial ex: 19:00)
                         let horaStr = t.hora_inicio || t.horario || '--:--';
                         if (horaStr.includes('-')) {
                             horaStr = horaStr.split('-')[0].trim();
                         }
                         
                         turmas.push({
+                            id: doc.id,
                             nome: nomeOriginal,
                             dias_array: diasArray,
                             hora: horaStr,
@@ -1175,7 +1253,6 @@ async function buscarMuralEHorarios() {
                         });
                     });
 
-                    // FUNÇÃO PARA CALCULAR PRÓXIMA DATA EXATA
                     function getProximoTreinoDate(diasArray, horaInicioStr) {
                         if(!diasArray || diasArray.length === 0 || !horaInicioStr || horaInicioStr === '--:--') return null;
                         const agora = new Date();
@@ -1192,9 +1269,8 @@ async function buscarMuralEHorarios() {
                             proxDate.setHours(hora, min, 0, 0);
 
                             if(dif < 0) { 
-                                dif += 7; // Próxima semana
+                                dif += 7;
                             } else if (dif === 0) {
-                                // É hoje, mas verifica se já passou do horário. Se passou, joga pra semana que vem
                                 if(agora > proxDate) dif = 7;
                             }
                             
@@ -1203,12 +1279,10 @@ async function buscarMuralEHorarios() {
                         });
 
                         if(datasPossiveis.length === 0) return null;
-                        // Ordena pelas que vão acontecer primeiro no tempo real
                         datasPossiveis.sort((a,b) => a.getTime() - b.getTime());
                         return datasPossiveis[0];
                     }
 
-                    // Aplica o cálculo e gera o Objeto de Data
                     turmas.forEach(t => {
                         t.proximaSessaoObj = getProximoTreinoDate(t.dias_array, t.hora);
                     });
@@ -1216,7 +1290,6 @@ async function buscarMuralEHorarios() {
                     let temTurmaAtleta = turmas.some(t => t.isMinhaTurma);
                     let turmasExibidas = temTurmaAtleta ? turmas.filter(t => t.isMinhaTurma) : turmas;
 
-                    // ORDENAÇÃO CRONOLÓGICA REAL MILISSEGUNDO POR MILISSEGUNDO
                     turmasExibidas.sort((a,b) => {
                         const timeA = a.proximaSessaoObj ? a.proximaSessaoObj.getTime() : Infinity;
                         const timeB = b.proximaSessaoObj ? b.proximaSessaoObj.getTime() : Infinity;
@@ -1230,12 +1303,14 @@ async function buscarMuralEHorarios() {
                             let labelDia = '--';
                             let iconeDia = '📅';
                             let corDia = 'text-slate-400';
+                            let textoHoraLimpa = t.hora.split('-')[0].trim();
+                            let isHoje = false;
                             
                             if(t.proximaSessaoObj) {
                                 const hoje = new Date();
                                 const prox = t.proximaSessaoObj;
                                 
-                                const isHoje = hoje.getDate() === prox.getDate() && hoje.getMonth() === prox.getMonth() && hoje.getFullYear() === prox.getFullYear();
+                                isHoje = hoje.getDate() === prox.getDate() && hoje.getMonth() === prox.getMonth() && hoje.getFullYear() === prox.getFullYear();
                                 
                                 const amanha = new Date();
                                 amanha.setDate(hoje.getDate() + 1);
@@ -1254,21 +1329,26 @@ async function buscarMuralEHorarios() {
                                     corDia = 'text-indigo-300 font-bold uppercase';
                                 }
                             }
+
+                            const checkinBtn = isHoje ? `<button onclick="registrarCheckin('${t.id}', '${t.nome}')" class="w-full mt-2 bg-emerald-500/20 hover:bg-emerald-500 text-emerald-400 hover:text-white border border-emerald-500/30 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-1 shadow-sm">📍 Fazer Check-in</button>` : '';
                             
                             return `
-                                <div class="flex items-center justify-between bg-slate-900/50 p-3 rounded-xl border border-slate-700/50 shrink-0 mb-2 transition-colors">
-                                    <div>
-                                        <p class="text-[11px] font-black text-indigo-200 uppercase truncate pr-2">${t.nome}</p>
-                                        <p class="text-[9px] uppercase ${corDia} mt-0.5">${iconeDia} ${labelDia}</p>
+                                <div class="flex flex-col bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/50 shrink-0 mb-2 transition-colors">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-[11px] font-black text-indigo-200 uppercase truncate pr-2">${t.nome}</p>
+                                            <p class="text-[9px] uppercase ${corDia} mt-0.5">${iconeDia} ${labelDia}</p>
+                                        </div>
+                                        <div class="text-right shrink-0 flex flex-col items-end">
+                                            <span class="text-xs font-black text-white bg-slate-800 px-2 py-1 rounded-lg border border-slate-600 shadow-inner">${textoHoraLimpa}</span>
+                                        </div>
                                     </div>
-                                    <div class="text-right shrink-0 flex flex-col items-end">
-                                        <span class="text-xs font-black text-white bg-slate-800 px-2 py-1 rounded-lg border border-slate-600 shadow-inner">${t.hora}</span>
-                                    </div>
+                                    ${checkinBtn}
                                 </div>
                             `;
                         }).join('');
                     } else { 
-                        divHorarios.innerHTML = "<div class='text-xs text-slate-500 italic flex h-full items-center justify-center'>Grade de horários não configurada.</div>"; 
+                        divHorarios.innerHTML = "<div class='text-xs text-slate-500 italic flex h-full items-center justify-center'>Nenhuma turma para exibir.</div>"; 
                     }
                 } catch (error) {
                     console.error("Erro Horários/Turmas:", error);
@@ -1276,6 +1356,7 @@ async function buscarMuralEHorarios() {
                 }
             }
         }
+
         async function buscarCurriculoAluno() {
             const divG = document.getElementById('timeline-graduacoes'); const divC = document.getElementById('lista-competicoes'); const divStatusFaixa = document.getElementById('status-faixa-atual');
             if (!divG || !divC) return;
@@ -1348,4 +1429,4 @@ async function buscarMuralEHorarios() {
 
     </script>
 </body>
-</html>
+</html> agora precisamos configurar os produtos. eu preciso de uma pagina onde cadastre os produtos. como podemos fazer? pensei em uma abinha lojinha e colocarmos lá, onde cadastrariamos com foto, nome e valor e ela cairia para portal_aluno.html o que acha?

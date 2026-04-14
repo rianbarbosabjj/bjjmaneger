@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -71,7 +71,7 @@
                             </button>
 
                             <button id="btn-config-equipe" onclick="abrirModalConfig()" class="hidden bg-slate-700 hover:bg-slate-800 text-white font-bold py-2.5 px-3 md:px-4 rounded-xl shadow-md transition-all flex items-center text-xs md:text-sm">
-                                <span class="mr-1 md:mr-2">⚙️</span> <span class="hidden sm:inline">Configurar Equipe</span>
+                                <span class="mr-1 md:mr-2">⚙️</span> <span class="hidden sm:inline">Configurar Equipa</span>
                             </button>
                             
                             <a href="cadastro.html" class="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2.5 px-3 md:px-4 rounded-xl shadow-md transition-all flex items-center text-xs md:text-sm">
@@ -115,7 +115,7 @@
                     </div>
 
                     <div id="painel-metricas" class="hidden">
-                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
                             <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-cyan-500 flex flex-col justify-center hover:-translate-y-1 transition-transform">
                                 <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">Alunos Ativos</h3>
                                 <p class="text-2xl md:text-3xl font-black text-slate-800" id="card-ativos">⏳</p>
@@ -141,11 +141,11 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                             
                             <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-80">
                                 <div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-3xl shrink-0">
-                                    <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">🎂</span> Aniversariantes do Mês</h3>
+                                    <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">🎂</span> Aniversariantes</h3>
                                 </div>
                                 <div class="flex-1 overflow-y-auto p-4 hide-scrollbar space-y-2" id="lista-niver">
                                     <div class="text-center text-slate-400 text-sm mt-5">A procurar festas...</div>
@@ -163,10 +163,19 @@
 
                             <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-80">
                                 <div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-3xl flex justify-between items-center shrink-0">
-                                    <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">⚠️</span> Atenção Financeira</h3>
+                                    <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">⚠️</span> Atenção (Finanças)</h3>
                                 </div>
                                 <div class="flex-1 overflow-y-auto p-4 hide-scrollbar space-y-2" id="lista-pendencias">
                                     <div class="text-center text-slate-400 text-sm mt-5">A calcular mensalidades...</div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-80 border-t-4 border-t-emerald-500">
+                                <div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-3xl shrink-0">
+                                    <h3 class="font-black text-emerald-700 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">📍</span> Hoje no Tatame</h3>
+                                </div>
+                                <div class="flex-1 overflow-y-auto p-4 hide-scrollbar space-y-2" id="lista-checkins">
+                                    <div class="text-center text-slate-400 text-sm mt-5">A procurar presenças...</div>
                                 </div>
                             </div>
 
@@ -251,7 +260,7 @@
             
             <div class="flex border-b border-slate-200 shrink-0 overflow-x-auto hide-scrollbar">
                 <button id="tab-btn-dados" onclick="switchConfigTab('dados')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-cyan-600 border-b-2 border-cyan-500 transition-colors whitespace-nowrap">Dados</button>
-                <button id="tab-btn-colabs" onclick="switchConfigTab('colabs')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors whitespace-nowrap">Equipe Técnica</button>
+                <button id="tab-btn-colabs" onclick="switchConfigTab('colabs')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors whitespace-nowrap">Equipa Técnica</button>
                 <button id="tab-btn-convites" onclick="switchConfigTab('convites')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors whitespace-nowrap">Convites</button>
             </div>
 
@@ -284,8 +293,8 @@
 
             <div id="tab-convites" class="hidden p-6 flex-1 overflow-y-auto flex-col space-y-6">
                 <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
-                    <h4 class="text-xs font-black text-indigo-700 uppercase mb-1 flex items-center"><span class="mr-2 text-base">👥</span> Para Co-Adminsitrador(a) / Auxiliares</h4>
-                    <p class="text-[10px] text-indigo-500/80 font-medium mb-3 leading-relaxed">Compartilhe este link. Ao se cadastrarem, eles entrarão automaticamente como Co-Administradores.</p>
+                    <h4 class="text-xs font-black text-indigo-700 uppercase mb-1 flex items-center"><span class="mr-2 text-base">👥</span> Para Co-Administrador(a) / Auxiliares</h4>
+                    <p class="text-[10px] text-indigo-500/80 font-medium mb-3 leading-relaxed">Partilhe este link. Ao se cadastrarem, entrarão automaticamente como Co-Administradores.</p>
                     <div class="flex gap-2">
                         <input type="text" id="link-convite-prof" readonly class="w-full p-2.5 bg-white border border-indigo-200 rounded-lg text-[10px] text-slate-600 font-mono outline-none">
                         <button onclick="copiarLink('link-convite-prof')" class="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-2.5 rounded-lg text-[10px] font-black uppercase shrink-0 transition-colors shadow-sm">Copiar</button>
@@ -378,7 +387,7 @@
             const toast = document.createElement('div');
             const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : 'bg-slate-800');
             const icon = type === 'success' ? '✅' : (type === 'error' ? '🚨' : 'ℹ️');
-            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transform transition-all duration-300 translate-x-full opacity-0 flex items-center gap-3 font-bold text-sm z-50 pointer-events-auto max-w-sm`;
+            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transition-all duration-300 transform translate-x-0 font-bold text-sm z-50 pointer-events-auto max-w-sm`;
             toast.innerHTML = `<span class="text-xl">${icon}</span> <span class="flex-1">${message}</span>`;
             container.appendChild(toast);
             setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 10);
@@ -566,6 +575,7 @@
                     if (msg.urgencia === 'importante') { cor = 'bg-amber-50 border-amber-200 text-amber-700'; icone = '⚠️'; }
                     if (msg.urgencia === 'urgente') { cor = 'bg-rose-50 border-rose-200 text-rose-700'; icone = '🚨'; }
 
+                    // Formata a data limite para algo legível
                     let dataLim = "Sem expiração";
                     if (msg.data_expiracao) {
                         const dl = new Date(msg.data_expiracao);
@@ -1059,7 +1069,53 @@
                 });
 
                 // ========================================================================
-                // 🚀 A MÁGICA DO ONBOARDING
+                // NOVO: A CARREGAR OS CHECK-INS DE HOJE
+                // ========================================================================
+                const dataHojeStr = new Date().toISOString().split('T')[0];
+                let checkinsHTML = '';
+                
+                try {
+                    const checkinQuery = query(collection(db, "checkins"), where("equipe_id", "==", uid), where("data", "==", dataHojeStr));
+                    const checkinSnap = await getDocs(checkinQuery);
+                    let checkins = [];
+                    checkinSnap.forEach(doc => checkins.push(doc.data()));
+
+                    // Ordenar por hora do check-in (timestamp) mais recente primeiro
+                    checkins.sort((a,b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+                    if(checkins.length === 0) {
+                        checkinsHTML = `
+                            <div class="flex flex-col items-center justify-center h-full text-slate-400 mt-8">
+                                <span class="text-2xl mb-2">😴</span><p class="text-sm font-medium">Ainda sem presenças registadas</p>
+                            </div>
+                        `;
+                    } else {
+                        checkins.forEach(ck => {
+                            const hora = new Date(ck.timestamp).toLocaleTimeString('pt-PT', {hour: '2-digit', minute:'2-digit'});
+                            checkinsHTML += `
+                                <div class="flex items-center justify-between p-3 bg-emerald-50/50 rounded-xl border border-emerald-100 mb-2 shadow-sm">
+                                    <div class="flex items-center gap-3 overflow-hidden">
+                                        <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-black text-xs shrink-0">📍</div>
+                                        <div class="truncate">
+                                            <span class="text-xs font-bold text-slate-700 truncate block">${ck.aluno_nome}</span>
+                                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest truncate block">${ck.turma_nome}</span>
+                                        </div>
+                                    </div>
+                                    <span class="text-[9px] font-black text-emerald-500 bg-white px-2 py-1 rounded-md border border-emerald-100 shrink-0 shadow-sm">${hora}</span>
+                                </div>
+                            `;
+                        });
+                    }
+                } catch(e) {
+                    console.error("Erro a carregar checkins:", e);
+                    checkinsHTML = `<div class="text-center text-rose-500 text-xs py-4">Erro ao carregar presenças.</div>`;
+                }
+                
+                const elListaCheckins = document.getElementById('lista-checkins');
+                if (elListaCheckins) elListaCheckins.innerHTML = checkinsHTML;
+
+                // ========================================================================
+                // 🚀 A MÁGICA DO ONBOARDING E DA GRELHA GERAL
                 // ========================================================================
                 const painelMetricas = document.getElementById('painel-metricas');
                 const painelOnboarding = document.getElementById('painel-onboarding');
@@ -1185,7 +1241,7 @@
                 }
                 
                 await updateDoc(doc(db, "equipes", uid), updates);
-                showToast("Equipe atualizada!", "success");
+                showToast("Equipa atualizada!", "success");
                 setTimeout(() => window.location.reload(), 1500);
             } catch (error) {
                 console.error(error);

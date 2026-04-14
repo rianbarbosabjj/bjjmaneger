@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Loja Virtual | BJJ Manager</title>
+    <title>Vitrine Virtual | BJJ Manager</title>
     
     <link rel="icon" type="image/png" href="logo_bjj_maneger.png">
     
@@ -26,7 +26,7 @@
             
             <div class="flex items-center justify-between p-6 pb-0 max-w-7xl mx-auto w-full shrink-0">
                 <div>
-                    <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Loja da Equipa</h2>
+                    <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Vitrine da Equipe</h2>
                     <p class="text-xs text-slate-500 font-medium mt-1">Gere os produtos que os alunos podem encomendar</p>
                 </div>
             </div>
@@ -67,7 +67,7 @@
                             <div>
                                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Status do Produto</label>
                                 <select id="produto-status" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">
-                                    <option value="ATIVO">🟢 Disponível na Loja</option>
+                                    <option value="ATIVO">🟢 Disponível na vitrine</option>
                                     <option value="INATIVO">🔴 Oculto / Esgotado</option>
                                 </select>
                             </div>
@@ -187,13 +187,13 @@
                 produtosCache = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => a.nome.localeCompare(b.nome));
                 renderizarProdutos();
             } catch (error) {
-                container.innerHTML = "<div class='col-span-full text-center p-6 text-rose-500 text-xs italic bg-rose-50 rounded-xl'>Erro ao carregar loja.</div>";
+                container.innerHTML = "<div class='col-span-full text-center p-6 text-rose-500 text-xs italic bg-rose-50 rounded-xl'>Erro ao carregar a vitrine virtual..</div>";
             }
         }
 
         function renderizarProdutos() {
             const container = document.getElementById('lista-produtos');
-            container.innerHTML = produtosCache.length === 0 ? "<div class='col-span-full text-center p-10 text-slate-400 text-sm'>Nenhum produto cadastrado na tua loja.</div>" : "";
+            container.innerHTML = produtosCache.length === 0 ? "<div class='col-span-full text-center p-10 text-slate-400 text-sm'>Nenhum produto cadastrado na vitrine virtual.</div>" : "";
             
             produtosCache.forEach(p => {
                 const precoFormatado = p.valor ? parseFloat(p.valor).toFixed(2).replace('.', ',') : "0,00";
@@ -202,7 +202,7 @@
                 // Estilo dependendo se está ativo ou não
                 const bgStatus = p.status === 'ATIVO' ? 'bg-white' : 'bg-slate-100 grayscale-[50%] opacity-70';
                 const badgeStatus = p.status === 'ATIVO' 
-                    ? '<span class="absolute top-2 right-2 bg-emerald-500 text-white text-[8px] font-black px-2 py-0.5 rounded uppercase tracking-widest shadow-sm">Na Loja</span>'
+                    ? '<span class="absolute top-2 right-2 bg-emerald-500 text-white text-[8px] font-black px-2 py-0.5 rounded uppercase tracking-widest shadow-sm">Na vitrine</span>'
                     : '<span class="absolute top-2 right-2 bg-slate-500 text-white text-[8px] font-black px-2 py-0.5 rounded uppercase tracking-widest shadow-sm">Oculto</span>';
 
                 const card = document.createElement('div');
@@ -264,7 +264,7 @@
                     showToast("Produto atualizado com sucesso!", "success");
                 } else {
                     await addDoc(collection(db, "produtos"), { ...dados, equipe_id: uid, data_criacao: new Date().toISOString() });
-                    showToast("Produto adicionado à loja!", "success");
+                    showToast("Produto adicionado à vitrine!", "success");
                 }
                 
                 cancelarEdicaoProduto(); 
@@ -306,7 +306,7 @@
         }
 
         window.excluirProduto = async function(id, imagemUrl) {
-            if(!confirm("Tem a certeza que desejas excluir este produto da loja? Esta ação não pode ser desfeita.")) return;
+            if(!confirm("Tem a certeza que desejas excluir este produto da vitrine? Esta ação não pode ser desfeita.")) return;
             try {
                 await deleteDoc(doc(db, "produtos", id));
                 

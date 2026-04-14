@@ -179,7 +179,7 @@
         </main>
     </div>
 
-    <div id="modal-mensagem" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
+<div id="modal-mensagem" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col">
             <div class="bg-indigo-600 p-4 text-white font-black uppercase tracking-widest text-sm flex justify-between items-center shrink-0">
                 <span>📢 Novo Aviso Geral</span>
@@ -192,6 +192,24 @@
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Título do Aviso</label>
                     <input type="text" id="msg-titulo" placeholder="Ex: Treino de Feriado" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 font-bold text-slate-700">
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Urgência do Aviso</label>
+                    <div class="flex gap-2">
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="msg-urgencia" value="normal" checked class="peer sr-only">
+                            <div class="text-center py-2 px-1 rounded-xl border-2 border-slate-100 text-[10px] font-bold text-slate-500 peer-checked:bg-slate-800 peer-checked:text-white peer-checked:border-slate-800 transition-all uppercase tracking-widest">Normal</div>
+                        </label>
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="msg-urgencia" value="importante" class="peer sr-only">
+                            <div class="text-center py-2 px-1 rounded-xl border-2 border-slate-100 text-[10px] font-bold text-slate-500 peer-checked:bg-amber-500 peer-checked:text-white peer-checked:border-amber-500 transition-all uppercase tracking-widest">Atenção</div>
+                        </label>
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="msg-urgencia" value="urgente" class="peer sr-only">
+                            <div class="text-center py-2 px-1 rounded-xl border-2 border-slate-100 text-[10px] font-bold text-slate-500 peer-checked:bg-rose-500 peer-checked:text-white peer-checked:border-rose-500 transition-all uppercase tracking-widest">Urgente</div>
+                        </label>
+                    </div>
                 </div>
                 
                 <div>
@@ -206,7 +224,6 @@
             </div>
         </div>
     </div>
-
     <div id="modal-config-equipe" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
             <div class="bg-slate-800 p-4 text-white font-black uppercase tracking-widest text-sm flex justify-between items-center shrink-0">

@@ -179,14 +179,19 @@
         </main>
     </div>
 
-<div id="modal-mensagem" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col">
+    <div id="modal-mensagem" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
             <div class="bg-indigo-600 p-4 text-white font-black uppercase tracking-widest text-sm flex justify-between items-center shrink-0">
-                <span>📢 Novo Aviso Geral</span>
+                <span>📢 Mural de Avisos</span>
                 <button onclick="fecharModalMensagem()" class="text-indigo-200 hover:text-white text-xl leading-none">&times;</button>
             </div>
             
-            <div class="p-6 flex-1 overflow-y-auto space-y-4">
+            <div class="flex border-b border-slate-200 shrink-0 overflow-x-auto hide-scrollbar">
+                <button id="tab-btn-msg-nova" onclick="switchMsgTab('nova')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-indigo-600 border-b-2 border-indigo-500 transition-colors whitespace-nowrap">Novo Aviso</button>
+                <button id="tab-btn-msg-lista" onclick="switchMsgTab('lista')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors whitespace-nowrap">Avisos Ativos</button>
+            </div>
+
+            <div id="tab-msg-nova" class="p-6 flex-1 overflow-y-auto space-y-4">
                 <p class="text-[11px] text-slate-500 font-medium leading-relaxed mb-2">Este aviso aparecerá no portal digital de todos os alunos ativos da sua equipe.</p>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -224,9 +229,15 @@
                 </div>
             </div>
 
+            <div id="tab-msg-lista" class="hidden p-6 flex-1 overflow-y-auto flex-col space-y-4 bg-slate-50/50">
+                <div id="lista-mensagens-ativas" class="space-y-3">
+                    <div class="text-center text-slate-400 text-xs italic py-4">Buscando avisos...</div>
+                </div>
+            </div>
+
             <div class="p-5 bg-slate-50 border-t border-slate-100 flex gap-3 shrink-0">
-                <button onclick="fecharModalMensagem()" class="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-200 rounded-xl transition-colors">Cancelar</button>
-                <button id="btn-enviar-msg" onclick="enviarMensagemEquipe()" class="flex-1 py-3 text-sm font-black text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-lg uppercase tracking-widest transition-transform transform hover:-translate-y-0.5">Enviar Aviso</button>
+                <button onclick="fecharModalMensagem()" class="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-200 rounded-xl transition-colors">Fechar</button>
+                <button id="btn-enviar-msg" onclick="enviarMensagemEquipe()" class="flex-1 py-3 text-sm font-black text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-lg uppercase tracking-widest transition-transform transform hover:-translate-y-0.5">Publicar Aviso</button>
             </div>
         </div>
     </div>
@@ -374,12 +385,37 @@
             }, 4500);
         }
 
-window.abrirModalMensagem = function() {
+        // --- CONTROLE MODAL DE MENSAGENS COM ABAS ---
+        window.switchMsgTab = function(tab) {
+            ['nova', 'lista'].forEach(t => {
+                document.getElementById('tab-msg-' + t).classList.add('hidden');
+                document.getElementById('tab-msg-' + t).classList.remove('flex', 'flex-col', 'block');
+                document.getElementById('tab-btn-msg-' + t).className = "flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors whitespace-nowrap";
+            });
+
+            const abaAtiva = document.getElementById('tab-msg-' + tab);
+            abaAtiva.classList.remove('hidden');
+            
+            if (tab === 'nova') {
+                abaAtiva.classList.add('block');
+                document.getElementById('btn-enviar-msg').style.display = 'block';
+            } else {
+                abaAtiva.classList.add('flex', 'flex-col');
+                document.getElementById('btn-enviar-msg').style.display = 'none';
+                carregarMensagensEquipe();
+            }
+
+            const btnAtivo = document.getElementById('tab-btn-msg-' + tab);
+            btnAtivo.className = "flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-indigo-600 border-b-2 border-indigo-500 transition-colors whitespace-nowrap";
+        };
+
+        window.abrirModalMensagem = function() {
             document.getElementById('modal-mensagem').classList.remove('hidden');
             document.getElementById('modal-mensagem').classList.add('flex');
             document.getElementById('msg-titulo').value = '';
             document.getElementById('msg-conteudo').value = '';
-            document.getElementById('msg-validade').value = ''; // Limpa a data ao abrir
+            document.getElementById('msg-validade').value = ''; 
+            switchMsgTab('nova');
         };
 
         window.fecharModalMensagem = function() {
@@ -391,7 +427,7 @@ window.abrirModalMensagem = function() {
             const titulo = document.getElementById('msg-titulo').value.trim();
             const conteudo = document.getElementById('msg-conteudo').value.trim();
             const urgenciaSelecionada = document.querySelector('input[name="msg-urgencia"]:checked').value;
-            const dataValidade = document.getElementById('msg-validade').value; // Pegando a data escolhida
+            const dataValidade = document.getElementById('msg-validade').value; 
             
             if (!titulo || !conteudo) {
                 return showToast("Preencha o título e a mensagem!", "error");
@@ -401,7 +437,6 @@ window.abrirModalMensagem = function() {
                 return showToast("Erro: ID da equipe não encontrado.", "error");
             }
 
-            // Calcula o final do dia da data escolhida para expirar
             let dataExpiracaoIso = null;
             if (dataValidade) {
                 dataExpiracaoIso = new Date(dataValidade + 'T23:59:59').toISOString();
@@ -418,25 +453,93 @@ window.abrirModalMensagem = function() {
                     conteudo: conteudo,
                     urgencia: urgenciaSelecionada,
                     data_envio: new Date().toISOString(),
-                    data_expiracao: dataExpiracaoIso, // Salvando a data de validade
+                    data_expiracao: dataExpiracaoIso,
                     status: 'ativo'
                 });
                 
-                showToast("Aviso enviado para a equipe!", "success");
-                fecharModalMensagem();
+                showToast("Aviso publicado com sucesso!", "success");
+                document.getElementById('msg-titulo').value = '';
+                document.getElementById('msg-conteudo').value = '';
+                switchMsgTab('lista'); // Muda direto para a lista de ativos
+                
             } catch (error) {
                 console.error(error);
-                if (error.code === 'permission-denied') {
-                    showToast("Erro de Permissão! Verifique as regras do Firestore.", "error");
-                } else {
-                    showToast("Erro ao enviar. Tente novamente.", "error");
-                }
+                showToast("Erro ao publicar aviso.", "error");
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = "Enviar Aviso";
+                btn.innerHTML = "Publicar Aviso";
             }
         };
-        
+
+        window.carregarMensagensEquipe = async function() {
+            const listaEl = document.getElementById('lista-mensagens-ativas');
+            listaEl.innerHTML = '<div class="text-center text-slate-400 text-xs italic py-4">Buscando avisos...</div>';
+            
+            if (!uid) return;
+
+            try {
+                const q = query(collection(db, "mensagens"), where("equipe_id", "==", uid));
+                const snap = await getDocs(q);
+                
+                if (snap.empty) {
+                    listaEl.innerHTML = '<div class="text-center text-slate-400 text-xs py-4">Nenhum aviso ativo.</div>';
+                    return;
+                }
+
+                let msgs = [];
+                snap.forEach(doc => msgs.push({ id: doc.id, ...doc.data() }));
+                
+                msgs.sort((a,b) => new Date(b.data_envio || 0) - new Date(a.data_envio || 0));
+
+                let html = '';
+                msgs.forEach(msg => {
+                    let cor = 'bg-slate-100 border-slate-200 text-slate-700';
+                    let icone = '📌';
+                    if (msg.urgencia === 'importante') { cor = 'bg-amber-50 border-amber-200 text-amber-700'; icone = '⚠️'; }
+                    if (msg.urgencia === 'urgente') { cor = 'bg-rose-50 border-rose-200 text-rose-700'; icone = '🚨'; }
+
+                    // Formata a data limite para algo legível
+                    let dataLim = "Sem expiração";
+                    if (msg.data_expiracao) {
+                        const dl = new Date(msg.data_expiracao);
+                        dataLim = `${String(dl.getDate()).padStart(2, '0')}/${String(dl.getMonth() + 1).padStart(2, '0')}/${dl.getFullYear()}`;
+                    }
+
+                    html += `
+                        <div class="p-4 rounded-xl border shadow-sm relative ${cor} group">
+                            <div class="pr-10">
+                                <h4 class="text-xs font-black uppercase mb-1 flex items-center gap-1"><span>${icone}</span> ${msg.titulo}</h4>
+                                <p class="text-[10px] opacity-80 mb-2 truncate">${msg.conteudo}</p>
+                                <span class="text-[8px] font-bold uppercase tracking-widest opacity-60">Expira: ${dataLim}</span>
+                            </div>
+                            <button onclick="excluirMensagemEquipe('${msg.id}')" class="absolute top-1/2 -translate-y-1/2 right-4 w-8 h-8 flex items-center justify-center bg-white border border-rose-100 hover:bg-rose-500 hover:border-rose-500 rounded-lg text-rose-500 hover:text-white shadow-sm transition-all" title="Excluir Aviso">
+                                🗑️
+                            </button>
+                        </div>
+                    `;
+                });
+                
+                listaEl.innerHTML = html;
+
+            } catch (error) {
+                console.error(error);
+                listaEl.innerHTML = '<div class="text-center text-rose-500 text-xs py-4">Erro ao buscar avisos.</div>';
+            }
+        };
+
+        window.excluirMensagemEquipe = async function(msgId) {
+            if (!confirm("Tem certeza que deseja excluir este aviso? Ele sumirá do portal dos alunos imediatamente.")) return;
+            
+            try {
+                await deleteDoc(doc(db, "mensagens", msgId));
+                showToast("Aviso excluído com sucesso!", "success");
+                carregarMensagensEquipe(); 
+            } catch (error) {
+                console.error(error);
+                showToast("Erro ao excluir aviso.", "error");
+            }
+        };
+
         // --- CONTROLE DE ABAS NO MODAL CONFIG ---
         window.switchConfigTab = function(tab) {
             ['dados', 'colabs', 'convites'].forEach(t => {

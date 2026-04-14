@@ -1039,59 +1039,66 @@
 async function buscarMuralEHorarios() {
             const divAvisos = document.getElementById('lista-avisos');
             const divHorarios = document.getElementById('lista-horarios');
-            if(!divAvisos || !divHorarios) return;
 
-            try {
-                // CORREÇÃO 1: Buscando na coleção "mensagens"
-                const qAvisos = query(collection(db, "mensagens"), where("equipe_id", "==", alunoLogado.equipe_id));
-                const snapAvisos = await getDocs(qAvisos);
-                let avisos = []; snapAvisos.forEach(doc => avisos.push(doc.data()));
-                
-                avisos.sort((a,b) => {
-                    // CORREÇÃO 2: Ordenando pelo campo "data_envio"
-                    let dateA = a.data_envio ? new Date(a.data_envio).getTime() : 0; 
-                    let dateB = b.data_envio ? new Date(b.data_envio).getTime() : 0; 
-                    return dateB - dateA;
-                });
+            // --- BLOCO 1: BUSCAR AVISOS/MENSAGENS ---
+            if(divAvisos) {
+                try {
+                    const qAvisos = query(collection(db, "mensagens"), where("equipe_id", "==", alunoLogado.equipe_id));
+                    const snapAvisos = await getDocs(qAvisos);
+                    let avisos = []; 
+                    snapAvisos.forEach(doc => avisos.push(doc.data()));
+                    
+                    avisos.sort((a,b) => {
+                        let dateA = a.data_envio ? new Date(a.data_envio).getTime() : 0; 
+                        let dateB = b.data_envio ? new Date(b.data_envio).getTime() : 0; 
+                        return dateB - dateA;
+                    });
 
-                if(avisos.length > 0) {
-                    divAvisos.innerHTML = avisos.map(av => {
-                        // CORREÇÃO 3: Lendo as novas cores de "urgencia"
-                        let corBorda = 'border-slate-600/50';
-                        let corIcone = 'text-cyan-400';
-                        let icone = '📌';
+                    if(avisos.length > 0) {
+                        divAvisos.innerHTML = avisos.map(av => {
+                            let corBorda = 'border-slate-600/50';
+                            let corIcone = 'text-cyan-400';
+                            let icone = '📌';
 
-                        if (av.urgencia === 'urgente') {
-                            corBorda = 'border-rose-500/50';
-                            corIcone = 'text-rose-400';
-                            icone = '🚨';
-                        } else if (av.urgencia === 'importante') {
-                            corBorda = 'border-amber-500/50';
-                            corIcone = 'text-amber-400';
-                            icone = '⚠️';
-                        }
+                            if (av.urgencia === 'urgente') {
+                                corBorda = 'border-rose-500/50';
+                                corIcone = 'text-rose-400';
+                                icone = '🚨';
+                            } else if (av.urgencia === 'importante') {
+                                corBorda = 'border-amber-500/50';
+                                corIcone = 'text-amber-400';
+                                icone = '⚠️';
+                            }
 
-                        // CORREÇÃO 4: Exibindo av.conteudo em vez de av.mensagem
-                        return `<div class="bg-slate-900/50 p-4 rounded-2xl border ${corBorda} shadow-sm"><div class="flex items-center gap-2 mb-2"><span class="text-sm ${corIcone}">${icone}</span><h4 class="text-xs font-black text-white uppercase">${av.titulo || 'Aviso'}</h4></div><p class="text-[11px] text-slate-300 leading-relaxed">${av.conteudo || ''}</p></div>`;
-                    }).join('');
-                } else { 
-                    divAvisos.innerHTML = "<p class='text-xs text-slate-500 italic text-center'>Nenhum recado no momento.</p>"; 
+                            return `<div class="bg-slate-900/50 p-4 rounded-2xl border ${corBorda} shadow-sm"><div class="flex items-center gap-2 mb-2"><span class="text-sm ${corIcone}">${icone}</span><h4 class="text-xs font-black text-white uppercase">${av.titulo || 'Aviso'}</h4></div><p class="text-[11px] text-slate-300 leading-relaxed">${av.conteudo || ''}</p></div>`;
+                        }).join('');
+                    } else { 
+                        divAvisos.innerHTML = "<p class='text-xs text-slate-500 italic text-center'>Nenhum recado no momento.</p>"; 
+                    }
+                } catch (error) { 
+                    console.error("Erro Avisos:", error);
+                    divAvisos.innerHTML = "<p class='text-[10px] text-rose-500 text-center bg-rose-500/10 p-2 rounded-lg'>Erro ao carregar avisos.</p>"; 
                 }
+            }
 
-                // A parte dos horários continua igual
-                const qHorarios = query(collection(db, "horarios"), where("equipe_id", "==", alunoLogado.equipe_id));
-                const snapHorarios = await getDocs(qHorarios); let horarios = []; snapHorarios.forEach(doc => horarios.push(doc.data()));
-                horarios.sort((a,b) => (a.hora_inicio || "").localeCompare(b.hora_inicio || ""));
+            // --- BLOCO 2: BUSCAR HORÁRIOS ---
+            if(divHorarios) {
+                try {
+                    const qHorarios = query(collection(db, "horarios"), where("equipe_id", "==", alunoLogado.equipe_id));
+                    const snapHorarios = await getDocs(qHorarios); 
+                    let horarios = []; 
+                    snapHorarios.forEach(doc => horarios.push(doc.data()));
+                    horarios.sort((a,b) => (a.hora_inicio || "").localeCompare(b.hora_inicio || ""));
 
-                if(horarios.length > 0) {
-                    divHorarios.innerHTML = horarios.map(h => `<div class="flex items-center justify-between bg-slate-900/50 p-3 rounded-xl border border-slate-700/50"><div><p class="text-[11px] font-black text-indigo-300 uppercase">${h.turma || 'Turma'}</p><p class="text-[9px] text-slate-400">${h.dias_semana || 'Dias a definir'}</p></div><div class="text-right"><span class="text-xs font-black text-white bg-slate-800 px-2 py-1 rounded-lg border border-slate-600">${h.hora_inicio || '--:--'}</span></div></div>`).join('');
-                } else { 
-                    divHorarios.innerHTML = "<p class='text-xs text-slate-500 italic text-center'>Grade de horários não definida.</p>"; 
+                    if(horarios.length > 0) {
+                        divHorarios.innerHTML = horarios.map(h => `<div class="flex items-center justify-between bg-slate-900/50 p-3 rounded-xl border border-slate-700/50"><div><p class="text-[11px] font-black text-indigo-300 uppercase">${h.turma || 'Turma'}</p><p class="text-[9px] text-slate-400">${h.dias_semana || 'Dias a definir'}</p></div><div class="text-right"><span class="text-xs font-black text-white bg-slate-800 px-2 py-1 rounded-lg border border-slate-600">${h.hora_inicio || '--:--'}</span></div></div>`).join('');
+                    } else { 
+                        divHorarios.innerHTML = "<p class='text-xs text-slate-500 italic text-center'>Grade de horários não definida.</p>"; 
+                    }
+                } catch (error) {
+                    console.error("Erro Horários:", error);
+                    divHorarios.innerHTML = "<p class='text-[10px] text-rose-500 text-center bg-rose-500/10 p-2 rounded-lg'>Erro ao carregar horários.</p>"; 
                 }
-            } catch (error) { 
-                console.error(error);
-                divAvisos.innerHTML = "<p class='text-[10px] text-rose-500 text-center bg-rose-500/10 p-2 rounded-lg'>Erro ao carregar avisos.</p>"; 
-                divHorarios.innerHTML = "<p class='text-[10px] text-rose-500 text-center bg-rose-500/10 p-2 rounded-lg'>Erro ao carregar horários.</p>"; 
             }
         }
 

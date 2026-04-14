@@ -32,24 +32,17 @@
 
     <div id="tela-bloqueio" class="fixed inset-0 bg-slate-900 z-[90] hidden flex-col items-center justify-center p-6 text-center">
         <div class="bg-slate-800 p-8 rounded-3xl shadow-2xl max-w-md w-full border border-rose-500/30">
-            <div class="w-20 h-20 bg-rose-500/20 text-rose-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 shadow-[0_0_20px_rgba(244,63,94,0.3)]">
-                🔒
-            </div>
+            <div class="w-20 h-20 bg-rose-500/20 text-rose-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 shadow-[0_0_20px_rgba(244,63,94,0.3)]">🔒</div>
             <h2 class="text-2xl font-black text-white mb-2 uppercase tracking-tight">Acesso Suspenso</h2>
-            <p class="text-slate-400 text-sm mb-8 leading-relaxed">
-                A assinatura desta equipe encontra-se bloqueada. Por favor, regularize a situação financeira para restaurar o acesso ao sistema.
-            </p>
+            <p class="text-slate-400 text-sm mb-8 leading-relaxed">A assinatura desta equipe encontra-se bloqueada. Por favor, regularize a situação financeira para restaurar o acesso ao sistema.</p>
             <a href="https://wa.me/5521981716074?text=Olá! Minha conta no BJJ Manager foi suspensa e gostaria de regularizar o acesso da minha equipe." target="_blank" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-xl transition-all flex items-center justify-center gap-2 uppercase tracking-widest text-xs shadow-lg shadow-emerald-500/30 mb-4">
                 <span>📱</span> Falar com o Suporte
             </a>
-            <button onclick="sairDoSistema()" class="text-slate-500 hover:text-white text-xs font-bold uppercase tracking-widest transition-colors">
-                Sair do Sistema
-            </button>
+            <button onclick="sairDoSistema()" class="text-slate-500 hover:text-white text-xs font-bold uppercase tracking-widest transition-colors">Sair do Sistema</button>
         </div>
     </div>
 
     <div id="interface-sistema" class="flex w-full h-full relative">
-        
         <main class="flex-1 flex flex-col h-full overflow-hidden relative">
             <div class="flex-1 overflow-y-auto p-5 md:p-8 pb-24 md:pb-10">
                 <div class="max-w-7xl mx-auto">
@@ -65,6 +58,11 @@
                         </div>
                         
                         <div class="flex flex-wrap gap-2 md:gap-3 justify-center sm:justify-start">
+                            
+                            <button onclick="abrirModalAviso()" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-3 md:px-4 rounded-xl shadow-md transition-all flex items-center text-xs md:text-sm">
+                                <span class="mr-1 md:mr-2">📢</span> <span class="hidden sm:inline">Novo Recado</span>
+                            </button>
+
                             <button id="btn-config-equipe" onclick="abrirModalConfig()" class="hidden bg-slate-700 hover:bg-slate-800 text-white font-bold py-2.5 px-3 md:px-4 rounded-xl shadow-md transition-all flex items-center text-xs md:text-sm">
                                 <span class="mr-1 md:mr-2">⚙️</span> <span class="hidden sm:inline">Configurar Equipe</span>
                             </button>
@@ -174,6 +172,37 @@
         </main>
     </div>
 
+    <div id="modal-aviso" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-[200] p-4 transition-opacity">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col">
+            <div class="bg-amber-500 p-5 text-white font-black uppercase tracking-widest text-sm flex justify-between items-center shrink-0">
+                <span class="flex items-center gap-2"><span class="text-xl">📢</span> Enviar Recado</span>
+                <button onclick="fecharModalAviso()" class="text-amber-200 hover:text-white text-2xl leading-none">&times;</button>
+            </div>
+            
+            <form id="form-aviso" onsubmit="event.preventDefault(); salvarAviso();" class="p-6 space-y-5">
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Título do Recado</label>
+                    <input type="text" id="aviso-titulo" required placeholder="Ex: Treino de Feriado" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 font-bold text-slate-700 transition-all">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Mensagem Completa</label>
+                    <textarea id="aviso-mensagem" required rows="4" placeholder="Escreva o aviso para os alunos aqui..." class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 font-medium text-slate-700 resize-none transition-all"></textarea>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Tipo de Aviso</label>
+                    <select id="aviso-tipo" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 font-bold text-slate-700 cursor-pointer transition-all">
+                        <option value="normal">📌 Normal (Informativo)</option>
+                        <option value="importante">🚨 Importante (Aviso Urgente)</option>
+                    </select>
+                </div>
+                
+                <button type="submit" id="btn-salvar-aviso" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest transition-transform transform hover:-translate-y-1 text-xs mt-2">
+                    🚀 Enviar para o Portal do Atleta
+                </button>
+            </form>
+        </div>
+    </div>
+
     <div id="modal-config-equipe" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
             <div class="bg-slate-800 p-4 text-white font-black uppercase tracking-widest text-sm flex justify-between items-center shrink-0">
@@ -192,7 +221,6 @@
                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome da Equipe</label>
                     <input type="text" id="config-nome-equipe" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700 uppercase">
                 </div>
-                
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Alterar Logo (Opcional)</label>
                     <input type="file" id="config-logo" accept="image/png, image/jpeg" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-cyan-50 file:text-cyan-600 hover:file:bg-cyan-100 transition-all cursor-pointer">
@@ -277,7 +305,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        // Importando as funções do Storage, incluindo o deleteObject
         import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
         const firebaseConfig = {
@@ -296,7 +323,7 @@
         
         let uid = null;        
         let nomeEquipeAtual = "";
-        let logoEquipeAnterior = ""; // Nova variável para guardar a logo antiga
+        let logoEquipeAnterior = ""; 
         
         let valPrazo = 70.0;
         let valAtraso = 100.0;
@@ -318,7 +345,50 @@
             }, 4500);
         }
 
-        // --- CONTROLE DE ABAS NO MODAL ---
+        // --- NOVO: MODAL DE AVISO (MURAL DO PORTAL) ---
+        window.abrirModalAviso = function() {
+            document.getElementById('modal-aviso').classList.remove('hidden');
+            document.getElementById('modal-aviso').classList.add('flex');
+        }
+
+        window.fecharModalAviso = function() {
+            document.getElementById('modal-aviso').classList.add('hidden');
+            document.getElementById('modal-aviso').classList.remove('flex');
+            document.getElementById('form-aviso').reset();
+        }
+
+        window.salvarAviso = async function() {
+            const titulo = document.getElementById('aviso-titulo').value.trim();
+            const mensagem = document.getElementById('aviso-mensagem').value.trim();
+            const tipo = document.getElementById('aviso-tipo').value;
+            const btn = document.getElementById('btn-salvar-aviso');
+
+            if (!titulo || !mensagem) return showToast("Preencha o título e a mensagem.", "error");
+
+            const origTxt = btn.innerHTML;
+            btn.innerHTML = "⏳ Enviando...";
+            btn.disabled = true;
+
+            try {
+                await addDoc(collection(db, "avisos"), {
+                    equipe_id: uid,
+                    titulo: titulo,
+                    mensagem: mensagem,
+                    tipo: tipo,
+                    data_criacao: new Date().toISOString()
+                });
+                showToast("Recado enviado aos alunos com sucesso!", "success");
+                fecharModalAviso();
+            } catch (error) {
+                console.error(error);
+                showToast("Erro ao enviar recado.", "error");
+            } finally {
+                btn.innerHTML = origTxt;
+                btn.disabled = false;
+            }
+        }
+
+        // --- CONTROLE DE ABAS NO MODAL CONFIG ---
         window.switchConfigTab = function(tab) {
             ['dados', 'colabs', 'convites'].forEach(t => {
                 document.getElementById('tab-' + t).classList.add('hidden');
@@ -424,6 +494,28 @@
             } catch (e) { showToast("Erro ao remover.", "error"); }
         };
 
+        // --- MÁSCARAS DE INPUTS ---
+        window.mascaraMoeda = function(elemento) {
+            let valor = elemento.value.replace(/\D/g, ''); 
+            if (valor === '') { elemento.value = ''; return; }
+            valor = (parseInt(valor, 10) / 100).toFixed(2) + '';
+            valor = valor.replace(".", ",");
+            valor = valor.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+            elemento.value = valor;
+        }
+
+        function strToFloat(stringMoeda) {
+            if (!stringMoeda) return 0;
+            let valor = stringMoeda.replace(/\./g, '');
+            valor = valor.replace(',', '.');
+            return parseFloat(valor);
+        }
+
+        function floatToStr(valor) {
+            return valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+
         // --- AUTENTICAÇÃO E VERIFICAÇÃO DE BLOQUEIO ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -528,7 +620,10 @@
                                 elLogo.style.background = 'transparent';
                                 elLogo.innerHTML = `<img src="${dadosEquipe.url_logo}" class="w-full h-full object-cover" alt="Logo">`;
                             }
-                            if (imgTopo) imgTopo.src = dadosEquipe.url_logo;
+                            if (imgTopo) {
+                                imgTopo.src = dadosEquipe.url_logo;
+                                imgTopo.style.display = 'block';
+                            }
                         } else {
                             if (elLogo) {
                                 elLogo.style.background = ''; 
@@ -537,6 +632,13 @@
                         }
                     }
                     
+                    const hoje = new Date();
+                    document.getElementById('filtro-mes').value = String(hoje.getMonth() + 1).padStart(2, '0');
+                    document.getElementById('filtro-ano').value = hoje.getFullYear().toString();
+                    
+                    document.getElementById('config-prazo').value = floatToStr(valPrazo);
+                    document.getElementById('config-atraso').value = floatToStr(valAtraso);
+
                     carregarDashboard();
 
                 } catch (error) { console.log(error); }
@@ -632,8 +734,13 @@
         }
 
         // --- CARREGAMENTO PRINCIPAL DO DASHBOARD ---
-        async function carregarDashboard() {
+        window.carregarDashboard = async function() {
             try {
+                const mesAtual = parseInt(document.getElementById('filtro-mes').value, 10); 
+                const anoAtual = parseInt(document.getElementById('filtro-ano').value, 10);
+                const diaHoje = new Date().getDate();
+                const mesAnoFiltro = `${anoAtual}-${String(mesAtual).padStart(2, '0')}`;
+
                 const turmasQuery = query(collection(db, "turmas"), where("equipe_id", "==", uid));
                 const turmasSnap = await getDocs(turmasQuery);
                 
@@ -651,12 +758,6 @@
                         });
                     }
                 });
-
-                const dataHoje = new Date();
-                const mesAtual = dataHoje.getMonth() + 1; 
-                const anoAtual = dataHoje.getFullYear();
-                const diaHoje = dataHoje.getDate();
-                const mesAnoFiltro = `${anoAtual}-${String(mesAtual).padStart(2, '0')}`;
 
                 let caixaDoMes = 0;
                 let despesasDoMes = 0;
@@ -727,14 +828,14 @@
 
                         // ATENÇÃO FINANCEIRA
                         let isAlerta = false, msgAlerta = '', tema = 'rose'; 
-                        const diaVenc = parseInt(aluno.dia_vencimento, 10);
+                        const diaVencA = parseInt(aluno.dia_vencimento, 10);
                         const statusFaturaObj = faturasDoMes[alunoId]; 
                         const statusFatura = statusFaturaObj ? statusFaturaObj.status : null;
 
                         if (statusFatura !== 'PAGO' && statusFatura !== 'ISENTO' && parseInt(aluno.bolsa_perc || 0) !== 100) {
-                            if (!isNaN(diaVenc) && diaVenc > 0 && diaVenc <= 31) {
-                                if (diaVenc < diaHoje) { isAlerta = true; msgAlerta = `Venceu dia ${diaVenc}`; tema = 'rose'; } 
-                                else if (diaVenc >= diaHoje && diaVenc <= diaHoje + 10) { isAlerta = true; msgAlerta = diaVenc === diaHoje ? `Vence HOJE` : `Vence dia ${diaVenc}`; tema = 'amber'; }
+                            if (!isNaN(diaVencA) && diaVencA > 0 && diaVencA <= 31) {
+                                if (diaVencA < diaHoje) { isAlerta = true; msgAlerta = `Venceu dia ${diaVencA}`; tema = 'rose'; } 
+                                else if (diaVencA >= diaHoje && diaVencA <= diaHoje + 10) { isAlerta = true; msgAlerta = diaVencA === diaHoje ? `Vence HOJE` : `Vence dia ${diaVencA}`; tema = 'amber'; }
                             }
                         }
 
@@ -774,44 +875,50 @@
                 const painelOnboarding = document.getElementById('painel-onboarding');
 
                 if (ativos === 0) {
-                    painelMetricas.classList.add('hidden');
-                    painelOnboarding.classList.remove('hidden');
+                    if (painelMetricas) painelMetricas.classList.add('hidden');
+                    if (painelOnboarding) painelOnboarding.classList.remove('hidden');
                 } else {
-                    painelMetricas.classList.remove('hidden');
-                    painelOnboarding.classList.add('hidden');
+                    if (painelMetricas) painelMetricas.classList.remove('hidden');
+                    if (painelOnboarding) painelOnboarding.classList.add('hidden');
 
-                    document.getElementById('card-ativos').innerText = ativos;
-                    document.getElementById('card-receitas').innerText = `R$ ${caixaDoMes.toFixed(2).replace('.', ',')}`;
-                    document.getElementById('card-inadimplencia').innerText = `R$ ${valorAtrasado.toFixed(2).replace('.', ',')}`;
-                    document.getElementById('card-despesas').innerText = `R$ ${despesasDoMes.toFixed(2).replace('.', ',')}`;
+                    if (document.getElementById('card-ativos')) document.getElementById('card-ativos').innerText = ativos;
+                    if (document.getElementById('card-receitas')) document.getElementById('card-receitas').innerText = `R$ ${caixaDoMes.toFixed(2).replace('.', ',')}`;
+                    if (document.getElementById('card-inadimplencia')) document.getElementById('card-inadimplencia').innerText = `R$ ${valorAtrasado.toFixed(2).replace('.', ',')}`;
+                    if (document.getElementById('card-despesas')) document.getElementById('card-despesas').innerText = `R$ ${despesasDoMes.toFixed(2).replace('.', ',')}`;
 
                     const gridFaixas = document.getElementById('grid-faixas');
-                    gridFaixas.innerHTML = ''; 
-                    if (Object.keys(faixasCount).length === 0) {
-                        gridFaixas.innerHTML = '<span class="text-slate-400 text-sm font-medium">Nenhum aluno ativo mapeado.</span>';
-                    } else {
-                        for (const [faixa, qtd] of Object.entries(faixasCount)) {
-                            const estiloCss = obterEstiloFaixa(faixa);
-                            gridFaixas.innerHTML += `
-                                <div class="bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-sm">
-                                    <span class="w-3 h-3 rounded-full border border-slate-300 shadow-inner" style="${estiloCss}"></span>
-                                    <span class="text-xs font-bold text-slate-700">${faixa}: <span class="text-slate-900">${qtd}</span></span>
-                                </div>
-                            `;
+                    if (gridFaixas) {
+                        gridFaixas.innerHTML = ''; 
+                        if (Object.keys(faixasCount).length === 0) {
+                            gridFaixas.innerHTML = '<span class="text-slate-400 text-sm font-medium">Nenhum aluno ativo mapeado.</span>';
+                        } else {
+                            for (const [faixa, qtd] of Object.entries(faixasCount)) {
+                                const estiloCss = obterEstiloFaixa(faixa);
+                                gridFaixas.innerHTML += `
+                                    <div class="bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-sm">
+                                        <span class="w-3 h-3 rounded-full border border-slate-300 shadow-inner" style="${estiloCss}"></span>
+                                        <span class="text-xs font-bold text-slate-700">${faixa}: <span class="text-slate-900">${qtd}</span></span>
+                                    </div>
+                                `;
+                            }
                         }
                     }
 
-                    document.getElementById('lista-niver').innerHTML = aniversariantesHTML || `
-                        <div class="flex flex-col items-center justify-center h-full text-slate-400 mt-8">
-                            <span class="text-2xl mb-2">🎈</span><p class="text-sm font-medium">Nenhum aniversariante este mês</p>
-                        </div>
-                    `;
+                    if (document.getElementById('lista-niver')) {
+                        document.getElementById('lista-niver').innerHTML = aniversariantesHTML || `
+                            <div class="flex flex-col items-center justify-center h-full text-slate-400 mt-8">
+                                <span class="text-2xl mb-2">🎈</span><p class="text-sm font-medium">Nenhum aniversariante este mês</p>
+                            </div>
+                        `;
+                    }
 
-                    document.getElementById('lista-pendencias').innerHTML = pendenciasHTML || `
-                        <div class="flex flex-col items-center justify-center h-full text-slate-400 mt-8">
-                            <span class="text-2xl mb-2">✅</span><p class="text-sm font-medium">Nenhuma pendência financeira!</p>
-                        </div>
-                    `;
+                    if (document.getElementById('lista-pendencias')) {
+                        document.getElementById('lista-pendencias').innerHTML = pendenciasHTML || `
+                            <div class="flex flex-col items-center justify-center h-full text-slate-400 mt-8">
+                                <span class="text-2xl mb-2">✅</span><p class="text-sm font-medium">Nenhuma pendência financeira!</p>
+                            </div>
+                        `;
+                    }
 
                     let turmasHTML = '';
                     for (const [turmaNome, alunosDaTurma] of Object.entries(turmasMap)) {
@@ -850,11 +957,13 @@
                         `;
                     }
                     
-                    document.getElementById('lista-turmas').innerHTML = turmasHTML || `
-                        <div class="flex flex-col items-center justify-center h-full text-slate-400 mt-8">
-                            <span class="text-2xl mb-2">🥋</span><p class="text-sm font-medium">Nenhuma turma mapeada</p>
-                        </div>
-                    `;
+                    if (document.getElementById('lista-turmas')) {
+                        document.getElementById('lista-turmas').innerHTML = turmasHTML || `
+                            <div class="flex flex-col items-center justify-center h-full text-slate-400 mt-8">
+                                <span class="text-2xl mb-2">🥋</span><p class="text-sm font-medium">Nenhuma turma mapeada</p>
+                            </div>
+                        `;
+                    }
                 }
 
             } catch (error) { console.error(error); }
@@ -878,8 +987,6 @@
                     // 1. Apaga a logo antiga se existir
                     if (logoEquipeAnterior) {
                         try {
-                            // Extrai o caminho do arquivo no Firebase Storage a partir da URL
-                            // Nota: Isto assume que a imagem foi carregada usando a nossa estrutura padrão.
                             const refLogoAntiga = ref(storage, logoEquipeAnterior);
                             await deleteObject(refLogoAntiga);
                             console.log("Logo antiga apagada do Storage.");
@@ -905,16 +1012,20 @@
             }
         };
 
+        window.carregarDados = async function() {
+            carregarDashboard();
+        }
+
         window.sairDoSistema = () => signOut(auth).then(() => window.location.href = "index.html");
+
     </script>
     
     <script>
         // Oculta a div gigante do menu.js silenciosamente (Corrigido para não esconder o sistema!)
         const radarSuporte = setInterval(() => {
             Array.from(document.body.children).forEach(el => {
-                // Procura a div do menu.js, mas IGNORA a interface do sistema
                 if (el.tagName === 'DIV' && el.id !== 'interface-sistema' && (el.textContent || '').toUpperCase().includes('MODO SUPORTE ATIVADO')) {
-                    el.style.display = 'none'; // Esconde apenas o monstro vermelho
+                    el.style.display = 'none';
                     clearInterval(radarSuporte);
                 }
             });

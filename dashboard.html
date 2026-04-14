@@ -260,7 +260,7 @@
             
             <div class="flex border-b border-slate-200 shrink-0 overflow-x-auto hide-scrollbar">
                 <button id="tab-btn-dados" onclick="switchConfigTab('dados')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-cyan-600 border-b-2 border-cyan-500 transition-colors whitespace-nowrap">Dados</button>
-                <button id="tab-btn-colabs" onclick="switchConfigTab('colabs')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors whitespace-nowrap">Equipa Técnica</button>
+                <button id="tab-btn-colabs" onclick="switchConfigTab('colabs')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors whitespace-nowrap">Equipe Técnica</button>
                 <button id="tab-btn-convites" onclick="switchConfigTab('convites')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors whitespace-nowrap">Convites</button>
             </div>
 
@@ -293,8 +293,8 @@
 
             <div id="tab-convites" class="hidden p-6 flex-1 overflow-y-auto flex-col space-y-6">
                 <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
-                    <h4 class="text-xs font-black text-indigo-700 uppercase mb-1 flex items-center"><span class="mr-2 text-base">👥</span> Para Co-Administrador(a) / Auxiliares</h4>
-                    <p class="text-[10px] text-indigo-500/80 font-medium mb-3 leading-relaxed">Partilhe este link. Ao se cadastrarem, entrarão automaticamente como Co-Administradores.</p>
+                    <h4 class="text-xs font-black text-indigo-700 uppercase mb-1 flex items-center"><span class="mr-2 text-base">👥</span> Para Co-Adminsitrador(a) / Auxiliares</h4>
+                    <p class="text-[10px] text-indigo-500/80 font-medium mb-3 leading-relaxed">Compartilhe este link. Ao se cadastrarem, eles entrarão automaticamente como Co-Administradores.</p>
                     <div class="flex gap-2">
                         <input type="text" id="link-convite-prof" readonly class="w-full p-2.5 bg-white border border-indigo-200 rounded-lg text-[10px] text-slate-600 font-mono outline-none">
                         <button onclick="copiarLink('link-convite-prof')" class="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-2.5 rounded-lg text-[10px] font-black uppercase shrink-0 transition-colors shadow-sm">Copiar</button>
@@ -404,7 +404,7 @@
                 document.getElementById('btn-enviar-msg').innerHTML = "Publicar Aviso";
             }
             if(tab === 'lista') {
-                cancelarEdicaoMensagem(); // Limpa o formulário quando vai pra lista
+                cancelarEdicaoMensagem(); 
             }
             
             ['nova', 'lista'].forEach(t => {
@@ -471,7 +471,6 @@
             document.getElementById('btn-enviar-msg').innerHTML = "Salvar Alterações";
             document.getElementById('tab-btn-msg-nova').innerText = "Editar Aviso";
             
-            // Esconde todas e mostra a Aba Nova diretamente sem disparar a função switch
             ['nova', 'lista'].forEach(t => {
                 document.getElementById('tab-msg-' + t).classList.add('hidden');
                 document.getElementById('tab-msg-' + t).classList.remove('flex', 'flex-col', 'block');
@@ -566,7 +565,7 @@
                 snap.forEach(doc => msgs.push({ id: doc.id, ...doc.data() }));
                 
                 msgs.sort((a,b) => new Date(b.data_envio || 0) - new Date(a.data_envio || 0));
-                mensagensCache = msgs; // Salva no cache
+                mensagensCache = msgs; 
 
                 let html = '';
                 msgs.forEach(msg => {
@@ -575,7 +574,6 @@
                     if (msg.urgencia === 'importante') { cor = 'bg-amber-50 border-amber-200 text-amber-700'; icone = '⚠️'; }
                     if (msg.urgencia === 'urgente') { cor = 'bg-rose-50 border-rose-200 text-rose-700'; icone = '🚨'; }
 
-                    // Formata a data limite para algo legível
                     let dataLim = "Sem expiração";
                     if (msg.data_expiracao) {
                         const dl = new Date(msg.data_expiracao);
@@ -1241,7 +1239,7 @@
                 }
                 
                 await updateDoc(doc(db, "equipes", uid), updates);
-                showToast("Equipa atualizada!", "success");
+                showToast("Equipe atualizada!", "success");
                 setTimeout(() => window.location.reload(), 1500);
             } catch (error) {
                 console.error(error);

@@ -39,6 +39,8 @@ function carregarMenu() {
                 <a href="alunos.html" class="${classDesktop('alunos.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'alunos.html' ? 'drop-shadow-md' : 'opacity-70'}">🥋</span> Alunos</a>
                 <a href="turmas.html" class="${classDesktop('turmas.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'turmas.html' ? 'drop-shadow-md' : 'opacity-70'}">🗓️</span> Turmas</a>
                 
+                <a href="loja.html" class="${classDesktop('loja.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'loja.html' ? 'drop-shadow-md' : 'opacity-70'}">🛒</span> Loja Virtual</a>
+                
                 <div class="px-5 pt-4 pb-2">
                     <p class="text-[10px] font-black text-slate-600 uppercase tracking-widest">Acadêmico</p>
                 </div>
@@ -75,6 +77,8 @@ function carregarMenu() {
             <a href="financeiro.html" class="${classMobile('financeiro.html')}">${indicadorMobile('financeiro.html')}<span class="text-xl mb-1 ${paginaAtual === 'financeiro.html' ? '' : 'opacity-60'}">💰</span><span class="text-[8px] font-bold uppercase tracking-wide">Caixa</span></a>
             <a href="alunos.html" class="${classMobile('alunos.html')}">${indicadorMobile('alunos.html')}<span class="text-xl mb-1 ${paginaAtual === 'alunos.html' ? '' : 'opacity-60'}">🥋</span><span class="text-[8px] font-bold uppercase tracking-wide">Alunos</span></a>
             <a href="turmas.html" class="${classMobile('turmas.html')}">${indicadorMobile('turmas.html')}<span class="text-xl mb-1 ${paginaAtual === 'turmas.html' ? '' : 'opacity-60'}">🗓️</span><span class="text-[8px] font-bold uppercase tracking-wide">Turmas</span></a>
+            
+            <a href="loja.html" class="${classMobile('loja.html')}">${indicadorMobile('loja.html')}<span class="text-xl mb-1 ${paginaAtual === 'loja.html' ? '' : 'opacity-60'}">🛒</span><span class="text-[8px] font-bold uppercase tracking-wide">Loja</span></a>
             
             <a href="certificados.html" class="${classMobile('certificados.html')}">${indicadorMobile('certificados.html')}<span class="text-xl mb-1 ${paginaAtual === 'certificados.html' ? '' : 'opacity-60'}">📜</span><span class="text-[8px] font-bold uppercase tracking-wide">Certif.</span></a>
             <a href="curriculo.html" class="${classMobile('curriculo.html')}">${indicadorMobile('curriculo.html')}<span class="text-xl mb-1 ${paginaAtual === 'curriculo.html' ? '' : 'opacity-60'}">📄</span><span class="text-[8px] font-bold uppercase tracking-wide">Currí.</span></a>

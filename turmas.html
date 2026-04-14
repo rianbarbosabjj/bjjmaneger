@@ -43,7 +43,7 @@
                         
                         <div class="space-y-3">
                             <div>
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome (Ex: Infantil / Adulto)</label>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome (Ex: Adulto Noite)</label>
                                 <input type="text" id="turma-nome" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700 uppercase">
                             </div>
                             
@@ -127,12 +127,12 @@
                 <div id="painel-detalhe" class="w-full md:w-2/3 hidden flex-col h-full gap-4 md:gap-6 overflow-hidden">
                     <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-4 md:p-6 flex flex-col shrink-0">
                         <div class="flex items-center gap-3 sm:gap-4 mb-2">
-                            <button onclick="voltarLista()" class="md:hidden flex items-center justify-center w-10 h-10 bg-slate-100 text-slate-500 rounded-full hover:bg-slate-200 shrink-0 shadow-sm">🔙</button>
+                            <button onclick="voltarLista()" class="md:hidden flex items-center justify-center w-10 h-10 bg-slate-100 text-slate-500 rounded-full hover:bg-slate-200 shrink-0">🔙</button>
                             <div class="flex-1 overflow-hidden">
                                 <h2 class="text-xl md:text-3xl font-black text-slate-800 truncate" id="turma-nome-detalhe">Nome da Turma</h2>
                             </div>
                             <div class="text-right shrink-0">
-                                <div id="turma-horario-badge" class="px-3 py-1.5 rounded-lg text-[10px] font-black uppercase bg-cyan-50 text-cyan-700 border border-cyan-200 shadow-sm inline-block">--</div>
+                                <div id="turma-horario-badge" class="px-3 py-1.5 rounded-lg text-[10px] font-black uppercase bg-cyan-50 text-cyan-700 border border-cyan-200 inline-block shadow-sm">--</div>
                                 <div id="turma-idade-badge" class="block text-[9px] font-bold text-slate-400 uppercase mt-1">--</div>
                             </div>
                         </div>
@@ -142,11 +142,11 @@
                     <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex-1 flex flex-col overflow-hidden relative">
                         <div class="p-4 md:p-5 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row gap-3 items-center shrink-0">
                             <div class="flex-1 w-full">
-                                <select id="combo-add-aluno" class="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer shadow-sm">
+                                <select id="combo-add-aluno" class="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">
                                     <option value="">Selecione um atleta...</option>
                                 </select>
                             </div>
-                            <button onclick="adicionarAlunoNaTurma()" class="w-full sm:w-auto bg-[#10B981] hover:bg-emerald-600 text-white font-black py-3 px-6 rounded-xl shadow-md transition-all uppercase tracking-widest text-xs">Adicionar Atleta</button>
+                            <button onclick="adicionarAlunoNaTurma()" class="w-full sm:w-auto bg-[#10B981] hover:bg-emerald-600 text-white font-black py-3 px-6 rounded-xl shadow-md transition-all uppercase tracking-widest text-xs">Adicionar</button>
                         </div>
                         <div class="flex-1 overflow-y-auto p-2 md:p-4 hide-scrollbar bg-slate-50/30" id="lista-matriculados"></div>
                     </div>
@@ -167,11 +167,11 @@
             <div class="bg-slate-900 p-4 text-white font-black uppercase tracking-widest text-sm">🔄 Trocar de Turma</div>
             <div class="p-6 space-y-4">
                 <p class="text-sm text-slate-500">Transferir <span id="lbl-atleta-troca" class="font-black text-cyan-600"></span> para:</p>
-                <select id="select-nova-turma" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:border-cyan-500"></select>
+                <select id="select-nova-turma" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none"></select>
             </div>
             <div class="p-4 bg-slate-50 border-t border-slate-200 flex gap-2">
-                <button onclick="fecharModalTrocar()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold py-3 rounded-xl transition-all text-xs uppercase tracking-widest">Cancelar</button>
-                <button onclick="confirmarTroca()" class="flex-1 bg-cyan-500 hover:bg-cyan-600 text-white font-black py-3 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest">Confirmar</button>
+                <button onclick="fecharModalTrocar()" class="flex-1 bg-slate-200 text-slate-600 font-bold py-3 rounded-xl transition-all text-xs">CANCELAR</button>
+                <button onclick="confirmarTroca()" class="flex-1 bg-cyan-500 text-white font-black py-3 rounded-xl shadow-md transition-all text-xs">CONFIRMAR</button>
             </div>
         </div>
     </div>
@@ -179,7 +179,7 @@
     <script src="menu.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where, updateDoc, deleteDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -271,11 +271,21 @@
             }
         }
 
-        // Função ajudante para formatar a array de dias [1, 3] para "Seg, Qua"
-        function formatarDiasSemanas(diasArray) {
-            if(!diasArray || !Array.isArray(diasArray) || diasArray.length === 0) return "--";
-            const mapaDias = {0: 'Dom', 1: 'Seg', 2: 'Ter', 3: 'Qua', 4: 'Qui', 5: 'Sex', 6: 'Sáb'};
-            return diasArray.sort().map(d => mapaDias[d]).join(', ');
+        // --- FORMATADORES PARA MANTER O PADRÃO VISUAL DO PROFESSOR ---
+        function formatarDiasSemanas(diasData) {
+            if (!diasData) return "--";
+            if (typeof diasData === 'string') return diasData; // Fallback se for turma muito antiga
+            if (Array.isArray(diasData)) {
+                if (diasData.length === 0) return "--";
+                const mapaDias = {0: 'Dom', 1: 'Seg', 2: 'Ter', 3: 'Qua', 4: 'Qui', 5: 'Sex', 6: 'Sáb'};
+                return diasData.sort().map(d => mapaDias[d]).join('/');
+            }
+            return "--";
+        }
+
+        function formatarHorarioBox(h_inicio, h_fim, legado) {
+            if (h_inicio) return `${h_inicio}${h_fim ? `-${h_fim}` : ''}`;
+            return legado || '--:--';
         }
 
         function getEstiloFaixa(faixa) {
@@ -321,6 +331,21 @@
             return `Idade: ${min} a ${max} anos`;
         }
 
+        async function limparInativosDasTurmas() {
+            const q = query(collection(db, "alunos"), where("equipe_id", "==", uid), where("status", "==", "INATIVO"));
+            const snap = await getDocs(q);
+            const idsInativos = snap.docs.map(d => d.id);
+            if (idsInativos.length === 0) return;
+            for (let t of turmasCache) {
+                const novosIds = (t.alunos_ids || []).filter(id => !idsInativos.includes(id));
+                if (novosIds.length !== (t.alunos_ids || []).length) {
+                    await updateDoc(doc(db, "turmas", t.id), { alunos_ids: novosIds });
+                    t.alunos_ids = novosIds;
+                }
+            }
+            renderizarTurmas();
+        }
+
         async function carregarAlunos() {
             const q = query(collection(db, "alunos"), where("equipe_id", "==", uid), where("status", "==", "ATIVO"));
             const snap = await getDocs(q);
@@ -342,14 +367,15 @@
                 const div = document.createElement('div');
                 div.className = "p-3 mb-3 bg-white border border-slate-100 rounded-xl hover:border-cyan-300 transition-all flex flex-col gap-2 group shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)]";
                 
-                // Trata as turmas antigas que só tinham texto e as novas que tem Array
-                let strDias = Array.isArray(t.dias_semana) ? formatarDiasSemanas(t.dias_semana) : (t.dias_semana || '--');
+                // MÁGICA: Formata do jeito que você gosta: "Seg/Qua | 19:00-20:30"
+                let strDias = formatarDiasSemanas(t.dias_semana || t.dias);
+                let strHorario = formatarHorarioBox(t.hora_inicio, t.hora_fim, t.horario);
 
                 div.innerHTML = `
                     <div class="flex items-center justify-between cursor-pointer" onclick="selecionarTurma('${t.id}')">
                         <div>
                             <h4 class='font-black text-xs uppercase text-slate-800 group-hover:text-cyan-600 transition-colors'>${t.nome}</h4>
-                            <p class='text-[9px] text-slate-400 font-bold mt-0.5'>${strDias} | ${t.hora_inicio || '--'} às ${t.hora_fim || '--'}</p>
+                            <p class='text-[9px] text-slate-400 font-bold mt-0.5'>${strDias} | ${strHorario}</p>
                         </div>
                         <div class='bg-cyan-50 text-cyan-600 text-[10px] font-black px-2 py-1 rounded-lg border border-cyan-100 shadow-sm'>
                             👥 ${(t.alunos_ids||[]).length}
@@ -371,7 +397,6 @@
             const hora_inicio = document.getElementById('turma-hora-inicio').value;
             const hora_fim = document.getElementById('turma-hora-fim').value;
 
-            // Pega todos os checkboxes marcados e joga numa array de números
             const checkboxesDias = document.querySelectorAll('.chk-dia:checked');
             const dias_semana = Array.from(checkboxesDias).map(cb => parseInt(cb.value));
 
@@ -385,7 +410,7 @@
             try {
                 const dados = { 
                     nome: nome, 
-                    dias_semana: dias_semana, // Agora salvamos o ARRAY
+                    dias_semana: dias_semana, 
                     hora_inicio: hora_inicio, 
                     hora_fim: hora_fim,
                     idade_min: min, 
@@ -420,10 +445,7 @@
             document.getElementById('turma-hora-inicio').value = t.hora_inicio || "";
             document.getElementById('turma-hora-fim').value = t.hora_fim || "";
 
-            // Limpa as caixas de seleção
             document.querySelectorAll('.chk-dia').forEach(cb => cb.checked = false);
-            
-            // Marca as que vem do banco
             if(Array.isArray(t.dias_semana)) {
                 t.dias_semana.forEach(d => {
                     const cb = document.querySelector(`.chk-dia[value="${d}"]`);
@@ -465,10 +487,11 @@
             document.getElementById('painel-detalhe').classList.add('flex');
             document.getElementById('painel-lista').classList.add('hidden', 'md:flex');
             
-            let strDias = Array.isArray(turmaSelecionada.dias_semana) ? formatarDiasSemanas(turmaSelecionada.dias_semana) : (turmaSelecionada.dias_semana || '--');
+            let strDias = formatarDiasSemanas(turmaSelecionada.dias_semana || turmaSelecionada.dias);
+            let strHorario = formatarHorarioBox(turmaSelecionada.hora_inicio, turmaSelecionada.hora_fim, turmaSelecionada.horario);
 
             document.getElementById('turma-nome-detalhe').innerText = turmaSelecionada.nome;
-            document.getElementById('turma-horario-badge').innerText = `${strDias} | ${turmaSelecionada.hora_inicio || '--'} às ${turmaSelecionada.hora_fim || '--'}`;
+            document.getElementById('turma-horario-badge').innerText = `${strDias} | ${strHorario}`;
             document.getElementById('turma-idade-badge').innerText = formatarRegraIdade(turmaSelecionada.idade_min, turmaSelecionada.idade_max);
             
             atualizarUIAlunosDaTurma();

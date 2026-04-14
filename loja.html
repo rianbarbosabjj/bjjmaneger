@@ -14,6 +14,10 @@
         
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Estilo para as bolinhas do carrossel */
+        .carousel-dot { transition: all 0.3s ease; }
+        .carousel-dot.active { background-color: #06b6d4; width: 1rem; }
     </style>
 </head>
 <body class="flex flex-col h-[100dvh] overflow-hidden text-slate-800 bg-[#F8FAFC]">
@@ -45,13 +49,18 @@
                         
                         <div class="space-y-4 relative z-10">
                             
-                            <div class="flex flex-col items-center justify-center">
-                                <div class="relative w-32 h-32 rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 hover:bg-slate-100 transition-colors flex items-center justify-center overflow-hidden group cursor-pointer mb-2">
-                                    <img id="preview-foto-produto" src="" class="w-full h-full object-contain hidden z-10 bg-white" />
-                                    <span id="icone-foto-fallback" class="text-3xl text-slate-400 z-0 group-hover:scale-110 transition-transform">📸</span>
-                                    <input type="file" id="produto-foto" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-20" onchange="previewImagemProduto(this)">
-                                </div>
-                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Toque para adicionar foto</p>
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Imagens do Produto</label>
+                                
+                                <div class="flex gap-2 overflow-x-auto hide-scrollbar py-1" id="container-miniaturas">
+                                    <label class="shrink-0 w-20 h-20 rounded-2xl border-2 border-dashed border-cyan-300 bg-cyan-50 hover:bg-cyan-100 transition-colors flex flex-col items-center justify-center cursor-pointer group shadow-sm">
+                                        <span class="text-xl text-cyan-500 group-hover:scale-110 transition-transform">➕</span>
+                                        <span class="text-[8px] font-black text-cyan-600 uppercase mt-1">Fotos</span>
+                                        <input type="file" id="produto-foto" accept="image/*" multiple class="hidden" onchange="processarNovasImagens(this)">
+                                    </label>
+                                    
+                                    </div>
+                                <p class="text-[9px] text-slate-400 mt-1">Podes selecionar várias imagens (até 5MB por foto).</p>
                             </div>
 
                             <div>
@@ -74,7 +83,7 @@
                             
                             <div class="flex gap-2 mt-4 pt-2 border-t border-slate-100">
                                 <button onclick="cancelarEdicaoProduto()" id="btn-cancelar-produto" class="hidden flex-1 bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold py-3 px-3 rounded-xl transition-all text-xs uppercase tracking-widest">Cancelar</button>
-                                <button onclick="salvarProduto()" id="btn-salvar-produto" class="flex-[2] bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 px-3 rounded-xl shadow-lg shadow-emerald-500/30 transition-transform transform hover:-translate-y-0.5 uppercase tracking-widest text-xs">💾 Guardar Produto</button>
+                                <button onclick="salvarProduto()" id="btn-salvar-produto" class="flex-[2] bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 px-3 rounded-xl shadow-lg shadow-emerald-500/30 transition-transform transform hover:-translate-y-0.5 uppercase tracking-widest text-xs">💾 Guardar</button>
                             </div>
                         </div>
                     </div>
@@ -87,7 +96,7 @@
                     </div>
                     
                     <div class="flex-1 overflow-y-auto p-4 md:p-6 hide-scrollbar bg-slate-50/50">
-                        <div id="lista-produtos" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        <div id="lista-produtos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                             <div class="col-span-full text-center text-slate-400 text-sm mt-10 italic">A carregar produtos...</div>
                         </div>
                     </div>
@@ -122,7 +131,10 @@
         let teamId = null; 
         let produtosCache = [];
         let produtoEditandoId = null;
-        let fotoProdutoEditandoURL = null; // Guarda a URL antiga se for edição
+
+        // Variaveis para o controle de múltiplas imagens
+        let imagensUrlsExistentes = []; // Imagens que já estão no banco
+        let novosArquivosImagem = []; // Novos arquivos selecionados para upload
 
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
@@ -166,19 +178,68 @@
             } else { window.location.href = "index.html"; }
         });
 
-        window.previewImagemProduto = function(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = document.getElementById('preview-foto-produto');
-                    img.src = e.target.result;
-                    img.classList.remove('hidden');
-                    document.getElementById('icone-foto-fallback').classList.add('hidden');
+        // --- SISTEMA DE MÚLTIPLAS IMAGENS ---
+        window.processarNovasImagens = function(input) {
+            if (input.files && input.files.length > 0) {
+                for(let i = 0; i < input.files.length; i++) {
+                    // Proteção extra: Limita a 5 imagens por produto para não pesar
+                    if (imagensUrlsExistentes.length + novosArquivosImagem.length >= 5) {
+                        showToast("Máximo de 5 fotos por produto.", "error");
+                        break;
+                    }
+                    novosArquivosImagem.push(input.files[i]);
                 }
-                reader.readAsDataURL(input.files[0]);
+                atualizarContainerMiniaturas();
             }
+            input.value = ""; // Reseta o input para permitir selecionar o mesmo arquivo novamente se quiser
         };
 
+        window.removerImagemExistente = function(index) {
+            imagensUrlsExistentes.splice(index, 1);
+            atualizarContainerMiniaturas();
+        };
+
+        window.removerNovoArquivo = function(index) {
+            novosArquivosImagem.splice(index, 1);
+            atualizarContainerMiniaturas();
+        };
+
+        function atualizarContainerMiniaturas() {
+            // Pegamos as divs que já estão lá (mantendo o botão de add)
+            const container = document.getElementById('container-miniaturas');
+            const btnAdd = container.firstElementChild; // Salva o botão "➕ Fotos"
+            
+            container.innerHTML = '';
+            container.appendChild(btnAdd);
+
+            // 1. Renderiza imagens que já existem no banco
+            imagensUrlsExistentes.forEach((url, index) => {
+                const div = criarMiniatura(url, () => removerImagemExistente(index));
+                container.appendChild(div);
+            });
+
+            // 2. Renderiza as imagens novas que vão ser upadas
+            novosArquivosImagem.forEach((file, index) => {
+                const objectUrl = URL.createObjectURL(file);
+                const div = criarMiniatura(objectUrl, () => removerNovoArquivo(index));
+                container.appendChild(div);
+            });
+        }
+
+        function criarMiniatura(src, funcRemover) {
+            const div = document.createElement('div');
+            div.className = "shrink-0 w-20 h-20 rounded-2xl border border-slate-200 bg-white relative overflow-hidden group shadow-sm";
+            div.innerHTML = `
+                <img src="${src}" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <button type="button" class="text-white bg-rose-500 hover:bg-rose-600 rounded-full w-8 h-8 flex items-center justify-center shadow-lg font-bold" title="Remover foto">🗑️</button>
+                </div>
+            `;
+            div.querySelector('button').onclick = funcRemover;
+            return div;
+        }
+
+        // --- CARREGAMENTO DOS PRODUTOS DA LOJA ---
         async function carregarProdutos() {
             const container = document.getElementById('lista-produtos');
             try {
@@ -191,35 +252,71 @@
             }
         }
 
+        // Função utilitária para tratar cliques do scroll do carrossel (Scroll ScrollSnap Native)
+        window.scrollCarrossel = function(idCarrossel, direcao) {
+            const el = document.getElementById(idCarrossel);
+            if(el) {
+                const scrollAmount = el.clientWidth;
+                el.scrollBy({ left: direcao * scrollAmount, behavior: 'smooth' });
+            }
+        }
+
         function renderizarProdutos() {
             const container = document.getElementById('lista-produtos');
             container.innerHTML = produtosCache.length === 0 ? "<div class='col-span-full text-center p-10 text-slate-400 text-sm'>Nenhum produto cadastrado na vitrine virtual.</div>" : "";
             
-            produtosCache.forEach(p => {
+            produtosCache.forEach((p, indexProduto) => {
                 const precoFormatado = p.valor ? parseFloat(p.valor).toFixed(2).replace('.', ',') : "0,00";
-                const img = p.imagem_url || 'https://via.placeholder.com/150?text=Sem+Foto';
                 
-                // Estilo dependendo se está ativo ou não
+                // Trata as imagens para suportar produtos velhos (com 1 imagem) e novos (array de imagens)
+                let arrayDeImagens = [];
+                if (p.imagens_urls && p.imagens_urls.length > 0) arrayDeImagens = p.imagens_urls;
+                else if (p.imagem_url) arrayDeImagens = [p.imagem_url];
+                else arrayDeImagens = ['https://via.placeholder.com/400x400?text=Sem+Foto'];
+
                 const bgStatus = p.status === 'ATIVO' ? 'bg-white' : 'bg-slate-100 grayscale-[50%] opacity-70';
                 const badgeStatus = p.status === 'ATIVO' 
-                    ? '<span class="absolute top-2 right-2 bg-emerald-500 text-white text-[8px] font-black px-2 py-0.5 rounded uppercase tracking-widest shadow-sm">Na vitrine</span>'
-                    : '<span class="absolute top-2 right-2 bg-slate-500 text-white text-[8px] font-black px-2 py-0.5 rounded uppercase tracking-widest shadow-sm">Oculto</span>';
+                    ? '<span class="absolute top-3 left-3 z-20 bg-emerald-500 text-white text-[8px] font-black px-2.5 py-1 rounded-md uppercase tracking-widest shadow-md">Na vitrine</span>'
+                    : '<span class="absolute top-3 left-3 z-20 bg-slate-500 text-white text-[8px] font-black px-2.5 py-1 rounded-md uppercase tracking-widest shadow-md">Oculto</span>';
+
+                // Renderiza o Carrossel (HTML Interno do card)
+                let idUnicoCarrossel = `carousel-${p.id}`;
+                
+                let slidesHtml = '';
+                arrayDeImagens.forEach(img => {
+                    slidesHtml += `<div class="w-full h-full shrink-0 flex items-center justify-center snap-center relative overflow-hidden"><img src="${img}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"></div>`;
+                });
+
+                // Setas apenas se houver mais de 1 imagem
+                let setasHtml = '';
+                if (arrayDeImagens.length > 1) {
+                    setasHtml = `
+                        <button onclick="scrollCarrossel('${idUnicoCarrossel}', -1)" class="absolute left-1 top-1/2 -translate-y-1/2 w-7 h-7 bg-white/80 hover:bg-white rounded-full flex items-center justify-center text-xs shadow-md z-10 opacity-0 group-hover:opacity-100 transition-opacity">◀</button>
+                        <button onclick="scrollCarrossel('${idUnicoCarrossel}', 1)" class="absolute right-1 top-1/2 -translate-y-1/2 w-7 h-7 bg-white/80 hover:bg-white rounded-full flex items-center justify-center text-xs shadow-md z-10 opacity-0 group-hover:opacity-100 transition-opacity">▶</button>
+                        <div class="absolute bottom-2 left-0 w-full flex justify-center gap-1 z-10">
+                            ${arrayDeImagens.map((_, i) => `<div class="w-1.5 h-1.5 rounded-full bg-slate-400/50 ${i===0?'!bg-cyan-500 w-3':''}"></div>`).join('')}
+                        </div>
+                    `;
+                }
 
                 const card = document.createElement('div');
-                card.className = `flex flex-col border border-slate-200 rounded-2xl overflow-hidden shadow-sm group hover:shadow-md transition-shadow ${bgStatus} relative`;
+                card.className = `flex flex-col border border-slate-200 rounded-3xl overflow-hidden shadow-sm group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${bgStatus} relative`;
                 
                 card.innerHTML = `
                     ${badgeStatus}
-                    <div class="aspect-square bg-white border-b border-slate-100 p-3 flex items-center justify-center overflow-hidden">
-                        <img src="${img}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300">
+                    <div class="aspect-square bg-slate-50 relative border-b border-slate-100">
+                        ${setasHtml}
+                        <div id="${idUnicoCarrossel}" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory hide-scrollbar scroll-smooth">
+                            ${slidesHtml}
+                        </div>
                     </div>
-                    <div class="p-3 flex flex-col flex-1">
-                        <h4 class="text-[11px] font-black text-slate-800 uppercase tracking-wide truncate mb-1" title="${p.nome}">${p.nome}</h4>
-                        <p class="text-sm font-black text-emerald-600 mb-3">R$ ${precoFormatado}</p>
+                    <div class="p-4 flex flex-col flex-1">
+                        <h4 class="text-xs font-black text-slate-800 uppercase tracking-wide truncate mb-1" title="${p.nome}">${p.nome}</h4>
+                        <p class="text-base font-black text-emerald-600 mb-4">R$ ${precoFormatado}</p>
                         
-                        <div class="mt-auto grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
-                            <button onclick="editarProduto('${p.id}')" class="bg-slate-100 hover:bg-cyan-50 text-slate-500 hover:text-cyan-600 border border-slate-200 hover:border-cyan-200 rounded-lg py-1.5 text-[9px] font-black uppercase transition-colors">Editar</button>
-                            <button onclick="excluirProduto('${p.id}', '${p.imagem_url || ''}')" class="bg-slate-100 hover:bg-rose-50 text-slate-500 hover:text-rose-600 border border-slate-200 hover:border-rose-200 rounded-lg py-1.5 text-[9px] font-black uppercase transition-colors">Excluir</button>
+                        <div class="mt-auto grid grid-cols-2 gap-2">
+                            <button onclick="editarProduto('${p.id}')" class="bg-slate-100 hover:bg-cyan-50 text-slate-500 hover:text-cyan-600 border border-slate-200 hover:border-cyan-200 rounded-xl py-2.5 text-[9px] font-black uppercase tracking-widest transition-colors shadow-sm">Editar</button>
+                            <button onclick="excluirProduto('${p.id}')" class="bg-slate-100 hover:bg-rose-50 text-slate-500 hover:text-rose-600 border border-slate-200 hover:border-rose-200 rounded-xl py-2.5 text-[9px] font-black uppercase tracking-widest transition-colors shadow-sm">Excluir</button>
                         </div>
                     </div>
                 `;
@@ -231,9 +328,9 @@
             const nome = document.getElementById('produto-nome').value.trim();
             const valor = parseFloat(document.getElementById('produto-valor').value);
             const status = document.getElementById('produto-status').value;
-            const inputFoto = document.getElementById('produto-foto');
 
             if (!nome || isNaN(valor)) return showToast("Preenche o nome e o preço corretamente.", "error");
+            if (imagensUrlsExistentes.length === 0 && novosArquivosImagem.length === 0) return showToast("Adiciona pelo menos uma foto.", "error");
             
             const btn = document.getElementById('btn-salvar-produto');
             btn.disabled = true; btn.innerHTML = "⏳ A Guardar...";
@@ -245,21 +342,32 @@
                     status: status 
                 };
 
-                if (inputFoto.files && inputFoto.files[0]) {
-                    btn.innerHTML = "⏳ A enviar foto...";
-                    const fotoRef = ref(storage, `loja_fotos/${uid}_${Date.now()}`);
-                    await uploadBytes(fotoRef, inputFoto.files[0]);
-                    dados.imagem_url = await getDownloadURL(fotoRef);
+                let urlsGeradas = [];
 
-                    if (produtoEditandoId && fotoProdutoEditandoURL) {
-                        try {
-                            const refAntiga = ref(storage, fotoProdutoEditandoURL);
-                            await deleteObject(refAntiga);
-                        } catch(e) { console.log("Não foi possível apagar foto antiga."); }
+                // Faz upload apenas das novas imagens selecionadas
+                if (novosArquivosImagem.length > 0) {
+                    btn.innerHTML = `⏳ A enviar ${novosArquivosImagem.length} fotos...`;
+                    for (let file of novosArquivosImagem) {
+                        const fotoRef = ref(storage, `loja_fotos/${uid}_${Date.now()}_${file.name}`);
+                        await uploadBytes(fotoRef, file);
+                        const url = await getDownloadURL(fotoRef);
+                        urlsGeradas.push(url);
                     }
                 }
 
+                // Junta as fotos velhas que não foram removidas com as recém upadas
+                dados.imagens_urls = [...imagensUrlsExistentes, ...urlsGeradas];
+
                 if (produtoEditandoId) {
+                    // Pega o produto antes de atualizar para apagar do Storage as fotos que o professor removeu agora
+                    const pAntigo = produtosCache.find(x => x.id === produtoEditandoId);
+                    if (pAntigo && pAntigo.imagens_urls) {
+                        const fotosRemovidas = pAntigo.imagens_urls.filter(urlAntiga => !imagensUrlsExistentes.includes(urlAntiga));
+                        for (let urlRemover of fotosRemovidas) {
+                            try { await deleteObject(ref(storage, urlRemover)); } catch(e) {}
+                        }
+                    }
+
                     await updateDoc(doc(db, "produtos", produtoEditandoId), dados);
                     showToast("Produto atualizado com sucesso!", "success");
                 } else {
@@ -274,47 +382,53 @@
                 showToast("Erro ao guardar o produto.", "error"); 
                 console.error(e);
             } finally {
-                btn.disabled = false; btn.innerHTML = "💾 Guardar Produto";
+                btn.disabled = false; btn.innerHTML = "💾 Guardar";
             }
         }
 
         window.editarProduto = function(id) {
             const p = produtosCache.find(x => x.id === id);
             if(!p) return;
+            
             produtoEditandoId = id;
-            fotoProdutoEditandoURL = p.imagem_url || null;
+            
+            // Carrega as imagens atuais no estado
+            if (p.imagens_urls && p.imagens_urls.length > 0) {
+                imagensUrlsExistentes = [...p.imagens_urls];
+            } else if (p.imagem_url) {
+                imagensUrlsExistentes = [p.imagem_url]; // Fallback pra produto velho
+            } else {
+                imagensUrlsExistentes = [];
+            }
+            
+            novosArquivosImagem = []; // Zera uploads novos
+            atualizarContainerMiniaturas();
 
             document.getElementById('produto-nome').value = p.nome || "";
             document.getElementById('produto-valor').value = p.valor || "";
             document.getElementById('produto-status').value = p.status || "ATIVO";
 
-            const imgPreview = document.getElementById('preview-foto-produto');
-            const iconFallback = document.getElementById('icone-foto-fallback');
-            
-            if(p.imagem_url) {
-                imgPreview.src = p.imagem_url;
-                imgPreview.classList.remove('hidden');
-                iconFallback.classList.add('hidden');
-            } else {
-                imgPreview.src = "";
-                imgPreview.classList.add('hidden');
-                iconFallback.classList.remove('hidden');
-            }
-
             document.getElementById('titulo-form').innerText = "✏️ Editar Produto";
             document.getElementById('btn-cancelar-produto').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // Sobe a tela no celular
         }
 
-        window.excluirProduto = async function(id, imagemUrl) {
-            if(!confirm("Tem a certeza que desejas excluir este produto da vitrine? Esta ação não pode ser desfeita.")) return;
+        window.excluirProduto = async function(id) {
+            if(!confirm("Tem a certeza que desejas excluir este produto da vitrine? Esta ação apagará todas as fotos associadas.")) return;
             try {
+                const p = produtosCache.find(x => x.id === id);
                 await deleteDoc(doc(db, "produtos", id));
                 
-                if(imagemUrl) {
+                // Tenta apagar TODAS as imagens vinculadas no storage
+                let imagensParaApagar = [];
+                if (p.imagens_urls) imagensParaApagar = [...p.imagens_urls];
+                else if (p.imagem_url) imagensParaApagar = [p.imagem_url];
+
+                for (let imgUrl of imagensParaApagar) {
                     try {
-                        const refImg = ref(storage, imagemUrl);
+                        const refImg = ref(storage, imgUrl);
                         await deleteObject(refImg);
-                    } catch(e) { console.log("Imagem antiga não encontrada no storage."); }
+                    } catch(e) {}
                 }
 
                 showToast("Produto excluído!", "success");
@@ -327,15 +441,15 @@
 
         window.cancelarEdicaoProduto = () => {
             produtoEditandoId = null;
-            fotoProdutoEditandoURL = null;
+            imagensUrlsExistentes = [];
+            novosArquivosImagem = [];
+            
             document.getElementById('produto-nome').value = "";
             document.getElementById('produto-valor').value = "";
             document.getElementById('produto-status').value = "ATIVO";
             document.getElementById('produto-foto').value = "";
             
-            document.getElementById('preview-foto-produto').src = "";
-            document.getElementById('preview-foto-produto').classList.add('hidden');
-            document.getElementById('icone-foto-fallback').classList.remove('hidden');
+            atualizarContainerMiniaturas();
 
             document.getElementById('titulo-form').innerHTML = "Novo Produto";
             document.getElementById('btn-cancelar-produto').classList.add('hidden');

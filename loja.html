@@ -27,7 +27,7 @@
             <div class="flex items-center justify-between p-6 pb-0 max-w-7xl mx-auto w-full shrink-0">
                 <div>
                     <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Loja da Equipa</h2>
-                    <p class="text-xs text-slate-500 font-medium mt-1">Gira os produtos que os alunos podem encomendar</p>
+                    <p class="text-xs text-slate-500 font-medium mt-1">Gere os produtos que os alunos podem encomendar</p>
                 </div>
             </div>
 
@@ -56,7 +56,7 @@
 
                             <div>
                                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome do Produto</label>
-                                <input type="text" id="produto-nome" placeholder="Ex: Rash Guard, Kimono, T-Shirt..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700">
+                                <input type="text" id="produto-nome" placeholder="Ex: Rash Guard, Kimono..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700">
                             </div>
                             
                             <div>
@@ -245,14 +245,12 @@
                     status: status 
                 };
 
-                // Se escolheu uma imagem nova, faz upload
                 if (inputFoto.files && inputFoto.files[0]) {
                     btn.innerHTML = "⏳ A enviar foto...";
                     const fotoRef = ref(storage, `loja_fotos/${uid}_${Date.now()}`);
                     await uploadBytes(fotoRef, inputFoto.files[0]);
                     dados.imagem_url = await getDownloadURL(fotoRef);
 
-                    // Se estivermos a editar e já existia foto, apagamos a foto antiga para não gastar espaço
                     if (produtoEditandoId && fotoProdutoEditandoURL) {
                         try {
                             const refAntiga = ref(storage, fotoProdutoEditandoURL);
@@ -284,7 +282,7 @@
             const p = produtosCache.find(x => x.id === id);
             if(!p) return;
             produtoEditandoId = id;
-            fotoProdutoEditandoURL = p.imagem_url || null; // Guarda caso ele mude a imagem
+            fotoProdutoEditandoURL = p.imagem_url || null;
 
             document.getElementById('produto-nome').value = p.nome || "";
             document.getElementById('produto-valor').value = p.valor || "";
@@ -312,7 +310,6 @@
             try {
                 await deleteDoc(doc(db, "produtos", id));
                 
-                // Tenta apagar a imagem no storage para poupar espaço
                 if(imagemUrl) {
                     try {
                         const refImg = ref(storage, imagemUrl);

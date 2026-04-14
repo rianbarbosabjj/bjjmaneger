@@ -58,14 +58,19 @@
                                 </div>
                             </div>
 
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Dias de Treino</label>
+                                <input type="text" id="turma-dias" placeholder="Ex: Segundas e Quartas" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all text-slate-700 font-bold text-xs">
+                            </div>
+
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Dias</label>
-                                    <input type="text" id="turma-dias" placeholder="Seg/Qua" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all text-slate-700">
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Hora Início</label>
+                                    <input type="time" id="turma-hora-inicio" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all text-slate-700 font-bold">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Horário</label>
-                                    <input type="text" id="turma-horario" placeholder="19:00-20:30" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all text-slate-700">
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Hora Fim</label>
+                                    <input type="time" id="turma-hora-fim" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all text-slate-700 font-bold">
                                 </div>
                             </div>
                             
@@ -93,12 +98,12 @@
                 <div id="painel-detalhe" class="w-full md:w-2/3 hidden flex-col h-full gap-4 md:gap-6 overflow-hidden">
                     <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-4 md:p-6 flex flex-col shrink-0">
                         <div class="flex items-center gap-3 sm:gap-4 mb-2">
-                            <button onclick="voltarLista()" class="md:hidden flex items-center justify-center w-10 h-10 bg-slate-100 text-slate-500 rounded-full hover:bg-slate-200 shrink-0">🔙</button>
+                            <button onclick="voltarLista()" class="md:hidden flex items-center justify-center w-10 h-10 bg-slate-100 text-slate-500 rounded-full hover:bg-slate-200 shrink-0 shadow-sm">🔙</button>
                             <div class="flex-1 overflow-hidden">
                                 <h2 class="text-xl md:text-3xl font-black text-slate-800 truncate" id="turma-nome-detalhe">Nome da Turma</h2>
                             </div>
                             <div class="text-right shrink-0">
-                                <div id="turma-horario-badge" class="px-3 py-1 rounded-lg text-[10px] font-black uppercase bg-cyan-50 text-cyan-700 border border-cyan-200 inline-block">--</div>
+                                <div id="turma-horario-badge" class="px-3 py-1.5 rounded-lg text-[10px] font-black uppercase bg-cyan-50 text-cyan-700 border border-cyan-200 shadow-sm inline-block">--</div>
                                 <div id="turma-idade-badge" class="block text-[9px] font-bold text-slate-400 uppercase mt-1">--</div>
                             </div>
                         </div>
@@ -108,11 +113,11 @@
                     <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex-1 flex flex-col overflow-hidden relative">
                         <div class="p-4 md:p-5 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row gap-3 items-center shrink-0">
                             <div class="flex-1 w-full">
-                                <select id="combo-add-aluno" class="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">
+                                <select id="combo-add-aluno" class="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer shadow-sm">
                                     <option value="">Selecione um atleta...</option>
                                 </select>
                             </div>
-                            <button onclick="adicionarAlunoNaTurma()" class="w-full sm:w-auto bg-[#10B981] hover:bg-emerald-600 text-white font-black py-3 px-6 rounded-xl shadow-md transition-all uppercase tracking-widest text-xs">Adicionar</button>
+                            <button onclick="adicionarAlunoNaTurma()" class="w-full sm:w-auto bg-[#10B981] hover:bg-emerald-600 text-white font-black py-3 px-6 rounded-xl shadow-md transition-all uppercase tracking-widest text-xs">Adicionar Atleta</button>
                         </div>
                         <div class="flex-1 overflow-y-auto p-2 md:p-4 hide-scrollbar bg-slate-50/30" id="lista-matriculados"></div>
                     </div>
@@ -133,17 +138,17 @@
             <div class="bg-slate-900 p-4 text-white font-black uppercase tracking-widest text-sm">🔄 Trocar de Turma</div>
             <div class="p-6 space-y-4">
                 <p class="text-sm text-slate-500">Transferir <span id="lbl-atleta-troca" class="font-black text-cyan-600"></span> para:</p>
-                <select id="select-nova-turma" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none"></select>
+                <select id="select-nova-turma" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:border-cyan-500"></select>
             </div>
             <div class="p-4 bg-slate-50 border-t border-slate-200 flex gap-2">
-                <button onclick="fecharModalTrocar()" class="flex-1 bg-slate-200 text-slate-600 font-bold py-3 rounded-xl transition-all text-xs">CANCELAR</button>
-                <button onclick="confirmarTroca()" class="flex-1 bg-cyan-500 text-white font-black py-3 rounded-xl shadow-md transition-all text-xs">CONFIRMAR</button>
+                <button onclick="fecharModalTrocar()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold py-3 rounded-xl transition-all text-xs uppercase tracking-widest">Cancelar</button>
+                <button onclick="confirmarTroca()" class="flex-1 bg-cyan-500 hover:bg-cyan-600 text-white font-black py-3 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest">Confirmar</button>
             </div>
         </div>
     </div>
 
     <script src="menu.js"></script>
-<script type="module">
+    <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where, updateDoc, deleteDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -162,7 +167,7 @@
         const db = getFirestore(app);
 
         let uid = null;
-        let teamId = null; // ID real da equipe para carregar os dados
+        let teamId = null; 
         let alunosCache = [];
         let turmasCache = [];
         let turmaSelecionada = null;
@@ -180,33 +185,28 @@
             setTimeout(() => toast.remove(), 4500);
         }
 
-onAuthStateChanged(auth, async (user) => {
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // --- FAXINA NO PERFIL (FORÇA A SAÍDA DO "ACESSANDO...") ---
                 const limparAcessando = () => {
                     const aside = document.querySelector('aside');
                     if (aside) {
-                        // 1. Procura o parágrafo do email
                         const elementos = aside.querySelectorAll('p, span, h4');
                         elementos.forEach(el => {
-                            // Se encontrar o texto de carregamento ou acessando, limpa na hora
                             if (el.innerText.includes('carregando') || el.innerText.includes('rianbarbosa')) {
                                 el.innerText = user.email;
                             }
                             if (el.innerText.includes('ACESSANDO')) {
                                 el.innerText = 'ADMINISTRADOR';
-                                el.classList.remove('animate-pulse'); // Mata a animação de brilho
+                                el.classList.remove('animate-pulse');
                                 el.style.opacity = "1";
                             }
                         });
                     }
                 };
 
-                // Executa imediatamente e garante uma segunda passada após meio segundo
                 limparAcessando();
                 setTimeout(limparAcessando, 600);
 
-                // Identifica se é Mestre ou Co-Administrador
                 const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
                 if (mestreDoc.exists()) { 
                     teamId = user.uid; 
@@ -216,9 +216,11 @@ onAuthStateChanged(auth, async (user) => {
                 }
 
                 if (teamId) {
+                    uid = teamId;
                     await carregarDadosEquipe();
                     await carregarAlunos(); 
                     await carregarTurmas();
+                    limparInativosDasTurmas(); 
                 }
             } else { window.location.href = "index.html"; }
         });
@@ -230,12 +232,9 @@ onAuthStateChanged(auth, async (user) => {
                 equipeDados.nome = d.nome_equipe || d.nome || "Sua Equipe";
                 equipeDados.logo = d.url_logo || "";
                 
-                // --- ATUALIZA O NOME DA EQUIPE NO TOPO DO MENU ---
-                // Procura o elemento que diz "CARREGANDO..." no topo
                 const elNomeEquipeMenu = document.querySelector('aside h2') || document.getElementById('nome-equipe');
                 if(elNomeEquipeMenu) elNomeEquipeMenu.innerText = equipeDados.nome.toUpperCase();
 
-                // CAÇADOR DE LOGO: Atualiza a imagem no menu lateral
                 const elLogoMenu = document.getElementById('logo-equipe-menu') || document.getElementById('container-logo') || document.querySelector('aside div[class*="bg-cyan-"], aside div[class*="bg-blue-"]');
                 if (elLogoMenu) {
                     if (equipeDados.logo) {
@@ -274,17 +273,6 @@ onAuthStateChanged(auth, async (user) => {
             const f = faixa ? faixa.charAt(0).toUpperCase() + faixa.slice(1).toLowerCase().trim() : 'Branca';
             return faixasInfo[f] || 'background-color: #cbd5e1';
         }
-
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                uid = user.uid;
-                const colabSnap = await getDoc(doc(db, "colaboradores", uid));
-                if(colabSnap.exists()) uid = colabSnap.data().equipe_id;
-                await carregarAlunos(); 
-                await carregarTurmas();
-                limparInativosDasTurmas(); 
-            } else { window.location.href = "index.html"; }
-        });
 
         function calcularIdadeNum(data) {
             if (!data) return -1;
@@ -333,12 +321,27 @@ onAuthStateChanged(auth, async (user) => {
 
         function renderizarTurmas() {
             const container = document.getElementById('lista-turmas');
-            container.innerHTML = turmasCache.length === 0 ? "<p class='text-center p-5 text-slate-400 text-xs'>Nenhuma turma.</p>" : "";
+            container.innerHTML = turmasCache.length === 0 ? "<p class='text-center p-5 text-slate-400 text-xs'>Nenhuma turma criada.</p>" : "";
+            
             turmasCache.forEach(t => {
                 const div = document.createElement('div');
-                div.className = "p-3 mb-2 bg-white border border-slate-100 rounded-xl hover:border-cyan-300 cursor-pointer transition-all flex items-center justify-between group";
-                div.onclick = (e) => { if(e.target.tagName !== 'BUTTON') selecionarTurma(t.id); };
-                div.innerHTML = `<div><h4 class='font-black text-xs uppercase'>${t.nome}</h4><p class='text-[9px] text-slate-400'>${t.dias || '--'} | ${t.horario || '--'}</p></div><div class='bg-slate-50 text-[10px] font-black px-2 py-1 rounded'>👥 ${(t.alunos_ids||[]).length}</div>`;
+                div.className = "p-3 mb-3 bg-white border border-slate-100 rounded-xl hover:border-cyan-300 transition-all flex flex-col gap-2 group shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)]";
+                
+                div.innerHTML = `
+                    <div class="flex items-center justify-between cursor-pointer" onclick="selecionarTurma('${t.id}')">
+                        <div>
+                            <h4 class='font-black text-xs uppercase text-slate-800 group-hover:text-cyan-600 transition-colors'>${t.nome}</h4>
+                            <p class='text-[9px] text-slate-400 font-bold mt-0.5'>${t.dias_semana || '--'} | ${t.hora_inicio || '--'} às ${t.hora_fim || '--'}</p>
+                        </div>
+                        <div class='bg-cyan-50 text-cyan-600 text-[10px] font-black px-2 py-1 rounded-lg border border-cyan-100 shadow-sm'>
+                            👥 ${(t.alunos_ids||[]).length}
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 pt-2 border-t border-slate-50 mt-1">
+                        <button onclick="editarTurma('${t.id}')" class="flex-1 bg-slate-50 hover:bg-amber-50 text-slate-500 hover:text-amber-600 text-[9px] font-black py-2 rounded-lg transition-colors flex items-center justify-center gap-1 uppercase tracking-widest border border-transparent hover:border-amber-200">✏️ Editar</button>
+                        <button onclick="excluirTurma('${t.id}')" class="flex-1 bg-slate-50 hover:bg-rose-50 text-slate-500 hover:text-rose-600 text-[9px] font-black py-2 rounded-lg transition-colors flex items-center justify-center gap-1 uppercase tracking-widest border border-transparent hover:border-rose-200">🗑️ Excluir</button>
+                    </div>
+                `;
                 container.appendChild(div);
             });
         }
@@ -347,19 +350,75 @@ onAuthStateChanged(auth, async (user) => {
             const nome = document.getElementById('turma-nome').value.toUpperCase().trim();
             const min = parseInt(document.getElementById('turma-idade-min').value) || 0;
             const max = parseInt(document.getElementById('turma-idade-max').value) || 999;
-            if (!nome) return showToast("Nome obrigatório");
+            const dias = document.getElementById('turma-dias').value.trim();
+            const hora_inicio = document.getElementById('turma-hora-inicio').value;
+            const hora_fim = document.getElementById('turma-hora-fim').value;
+
+            if (!nome) return showToast("Nome da turma é obrigatório", "error");
+            
+            const btn = document.getElementById('btn-salvar-turma');
+            btn.disabled = true; btn.innerHTML = "⏳ Salvando...";
+
             try {
-                const dados = { nome, dias: document.getElementById('turma-dias').value, horario: document.getElementById('turma-horario').value, idade_min: min, idade_max: max };
-                if (turmaEditandoId) await updateDoc(doc(db, "turmas", turmaEditandoId), dados);
-                else await addDoc(collection(db, "turmas"), { ...dados, equipe_id: uid, alunos_ids: [] });
-                showToast("Sucesso!", "success"); cancelarEdicaoTurma(); carregarTurmas();
-            } catch (e) { showToast("Erro ao salvar"); }
+                const dados = { 
+                    nome: nome, 
+                    dias_semana: dias, 
+                    hora_inicio: hora_inicio, 
+                    hora_fim: hora_fim,
+                    idade_min: min, 
+                    idade_max: max 
+                };
+
+                if (turmaEditandoId) {
+                    await updateDoc(doc(db, "turmas", turmaEditandoId), dados);
+                    showToast("Turma atualizada!", "success");
+                } else {
+                    await addDoc(collection(db, "turmas"), { ...dados, equipe_id: uid, alunos_ids: [] });
+                    showToast("Turma criada!", "success");
+                }
+                
+                cancelarEdicaoTurma(); 
+                carregarTurmas();
+                
+            } catch (e) { 
+                showToast("Erro ao salvar", "error"); 
+            } finally {
+                btn.disabled = false; btn.innerHTML = "➕ Criar Turma";
+            }
+        }
+
+        window.editarTurma = function(id) {
+            const t = turmasCache.find(x => x.id === id);
+            if(!t) return;
+            turmaEditandoId = id;
+            document.getElementById('turma-nome').value = t.nome || "";
+            document.getElementById('turma-idade-min').value = t.idade_min || "";
+            document.getElementById('turma-idade-max').value = t.idade_max || "";
+            document.getElementById('turma-dias').value = t.dias_semana || t.dias || "";
+            document.getElementById('turma-hora-inicio').value = t.hora_inicio || "";
+            document.getElementById('turma-hora-fim').value = t.hora_fim || "";
+
+            document.getElementById('titulo-form').innerText = "✏️ Editar Turma";
+            document.getElementById('btn-salvar-turma').innerText = "💾 Salvar";
+            document.getElementById('btn-cancelar-turma').classList.remove('hidden');
+        }
+
+        window.excluirTurma = async function(id) {
+            if(!confirm("Tem certeza que deseja excluir esta turma? Os alunos não serão excluídos, apenas ficarão sem turma associada.")) return;
+            try {
+                await deleteDoc(doc(db, "turmas", id));
+                showToast("Turma excluída com sucesso!", "success");
+                if (turmaSelecionada && turmaSelecionada.id === id) voltarLista();
+                carregarTurmas();
+            } catch(e) {
+                showToast("Erro ao excluir.", "error");
+            }
         }
 
         window.cancelarEdicaoTurma = () => {
             turmaEditandoId = null;
-            document.querySelectorAll('input').forEach(i => i.value = "");
-            document.getElementById('titulo-form').innerText = "Nova Turma";
+            document.querySelectorAll('#painel-lista input').forEach(i => i.value = "");
+            document.getElementById('titulo-form').innerHTML = "Nova Turma";
             document.getElementById('btn-salvar-turma').innerText = "➕ Criar Turma";
             document.getElementById('btn-cancelar-turma').classList.add('hidden');
         }
@@ -370,9 +429,11 @@ onAuthStateChanged(auth, async (user) => {
             document.getElementById('painel-detalhe').classList.remove('hidden');
             document.getElementById('painel-detalhe').classList.add('flex');
             document.getElementById('painel-lista').classList.add('hidden', 'md:flex');
+            
             document.getElementById('turma-nome-detalhe').innerText = turmaSelecionada.nome;
-            document.getElementById('turma-horario-badge').innerText = `${turmaSelecionada.dias || '--'} | ${turmaSelecionada.horario || '--'}`;
+            document.getElementById('turma-horario-badge').innerText = `${turmaSelecionada.dias_semana || '--'} | ${turmaSelecionada.hora_inicio || '--'} às ${turmaSelecionada.hora_fim || '--'}`;
             document.getElementById('turma-idade-badge').innerText = formatarRegraIdade(turmaSelecionada.idade_min, turmaSelecionada.idade_max);
+            
             atualizarUIAlunosDaTurma();
         }
 
@@ -386,15 +447,30 @@ onAuthStateChanged(auth, async (user) => {
             if(!turmaSelecionada) return;
             const ids = turmaSelecionada.alunos_ids || [];
             document.getElementById('turma-contagem').innerText = `Matriculados: ${ids.length}`;
+            
             const combo = document.getElementById('combo-add-aluno');
-            combo.innerHTML = '<option value="">Matricular atleta...</option>';
+            combo.innerHTML = '<option value="">Selecionar atleta para matricular...</option>';
             alunosCache.filter(a => !ids.includes(a.id)).forEach(a => combo.add(new Option(a.nome, a.id)));
+            
             const container = document.getElementById('lista-matriculados');
-            container.innerHTML = ids.length === 0 ? "<p class='text-center mt-10 text-slate-400 text-sm'>Vazio.</p>" : "";
+            container.innerHTML = ids.length === 0 ? "<p class='text-center mt-10 text-slate-400 text-sm italic'>Nenhum atleta nesta turma.</p>" : "";
+            
             alunosCache.filter(a => ids.includes(a.id)).forEach(al => {
                 const item = document.createElement('div');
-                item.className = "p-3 mb-2 bg-white border border-slate-200 rounded-xl flex items-center justify-between";
-                item.innerHTML = `<div class='flex items-center gap-3'><div class='w-8 h-8 rounded-full border border-slate-300 shadow-inner' style='${getEstiloFaixa(al.faixa)}'></div><div><h4 class='font-black text-xs'>${al.nome}</h4><p class='text-[9px] text-slate-400 uppercase'>${al.faixa} • ${calcularIdadeNum(al.data_nascimento)} anos</p></div></div><button onclick="abrirModalTrocar('${al.id}', '${al.nome.replace(/'/g, "\\'")}')" class='text-[10px] bg-cyan-50 text-cyan-600 px-3 py-1.5 rounded-lg font-bold'>🔄 Trocar</button>`;
+                item.className = "p-3 mb-2 bg-white border border-slate-200 rounded-xl flex items-center justify-between shadow-sm hover:shadow-md transition-shadow";
+                item.innerHTML = `
+                    <div class='flex items-center gap-3'>
+                        <div class='w-8 h-8 rounded-full border border-slate-300 shadow-inner shrink-0' style='${getEstiloFaixa(al.faixa)}'></div>
+                        <div class='overflow-hidden pr-2'>
+                            <h4 class='font-black text-xs text-slate-800 truncate'>${al.nome}</h4>
+                            <p class='text-[9px] text-slate-400 uppercase font-medium mt-0.5 truncate'>${al.faixa} • ${calcularIdadeNum(al.data_nascimento)} anos</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button onclick="abrirModalTrocar('${al.id}', '${al.nome.replace(/'/g, "\\'")}')" class='text-[10px] bg-cyan-50 hover:bg-cyan-100 text-cyan-600 border border-cyan-200 px-3 py-1.5 rounded-lg font-bold transition-colors shadow-sm' title="Mover para outra turma">🔄</button>
+                        <button onclick="removerAlunoDaTurma('${al.id}')" class='text-[10px] bg-rose-50 hover:bg-rose-100 text-rose-500 border border-rose-200 px-3 py-1.5 rounded-lg font-bold transition-colors shadow-sm' title="Remover da turma">❌</button>
+                    </div>
+                `;
                 container.appendChild(item);
             });
         }
@@ -404,7 +480,22 @@ onAuthStateChanged(auth, async (user) => {
             if(!id) return;
             await updateDoc(doc(db, "turmas", turmaSelecionada.id), { alunos_ids: arrayUnion(id) });
             turmaSelecionada.alunos_ids.push(id);
-            showToast("Adicionado!", "success"); atualizarUIAlunosDaTurma(); carregarTurmas();
+            showToast("Atleta matriculado com sucesso!", "success"); 
+            atualizarUIAlunosDaTurma(); 
+            carregarTurmas();
+        }
+
+        window.removerAlunoDaTurma = async function(alunoId) {
+            if(!confirm("Remover este atleta da turma?")) return;
+            try {
+                await updateDoc(doc(db, "turmas", turmaSelecionada.id), { alunos_ids: arrayRemove(alunoId) });
+                turmaSelecionada.alunos_ids = turmaSelecionada.alunos_ids.filter(id => id !== alunoId);
+                showToast("Atleta removido da turma!", "success");
+                atualizarUIAlunosDaTurma();
+                carregarTurmas();
+            } catch(e) {
+                showToast("Erro ao remover.", "error");
+            }
         }
 
         window.abrirModalTrocar = (id, nome) => {
@@ -423,23 +514,30 @@ onAuthStateChanged(auth, async (user) => {
             const novaId = document.getElementById('select-nova-turma').value;
             await updateDoc(doc(db, "turmas", turmaSelecionada.id), { alunos_ids: arrayRemove(alunoParaTrocaId) });
             await updateDoc(doc(db, "turmas", novaId), { alunos_ids: arrayUnion(alunoParaTrocaId) });
-            showToast("Transferido!", "success"); fecharModalTrocar(); carregarTurmas(); voltarLista();
+            showToast("Transferido com sucesso!", "success"); 
+            fecharModalTrocar(); 
+            carregarTurmas(); 
+            voltarLista();
         }
 
         window.autoDistribuirAlunos = async () => {
-            if(!confirm("O robô vai distribuir os alunos pelas regras de idade. Continuar?")) return;
+            if(!confirm("O robô vai distribuir os alunos pelas regras de idade de cada turma. Continuar?")) return;
             let count = 0;
             for(let al of alunosCache) {
                 let idade = calcularIdadeNum(al.data_nascimento);
                 if(idade === -1) continue;
                 for(let t of turmasCache) {
                     if(idade >= (t.idade_min||0) && idade <= (t.idade_max||999)) {
-                        await updateDoc(doc(db, "turmas", t.id), { alunos_ids: arrayUnion(al.id) });
-                        count++;
+                        // Evita adicionar se já estiver
+                        if (!(t.alunos_ids && t.alunos_ids.includes(al.id))) {
+                            await updateDoc(doc(db, "turmas", t.id), { alunos_ids: arrayUnion(al.id) });
+                            count++;
+                        }
                     }
                 }
             }
-            showToast(`${count} ações realizadas!`, "success"); carregarTurmas();
+            showToast(`${count} matrículas realizadas!`, "success"); 
+            carregarTurmas();
         }
     </script>
 </body>

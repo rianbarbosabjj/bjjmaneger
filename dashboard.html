@@ -374,7 +374,7 @@
             }, 4500);
         }
 
- window.abrirModalMensagem = function() {
+window.abrirModalMensagem = function() {
             document.getElementById('modal-mensagem').classList.remove('hidden');
             document.getElementById('modal-mensagem').classList.add('flex');
             document.getElementById('msg-titulo').value = '';
@@ -436,7 +436,7 @@
                 btn.innerHTML = "Enviar Aviso";
             }
         };
-
+        
         // --- CONTROLE DE ABAS NO MODAL CONFIG ---
         window.switchConfigTab = function(tab) {
             ['dados', 'colabs', 'convites'].forEach(t => {

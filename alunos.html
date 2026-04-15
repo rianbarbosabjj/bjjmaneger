@@ -139,9 +139,12 @@
             <div class="flex border-b border-slate-200 bg-slate-50 px-2 overflow-x-auto hide-scrollbar shrink-0">
                 <button onclick="mudarAba('aba-pessoal')" id="btn-aba-pessoal" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest tab-active whitespace-nowrap transition-colors">👤 Pessoal</button>
                 <button onclick="mudarAba('aba-contato')" id="btn-aba-contato" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">📍 Contato</button>
-                <button onclick="mudarAba('aba-admin')" id="btn-aba-admin" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚙️ Administrativo</button>
-                <button onclick="mudarAba('aba-lgpd')" id="btn-aba-lgpd" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚖️ LGPD</button>
+                <button onclick="mudarAba('aba-admin')" id="btn-aba-admin" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚙️ Admin</button>
+                
+                <button onclick="mudarAba('aba-frequencia')" id="btn-aba-frequencia" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">📅 Frequência</button>
+                
                 <button onclick="mudarAba('aba-anamnese')" id="btn-aba-anamnese" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚕️ Saúde</button>
+                <button onclick="mudarAba('aba-lgpd')" id="btn-aba-lgpd" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚖️ LGPD</button>
             </div>
 
             <div class="p-5 md:p-8 overflow-y-auto space-y-6 flex-1 bg-white hide-scrollbar">
@@ -225,10 +228,17 @@
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">E-mail de Acesso</label>
                             <input type="email" id="aluno-email" placeholder="aluno@email.com" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none">
                         </div>
+                        
                         <div class="md:col-span-1">
                             <label class="block text-[10px] font-black text-cyan-500 uppercase mb-1">Senha (Portal do Aluno)</label>
-                            <input type="text" id="aluno-senha-portal" placeholder="Defina uma senha" class="w-full p-3 bg-cyan-50 border border-cyan-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none text-cyan-800 font-bold">
+                            <div class="relative">
+                                <input type="password" id="aluno-senha-portal" placeholder="Defina uma senha" class="w-full p-3 bg-cyan-50 border border-cyan-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none text-cyan-800 font-bold pr-12">
+                                <button type="button" onclick="toggleSenha('aluno-senha-portal', this)" class="absolute inset-y-0 right-4 flex items-center text-cyan-600 hover:text-cyan-800 transition-colors outline-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>
+                                </button>
+                            </div>
                         </div>
+
                         <div class="md:col-span-2 mt-[-10px] mb-2">
                             <p class="text-[9px] text-slate-400 font-medium">* O aluno usará este e-mail e senha para acessar a carteirinha digital no telemóvel dele.</p>
                         </div>
@@ -279,6 +289,46 @@
                             </select>
                         </div>
                     </div>
+                </div>
+
+                <div id="aba-frequencia" class="aba-content hidden space-y-5">
+                    <div class="flex items-center justify-between bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-cyan-100 text-cyan-600 rounded-full flex items-center justify-center text-xl">📍</div>
+                            <div>
+                                <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest">Assiduidade do Atleta</h4>
+                                <p class="text-[10px] text-slate-500">Histórico de treinos (Check-ins do Portal)</p>
+                            </div>
+                        </div>
+                        <div>
+                            <input type="month" id="filtro-mes-freq-admin" onchange="filtrarFrequenciaAdmin()" class="bg-white border border-slate-300 text-slate-700 text-xs font-bold rounded-lg p-2 outline-none focus:border-cyan-500 cursor-pointer shadow-sm">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                            <div class="bg-slate-50 border-b border-slate-100 p-3 flex justify-between items-center">
+                                <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Treinos Computados:</span>
+                                <span id="admin-contador-treinos" class="bg-cyan-500 text-white px-2 py-0.5 rounded text-xs font-black">0</span>
+                            </div>
+                            <div id="admin-lista-checkins" class="p-3 space-y-2 max-h-64 overflow-y-auto hide-scrollbar">
+                                <p class="text-center text-xs text-slate-400 py-6 italic">A selecionar atleta...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="aba-anamnese" class="aba-content hidden space-y-5">
+                    
+                    <div id="anamnese-vazia" class="hidden bg-slate-100 p-8 rounded-2xl text-center border border-slate-200">
+                        <span class="text-4xl block mb-3">⏳</span>
+                        <h4 class="text-slate-500 font-black uppercase tracking-widest text-sm">Ficha Pendente</h4>
+                        <p class="text-xs text-slate-400 mt-2">O aluno (ou responsável) ainda não preencheu a ficha de saúde e inclusão no Portal do Atleta.</p>
+                    </div>
+
+                    <div id="anamnese-preenchida" class="hidden space-y-4">
+                        </div>
+
                 </div>
 
                 <div id="aba-lgpd" class="aba-content hidden space-y-5">
@@ -339,19 +389,6 @@
                             📥 Baixar Assinatura Digital (PDF)
                         </button>
                     </div>
-                </div>
-
-                <div id="aba-anamnese" class="aba-content hidden space-y-5">
-                    
-                    <div id="anamnese-vazia" class="hidden bg-slate-100 p-8 rounded-2xl text-center border border-slate-200">
-                        <span class="text-4xl block mb-3">⏳</span>
-                        <h4 class="text-slate-500 font-black uppercase tracking-widest text-sm">Ficha Pendente</h4>
-                        <p class="text-xs text-slate-400 mt-2">O aluno (ou responsável) ainda não preencheu a ficha de saúde e inclusão no Portal do Atleta.</p>
-                    </div>
-
-                    <div id="anamnese-preenchida" class="hidden space-y-4">
-                        </div>
-
                 </div>
 
             </div>
@@ -470,8 +507,10 @@
         let equipeDados = { nome: "Sua Equipe", logo: "" };
         let alunoEditandoId = null;
         let ficheiroFotoSelecionado = null;
+        
+        let checkinsDoAlunoAtualCache = []; // Cache para não sobrecarregar Firebase ao trocar o mês do filtro
 
-        const ordemDasAbas = ['aba-pessoal', 'aba-contato', 'aba-admin', 'aba-lgpd', 'aba-anamnese'];
+        const ordemDasAbas = ['aba-pessoal', 'aba-contato', 'aba-admin', 'aba-frequencia', 'aba-lgpd', 'aba-anamnese'];
         let abaIndexAtual = 0;
 
         const selectVenc = document.getElementById('aluno-vencimento');
@@ -482,37 +521,41 @@
             selectVenc.value = "10";
         }
 
+        // --- SISTEMA DO OLHO DA SENHA ---
+        window.toggleSenha = function(inputId, btnElement) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                btnElement.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>`;
+            } else {
+                input.type = "password";
+                btnElement.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>`;
+            }
+        }
+
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                let isSuper = false;
-                try {
-                    const superSnap = await getDoc(doc(db, "super_admins", user.uid));
-                    if (superSnap.exists()) isSuper = true;
-                } catch(e) { isSuper = false; }
+                const limparAcessando = () => {
+                    const aside = document.querySelector('aside');
+                    if (aside) {
+                        const elementos = aside.querySelectorAll('p, span, h4');
+                        elementos.forEach(el => {
+                            if (el.innerText.includes('carregando') || el.innerText.includes('rianbarbosa')) el.innerText = user.email;
+                            if (el.innerText.includes('ACESSANDO')) {
+                                el.innerText = 'ADMINISTRADOR';
+                                el.classList.remove('animate-pulse');
+                                el.style.opacity = "1";
+                            }
+                        });
+                    }
+                };
+                limparAcessando(); setTimeout(limparAcessando, 600);
 
-                if (isSuper) {
-                    const equipeImpersonada = sessionStorage.getItem('admin_impersonate');
-                    if (equipeImpersonada) {
-                        teamId = equipeImpersonada;
-                        setTimeout(() => {
-                            Array.from(document.body.children).forEach(child => {
-                                if (child.tagName === 'DIV' && child.innerText.includes('MODO SUPORTE ATIVADO')) {
-                                    child.className = 'fixed bottom-0 left-0 w-full bg-rose-600 text-white z-[9999] flex items-center justify-center p-3 shadow-2xl font-bold text-sm gap-4 tracking-widest uppercase';
-                                }
-                            });
-                        }, 1000);
-                    } else {
-                        window.location.href = "super_admin.html";
-                        return;
-                    }
-                } else {
-                    const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
-                    if (mestreDoc.exists()) { 
-                        teamId = user.uid; 
-                    } else {
-                        const colabDoc = await getDoc(doc(db, "colaboradores", user.uid));
-                        if (colabDoc.exists()) teamId = colabDoc.data().equipe_id;
-                    }
+                const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
+                if (mestreDoc.exists()) { teamId = user.uid; } 
+                else {
+                    const colabDoc = await getDoc(doc(db, "colaboradores", user.uid));
+                    if (colabDoc.exists()) teamId = colabDoc.data().equipe_id;
                 }
 
                 if (teamId) {
@@ -740,6 +783,79 @@
             }
         }
 
+        // ========================================================
+        // 🚀 NOVO: FUNÇÕES DE FREQUÊNCIA NO PAINEL DO PROFESSOR
+        // ========================================================
+        async function carregarFrequenciaDoAluno(idAluno) {
+            const listaEl = document.getElementById('admin-lista-checkins');
+            listaEl.innerHTML = '<p class="text-center text-xs text-slate-400 py-6 italic">A carregar presenças...</p>';
+            
+            try {
+                // Traz todos os check-ins deste aluno específico
+                const q = query(collection(db, "checkins"), where("aluno_id", "==", idAluno));
+                const snap = await getDocs(q);
+                
+                checkinsDoAlunoAtualCache = [];
+                snap.forEach(doc => checkinsDoAlunoAtualCache.push(doc.data()));
+                
+                // Ordena do mais recente para o mais antigo
+                checkinsDoAlunoAtualCache.sort((a,b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+                // Define o mês no campo de filtro para o mês atual e manda renderizar
+                const hojeData = new Date();
+                const mesFormatado = String(hojeData.getMonth() + 1).padStart(2, '0');
+                document.getElementById('filtro-mes-freq-admin').value = `${hojeData.getFullYear()}-${mesFormatado}`;
+                
+                filtrarFrequenciaAdmin();
+
+            } catch(e) {
+                console.error("Erro na frequência:", e);
+                listaEl.innerHTML = '<p class="text-center text-xs text-rose-500 py-6 font-bold">Erro ao puxar dados.</p>';
+            }
+        }
+
+        window.filtrarFrequenciaAdmin = function() {
+            const valFiltro = document.getElementById('filtro-mes-freq-admin').value; // Formato YYYY-MM
+            if (!valFiltro) return;
+
+            const partes = valFiltro.split('-');
+            const anoSelecionado = parseInt(partes[0]);
+            const mesSelecionado = parseInt(partes[1]);
+
+            let checkinsFiltrados = checkinsDoAlunoAtualCache.filter(ck => {
+                const d = new Date(ck.timestamp);
+                return d.getFullYear() === anoSelecionado && (d.getMonth() + 1) === mesSelecionado;
+            });
+
+            document.getElementById('admin-contador-treinos').innerText = checkinsFiltrados.length;
+
+            let html = '';
+            if (checkinsFiltrados.length > 0) {
+                checkinsFiltrados.forEach(ck => {
+                    const dataObj = new Date(ck.timestamp);
+                    const hora = dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+                    const dataBonita = dataObj.toLocaleDateString('pt-BR', {day: '2-digit', month: 'short', year:'numeric'});
+
+                    html += `
+                        <div class="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-100 shadow-sm transition-all hover:border-cyan-200">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-cyan-50 text-cyan-500 border border-cyan-100 flex items-center justify-center font-black text-xs shrink-0">📍</div>
+                                <div>
+                                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">${dataBonita}</p>
+                                    <p class="text-[11px] font-bold text-slate-800 truncate">${ck.turma_nome || 'Treino'}</p>
+                                </div>
+                            </div>
+                            <span class="text-[10px] font-black text-cyan-600 bg-cyan-50 px-2 py-1 rounded-md shrink-0">${hora}</span>
+                        </div>
+                    `;
+                });
+            } else {
+                html = "<p class='text-[10px] text-slate-400 italic text-center py-6'>O aluno não possui treinos registados neste mês.</p>";
+            }
+
+            document.getElementById('admin-lista-checkins').innerHTML = html;
+        }
+
         window.abrirFichaAluno = (id) => {
             const a = todosAlunosCache.find(x => x.id === id);
             if(!a) return;
@@ -761,6 +877,8 @@
             
             if(document.getElementById('aluno-senha-portal')) {
                 document.getElementById('aluno-senha-portal').value = a.senha_portal || '';
+                // Garante que o input volte a ser tipo senha se foi alternado antes
+                document.getElementById('aluno-senha-portal').type = "password";
             }
 
             document.getElementById('aluno-endereco').value = a.endereco || '';
@@ -790,6 +908,9 @@
                 imgPreview.classList.add('hidden');
                 placeholder.classList.remove('hidden');
             }
+
+            // BUSCA O HISTÓRICO DE FREQUÊNCIA LOGO QUE ABRE A FICHA
+            carregarFrequenciaDoAluno(id);
 
             const divVazia = document.getElementById('anamnese-vazia');
             const divPreenchida = document.getElementById('anamnese-preenchida');
@@ -823,7 +944,7 @@
                 if(an.diagnostico?.transtorno_aprendizagem) diags.push("Trans. Aprendizagem");
                 if(an.diagnostico?.ansiedade_emocional) diags.push("Ansiedade/Emocional");
                 if(an.diagnostico?.outro) diags.push(an.diagnostico.outro);
-                const diagsText = diags.length > 0 ? diags.join(', ') : "Nenhuma relatada";
+                const diagsText = diags.length > 0 ? diags.join(', ') : "Nenhuma declarada";
                 
                 let dataFormatada = 'Data não registrada';
                 if(an.data_preenchimento) {

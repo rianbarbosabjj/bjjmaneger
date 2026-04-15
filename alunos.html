@@ -71,6 +71,9 @@
                             <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Administre sua equipe</p>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                            <button id="btn-relatorio-freq" onclick="gerarRelatorioGeralFrequencia()" class="w-full sm:w-auto bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold py-3 md:py-2.5 px-4 md:px-6 rounded-xl shadow-sm transition-all flex items-center justify-center text-xs md:text-sm">
+                                <span class="mr-2 text-base">📊</span> Relatório de Frequência
+                            </button>
                             <button onclick="abrirModal()" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 md:py-2.5 px-4 md:px-6 rounded-xl shadow-md transition-all flex items-center justify-center text-xs md:text-sm">
                                 <span class="mr-2 text-base">➕</span> Nova Matrícula
                             </button>
@@ -140,9 +143,7 @@
                 <button onclick="mudarAba('aba-pessoal')" id="btn-aba-pessoal" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest tab-active whitespace-nowrap transition-colors">👤 Pessoal</button>
                 <button onclick="mudarAba('aba-contato')" id="btn-aba-contato" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">📍 Contato</button>
                 <button onclick="mudarAba('aba-admin')" id="btn-aba-admin" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚙️ Admin</button>
-                
                 <button onclick="mudarAba('aba-frequencia')" id="btn-aba-frequencia" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">📅 Frequência</button>
-                
                 <button onclick="mudarAba('aba-anamnese')" id="btn-aba-anamnese" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚕️ Saúde</button>
                 <button onclick="mudarAba('aba-lgpd')" id="btn-aba-lgpd" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚖️ LGPD</button>
             </div>
@@ -228,7 +229,6 @@
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">E-mail de Acesso</label>
                             <input type="email" id="aluno-email" placeholder="aluno@email.com" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none">
                         </div>
-                        
                         <div class="md:col-span-1">
                             <label class="block text-[10px] font-black text-cyan-500 uppercase mb-1">Senha (Portal do Aluno)</label>
                             <div class="relative">
@@ -238,7 +238,6 @@
                                 </button>
                             </div>
                         </div>
-
                         <div class="md:col-span-2 mt-[-10px] mb-2">
                             <p class="text-[9px] text-slate-400 font-medium">* O aluno usará este e-mail e senha para acessar a carteirinha digital no telemóvel dele.</p>
                         </div>
@@ -319,16 +318,12 @@
                 </div>
 
                 <div id="aba-anamnese" class="aba-content hidden space-y-5">
-                    
                     <div id="anamnese-vazia" class="hidden bg-slate-100 p-8 rounded-2xl text-center border border-slate-200">
                         <span class="text-4xl block mb-3">⏳</span>
                         <h4 class="text-slate-500 font-black uppercase tracking-widest text-sm">Ficha Pendente</h4>
                         <p class="text-xs text-slate-400 mt-2">O aluno (ou responsável) ainda não preencheu a ficha de saúde e inclusão no Portal do Atleta.</p>
                     </div>
-
-                    <div id="anamnese-preenchida" class="hidden space-y-4">
-                        </div>
-
+                    <div id="anamnese-preenchida" class="hidden space-y-4"></div>
                 </div>
 
                 <div id="aba-lgpd" class="aba-content hidden space-y-5">
@@ -396,9 +391,7 @@
             <div class="p-4 md:p-6 bg-slate-50 border-t border-slate-200 flex flex-wrap justify-end gap-3 rounded-b-3xl shrink-0">
                 <button onclick="abrirModalCarteirinha()" id="btn-abrir-carteirinha" class="flex-1 md:flex-none bg-indigo-500 hover:bg-indigo-600 text-white font-black py-3 px-6 rounded-xl text-sm hidden uppercase tracking-widest shadow-md transition-all">🪪 Carteirinha</button>
                 <button onclick="fecharModal()" class="flex-1 md:flex-none px-6 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-200 transition-colors text-sm">Cancelar</button>
-                
                 <button onclick="proximaAba()" id="btn-proximo" class="flex-1 md:flex-none bg-slate-800 hover:bg-slate-900 text-white font-black py-3 px-8 rounded-xl shadow-md transition-all text-sm uppercase tracking-widest">Próximo ➔</button>
-                
                 <button onclick="salvarAluno()" id="btn-salvar-aluno" class="flex-1 md:flex-none bg-cyan-500 hover:bg-cyan-600 text-white font-black py-3 px-8 rounded-xl shadow-md transition-all text-sm uppercase tracking-widest hidden">💾 Salvar</button>
             </div>
         </div>
@@ -507,8 +500,7 @@
         let equipeDados = { nome: "Sua Equipe", logo: "" };
         let alunoEditandoId = null;
         let ficheiroFotoSelecionado = null;
-        
-        let checkinsDoAlunoAtualCache = []; // Cache para não sobrecarregar Firebase ao trocar o mês do filtro
+        let checkinsDoAlunoAtualCache = []; 
 
         const ordemDasAbas = ['aba-pessoal', 'aba-contato', 'aba-admin', 'aba-frequencia', 'aba-lgpd', 'aba-anamnese'];
         let abaIndexAtual = 0;
@@ -521,7 +513,6 @@
             selectVenc.value = "10";
         }
 
-        // --- SISTEMA DO OLHO DA SENHA ---
         window.toggleSenha = function(inputId, btnElement) {
             const input = document.getElementById(inputId);
             if (input.type === "password") {
@@ -784,7 +775,117 @@
         }
 
         // ========================================================
-        // 🚀 NOVO: FUNÇÕES DE FREQUÊNCIA NO PAINEL DO PROFESSOR (COM ENDEREÇO)
+        // 🚀 NOVO: FUNÇÃO PARA GERAR RELATÓRIO GERAL DE FREQUÊNCIA
+        // ========================================================
+        window.gerarRelatorioGeralFrequencia = async function() {
+            const btn = document.getElementById('btn-relatorio-freq');
+            const originalTxt = btn.innerHTML;
+            btn.innerHTML = "⏳ A Gerar...";
+            btn.disabled = true;
+
+            try {
+                const hoje = new Date();
+                const mesAtual = hoje.getMonth() + 1;
+                const anoAtual = hoje.getFullYear();
+                const mesStr = String(mesAtual).padStart(2, '0');
+                
+                // Pega todos os alunos ativos da equipe
+                const alunosAtivos = todosAlunosCache.filter(a => a.status === 'ATIVO');
+
+                // Define as datas limite do mês para buscar no banco
+                const dataInicio = `${anoAtual}-${mesStr}-01`;
+                const dataFim = `${anoAtual}-${mesStr}-31`;
+
+                const qCheck = query(collection(db, "checkins"), 
+                    where("equipe_id", "==", teamId),
+                    where("data", ">=", dataInicio),
+                    where("data", "<=", dataFim)
+                );
+                
+                const snap = await getDocs(qCheck);
+
+                // Conta quantos checkins cada aluno fez
+                let contagem = {};
+                snap.forEach(doc => {
+                    const c = doc.data();
+                    contagem[c.aluno_id] = (contagem[c.aluno_id] || 0) + 1;
+                });
+
+                // Ordena os alunos por quem mais treinou
+                alunosAtivos.sort((a, b) => {
+                    const treinosA = contagem[a.id] || 0;
+                    const treinosB = contagem[b.id] || 0;
+                    return treinosB - treinosA; 
+                });
+
+                // Constrói a tabela HTML
+                let linhasHtml = '';
+                alunosAtivos.forEach(a => {
+                    const treinos = contagem[a.id] || 0;
+                    linhasHtml += `
+                        <tr style="border-bottom: 1px solid #e2e8f0;">
+                            <td style="padding: 10px 8px; font-size: 12px; color: #334155;">${a.nome}</td>
+                            <td style="padding: 10px 8px; font-size: 12px; color: #64748b;">${a.faixa || 'Branca'}</td>
+                            <td style="padding: 10px 8px; font-size: 13px; text-align: center; color: ${treinos > 0 ? '#059669' : '#ef4444'}; font-weight: bold;">
+                                ${treinos}
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                const element = document.createElement('div');
+                element.innerHTML = `
+                    <div style="font-family: Arial, sans-serif; padding: 30px; color: #333;">
+                        <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px;">
+                            ${equipeDados.logo ? `<img src="${equipeDados.logo}" style="height: 50px; margin-bottom: 10px; border-radius: 8px;">` : ''}
+                            <h1 style="font-size: 22px; font-weight: 900; margin: 0; color: #0f172a; text-transform: uppercase;">RELATÓRIO DE ASSIDUIDADE</h1>
+                            <p style="font-size: 14px; margin: 5px 0; font-weight: bold; color: #475569;">${equipeDados.nome.toUpperCase()}</p>
+                            <p style="font-size: 12px; color: #64748b; background-color: #f1f5f9; display: inline-block; padding: 4px 12px; border-radius: 20px; margin-top: 10px;">Referência: Mês ${mesStr}/${anoAtual}</p>
+                        </div>
+                        
+                        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                            <thead>
+                                <tr style="background-color: #f8fafc; border-bottom: 2px solid #cbd5e1;">
+                                    <th style="padding: 12px 8px; font-size: 11px; font-weight: 900; color: #475569; text-transform: uppercase; letter-spacing: 1px;">Nome do Atleta</th>
+                                    <th style="padding: 12px 8px; font-size: 11px; font-weight: 900; color: #475569; text-transform: uppercase; letter-spacing: 1px;">Faixa</th>
+                                    <th style="padding: 12px 8px; font-size: 11px; font-weight: 900; color: #475569; text-align: center; text-transform: uppercase; letter-spacing: 1px;">Treinos no Mês</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${linhasHtml}
+                            </tbody>
+                        </table>
+                        
+                        <div style="margin-top: 40px; font-size: 10px; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 15px;">
+                            <p>Documento gerado eletronicamente via <strong>BJJ Manager</strong></p>
+                            <p>Emitido em ${hoje.toLocaleDateString('pt-BR')} às ${hoje.toLocaleTimeString('pt-BR')}</p>
+                        </div>
+                    </div>
+                `;
+
+                const opt = {
+                    margin:       10,
+                    filename:     `Relatorio_Frequencia_${mesStr}_${anoAtual}.pdf`,
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2 },
+                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+
+                showToast("Gerando PDF...", "success");
+                html2pdf().set(opt).from(element).save();
+
+            } catch (error) {
+                console.error(error);
+                showToast("Erro ao processar o relatório.", "error");
+            } finally {
+                btn.innerHTML = originalTxt;
+                btn.disabled = false;
+            }
+        }
+
+
+        // ========================================================
+        // 🚀 FUNÇÕES DE FREQUÊNCIA NO PAINEL DO PROFESSOR (PERFIL INDIVIDUAL)
         // ========================================================
         async function carregarFrequenciaDoAluno(idAluno) {
             const listaEl = document.getElementById('admin-lista-checkins');
@@ -811,10 +912,8 @@
             }
         }
 
-        // Função mágica de Reverse Geocoding via Nominatim (Gratuito)
         async function getEnderecoPorCoordenadas(lat, lng) {
             try {
-                // Adicionamos um header de User-Agent conforme exigido pela API do Nominatim
                 const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`, {
                     headers: { 'Accept-Language': 'pt-BR,pt;q=0.9' }
                 });
@@ -856,7 +955,6 @@
             container.innerHTML = '<p class="text-center text-xs text-slate-400 py-4 italic">A descodificar localizações... 📍</p>';
 
             let html = '';
-            // Vamos processar cada check-in e buscar a morada real se houver lat/lng
             for (let ck of checkinsFiltrados) {
                 const dataObj = new Date(ck.timestamp);
                 const hora = dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
@@ -865,7 +963,6 @@
                 let enderecoHtml = '';
                 
                 if (ck.localizacao && ck.localizacao.lat && ck.localizacao.lng) {
-                    // Já tínhamos a morada em cache neste objeto? Se não, vamos buscar à API.
                     if(!ck.endereco_texto) {
                         ck.endereco_texto = await getEnderecoPorCoordenadas(ck.localizacao.lat, ck.localizacao.lng);
                     }
@@ -919,7 +1016,6 @@
             
             if(document.getElementById('aluno-senha-portal')) {
                 document.getElementById('aluno-senha-portal').value = a.senha_portal || '';
-                // Garante que o input volte a ser tipo senha se foi alternado antes
                 document.getElementById('aluno-senha-portal').type = "password";
             }
 
@@ -951,7 +1047,6 @@
                 placeholder.classList.remove('hidden');
             }
 
-            // BUSCA O HISTÓRICO DE FREQUÊNCIA LOGO QUE ABRE A FICHA
             carregarFrequenciaDoAluno(id);
 
             const divVazia = document.getElementById('anamnese-vazia');
@@ -1281,7 +1376,6 @@
             html2pdf().set(opt).from(element).save();
         }
 
-        // NOVA FUNÇÃO: Gerar o PDF da Ficha de Saúde (Anamnese)
         window.gerarPDF_Anamnese = function() {
             const aluno = todosAlunosCache.find(a => a.id === alunoEditandoId);
             if (!aluno || !aluno.anamnese_preenchida || !aluno.anamnese) {
@@ -1291,7 +1385,6 @@
             const an = aluno.anamnese;
             const nome = aluno.nome || 'NÃO INFORMADO';
             
-            // Verifica se é menor de idade para garantir que pega o responsável
             let isMenor = false;
             if (aluno.data_nascimento) {
                 const hoje = new Date();
@@ -1303,7 +1396,6 @@
             }
 
             const resp = aluno.nome_responsavel || '';
-            // Se for menor E tiver responsável, usa o responsável. Senão, usa o próprio aluno.
             const assinante = (isMenor && resp) ? resp.toUpperCase() : nome.toUpperCase();
             const tipoAssinante = (isMenor && resp) ? "RESPONSÁVEL LEGAL" : "ATLETA";
 

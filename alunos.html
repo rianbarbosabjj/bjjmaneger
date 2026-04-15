@@ -229,6 +229,7 @@
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">E-mail de Acesso</label>
                             <input type="email" id="aluno-email" placeholder="aluno@email.com" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-cyan-500 outline-none">
                         </div>
+                        
                         <div class="md:col-span-1">
                             <label class="block text-[10px] font-black text-cyan-500 uppercase mb-1">Senha (Portal do Aluno)</label>
                             <div class="relative">
@@ -238,6 +239,7 @@
                                 </button>
                             </div>
                         </div>
+
                         <div class="md:col-span-2 mt-[-10px] mb-2">
                             <p class="text-[9px] text-slate-400 font-medium">* O aluno usará este e-mail e senha para acessar a carteirinha digital no telemóvel dele.</p>
                         </div>
@@ -500,7 +502,8 @@
         let equipeDados = { nome: "Sua Equipe", logo: "" };
         let alunoEditandoId = null;
         let ficheiroFotoSelecionado = null;
-        let checkinsDoAlunoAtualCache = []; 
+        
+        let checkinsDoAlunoAtualCache = []; // Cache para não sobrecarregar Firebase ao trocar o mês do filtro
 
         const ordemDasAbas = ['aba-pessoal', 'aba-contato', 'aba-admin', 'aba-frequencia', 'aba-lgpd', 'aba-anamnese'];
         let abaIndexAtual = 0;
@@ -513,6 +516,7 @@
             selectVenc.value = "10";
         }
 
+        // --- SISTEMA DO OLHO DA SENHA ---
         window.toggleSenha = function(inputId, btnElement) {
             const input = document.getElementById(inputId);
             if (input.type === "password") {
@@ -883,7 +887,6 @@
             }
         }
 
-
         // ========================================================
         // 🚀 FUNÇÕES DE FREQUÊNCIA NO PAINEL DO PROFESSOR (PERFIL INDIVIDUAL)
         // ========================================================
@@ -1016,6 +1019,7 @@
             
             if(document.getElementById('aluno-senha-portal')) {
                 document.getElementById('aluno-senha-portal').value = a.senha_portal || '';
+                // Garante que o input volte a ser tipo senha se foi alternado antes
                 document.getElementById('aluno-senha-portal').type = "password";
             }
 
@@ -1047,6 +1051,7 @@
                 placeholder.classList.remove('hidden');
             }
 
+            // BUSCA O HISTÓRICO DE FREQUÊNCIA LOGO QUE ABRE A FICHA
             carregarFrequenciaDoAluno(id);
 
             const divVazia = document.getElementById('anamnese-vazia');
@@ -1376,6 +1381,7 @@
             html2pdf().set(opt).from(element).save();
         }
 
+        // NOVA FUNÇÃO: Gerar o PDF da Ficha de Saúde (Anamnese)
         window.gerarPDF_Anamnese = function() {
             const aluno = todosAlunosCache.find(a => a.id === alunoEditandoId);
             if (!aluno || !aluno.anamnese_preenchida || !aluno.anamnese) {
@@ -1385,6 +1391,7 @@
             const an = aluno.anamnese;
             const nome = aluno.nome || 'NÃO INFORMADO';
             
+            // Verifica se é menor de idade para garantir que pega o responsável
             let isMenor = false;
             if (aluno.data_nascimento) {
                 const hoje = new Date();
@@ -1396,6 +1403,7 @@
             }
 
             const resp = aluno.nome_responsavel || '';
+            // Se for menor E tiver responsável, usa o responsável. Senão, usa o próprio aluno.
             const assinante = (isMenor && resp) ? resp.toUpperCase() : nome.toUpperCase();
             const tipoAssinante = (isMenor && resp) ? "RESPONSÁVEL LEGAL" : "ATLETA";
 

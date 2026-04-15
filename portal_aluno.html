@@ -727,7 +727,7 @@
             if(idAba === 'aba-loja') { subtitulo.innerText = "Adquira equipamentos e materiais da equipe."; carregarLoja(); }
             if(idAba === 'aba-carteirinha') { 
                 subtitulo.innerText = "Sua identificação oficial e acesso à equipe."; 
-                setTimeout(ajustarZoomCarteirinha, 50); 
+                setTimeout(window.ajustarZoomCarteirinha, 50); 
             }
             if(idAba === 'aba-financeiro') { subtitulo.innerText = "Controle de suas mensalidades e pagamentos."; }
             if(idAba === 'aba-curriculo') { subtitulo.innerText = "Sua trajetória marcial, graduações e medalhas."; buscarCurriculoAluno(); }
@@ -760,12 +760,12 @@
         }
 
         window.filtrarCheckins = function() {
-            const valFiltro = document.getElementById('filtro-mes-checkin').value;
+            const valFiltro = document.getElementById('filtro-mes-checkin').value; // Formato YYYY-MM
             if (!valFiltro) return;
 
             const partes = valFiltro.split('-');
             const anoSelecionado = parseInt(partes[0]);
-            const mesSelecionado = parseInt(partes[1]);
+            const mesSelecionado = parseInt(partes[1]); // 1 a 12
 
             let checkinsFiltrados = checkinsGlobalCache.filter(ck => {
                 const d = new Date(ck.timestamp);
@@ -1179,7 +1179,7 @@
                     elVenc.className = "text-[10px] font-bold text-amber-300 uppercase tracking-widest mb-5 bg-amber-900/60 border border-amber-500/30 px-3 py-1 rounded-md";
                     iconFin.innerHTML = "⏳";
                     iconFin.className = "w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center text-2xl mb-3 border border-amber-500/50";
-                    btnPagar.className = "w-full bg-amber-500 hover:bg-amber-400 text-slate-900 transition py-3.5 rounded-xl text-[11px] font-black uppercase tracking-widest shadow-md";
+                    btnPagar.className = "w-full bg-amber-50 hover:bg-amber-400 text-slate-900 transition py-3.5 rounded-xl text-[11px] font-black uppercase tracking-widest shadow-md";
                 }
 
                 btnPagar.classList.remove('hidden');
@@ -1345,7 +1345,6 @@
                     return;
                 }
 
-                // 1. Obtém a geolocalização do aluno obrigatória
                 const getPosicao = () => new Promise((resolve, reject) => {
                     if (!navigator.geolocation) reject("Geolocalização não suportada.");
                     navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 10000 });
@@ -1359,12 +1358,11 @@
                 } catch(e) {
                     showToast("Para fazer check-in, precisa permitir o acesso à sua localização.", "error");
                     if(btn) { btn.innerHTML = '📍 Fazer Check-in'; btn.disabled = false; }
-                    return; // Bloqueia o checkin se não tiver localização
+                    return; 
                 }
 
                 if(btn) btn.innerHTML = '⏳ Registando...';
 
-                // 2. Salva no banco de dados com a localização
                 await addDoc(collection(db, "checkins"), {
                     aluno_id: alunoLogado.id,
                     aluno_nome: alunoLogado.nome,
@@ -1487,11 +1485,12 @@
                             nome: nomeOriginal,
                             dias_array: diasArray,
                             hora: horaStr,
+                            hora_fim: t.hora_fim || '--:--',
                             isMinhaTurma: (t.alunos_ids && t.alunos_ids.includes(alunoLogado.id))
                         });
                     });
 
-                    function getProximoTreinoDate(diasArray, horaInicioStr) {
+                    function getProximoTreinoDate(diasArray, horaInicioStr, horaFimStr) {
                         if(!diasArray || diasArray.length === 0 || !horaInicioStr || horaInicioStr === '--:--') return null;
                         const agora = new Date();
                         const partesHora = horaInicioStr.split(':');
@@ -1499,6 +1498,15 @@
                         
                         const hora = parseInt(partesHora[0]);
                         const min = parseInt(partesHora[1]);
+
+                        let horaFim = hora + 2; 
+                        let minFim = min;
+                        if(horaFimStr && horaFimStr !== '--:--') {
+                            const pFim = horaFimStr.split(':');
+                            horaFim = parseInt(pFim[0]);
+                            minFim = parseInt(pFim[1]);
+                        }
+
                         let datasPossiveis = [];
 
                         diasArray.forEach(d => {
@@ -1506,10 +1514,13 @@
                             let proxDate = new Date(agora);
                             proxDate.setHours(hora, min, 0, 0);
 
+                            let dataFim = new Date(agora);
+                            dataFim.setHours(horaFim, minFim, 0, 0);
+
                             if(dif < 0) { 
                                 dif += 7;
                             } else if (dif === 0) {
-                                if(agora > proxDate) dif = 7;
+                                if(agora > dataFim) dif = 7;
                             }
                             
                             proxDate.setDate(agora.getDate() + dif);
@@ -1522,7 +1533,7 @@
                     }
 
                     turmas.forEach(t => {
-                        t.proximaSessaoObj = getProximoTreinoDate(t.dias_array, t.hora);
+                        t.proximaSessaoObj = getProximoTreinoDate(t.dias_array, t.hora, t.hora_fim);
                     });
 
                     let temTurmaAtleta = turmas.some(t => t.isMinhaTurma);
@@ -1566,7 +1577,6 @@
                                     iconeDia = '🟢';
                                     corDia = 'text-emerald-400 font-black tracking-widest';
 
-                                    // LÓGICA: Libera o check-in apenas 10 minutos antes do início da aula
                                     const limiteInicio = new Date(prox.getTime() - 10 * 60000); 
                                     if(hoje >= limiteInicio) {
                                         isCheckinLiberado = true;

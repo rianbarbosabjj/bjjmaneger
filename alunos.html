@@ -311,7 +311,7 @@
                                 <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Treinos Computados:</span>
                                 <span id="admin-contador-treinos" class="bg-cyan-500 text-white px-2 py-0.5 rounded text-xs font-black">0</span>
                             </div>
-                            <div id="admin-lista-checkins" class="p-3 space-y-2 max-h-64 overflow-y-auto hide-scrollbar">
+                            <div id="admin-lista-checkins" class="p-3 space-y-3 max-h-64 overflow-y-auto hide-scrollbar">
                                 <p class="text-center text-xs text-slate-400 py-6 italic">A selecionar atleta...</p>
                             </div>
                         </div>
@@ -784,24 +784,21 @@
         }
 
         // ========================================================
-        // 🚀 NOVO: FUNÇÕES DE FREQUÊNCIA NO PAINEL DO PROFESSOR
+        // 🚀 NOVO: FUNÇÕES DE FREQUÊNCIA NO PAINEL DO PROFESSOR (COM ENDEREÇO)
         // ========================================================
         async function carregarFrequenciaDoAluno(idAluno) {
             const listaEl = document.getElementById('admin-lista-checkins');
             listaEl.innerHTML = '<p class="text-center text-xs text-slate-400 py-6 italic">A carregar presenças...</p>';
             
             try {
-                // Traz todos os check-ins deste aluno específico
                 const q = query(collection(db, "checkins"), where("aluno_id", "==", idAluno));
                 const snap = await getDocs(q);
                 
                 checkinsDoAlunoAtualCache = [];
                 snap.forEach(doc => checkinsDoAlunoAtualCache.push(doc.data()));
                 
-                // Ordena do mais recente para o mais antigo
                 checkinsDoAlunoAtualCache.sort((a,b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
-                // Define o mês no campo de filtro para o mês atual e manda renderizar
                 const hojeData = new Date();
                 const mesFormatado = String(hojeData.getMonth() + 1).padStart(2, '0');
                 document.getElementById('filtro-mes-freq-admin').value = `${hojeData.getFullYear()}-${mesFormatado}`;
@@ -814,7 +811,27 @@
             }
         }
 
-        window.filtrarFrequenciaAdmin = function() {
+        // Função mágica de Reverse Geocoding via Nominatim (Gratuito)
+        async function getEnderecoPorCoordenadas(lat, lng) {
+            try {
+                // Adicionamos um header de User-Agent conforme exigido pela API do Nominatim
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`, {
+                    headers: { 'Accept-Language': 'pt-BR,pt;q=0.9' }
+                });
+                const data = await res.json();
+                if(data && data.address) {
+                    const rua = data.address.road || data.address.pedestrian || data.address.suburb || "Rua Desconhecida";
+                    const num = data.address.house_number ? `, ${data.address.house_number}` : '';
+                    const cidade = data.address.city || data.address.town || data.address.village || "";
+                    return `${rua}${num} - ${cidade}`.trim();
+                }
+                return "Localização obtida";
+            } catch(e) {
+                return "Localização obtida";
+            }
+        }
+
+        window.filtrarFrequenciaAdmin = async function() {
             const valFiltro = document.getElementById('filtro-mes-freq-admin').value; // Formato YYYY-MM
             if (!valFiltro) return;
 
@@ -829,40 +846,56 @@
 
             document.getElementById('admin-contador-treinos').innerText = checkinsFiltrados.length;
 
+            const container = document.getElementById('admin-lista-checkins');
+            
+            if (checkinsFiltrados.length === 0) {
+                container.innerHTML = "<p class='text-[10px] text-slate-400 italic text-center py-6'>O aluno não possui treinos registados neste mês.</p>";
+                return;
+            }
+
+            container.innerHTML = '<p class="text-center text-xs text-slate-400 py-4 italic">A descodificar localizações... 📍</p>';
+
             let html = '';
-            if (checkinsFiltrados.length > 0) {
-                checkinsFiltrados.forEach(ck => {
-                    const dataObj = new Date(ck.timestamp);
-                    const hora = dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
-                    const dataBonita = dataObj.toLocaleDateString('pt-BR', {day: '2-digit', month: 'short', year:'numeric'});
+            // Vamos processar cada check-in e buscar a morada real se houver lat/lng
+            for (let ck of checkinsFiltrados) {
+                const dataObj = new Date(ck.timestamp);
+                const hora = dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+                const dataBonita = dataObj.toLocaleDateString('pt-BR', {day: '2-digit', month: 'short', year:'numeric'});
 
-                    // NOVO BOTÃO PARA ABRIR GOOGLE MAPS
-                    let btnMapa = '';
-                    if(ck.localizacao && ck.localizacao.lat && ck.localizacao.lng) {
-                        btnMapa = `<a href="https://www.google.com/maps?q=${ck.localizacao.lat},${ck.localizacao.lng}" target="_blank" class="text-[10px] font-black text-white bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded-md shrink-0 transition-colors flex items-center gap-1 shadow-sm" title="Ver Localização no Mapa">🗺️ Mapa</a>`;
+                let enderecoHtml = '';
+                
+                if (ck.localizacao && ck.localizacao.lat && ck.localizacao.lng) {
+                    // Já tínhamos a morada em cache neste objeto? Se não, vamos buscar à API.
+                    if(!ck.endereco_texto) {
+                        ck.endereco_texto = await getEnderecoPorCoordenadas(ck.localizacao.lat, ck.localizacao.lng);
                     }
+                    
+                    enderecoHtml = `
+                        <div class="mt-2 pt-2 border-t border-slate-100 flex items-start gap-1">
+                            <span class="text-[10px] text-slate-400">📍</span>
+                            <span class="text-[9px] text-slate-500 italic mt-0.5 leading-tight">${ck.endereco_texto}</span>
+                        </div>
+                    `;
+                }
 
-                    html += `
-                        <div class="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-100 shadow-sm transition-all hover:border-cyan-200">
+                html += `
+                    <div class="p-3 bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all hover:border-cyan-200">
+                        <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-cyan-50 text-cyan-500 border border-cyan-100 flex items-center justify-center font-black text-xs shrink-0">📍</div>
+                                <div class="w-8 h-8 rounded-full bg-cyan-50 text-cyan-500 border border-cyan-100 flex items-center justify-center font-black text-xs shrink-0">🥋</div>
                                 <div>
-                                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">${dataBonita}</p>
+                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">${dataBonita}</p>
                                     <p class="text-[11px] font-bold text-slate-800 truncate">${ck.turma_nome || 'Treino'}</p>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-2 shrink-0">
-                                ${btnMapa}
-                                <span class="text-[10px] font-black text-cyan-600 bg-cyan-50 px-2 py-1 rounded-md shrink-0">${hora}</span>
-                            </div>
+                            <span class="text-[10px] font-black text-cyan-600 bg-cyan-50 px-2 py-1 rounded-md shrink-0">${hora}</span>
                         </div>
-                    `;
-                });
-            } else {
-                html = "<p class='text-[10px] text-slate-400 italic text-center py-6'>O aluno não possui treinos registados neste mês.</p>";
+                        ${enderecoHtml}
+                    </div>
+                `;
             }
 
-            document.getElementById('admin-lista-checkins').innerHTML = html;
+            container.innerHTML = html;
         }
 
         window.abrirFichaAluno = (id) => {
@@ -1186,7 +1219,7 @@
             if(document.getElementById('lgpd-promo').checked) usos.push("Materiais informativos e promocionais.");
             if(document.getElementById('lgpd-relatorio').checked) usos.push("Relatórios e prestação de contas.");
 
-            let listaUsosHtml = usos.length > 0 ? usos.map(u => `<p style='margin: 10px 0;'>&bull; ${u}</p>`).join('') : "<p style='margin: 10px 0;'><i>Nenhuma autorização específica.</i></p>";
+            let listaUsosHtml = usos.length > 0 ? usos.map(u => `<p style='margin: 10px 0;'>• ${u}</p>`).join('') : "<p style='margin: 10px 0;'><i>Nenhuma autorização específica.</i></p>";
             
             let dataAtual = new Date().toLocaleString('pt-BR');
             let hash = "GERADO-" + Math.random().toString(36).substring(2, 10).toUpperCase() + "-" + Math.random().toString(36).substring(2, 10).toUpperCase();

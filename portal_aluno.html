@@ -452,7 +452,7 @@
             </button>
             <button onclick="mudarAbaAluno('aba-carteirinha')" id="nav-aba-carteirinha" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
                 <span class="text-xl sm:text-2xl mb-1 grayscale transition-all">🪪</span>
-                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-center">Careirinha</span>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-center">Carteirinha</span>
             </button>
             <button onclick="mudarAbaAluno('aba-financeiro')" id="nav-aba-financeiro" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
                 <span class="text-xl sm:text-2xl mb-1 grayscale transition-all">💰</span>
@@ -630,7 +630,7 @@
         let equipeDados = null;
         let faturasCache = []; 
         let produtosCache = [];
-        let checkinsGlobalCache = []; // NOVA VARIÁVEL: Guarda todos os check-ins do aluno para o filtro local funcionar
+        let checkinsGlobalCache = []; 
 
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
@@ -723,17 +723,17 @@
             }
 
             const subtitulo = document.getElementById('subtitulo-secao');
-            if(idAba === 'aba-inicio') { subtitulo.innerText = "Seja Bem-vindo(a) ao seu portal"; buscarMuralEHorarios(); }
+            if(idAba === 'aba-inicio') { subtitulo.innerText = "Seja bem-vindo(a) ao seu Portal."; buscarMuralEHorarios(); }
             if(idAba === 'aba-loja') { subtitulo.innerText = "Adquira produtos da equipe."; carregarLoja(); }
-            if(idAba === 'aba-carteirinha') { subtitulo.innerText = "Sua identificação oficial da equipe."; }
+            if(idAba === 'aba-carteirinha') { 
+                subtitulo.innerText = "Sua identificação da equipe."; 
+                setTimeout(ajustarZoomCarteirinha, 50); 
+            }
             if(idAba === 'aba-financeiro') { subtitulo.innerText = "Controle de suas mensalidades."; }
             if(idAba === 'aba-curriculo') { subtitulo.innerText = "Sua trajetória: graduações e medalhas."; buscarCurriculoAluno(); }
             if(idAba === 'aba-dados') { subtitulo.innerText = "Mantenha o seu cadastro atualizado."; preencherFormularioDados(); }
         }
 
-        // ========================================================
-        // 🚀 NOVO: CONTROLO DE ABAS DENTRO DO HISTÓRICO
-        // ========================================================
         window.switchCurriculoTab = function(tab) {
             const tabFreq = document.getElementById('tab-curriculo-freq');
             const tabConq = document.getElementById('tab-curriculo-conq');
@@ -760,12 +760,12 @@
         }
 
         window.filtrarCheckins = function() {
-            const valFiltro = document.getElementById('filtro-mes-checkin').value; // Formato YYYY-MM
+            const valFiltro = document.getElementById('filtro-mes-checkin').value;
             if (!valFiltro) return;
 
             const partes = valFiltro.split('-');
             const anoSelecionado = parseInt(partes[0]);
-            const mesSelecionado = parseInt(partes[1]); // 1 a 12
+            const mesSelecionado = parseInt(partes[1]);
 
             let checkinsFiltrados = checkinsGlobalCache.filter(ck => {
                 const d = new Date(ck.timestamp);
@@ -955,13 +955,28 @@
         }
 
         window.ajustarZoomCarteirinha = function() {
-            const wrapper = document.getElementById('cart-wrapper'); const cart = document.getElementById('carteirinha');
-            if(!wrapper || !cart) return;
-            const maxWidth = wrapper.parentElement.clientWidth - 32; 
-            if(maxWidth < 600) { const scale = maxWidth / 600; cart.style.transform = `scale(${scale})`; cart.style.transformOrigin = 'top center'; wrapper.style.height = `${380 * scale}px`; } 
-            else { cart.style.transform = `scale(1)`; wrapper.style.height = '380px'; }
+            const wrapper = document.getElementById('cart-wrapper'); 
+            const cart = document.getElementById('carteirinha');
+            
+            // Só ajusta se a aba estiver visível e renderizada para não bugar o tamanho caindo para zero
+            if(!wrapper || !cart || wrapper.closest('.hidden')) return;
+
+            let padding = window.innerWidth < 640 ? 32 : 0;
+            let maxWidth = wrapper.parentElement.clientWidth - padding; 
+            
+            if(maxWidth > 50 && maxWidth < 600) { 
+                const scale = maxWidth / 600; 
+                cart.style.transform = `scale(${scale})`; 
+                cart.style.transformOrigin = window.innerWidth < 640 ? 'top left' : 'top center'; 
+                wrapper.style.height = `${380 * scale + 20}px`; // +20 de folga vertical
+            } else { 
+                cart.style.transform = `scale(1)`; 
+                cart.style.transformOrigin = 'top center';
+                wrapper.style.height = '390px'; 
+            }
         }
-        window.addEventListener('resize', ajustarZoomCarteirinha);
+        
+        window.addEventListener('resize', window.ajustarZoomCarteirinha);
 
         async function iniciarPortal() {
             document.getElementById('tela-login').classList.add('hidden'); document.getElementById('tela-portal').classList.remove('hidden'); document.getElementById('tela-portal').classList.add('flex');
@@ -973,18 +988,16 @@
                 if (eqSnap.exists()) { equipeDados = eqSnap.data(); }
             } catch(e) { console.log("Erro ao buscar dados."); }
             preencherCarteirinha(); buscarFaturasResiliente(); verificarAnamnese(); 
-            setTimeout(ajustarZoomCarteirinha, 100);
             
-            // Define o filtro de mês da assiduidade para o mês atual automaticamente
             const hojeData = new Date();
             const mesFormatado = String(hojeData.getMonth() + 1).padStart(2, '0');
             document.getElementById('filtro-mes-checkin').value = `${hojeData.getFullYear()}-${mesFormatado}`;
 
             buscarMuralEHorarios();
-            buscarCurriculoAluno(); // Agora também carrega a assiduidade!
+            buscarCurriculoAluno(); 
             atualizarWidgetMensalidade();
             
-            mudarAbaAluno('aba-inicio'); // Inicia na home corretamente
+            mudarAbaAluno('aba-inicio'); 
         }
 
         function getCorFaixaDupla(faixaTexto) {
@@ -1184,9 +1197,6 @@
             }
         }
 
-        // ========================================================
-        // FUNÇÃO AUXILIAR PARA O CARROSSEL DA LOJA
-        // ========================================================
         window.scrollCarrossel = function(idCarrossel, direcao) {
             const el = document.getElementById(idCarrossel);
             if(el) {
@@ -1342,7 +1352,6 @@
                 });
                 showToast("Check-in realizado com sucesso! Oss!", "success");
                 
-                // Recarrega a home e o currículo
                 buscarMuralEHorarios();
                 buscarCurriculoAluno();
             } catch(e) {
@@ -1568,50 +1577,6 @@
             }
         }
 
-        // ========================================================
-        // 🚀 FILTRO DE CHECK-INS DO ALUNO
-        // ========================================================
-        window.filtrarCheckins = function() {
-            const valFiltro = document.getElementById('filtro-mes-checkin').value; // Formato YYYY-MM
-            if (!valFiltro) return;
-
-            const partes = valFiltro.split('-');
-            const anoSelecionado = parseInt(partes[0]);
-            const mesSelecionado = parseInt(partes[1]); // 1 a 12
-
-            let checkinsFiltrados = checkinsGlobalCache.filter(ck => {
-                const d = new Date(ck.timestamp);
-                return d.getFullYear() === anoSelecionado && (d.getMonth() + 1) === mesSelecionado;
-            });
-
-            document.getElementById('contador-checkins-mes').innerText = checkinsFiltrados.length;
-
-            let html = '';
-            if (checkinsFiltrados.length > 0) {
-                checkinsFiltrados.forEach(ck => {
-                    const dataObj = new Date(ck.timestamp);
-                    const hora = dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
-                    const dataBonita = dataObj.toLocaleDateString('pt-BR', {day: '2-digit', month: 'short'});
-
-                    html += `
-                        <div class="flex items-center justify-between p-3 bg-slate-900/40 rounded-xl border border-slate-700/50 mb-2">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex items-center justify-center font-black text-xs shrink-0">📍</div>
-                                <div>
-                                    <p class="text-[10px] font-black text-emerald-400 uppercase tracking-widest">${dataBonita} <span class="text-slate-500">• ${hora}</span></p>
-                                    <p class="text-[11px] font-bold text-white truncate">${ck.turma_nome || 'Treino'}</p>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-            } else {
-                html = "<p class='text-[10px] text-slate-500 italic text-center py-6'>Nenhum treino registrado neste mês.</p>";
-            }
-
-            document.getElementById('lista-historico-checkins').innerHTML = html;
-        }
-
         async function buscarCurriculoAluno() {
             const divG = document.getElementById('timeline-graduacoes'); 
             const divC = document.getElementById('lista-competicoes'); 
@@ -1639,7 +1604,6 @@
                 compCache.sort((a, b) => getTempoOrdenacao(b.data) - getTempoOrdenacao(a.data));
                 checkCache.sort((a, b) => getTempoOrdenacao(b.timestamp) - getTempoOrdenacao(a.timestamp));
 
-                // Popula o cache global para o filtro de meses
                 checkinsGlobalCache = checkCache;
 
                 const formatarDataBR = (dataStr) => {
@@ -1649,12 +1613,10 @@
                     return String(dataStr);
                 };
 
-                // --- 1. RENDERIZAR CHECK-INS ---
                 if (divCheckins && numCheckinsMes) {
-                    filtrarCheckins(); // Usa o filtro no mês configurado atualmente
+                    filtrarCheckins();
                 }
 
-                // --- 2. RENDERIZAR GRADUAÇÕES ---
                 if(gradCache.length > 0) {
                     const atual = gradCache[0];
                     if(divStatusFaixa) divStatusFaixa.classList.remove('hidden');
@@ -1674,7 +1636,6 @@
                     }
                 } else { if(divStatusFaixa) divStatusFaixa.classList.add('hidden'); if(divG) divG.innerHTML = "<p class='text-xs text-slate-500 italic text-center'>Nenhum registro encontrado.</p>"; }
 
-                // --- 3. RENDERIZAR COMPETIÇÕES ---
                 if(compCache.length > 0 && divC) {
                     divC.innerHTML = compCache.map(c => {
                         const col = (c.colocacao || "").toLowerCase(); let med = "🥋"; let textCol = "text-slate-400"; let borderGlow = "border-slate-700/50"; let bgGlow = "bg-slate-900";

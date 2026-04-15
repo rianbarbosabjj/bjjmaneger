@@ -760,12 +760,12 @@
         }
 
         window.filtrarCheckins = function() {
-            const valFiltro = document.getElementById('filtro-mes-checkin').value; // Formato YYYY-MM
+            const valFiltro = document.getElementById('filtro-mes-checkin').value;
             if (!valFiltro) return;
 
             const partes = valFiltro.split('-');
             const anoSelecionado = parseInt(partes[0]);
-            const mesSelecionado = parseInt(partes[1]); // 1 a 12
+            const mesSelecionado = parseInt(partes[1]);
 
             let checkinsFiltrados = checkinsGlobalCache.filter(ck => {
                 const d = new Date(ck.timestamp);
@@ -958,17 +958,17 @@
             const wrapper = document.getElementById('cart-wrapper'); 
             const cart = document.getElementById('carteirinha');
             
-            // Só ajusta se a aba estiver visível e renderizada para não bugar o tamanho caindo para zero
-            if(!wrapper || !cart || wrapper.closest('.hidden')) return;
+            if(!wrapper || !cart) return;
 
-            let padding = window.innerWidth < 640 ? 32 : 0;
-            let maxWidth = wrapper.parentElement.clientWidth - padding; 
+            let screenWidth = window.innerWidth;
+            let padding = screenWidth < 640 ? 32 : 0;
+            let maxWidth = screenWidth - padding; 
             
             if(maxWidth > 50 && maxWidth < 600) { 
                 const scale = maxWidth / 600; 
                 cart.style.transform = `scale(${scale})`; 
-                cart.style.transformOrigin = window.innerWidth < 640 ? 'top left' : 'top center'; 
-                wrapper.style.height = `${380 * scale + 20}px`; // +20 de folga vertical
+                cart.style.transformOrigin = 'top center'; 
+                wrapper.style.height = `${380 * scale + 20}px`; 
             } else { 
                 cart.style.transform = `scale(1)`; 
                 cart.style.transformOrigin = 'top center';
@@ -1336,11 +1336,11 @@
 
             try {
                 const hoje = new Date().toISOString().split('T')[0];
-                const q = query(collection(db, "checkins"), where("aluno_id", "==", alunoLogado.id), where("data", "==", hoje));
+                const q = query(collection(db, "checkins"), where("aluno_id", "==", alunoLogado.id), where("data", "==", hoje), where("turma_id", "==", turmaId));
                 const snap = await getDocs(q);
                 
                 if (!snap.empty) {
-                    showToast("Você já fez check-in hoje!", "error");
+                    showToast("Você já fez check-in nesta turma hoje!", "error");
                     if(btn) { btn.innerHTML = '📍 Fazer Check-in'; btn.disabled = false; }
                     return;
                 }
@@ -1550,7 +1550,7 @@
                     const dataHojeStr = new Date().toISOString().split('T')[0];
                     const qCheck = query(collection(db, "checkins"), where("aluno_id", "==", alunoLogado.id), where("data", "==", dataHojeStr));
                     const snapCheck = await getDocs(qCheck);
-                    const jaFezCheckin = !snapCheck.empty;
+                    const turmasComCheckinHoje = snapCheck.docs.map(doc => doc.data().turma_id);
 
                     if(turmasExibidas.length > 0) {
                         divHorarios.innerHTML = turmasExibidas.map(t => {
@@ -1594,7 +1594,9 @@
                                 }
                             }
 
+                            const jaFezCheckin = turmasComCheckinHoje.includes(t.id);
                             let checkinBtn = '';
+                            
                             if (isHoje) {
                                 if (jaFezCheckin) {
                                     checkinBtn = `<button disabled class="w-full mt-2 bg-emerald-500 text-white py-2 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-1 shadow-sm opacity-70 cursor-not-allowed">✅ Check-in Feito</button>`;

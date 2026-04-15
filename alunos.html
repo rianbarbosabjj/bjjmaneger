@@ -836,6 +836,12 @@
                     const hora = dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
                     const dataBonita = dataObj.toLocaleDateString('pt-BR', {day: '2-digit', month: 'short', year:'numeric'});
 
+                    // NOVO BOTÃO PARA ABRIR GOOGLE MAPS
+                    let btnMapa = '';
+                    if(ck.localizacao && ck.localizacao.lat && ck.localizacao.lng) {
+                        btnMapa = `<a href="https://www.google.com/maps?q=${ck.localizacao.lat},${ck.localizacao.lng}" target="_blank" class="text-[10px] font-black text-white bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded-md shrink-0 transition-colors flex items-center gap-1 shadow-sm" title="Ver Localização no Mapa">🗺️ Mapa</a>`;
+                    }
+
                     html += `
                         <div class="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-100 shadow-sm transition-all hover:border-cyan-200">
                             <div class="flex items-center gap-3">
@@ -845,7 +851,10 @@
                                     <p class="text-[11px] font-bold text-slate-800 truncate">${ck.turma_nome || 'Treino'}</p>
                                 </div>
                             </div>
-                            <span class="text-[10px] font-black text-cyan-600 bg-cyan-50 px-2 py-1 rounded-md shrink-0">${hora}</span>
+                            <div class="flex items-center gap-2 shrink-0">
+                                ${btnMapa}
+                                <span class="text-[10px] font-black text-cyan-600 bg-cyan-50 px-2 py-1 rounded-md shrink-0">${hora}</span>
+                            </div>
                         </div>
                     `;
                 });

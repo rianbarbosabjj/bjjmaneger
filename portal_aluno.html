@@ -452,15 +452,15 @@
             </button>
             <button onclick="mudarAbaAluno('aba-carteirinha')" id="nav-aba-carteirinha" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
                 <span class="text-xl sm:text-2xl mb-1 grayscale transition-all">🪪</span>
-                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-center">Carteirinha</span>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-center">Cartão</span>
             </button>
             <button onclick="mudarAbaAluno('aba-financeiro')" id="nav-aba-financeiro" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
                 <span class="text-xl sm:text-2xl mb-1 grayscale transition-all">💰</span>
-                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-center">Financeiro</span>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-center">Finanças</span>
             </button>
             <button onclick="mudarAbaAluno('aba-loja')" id="nav-aba-loja" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
                 <span class="text-xl sm:text-2xl mb-1 grayscale transition-all">🛒</span>
-                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-center">Vitrine Virtual</span>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-center">Vitrine</span>
             </button>
             <button onclick="mudarAbaAluno('aba-curriculo')" id="nav-aba-curriculo" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
                 <span class="text-xl sm:text-2xl mb-1 grayscale transition-all">📜</span>
@@ -723,14 +723,14 @@
             }
 
             const subtitulo = document.getElementById('subtitulo-secao');
-            if(idAba === 'aba-inicio') { subtitulo.innerText = "Seja bem-vindo(a) ao seu Portal."; buscarMuralEHorarios(); }
-            if(idAba === 'aba-loja') { subtitulo.innerText = "Adquira produtos da equipe."; carregarLoja(); }
+            if(idAba === 'aba-inicio') { subtitulo.innerText = "Fique por dentro das novidades da equipe."; buscarMuralEHorarios(); }
+            if(idAba === 'aba-loja') { subtitulo.innerText = "Adquira equipamentos e materiais da equipe."; carregarLoja(); }
             if(idAba === 'aba-carteirinha') { 
-                subtitulo.innerText = "Sua identificação da equipe."; 
+                subtitulo.innerText = "Sua identificação oficial e acesso à equipe."; 
                 setTimeout(ajustarZoomCarteirinha, 50); 
             }
-            if(idAba === 'aba-financeiro') { subtitulo.innerText = "Controle de suas mensalidades."; }
-            if(idAba === 'aba-curriculo') { subtitulo.innerText = "Sua trajetória: graduações e medalhas."; buscarCurriculoAluno(); }
+            if(idAba === 'aba-financeiro') { subtitulo.innerText = "Controle de suas mensalidades e pagamentos."; }
+            if(idAba === 'aba-curriculo') { subtitulo.innerText = "Sua trajetória marcial, graduações e medalhas."; buscarCurriculoAluno(); }
             if(idAba === 'aba-dados') { subtitulo.innerText = "Mantenha o seu cadastro atualizado."; preencherFormularioDados(); }
         }
 
@@ -1331,6 +1331,9 @@
         };
 
         window.registrarCheckin = async function(turmaId, nomeTurma) {
+            const btn = document.getElementById(`btn-checkin-${turmaId}`);
+            if(btn) { btn.innerHTML = '⏳ Localizando...'; btn.disabled = true; }
+
             try {
                 const hoje = new Date().toISOString().split('T')[0];
                 const q = query(collection(db, "checkins"), where("aluno_id", "==", alunoLogado.id), where("data", "==", hoje));
@@ -1338,9 +1341,30 @@
                 
                 if (!snap.empty) {
                     showToast("Você já fez check-in hoje!", "error");
+                    if(btn) { btn.innerHTML = '📍 Fazer Check-in'; btn.disabled = false; }
                     return;
                 }
 
+                // 1. Obtém a geolocalização do aluno obrigatória
+                const getPosicao = () => new Promise((resolve, reject) => {
+                    if (!navigator.geolocation) reject("Geolocalização não suportada.");
+                    navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 10000 });
+                });
+
+                let lat = null, lng = null;
+                try {
+                    const pos = await getPosicao();
+                    lat = pos.coords.latitude;
+                    lng = pos.coords.longitude;
+                } catch(e) {
+                    showToast("Para fazer check-in, precisa permitir o acesso à sua localização.", "error");
+                    if(btn) { btn.innerHTML = '📍 Fazer Check-in'; btn.disabled = false; }
+                    return; // Bloqueia o checkin se não tiver localização
+                }
+
+                if(btn) btn.innerHTML = '⏳ Registando...';
+
+                // 2. Salva no banco de dados com a localização
                 await addDoc(collection(db, "checkins"), {
                     aluno_id: alunoLogado.id,
                     aluno_nome: alunoLogado.nome,
@@ -1348,14 +1372,20 @@
                     turma_id: turmaId,
                     turma_nome: nomeTurma,
                     data: hoje,
-                    timestamp: new Date().toISOString()
+                    timestamp: new Date().toISOString(),
+                    localizacao: {
+                        lat: lat,
+                        lng: lng
+                    }
                 });
+                
                 showToast("Check-in realizado com sucesso! Oss!", "success");
                 
                 buscarMuralEHorarios();
                 buscarCurriculoAluno();
             } catch(e) {
                 showToast("Erro ao registrar check-in.", "error");
+                if(btn) { btn.innerHTML = '📍 Fazer Check-in'; btn.disabled = false; }
             }
         }
 
@@ -1518,6 +1548,8 @@
                             let corDia = 'text-slate-400';
                             let textoHoraLimpa = t.hora.split('-')[0].trim();
                             let isHoje = false;
+                            let isCheckinLiberado = false;
+                            let textoCheckinBloqueado = '';
                             
                             if(t.proximaSessaoObj) {
                                 const hoje = new Date();
@@ -1533,6 +1565,15 @@
                                     labelDia = 'HOJE';
                                     iconeDia = '🟢';
                                     corDia = 'text-emerald-400 font-black tracking-widest';
+
+                                    // LÓGICA: Libera o check-in apenas 10 minutos antes do início da aula
+                                    const limiteInicio = new Date(prox.getTime() - 10 * 60000); 
+                                    if(hoje >= limiteInicio) {
+                                        isCheckinLiberado = true;
+                                    } else {
+                                        textoCheckinBloqueado = `Libera às ${limiteInicio.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}`;
+                                    }
+
                                 } else if(isAmanha) {
                                     labelDia = 'AMANHÃ';
                                     iconeDia = '🟡';
@@ -1547,8 +1588,10 @@
                             if (isHoje) {
                                 if (jaFezCheckin) {
                                     checkinBtn = `<button disabled class="w-full mt-2 bg-emerald-500 text-white py-2 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-1 shadow-sm opacity-70 cursor-not-allowed">✅ Check-in Feito</button>`;
+                                } else if (isCheckinLiberado) {
+                                    checkinBtn = `<button id="btn-checkin-${t.id}" onclick="registrarCheckin('${t.id}', '${t.nome.replace(/'/g, "\\'")}')" class="w-full mt-2 bg-emerald-500/20 hover:bg-emerald-500 text-emerald-400 hover:text-white border border-emerald-500/30 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-1 shadow-sm">📍 Fazer Check-in</button>`;
                                 } else {
-                                    checkinBtn = `<button onclick="registrarCheckin('${t.id}', '${t.nome.replace(/'/g, "\\'")}')" class="w-full mt-2 bg-emerald-500/20 hover:bg-emerald-500 text-emerald-400 hover:text-white border border-emerald-500/30 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-1 shadow-sm">📍 Fazer Check-in</button>`;
+                                    checkinBtn = `<button disabled class="w-full mt-2 bg-slate-800 text-slate-500 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-1 shadow-sm cursor-not-allowed border border-slate-700/50">⏳ ${textoCheckinBloqueado}</button>`;
                                 }
                             }
                             
@@ -1575,6 +1618,47 @@
                     divHorarios.innerHTML = "<div class='text-[10px] text-rose-500 text-center bg-rose-500/10 p-2 rounded-lg'>Erro ao carregar a grade de treinos.</div>"; 
                 }
             }
+        }
+
+        window.filtrarCheckins = function() {
+            const valFiltro = document.getElementById('filtro-mes-checkin').value; // Formato YYYY-MM
+            if (!valFiltro) return;
+
+            const partes = valFiltro.split('-');
+            const anoSelecionado = parseInt(partes[0]);
+            const mesSelecionado = parseInt(partes[1]);
+
+            let checkinsFiltrados = checkinsGlobalCache.filter(ck => {
+                const d = new Date(ck.timestamp);
+                return d.getFullYear() === anoSelecionado && (d.getMonth() + 1) === mesSelecionado;
+            });
+
+            document.getElementById('contador-checkins-mes').innerText = checkinsFiltrados.length;
+
+            let html = '';
+            if (checkinsFiltrados.length > 0) {
+                checkinsFiltrados.forEach(ck => {
+                    const dataObj = new Date(ck.timestamp);
+                    const hora = dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+                    const dataBonita = dataObj.toLocaleDateString('pt-BR', {day: '2-digit', month: 'short'});
+
+                    html += `
+                        <div class="flex items-center justify-between p-3 bg-slate-900/40 rounded-xl border border-slate-700/50 mb-2">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex items-center justify-center font-black text-xs shrink-0">📍</div>
+                                <div>
+                                    <p class="text-[10px] font-black text-emerald-400 uppercase tracking-widest">${dataBonita} <span class="text-slate-500">• ${hora}</span></p>
+                                    <p class="text-[11px] font-bold text-white truncate">${ck.turma_nome || 'Treino'}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                html = "<p class='text-[10px] text-slate-500 italic text-center py-6'>Nenhum treino registrado neste mês.</p>";
+            }
+
+            document.getElementById('lista-historico-checkins').innerHTML = html;
         }
 
         async function buscarCurriculoAluno() {

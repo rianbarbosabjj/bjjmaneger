@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BJJ Manager | O Sistema Definitivo para Academias de Jiu-Jitsu</title>
+    <title>BJJ Manager | O Sistema de Gestão para Academias</title>
     
     <meta name="description" content="Automatize cobranças, emita certificados com QR Code e tenha o raio-x da sua equipe na palma da mão.">
     <link rel="icon" type="image/png" href="logo_bjj_maneger.png">
@@ -24,18 +24,18 @@
         }
         .btn-whatsapp {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
+            bottom: 20px;
+            right: 20px;
             background-color: #25D366;
             color: white;
-            border-radius: 50px;
-            width: 60px;
-            height: 60px;
+            border-radius: 50%;
+            width: 55px;
+            height: 55px;
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            z-index: 1000;
+            z-index: 9999;
             transition: all 0.3s ease;
             animation: pulse-whatsapp 2s infinite;
         }
@@ -45,8 +45,8 @@
 <body class="bg-slate-900 text-slate-200 overflow-x-hidden selection:bg-cyan-500 selection:text-white">
 
     <a href="https://wa.me/5521981716074?text=Olá! Gostaria de saber mais sobre o BJJ Manager." target="_blank" class="btn-whatsapp">
-        <svg class="w-8 h-8 fill-current" viewBox="0 0 24 24">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+        <svg class="w-7 h-7 fill-current shrink-0" viewBox="0 0 24 24">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
         </svg>
     </a>
 
@@ -66,8 +66,8 @@
                 </div>
                 
                 <div class="flex items-center gap-3 sm:gap-4">
-                    <a href="login.html" class="text-sm font-bold text-slate-300 hover:text-white transition-colors hidden sm:block">Entrar</a>
-                    <a href="#precos" class="bg-cyan-500 hover:bg-cyan-600 text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all transform hover:-translate-y-0.5">Criar Conta</a>
+                    <a href="login.html" class="text-[11px] sm:text-sm font-bold text-slate-300 hover:text-white transition-colors">Entrar</a>
+                    <a href="#precos" class="bg-cyan-500 hover:bg-cyan-600 text-white px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl text-[9px] sm:text-xs font-black uppercase tracking-widest shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all transform hover:-translate-y-0.5 whitespace-nowrap">Criar Conta</a>
                 </div>
             </div>
         </div>
@@ -236,27 +236,15 @@
                 </div>
 
                 <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-pink-500/50 hover:bg-slate-800/80 transition-all group">
-                    <div class="w-12 h-12 bg-pink-500/20 text-pink-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">🗓️</div>
-                    <h3 class="text-lg font-black text-white mb-2">Turmas e Horários</h3>
-                    <p class="text-slate-400 text-xs leading-relaxed">Crie as suas grades (Ex: Kids, Adultos). O sistema distribui alunos automaticamente pela idade e libera o check-in na hora certa.</p>
+                    <div class="w-12 h-12 bg-pink-500/20 text-pink-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">🎨</div>
+                    <h3 class="text-lg font-black text-white mb-2">A Sua Marca</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">O sistema adapta-se à sua academia. Faça o upload da sua logo e ela aparecerá nos dashboards, recibos e certificados.</p>
                 </div>
 
-                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-indigo-500/50 hover:bg-slate-800/80 transition-all group">
-                    <div class="w-12 h-12 bg-indigo-500/20 text-indigo-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">🔗</div>
-                    <h3 class="text-lg font-black text-white mb-2">Auto-Cadastro</h3>
-                    <p class="text-slate-400 text-xs leading-relaxed">Não perca tempo digitando dados. Envie o link e o aluno preenche a própria ficha e assina os termos diretamente do celular.</p>
-                </div>
-
-                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-teal-500/50 hover:bg-slate-800/80 transition-all group">
-                    <div class="w-12 h-12 bg-teal-500/20 text-teal-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">👥</div>
-                    <h3 class="text-lg font-black text-white mb-2">Co-Administradores</h3>
-                    <p class="text-slate-400 text-xs leading-relaxed">Dê acesso ao sistema aos seus professores auxiliares para ajudarem a gerir as turmas e lançar as presenças e pagamentos.</p>
-                </div>
-
-                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-blue-500/50 hover:bg-slate-800/80 transition-all group">
-                    <div class="w-12 h-12 bg-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">📊</div>
-                    <h3 class="text-lg font-black text-white mb-2">Raio-X (Dashboard)</h3>
-                    <p class="text-slate-400 text-xs leading-relaxed">Acompanhe quem está no tatame hoje, quem são os aniversariantes e o total de alunos por faixa e turma.</p>
+                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-orange-500/50 hover:bg-slate-800/80 transition-all group">
+                    <div class="w-12 h-12 bg-orange-500/20 text-orange-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">⚡</div>
+                    <h3 class="text-lg font-black text-white mb-2">Cobrança Automática</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">Disponível no Plano Elite: Geração automática de PIX e baixa automática no sistema quando o aluno paga a mensalidade.</p>
                 </div>
 
             </div>
@@ -308,11 +296,13 @@
                     
                     <ul class="space-y-4 mb-8 flex-1 text-sm text-slate-200 mt-4">
                         <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> <b>Alunos Ilimitados</b></li>
-                        <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> Acesso ao App / Portal do Aluno</li>
-                        <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> Emissão de Carteirinha Digital</li>
+                        <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> Todas as funcionalidades</li>
+                        <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> Acesso ao Portal do Aluno</li>
+                        <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> Emissão de Carteirinhas</li>
                         <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> Ficha de Saúde (Anamnese) e LGPD</li>
                         <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> Gerador de Certificados em PDF</li>
                         <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> Gestão de Medalhas e Federações</li>
+                        <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> Co-Administradores incluídos</li>
                     </ul>
                     <a href="cadastro_equipe.html" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-all shadow-lg transform hover:-translate-y-0.5">
                         Assinar Black Belt
@@ -321,7 +311,7 @@
 
                 <div class="bg-slate-900 rounded-3xl p-8 border border-slate-800 flex flex-col relative overflow-hidden">
                     <h3 class="text-xl font-black text-white mb-2">Plano Elite <span class="text-[9px] bg-amber-500/20 text-amber-500 px-2 py-1 rounded ml-2 uppercase">Automação</span></h3>
-                    <p class="text-xs text-slate-400 mb-6 min-h-[40px]">Para academias estruturadas que querem faturar mais no piloto automático.</p>
+                    <p class="text-xs text-slate-400 mb-6 min-h-[40px]">Para academias grandes que querem cobrança 100% no piloto automático.</p>
                     <div class="mb-6 border-b border-slate-800 pb-6">
                         <span class="text-sm text-slate-500 line-through font-bold">De R$ 149,90</span>
                         <div class="mt-1">
@@ -336,6 +326,8 @@
                         <li class="flex items-start gap-3"><span class="text-amber-500 font-bold">✓</span> <b>Vitrine Virtual (Loja Online)</b></li>
                         <li class="flex items-start gap-3"><span class="text-amber-500 font-bold">✓</span> <b>Check-in Geofencing (GPS Ativo)</b></li>
                         <li class="flex items-start gap-3"><span class="text-amber-500 font-bold">✓</span> Múltiplos Co-Administradores</li>
+                        <li class="flex items-start gap-3"><span class="text-amber-500 font-bold">✓</span> Baixa Automática de Faturas</li>
+                        <li class="flex items-start gap-3"><span class="text-amber-500 font-bold">✓</span> Mensagens de Cobrança Auto</li>
                     </ul>
                     <a href="https://wa.me/5521981716074?text=Tenho interesse no Plano Elite do BJJ Manager." target="_blank" class="w-full bg-transparent hover:bg-slate-800 text-amber-500 font-bold py-3 rounded-xl text-center text-xs uppercase tracking-widest transition-colors border border-amber-500/50 hover:border-amber-500">
                         Lista de Espera

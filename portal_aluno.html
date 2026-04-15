@@ -107,7 +107,6 @@
             </div>
 
             <section id="aba-inicio" class="aluno-secao block transition-opacity duration-300 space-y-6">
-                
                 <div id="status-faixa-atual" class="hidden relative overflow-hidden card-premium p-6 border-t-4 border-t-cyan-500 shadow-lg">
                     <div class="absolute top-0 right-0 w-48 h-48 bg-cyan-500/10 blur-[50px] rounded-full pointer-events-none"></div>
                     <div class="flex items-center justify-between relative z-10">
@@ -274,24 +273,53 @@
                 </div>
             </section>
 
-            <section id="aba-curriculo" class="aluno-secao hidden transition-opacity duration-300 space-y-6">
-                <div class="card-premium p-5 sm:p-6">
-                    <h3 class="text-[10px] font-black text-cyan-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
-                        <span class="text-lg">🥋</span> Linha do Tempo Marcial
-                    </h3>
-                    <div id="timeline-graduacoes" class="relative border-l-2 border-slate-700/70 border-dashed ml-3 space-y-6 pb-2">
-                        <div class="text-center p-4 text-slate-500 text-xs italic">Carregando jornada...</div>
+            <section id="aba-curriculo" class="aluno-secao hidden transition-opacity duration-300 space-y-4">
+                
+                <div class="flex p-1 bg-slate-900/50 rounded-2xl border border-slate-700/50 backdrop-blur-md">
+                    <button id="btn-tab-conq" onclick="switchCurriculoTab('conq')" class="flex-1 py-2.5 text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-xl bg-cyan-600 text-white shadow-md transition-all">Conquistas</button>
+                    <button id="btn-tab-freq" onclick="switchCurriculoTab('freq')" class="flex-1 py-2.5 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-white rounded-xl transition-all">Frequência</button>
+                </div>
+
+                <div id="tab-curriculo-conq" class="space-y-6 block">
+                    <div class="card-premium p-5 sm:p-6">
+                        <h3 class="text-[10px] font-black text-cyan-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                            <span class="text-lg">🥋</span> Linha do Tempo de Graduações
+                        </h3>
+                        <div id="timeline-graduacoes" class="relative border-l-2 border-slate-700/70 border-dashed ml-3 space-y-6 pb-2">
+                            <div class="text-center p-4 text-slate-500 text-xs italic">Carregando jornada...</div>
+                        </div>
+                    </div>
+
+                    <div class="card-premium p-5 sm:p-6">
+                        <h3 class="text-[10px] font-black text-rose-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                            <span class="text-lg">🏆</span> Competições e Medalhas
+                        </h3>
+                        <div id="lista-competicoes" class="space-y-3">
+                            <div class="text-center p-4 text-slate-500 text-xs italic">Carregando medalhas...</div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="card-premium p-5 sm:p-6">
-                    <h3 class="text-[10px] font-black text-rose-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
-                        <span class="text-lg">🏆</span> Conquistas e Campeonatos
-                    </h3>
-                    <div id="lista-competicoes" class="space-y-3">
-                        <div class="text-center p-4 text-slate-500 text-xs italic">Carregando medalhas...</div>
+                <div id="tab-curriculo-freq" class="space-y-6 hidden">
+                    <div class="card-premium p-5 sm:p-6 border-t-4 border-t-emerald-500">
+                        <div class="flex items-center justify-between mb-5">
+                            <h3 class="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                                <span class="text-lg">📍</span> Assiduidade
+                            </h3>
+                            <input type="month" id="filtro-mes-checkin" onchange="filtrarCheckins()" class="bg-slate-900 border border-slate-700 text-white text-xs font-bold rounded-lg p-2 outline-none focus:border-emerald-500 cursor-pointer shadow-inner">
+                        </div>
+                        
+                        <div class="bg-emerald-500/10 border border-emerald-500/30 px-4 py-3.5 rounded-xl flex justify-between items-center mb-5">
+                            <p class="text-[10px] text-emerald-400 uppercase font-bold tracking-widest">Treinos no Mês</p>
+                            <p class="text-3xl font-black text-white leading-none" id="contador-checkins-mes">0</p>
+                        </div>
+                        
+                        <div id="lista-historico-checkins" class="space-y-2 max-h-64 overflow-y-auto hide-scrollbar pr-1">
+                            <div class="text-center p-4 text-slate-500 text-xs italic">A carregar registos...</div>
+                        </div>
                     </div>
                 </div>
+
             </section>
 
             <section id="aba-financeiro" class="aluno-secao hidden transition-opacity duration-300">
@@ -422,21 +450,21 @@
                 <span class="text-xl sm:text-2xl mb-1 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)] transition-all transform scale-110">🏠</span>
                 <span class="text-[8px] sm:text-[9px] font-black uppercase tracking-wider text-center">Início</span>
             </button>
+            <button onclick="mudarAbaAluno('aba-carteirinha')" id="nav-aba-carteirinha" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
+                <span class="text-xl sm:text-2xl mb-1 grayscale transition-all">🪪</span>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-center">Careirinha</span>
+            </button>
+            <button onclick="mudarAbaAluno('aba-financeiro')" id="nav-aba-financeiro" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
+                <span class="text-xl sm:text-2xl mb-1 grayscale transition-all">💰</span>
+                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-center">Financeiro</span>
+            </button>
             <button onclick="mudarAbaAluno('aba-loja')" id="nav-aba-loja" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
                 <span class="text-xl sm:text-2xl mb-1 grayscale transition-all">🛒</span>
                 <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-center">Vitrine Virtual</span>
             </button>
-            <button onclick="mudarAbaAluno('aba-carteirinha')" id="nav-aba-carteirinha" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
-                <span class="text-xl sm:text-2xl mb-1 grayscale transition-all">🪪</span>
-                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-center">Cartão</span>
-            </button>
             <button onclick="mudarAbaAluno('aba-curriculo')" id="nav-aba-curriculo" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
                 <span class="text-xl sm:text-2xl mb-1 grayscale transition-all">📜</span>
                 <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-center">Histórico</span>
-            </button>
-            <button onclick="mudarAbaAluno('aba-financeiro')" id="nav-aba-financeiro" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
-                <span class="text-xl sm:text-2xl mb-1 grayscale transition-all">💰</span>
-                <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-center">Finanças</span>
             </button>
             <button onclick="mudarAbaAluno('aba-dados')" id="nav-aba-dados" class="nav-btn flex-1 flex flex-col items-center py-2 px-1 text-slate-500 hover:text-slate-300 transition-colors">
                 <span class="text-xl sm:text-2xl mb-1 grayscale transition-all">⚙️</span>
@@ -602,6 +630,7 @@
         let equipeDados = null;
         let faturasCache = []; 
         let produtosCache = [];
+        let checkinsGlobalCache = []; // NOVA VARIÁVEL: Guarda todos os check-ins do aluno para o filtro local funcionar
 
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
@@ -659,13 +688,11 @@
                 }
             } catch (error) { 
                 console.error("ERRO LOGIN:", error);
-                
                 if (error.code === 'permission-denied') {
                     showToast("Erro de Permissão no Firebase! Verifique as regras (Passo 1).");
                 } else {
                     showToast("Erro ao conectar com o servidor."); 
                 }
-                
                 btn.disabled = false; btn.innerText = "Entrar no Tatame"; 
             }
         }
@@ -696,12 +723,81 @@
             }
 
             const subtitulo = document.getElementById('subtitulo-secao');
-            if(idAba === 'aba-inicio') { subtitulo.innerText = "Fique por dentro das novidades da equipe."; buscarMuralEHorarios(); }
-            if(idAba === 'aba-loja') { subtitulo.innerText = "Adquira equipamentos e materiais da equipe."; carregarLoja(); }
-            if(idAba === 'aba-carteirinha') { subtitulo.innerText = "Sua identificação oficial e acesso à equipe."; }
-            if(idAba === 'aba-financeiro') { subtitulo.innerText = "Controle de suas mensalidades e pagamentos."; }
-            if(idAba === 'aba-curriculo') { subtitulo.innerText = "Sua trajetória marcial, graduações e medalhas."; buscarCurriculoAluno(); }
+            if(idAba === 'aba-inicio') { subtitulo.innerText = "Seja Bem-vindo(a) ao seu portal"; buscarMuralEHorarios(); }
+            if(idAba === 'aba-loja') { subtitulo.innerText = "Adquira produtos da equipe."; carregarLoja(); }
+            if(idAba === 'aba-carteirinha') { subtitulo.innerText = "Sua identificação oficial da equipe."; }
+            if(idAba === 'aba-financeiro') { subtitulo.innerText = "Controle de suas mensalidades."; }
+            if(idAba === 'aba-curriculo') { subtitulo.innerText = "Sua trajetória: graduações e medalhas."; buscarCurriculoAluno(); }
             if(idAba === 'aba-dados') { subtitulo.innerText = "Mantenha o seu cadastro atualizado."; preencherFormularioDados(); }
+        }
+
+        // ========================================================
+        // 🚀 NOVO: CONTROLO DE ABAS DENTRO DO HISTÓRICO
+        // ========================================================
+        window.switchCurriculoTab = function(tab) {
+            const tabFreq = document.getElementById('tab-curriculo-freq');
+            const tabConq = document.getElementById('tab-curriculo-conq');
+            const btnFreq = document.getElementById('btn-tab-freq');
+            const btnConq = document.getElementById('btn-tab-conq');
+
+            if (tab === 'freq') {
+                tabFreq.classList.remove('hidden');
+                tabFreq.classList.add('block');
+                tabConq.classList.add('hidden');
+                tabConq.classList.remove('block');
+
+                btnFreq.className = "flex-1 py-2.5 text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-xl bg-cyan-600 text-white shadow-md transition-all";
+                btnConq.className = "flex-1 py-2.5 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-white rounded-xl transition-all";
+            } else {
+                tabConq.classList.remove('hidden');
+                tabConq.classList.add('block');
+                tabFreq.classList.add('hidden');
+                tabFreq.classList.remove('block');
+
+                btnConq.className = "flex-1 py-2.5 text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-xl bg-cyan-600 text-white shadow-md transition-all";
+                btnFreq.className = "flex-1 py-2.5 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-white rounded-xl transition-all";
+            }
+        }
+
+        window.filtrarCheckins = function() {
+            const valFiltro = document.getElementById('filtro-mes-checkin').value; // Formato YYYY-MM
+            if (!valFiltro) return;
+
+            const partes = valFiltro.split('-');
+            const anoSelecionado = parseInt(partes[0]);
+            const mesSelecionado = parseInt(partes[1]); // 1 a 12
+
+            let checkinsFiltrados = checkinsGlobalCache.filter(ck => {
+                const d = new Date(ck.timestamp);
+                return d.getFullYear() === anoSelecionado && (d.getMonth() + 1) === mesSelecionado;
+            });
+
+            document.getElementById('contador-checkins-mes').innerText = checkinsFiltrados.length;
+
+            let html = '';
+            if (checkinsFiltrados.length > 0) {
+                checkinsFiltrados.forEach(ck => {
+                    const dataObj = new Date(ck.timestamp);
+                    const hora = dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+                    const dataBonita = dataObj.toLocaleDateString('pt-BR', {day: '2-digit', month: 'short'});
+
+                    html += `
+                        <div class="flex items-center justify-between p-3 bg-slate-900/40 rounded-xl border border-slate-700/50 mb-2">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex items-center justify-center font-black text-xs shrink-0">📍</div>
+                                <div>
+                                    <p class="text-[10px] font-black text-emerald-400 uppercase tracking-widest">${dataBonita} <span class="text-slate-500">• ${hora}</span></p>
+                                    <p class="text-[11px] font-bold text-white truncate">${ck.turma_nome || 'Treino'}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                html = "<p class='text-[10px] text-slate-500 italic text-center py-6'>Nenhum treino registrado neste mês.</p>";
+            }
+
+            document.getElementById('lista-historico-checkins').innerHTML = html;
         }
 
         window.previewImagem = function(input) {
@@ -879,8 +975,13 @@
             preencherCarteirinha(); buscarFaturasResiliente(); verificarAnamnese(); 
             setTimeout(ajustarZoomCarteirinha, 100);
             
+            // Define o filtro de mês da assiduidade para o mês atual automaticamente
+            const hojeData = new Date();
+            const mesFormatado = String(hojeData.getMonth() + 1).padStart(2, '0');
+            document.getElementById('filtro-mes-checkin').value = `${hojeData.getFullYear()}-${mesFormatado}`;
+
             buscarMuralEHorarios();
-            buscarCurriculoAluno();
+            buscarCurriculoAluno(); // Agora também carrega a assiduidade!
             atualizarWidgetMensalidade();
             
             mudarAbaAluno('aba-inicio'); // Inicia na home corretamente
@@ -1240,6 +1341,10 @@
                     timestamp: new Date().toISOString()
                 });
                 showToast("Check-in realizado com sucesso! Oss!", "success");
+                
+                // Recarrega a home e o currículo
+                buscarMuralEHorarios();
+                buscarCurriculoAluno();
             } catch(e) {
                 showToast("Erro ao registrar check-in.", "error");
             }
@@ -1392,6 +1497,11 @@
 
                     const nomesDias = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 
+                    const dataHojeStr = new Date().toISOString().split('T')[0];
+                    const qCheck = query(collection(db, "checkins"), where("aluno_id", "==", alunoLogado.id), where("data", "==", dataHojeStr));
+                    const snapCheck = await getDocs(qCheck);
+                    const jaFezCheckin = !snapCheck.empty;
+
                     if(turmasExibidas.length > 0) {
                         divHorarios.innerHTML = turmasExibidas.map(t => {
                             let labelDia = '--';
@@ -1424,7 +1534,14 @@
                                 }
                             }
 
-                            const checkinBtn = isHoje ? `<button onclick="registrarCheckin('${t.id}', '${t.nome}')" class="w-full mt-2 bg-emerald-500/20 hover:bg-emerald-500 text-emerald-400 hover:text-white border border-emerald-500/30 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-1 shadow-sm">📍 Fazer Check-in</button>` : '';
+                            let checkinBtn = '';
+                            if (isHoje) {
+                                if (jaFezCheckin) {
+                                    checkinBtn = `<button disabled class="w-full mt-2 bg-emerald-500 text-white py-2 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-1 shadow-sm opacity-70 cursor-not-allowed">✅ Check-in Feito</button>`;
+                                } else {
+                                    checkinBtn = `<button onclick="registrarCheckin('${t.id}', '${t.nome.replace(/'/g, "\\'")}')" class="w-full mt-2 bg-emerald-500/20 hover:bg-emerald-500 text-emerald-400 hover:text-white border border-emerald-500/30 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-1 shadow-sm">📍 Fazer Check-in</button>`;
+                                }
+                            }
                             
                             return `
                                 <div class="flex flex-col bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/50 shrink-0 mb-2 transition-colors">
@@ -1451,21 +1568,79 @@
             }
         }
 
+        // ========================================================
+        // 🚀 FILTRO DE CHECK-INS DO ALUNO
+        // ========================================================
+        window.filtrarCheckins = function() {
+            const valFiltro = document.getElementById('filtro-mes-checkin').value; // Formato YYYY-MM
+            if (!valFiltro) return;
+
+            const partes = valFiltro.split('-');
+            const anoSelecionado = parseInt(partes[0]);
+            const mesSelecionado = parseInt(partes[1]); // 1 a 12
+
+            let checkinsFiltrados = checkinsGlobalCache.filter(ck => {
+                const d = new Date(ck.timestamp);
+                return d.getFullYear() === anoSelecionado && (d.getMonth() + 1) === mesSelecionado;
+            });
+
+            document.getElementById('contador-checkins-mes').innerText = checkinsFiltrados.length;
+
+            let html = '';
+            if (checkinsFiltrados.length > 0) {
+                checkinsFiltrados.forEach(ck => {
+                    const dataObj = new Date(ck.timestamp);
+                    const hora = dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+                    const dataBonita = dataObj.toLocaleDateString('pt-BR', {day: '2-digit', month: 'short'});
+
+                    html += `
+                        <div class="flex items-center justify-between p-3 bg-slate-900/40 rounded-xl border border-slate-700/50 mb-2">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex items-center justify-center font-black text-xs shrink-0">📍</div>
+                                <div>
+                                    <p class="text-[10px] font-black text-emerald-400 uppercase tracking-widest">${dataBonita} <span class="text-slate-500">• ${hora}</span></p>
+                                    <p class="text-[11px] font-bold text-white truncate">${ck.turma_nome || 'Treino'}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                html = "<p class='text-[10px] text-slate-500 italic text-center py-6'>Nenhum treino registrado neste mês.</p>";
+            }
+
+            document.getElementById('lista-historico-checkins').innerHTML = html;
+        }
+
         async function buscarCurriculoAluno() {
-            const divG = document.getElementById('timeline-graduacoes'); const divC = document.getElementById('lista-competicoes'); const divStatusFaixa = document.getElementById('status-faixa-atual');
-            if (!divG || !divC) return;
-            divG.innerHTML = "<p class='text-xs text-slate-500 italic text-center'>Buscando linha do tempo...</p>"; divC.innerHTML = "<p class='text-xs text-slate-500 italic text-center'>Buscando medalhas...</p>";
+            const divG = document.getElementById('timeline-graduacoes'); 
+            const divC = document.getElementById('lista-competicoes'); 
+            const divStatusFaixa = document.getElementById('status-faixa-atual');
+            const divCheckins = document.getElementById('lista-historico-checkins');
+            const numCheckinsMes = document.getElementById('contador-checkins-mes');
+
+            if (divG) divG.innerHTML = "<p class='text-xs text-slate-500 italic text-center'>Buscando linha do tempo...</p>"; 
+            if (divC) divC.innerHTML = "<p class='text-xs text-slate-500 italic text-center'>Buscando medalhas...</p>";
+            if (divCheckins) divCheckins.innerHTML = "<p class='text-xs text-slate-500 italic text-center'>Buscando assiduidade...</p>";
 
             try {
                 const qGrad = query(collection(db, "graduacoes"), where("equipe_id", "==", alunoLogado.equipe_id), where("aluno_id", "==", alunoLogado.id));
                 const qComp = query(collection(db, "competicoes"), where("equipe_id", "==", alunoLogado.equipe_id), where("aluno_id", "==", alunoLogado.id));
-                const [snapGrad, snapComp] = await Promise.all([getDocs(qGrad), getDocs(qComp)]);
+                const qCheck = query(collection(db, "checkins"), where("aluno_id", "==", alunoLogado.id));
+                
+                const [snapGrad, snapComp, snapCheck] = await Promise.all([getDocs(qGrad), getDocs(qComp), getDocs(qCheck)]);
+                
                 let gradCache = []; snapGrad.forEach(doc => gradCache.push(doc.data()));
                 let compCache = []; snapComp.forEach(doc => compCache.push(doc.data()));
+                let checkCache = []; snapCheck.forEach(doc => checkCache.push(doc.data()));
 
                 const getTempoOrdenacao = (val) => { if (!val) return 0; if (typeof val.toDate === 'function') return val.toDate().getTime(); if (val.seconds) return val.seconds * 1000; const d = new Date(val); return isNaN(d.getTime()) ? 0 : d.getTime(); };
                 gradCache.sort((a, b) => getTempoOrdenacao(b.data) - getTempoOrdenacao(a.data));
                 compCache.sort((a, b) => getTempoOrdenacao(b.data) - getTempoOrdenacao(a.data));
+                checkCache.sort((a, b) => getTempoOrdenacao(b.timestamp) - getTempoOrdenacao(a.timestamp));
+
+                // Popula o cache global para o filtro de meses
+                checkinsGlobalCache = checkCache;
 
                 const formatarDataBR = (dataStr) => {
                     if(!dataStr) return "--";
@@ -1474,6 +1649,12 @@
                     return String(dataStr);
                 };
 
+                // --- 1. RENDERIZAR CHECK-INS ---
+                if (divCheckins && numCheckinsMes) {
+                    filtrarCheckins(); // Usa o filtro no mês configurado atualmente
+                }
+
+                // --- 2. RENDERIZAR GRADUAÇÕES ---
                 if(gradCache.length > 0) {
                     const atual = gradCache[0];
                     if(divStatusFaixa) divStatusFaixa.classList.remove('hidden');
@@ -1481,17 +1662,20 @@
                     if(document.getElementById('cor-faixa-atual-badge')) document.getElementById('cor-faixa-atual-badge').style.background = getCorFaixaDupla(atual.faixa);
                     if(document.getElementById('tempo-faixa-atual')) document.getElementById('tempo-faixa-atual').innerText = calcularTempo(getTempoOrdenacao(atual.data));
                     
-                    divG.innerHTML = gradCache.map((g, index) => `
-                        <div class="relative pl-6 sm:pl-8 group">
-                            <div class="absolute -left-[9px] top-3 w-4 h-4 rounded-full border-[3px] border-slate-900 shadow-[0_0_10px_rgba(0,0,0,0.8)] group-hover:scale-125 transition-transform duration-300 z-10" style="background: ${getCorFaixaDupla(g.faixa)}"></div>
-                            <div class="bg-slate-800/40 hover:bg-slate-800/80 p-3.5 sm:p-4 rounded-2xl border border-slate-700/40 transition-all duration-300 shadow-sm hover:shadow-md group-hover:-translate-y-1">
-                                <div class="flex justify-between items-start mb-1.5"><span class="text-[9px] font-black text-cyan-400 uppercase tracking-widest bg-cyan-500/10 px-2 py-0.5 rounded-md border border-cyan-500/20">${formatarDataBR(g.data)}</span>${index === 0 ? '<span class="text-[8px] font-black text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md uppercase tracking-widest border border-emerald-500/20 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.3)]">Atual</span>' : ''}</div>
-                                <p class="text-xs sm:text-sm font-black text-white uppercase tracking-wide">${g.faixa} <span class="text-slate-400 text-[10px] sm:text-xs font-medium normal-case tracking-normal ml-1">• ${g.grau || 'Sem grau'}</span></p>
-                            </div>
-                        </div>`).join('');
-                } else { if(divStatusFaixa) divStatusFaixa.classList.add('hidden'); divG.innerHTML = "<p class='text-xs text-slate-500 italic text-center'>Nenhum registro encontrado.</p>"; }
+                    if (divG) {
+                        divG.innerHTML = gradCache.map((g, index) => `
+                            <div class="relative pl-6 sm:pl-8 group">
+                                <div class="absolute -left-[9px] top-3 w-4 h-4 rounded-full border-[3px] border-slate-900 shadow-[0_0_10px_rgba(0,0,0,0.8)] group-hover:scale-125 transition-transform duration-300 z-10" style="background: ${getCorFaixaDupla(g.faixa)}"></div>
+                                <div class="bg-slate-800/40 hover:bg-slate-800/80 p-3.5 sm:p-4 rounded-2xl border border-slate-700/40 transition-all duration-300 shadow-sm hover:shadow-md group-hover:-translate-y-1">
+                                    <div class="flex justify-between items-start mb-1.5"><span class="text-[9px] font-black text-cyan-400 uppercase tracking-widest bg-cyan-500/10 px-2 py-0.5 rounded-md border border-cyan-500/20">${formatarDataBR(g.data)}</span>${index === 0 ? '<span class="text-[8px] font-black text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md uppercase tracking-widest border border-emerald-500/20 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.3)]">Atual</span>' : ''}</div>
+                                    <p class="text-xs sm:text-sm font-black text-white uppercase tracking-wide">${g.faixa} <span class="text-slate-400 text-[10px] sm:text-xs font-medium normal-case tracking-normal ml-1">• ${g.grau || 'Sem grau'}</span></p>
+                                </div>
+                            </div>`).join('');
+                    }
+                } else { if(divStatusFaixa) divStatusFaixa.classList.add('hidden'); if(divG) divG.innerHTML = "<p class='text-xs text-slate-500 italic text-center'>Nenhum registro encontrado.</p>"; }
 
-                if(compCache.length > 0) {
+                // --- 3. RENDERIZAR COMPETIÇÕES ---
+                if(compCache.length > 0 && divC) {
                     divC.innerHTML = compCache.map(c => {
                         const col = (c.colocacao || "").toLowerCase(); let med = "🥋"; let textCol = "text-slate-400"; let borderGlow = "border-slate-700/50"; let bgGlow = "bg-slate-900";
                         if(col.includes("1º") || col.includes("ouro")) { med="🥇"; textCol="text-yellow-400"; borderGlow="border-yellow-500/30"; bgGlow="bg-yellow-500/10"; } 
@@ -1500,11 +1684,11 @@
                         
                         return `<div class="flex items-center gap-3 sm:gap-4 bg-slate-800/40 hover:bg-slate-800/80 p-4 rounded-2xl border border-slate-700/40 transition-all duration-300 group hover:-translate-y-1 shadow-sm hover:shadow-md"><div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center ${bgGlow} ${borderGlow} border shadow-inner shrink-0 group-hover:scale-110 transition-transform duration-300 text-xl sm:text-2xl ${textCol}">${med}</div><div class="flex-1 overflow-hidden"><p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-0.5">${formatarDataBR(c.data)}</p><p class="text-xs sm:text-sm font-black text-white truncate leading-tight">${c.nome_evento}</p><p class="text-[9px] sm:text-[10px] font-medium text-slate-400 mt-0.5 truncate">${c.categoria || 'Geral'} • ${c.peso || '--'}kg</p></div><div class="shrink-0"><span class="text-[9px] sm:text-[10px] font-black ${bgGlow} px-2 py-1.5 sm:px-3 sm:py-2 rounded-lg ${textCol} border ${borderGlow} uppercase tracking-widest flex items-center justify-center text-center shadow-sm">${c.colocacao || 'Part.'}</span></div></div>`;
                     }).join('');
-                } else { divC.innerHTML = "<p class='text-xs text-slate-500 italic text-center'>Nenhum campeonato registrado.</p>"; }
+                } else if(divC) { divC.innerHTML = "<p class='text-xs text-slate-500 italic text-center'>Nenhum campeonato registrado.</p>"; }
                 
             } catch (err) {
-                divG.innerHTML = `<p class='text-rose-500 text-[10px] text-center p-2 bg-rose-500/10 rounded-lg'>Erro Técnico</p>`;
-                divC.innerHTML = `<p class='text-rose-500 text-[10px] text-center p-2 bg-rose-500/10 rounded-lg'>Erro Técnico</p>`;
+                if(divG) divG.innerHTML = `<p class='text-rose-500 text-[10px] text-center p-2 bg-rose-500/10 rounded-lg'>Erro Técnico</p>`;
+                if(divC) divC.innerHTML = `<p class='text-rose-500 text-[10px] text-center p-2 bg-rose-500/10 rounded-lg'>Erro Técnico</p>`;
             }
         }
 

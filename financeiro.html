@@ -118,8 +118,8 @@
 
                     <div id="tab-mensalidades" class="aba-content flex flex-col gap-6">
                         
-                        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-6 card-premium">
-                            <div class="flex gap-8">
+                        <div class="flex flex-col sm:flex-row justify-between items-start gap-6 bg-white p-6 card-premium">
+                            <div class="flex gap-8 mt-2">
                                 <div>
                                     <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Caixa Atual</p>
                                     <p class="text-2xl font-black text-emerald-500" id="lbl-resumo-pago">Recebido: R$ 0,00</p>
@@ -130,14 +130,35 @@
                                 </div>
                             </div>
                             
-                            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                                <div class="relative flex-1 sm:w-64">
-                                    <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">🔍</div>
-                                    <input type="text" id="input-busca-mens" onkeyup="filtrarMensalidades()" class="bg-slate-50 border border-slate-200 text-slate-900 text-xs font-bold rounded-2xl w-full pl-10 p-4 outline-none focus:border-cyan-500 transition-all shadow-inner" placeholder="Buscar atleta ou fatura...">
+                            <div class="flex flex-col w-full sm:w-auto max-w-md gap-3">
+                                <div class="flex flex-col sm:flex-row gap-3">
+                                    <div class="relative flex-1">
+                                        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">🔍</div>
+                                        <input type="text" id="input-busca-mens" onkeyup="filtrarMensalidades()" class="bg-slate-50 border border-slate-200 text-slate-900 text-xs font-bold rounded-2xl w-full pl-10 p-4 outline-none focus:border-cyan-500 transition-all shadow-inner" placeholder="Buscar atleta ou fatura...">
+                                    </div>
+                                    <button id="btn-gerar-faturas" onclick="gerarFaturas()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 px-6 rounded-2xl shadow-lg transition-all text-[11px] uppercase tracking-widest flex items-center justify-center shrink-0">
+                                        <span class="mr-2 text-base">⚡</span> Gerar Faturas
+                                    </button>
                                 </div>
-                                <button id="btn-gerar-faturas" onclick="gerarFaturas()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 px-8 rounded-3xl shadow-lg transition-all text-xs uppercase tracking-widest flex items-center justify-center shrink-0">
-                                    <span class="mr-2 text-base">⚡</span> Gerar Faturas do Mês
-                                </button>
+                                
+                                <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 shadow-sm transition-all mt-1">
+                                    <label class="flex items-center justify-between cursor-pointer w-full">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm">🔄</span>
+                                            <p class="text-[10px] font-black text-amber-800 uppercase tracking-widest">Repassar Taxas p/ Aluno</p>
+                                        </div>
+                                        <input type="checkbox" id="asaas-repassar-taxa" onchange="toggleTaxaInput(); salvarConfigRepasse();" class="w-4 h-4 text-amber-600 rounded border-amber-300 focus:ring-amber-500 cursor-pointer">
+                                    </label>
+                                    
+                                    <div id="box-valor-taxa" class="hidden mt-3 pt-3 border-t border-amber-200/60 flex-col gap-2">
+                                        <div class="flex items-center justify-between gap-2">
+                                            <label class="text-[9px] font-bold text-amber-700 uppercase flex-1">Taxa do Banco (R$):</label>
+                                            <input type="text" id="asaas-valor-taxa" oninput="mascaraMoeda(this)" onblur="salvarConfigRepasse()" placeholder="1,99" class="w-20 p-2 bg-white border border-amber-300 rounded-lg font-black text-amber-900 text-center focus:border-amber-500 outline-none text-xs shadow-inner">
+                                        </div>
+                                        <p class="text-[8px] text-amber-600 leading-tight">O sistema somará este valor no link de cobrança. O aluno paga a taxa bancária e você recebe a mensalidade limpa.</p>
+                                    </div>
+                                </div>
+                                
                             </div>
                         </div>
 
@@ -227,23 +248,6 @@
                                                 <div class="flex items-center gap-3"><span class="text-xl">💳</span><div><p class="text-xs font-black text-slate-700">Cartão de Crédito</p><p class="text-[9px] font-bold text-rose-500">Compensa em 30 dias</p></div></div>
                                                 <input type="checkbox" id="asaas-aceita-cartao" class="w-5 h-5 text-cyan-600 rounded border-slate-300 focus:ring-cyan-500">
                                             </label>
-                                            
-                                            <label class="flex items-center justify-between p-3.5 bg-white border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50 transition-colors shadow-sm mt-3">
-                                                <div class="flex items-center gap-3">
-                                                    <span class="text-xl">🔄</span>
-                                                    <div>
-                                                        <p class="text-xs font-black text-slate-700">Repassar Taxas p/ Aluno</p>
-                                                        <p class="text-[9px] font-bold text-slate-500">Soma um valor extra na fatura para cobrir o banco</p>
-                                                    </div>
-                                                </div>
-                                                <input type="checkbox" id="asaas-repassar-taxa" onchange="toggleTaxaInput()" class="w-5 h-5 text-cyan-600 rounded border-slate-300 focus:ring-cyan-500">
-                                            </label>
-
-                                            <div id="box-valor-taxa" class="hidden mt-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
-                                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Valor da Taxa a somar (R$)</label>
-                                                <input type="text" id="asaas-valor-taxa" oninput="mascaraMoeda(this)" placeholder="Ex: 1,99" class="w-full p-3 bg-white border border-slate-300 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none">
-                                                <p class="text-[9px] text-slate-500 mt-2 leading-relaxed">Ex: Se a mensalidade é R$ 100,00 e a taxa é R$ 1,99, o link de cobrança será de <b>R$ 101,99</b>. O Asaas desconta a taxa do aluno e você recebe seus R$ 100,00 limpos.</p>
-                                            </div>
                                         </div>
 
                                         <button onclick="salvarConfigPagamento()" id="btn-salvar-pagamentos" class="mt-4 bg-cyan-600 hover:bg-cyan-700 text-white text-[10px] font-black px-6 py-4 rounded-2xl transition-colors uppercase tracking-widest w-full shadow-md">
@@ -581,8 +585,10 @@
             const box = document.getElementById('box-valor-taxa');
             if(check) {
                 box.classList.remove('hidden');
+                box.classList.add('flex');
             } else {
                 box.classList.add('hidden');
+                box.classList.remove('flex');
             }
         }
 
@@ -752,7 +758,6 @@
                         document.getElementById('config-pix').value = equipeDados.chave_pix;
                     }
 
-                    // PREENCHIMENTO AUTOMÁTICO DO FORMULÁRIO ASAAS E DOS CHECKBOXES
                     document.getElementById('asaas-cpf').value = equipeDados.cpf_cnpj || equipeDados.cpf || equipeDados.cnpj || "";
                     document.getElementById('asaas-nome').value = equipeDados.nome_responsavel || equipeDados.nome_equipe || "";
                     document.getElementById('asaas-email').value = user.email || equipeDados.email || "";
@@ -803,11 +808,29 @@
             finally { btn.innerHTML = origHTML; btn.disabled = false; }
         }
 
+        // NOVO: SALVAMENTO AUTOMÁTICO DO REPASSE DE TAXAS
+        window.salvarConfigRepasse = async function() {
+            const repassarTaxa = document.getElementById('asaas-repassar-taxa').checked;
+            const valorTaxa = strToFloat(document.getElementById('asaas-valor-taxa').value);
+            
+            try {
+                await updateDoc(doc(db, "equipes", uid), {
+                    asaas_repassar_taxa: repassarTaxa,
+                    asaas_valor_taxa: valorTaxa
+                });
+                
+                if (equipeDados) {
+                    equipeDados.asaas_repassar_taxa = repassarTaxa;
+                    equipeDados.asaas_valor_taxa = valorTaxa;
+                }
+            } catch(e) {
+                console.error("Erro ao salvar regras de repasse de taxas.", e);
+            }
+        }
+
         window.salvarConfigPagamento = async function() {
             const aceitaBoleto = document.getElementById('asaas-aceita-boleto').checked;
             const aceitaCartao = document.getElementById('asaas-aceita-cartao').checked;
-            const repassarTaxa = document.getElementById('asaas-repassar-taxa').checked;
-            const valorTaxa = strToFloat(document.getElementById('asaas-valor-taxa').value);
             
             const btn = document.getElementById('btn-salvar-pagamentos');
             const origTxt = btn.innerHTML;
@@ -816,15 +839,11 @@
             try {
                 await updateDoc(doc(db, "equipes", uid), {
                     asaas_aceita_boleto: aceitaBoleto,
-                    asaas_aceita_cartao: aceitaCartao,
-                    asaas_repassar_taxa: repassarTaxa,
-                    asaas_valor_taxa: valorTaxa
+                    asaas_aceita_cartao: aceitaCartao
                 });
                 
                 equipeDados.asaas_aceita_boleto = aceitaBoleto;
                 equipeDados.asaas_aceita_cartao = aceitaCartao;
-                equipeDados.asaas_repassar_taxa = repassarTaxa;
-                equipeDados.asaas_valor_taxa = valorTaxa;
                 
                 showToast("Preferências de pagamento atualizadas com sucesso!", "success");
             } catch(e) {
@@ -1107,7 +1126,7 @@
                             <div class="flex flex-col items-center justify-center py-16 text-center w-full">
                                 <span class="text-5xl mb-4 opacity-50">📋</span>
                                 <h3 class="text-lg font-black text-slate-700 mb-2">Nenhuma fatura gerada para este mês</h3>
-                                <p class="text-xs text-slate-500 max-w-md">O sistema ainda não criou as cobranças de ${mes}/${ano}. Clique no botão <b class="text-indigo-500">"⚡ Gerar Faturas do Mês"</b> lá em cima para listar todos os seus alunos ativos automaticamente.</p>
+                                <p class="text-xs text-slate-500 max-w-md">O sistema ainda não criou as cobranças de ${mes}/${ano}. Clique no botão <b class="text-indigo-500">"⚡ Gerar Faturas"</b> lá em cima para listar todos os seus alunos ativos automaticamente.</p>
                             </div>
                         </td>
                     </tr>`;

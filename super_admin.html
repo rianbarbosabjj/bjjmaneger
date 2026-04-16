@@ -13,6 +13,12 @@
         body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fafc; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Custom Scrollbar for Listboxes */
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #475569; }
     </style>
 </head>
 <body class="h-screen flex overflow-hidden selection:bg-rose-500 selection:text-white">
@@ -171,7 +177,7 @@
             <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
                     <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight">Construtor de Planos</h2>
-                    <p class="text-sm text-slate-400 mt-1 font-medium">Defina preços e lista de funcionalidades que aparecem no Site (index) e App.</p>
+                    <p class="text-sm text-slate-400 mt-1 font-medium">Defina preços e use as caixas de seleção para montar o que cada plano oferece no site.</p>
                 </div>
                 <button onclick="salvarConfigPlanos()" class="bg-emerald-500 hover:bg-emerald-400 text-white font-black py-3 px-8 rounded-xl shadow-lg shadow-emerald-500/20 text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2">
                     <span>💾</span> Publicar Planos no Site
@@ -179,71 +185,73 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl flex flex-col gap-4">
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl flex flex-col gap-4 max-h-[800px]">
                     <h3 class="font-black text-slate-300 uppercase tracking-widest text-xs border-b border-slate-800 pb-3">Plano Básico (Nível 1)</h3>
                     <div>
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Nome do Plano</label>
-                        <input type="text" id="p1-nome" value="Plano Tatame" class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-3 text-sm font-bold outline-none focus:border-rose-500">
+                        <input type="text" id="p1-nome" class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-3 text-sm font-bold outline-none focus:border-rose-500">
                     </div>
                     <div>
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Preço Mensal (R$)</label>
-                        <input type="number" id="p1-preco" value="0.00" class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-3 text-sm font-mono font-bold outline-none focus:border-rose-500">
+                        <input type="number" id="p1-preco" class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-3 text-sm font-mono font-bold outline-none focus:border-rose-500">
                     </div>
                     <div>
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Subtítulo (Pequena Descrição)</label>
-                        <input type="text" id="p1-desc" value="Para validar o sistema e organizar o básico." class="w-full bg-slate-950 border border-slate-800 text-slate-400 rounded-xl p-3 text-xs outline-none focus:border-rose-500">
+                        <input type="text" id="p1-desc" class="w-full bg-slate-950 border border-slate-800 text-slate-400 rounded-xl p-3 text-xs outline-none focus:border-rose-500">
                     </div>
-                    <div class="flex-1 mt-2">
-                        <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Funcionalidades (1 por linha)</label>
-                        <p class="text-[9px] text-slate-500 mb-2">Dica: Use "✓" para incluir e "❌" para excluir itens visualmente.</p>
-                        <textarea id="p1-features" rows="10" class="w-full bg-slate-950 border border-slate-800 text-slate-300 rounded-xl p-3 text-sm outline-none focus:border-rose-500 resize-none leading-relaxed"></textarea>
+                    <div class="flex-1 mt-2 flex flex-col min-h-0">
+                        <label class="text-[10px] text-slate-500 font-bold uppercase mb-2 block">Selecione as Funcionalidades:</label>
+                        <div id="listbox-p1" class="flex-1 overflow-y-auto space-y-1 custom-scroll pr-2 pb-2">
+                            </div>
                     </div>
                 </div>
 
-                <div class="bg-gradient-to-b from-slate-800 to-slate-900 border-2 border-cyan-500 p-6 rounded-3xl shadow-[0_0_30px_rgba(6,182,212,0.15)] flex flex-col gap-4 relative">
+                <div class="bg-gradient-to-b from-slate-800 to-slate-900 border-2 border-cyan-500 p-6 rounded-3xl shadow-[0_0_30px_rgba(6,182,212,0.15)] flex flex-col gap-4 relative max-h-[800px]">
                     <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-cyan-500 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Plano Principal</div>
                     <h3 class="font-black text-cyan-400 uppercase tracking-widest text-xs border-b border-slate-700 pb-3 mt-2">Plano Intermediário (Nível 2)</h3>
                     <div>
                         <label class="text-[10px] text-cyan-500/70 font-bold uppercase mb-1 block">Nome do Plano</label>
-                        <input type="text" id="p2-nome" value="Plano Black Belt" class="w-full bg-slate-950 border border-slate-700 text-white rounded-xl p-3 text-sm font-bold outline-none focus:border-cyan-500">
+                        <input type="text" id="p2-nome" class="w-full bg-slate-950 border border-slate-700 text-white rounded-xl p-3 text-sm font-bold outline-none focus:border-cyan-500">
                     </div>
                     <div>
                         <label class="text-[10px] text-cyan-500/70 font-bold uppercase mb-1 block">Preço Mensal (R$)</label>
-                        <input type="number" id="p2-preco" value="49.90" class="w-full bg-slate-950 border border-slate-700 text-cyan-400 rounded-xl p-3 text-sm font-mono font-black outline-none focus:border-cyan-500">
+                        <input type="number" id="p2-preco" class="w-full bg-slate-950 border border-slate-700 text-cyan-400 rounded-xl p-3 text-sm font-mono font-black outline-none focus:border-cyan-500">
                     </div>
                     <div>
                         <label class="text-[10px] text-cyan-500/70 font-bold uppercase mb-1 block">Subtítulo (Pequena Descrição)</label>
-                        <input type="text" id="p2-desc" value="Experiência digital premium completa." class="w-full bg-slate-950 border border-slate-700 text-slate-300 rounded-xl p-3 text-xs outline-none focus:border-cyan-500">
+                        <input type="text" id="p2-desc" class="w-full bg-slate-950 border border-slate-700 text-slate-300 rounded-xl p-3 text-xs outline-none focus:border-cyan-500">
                     </div>
-                    <div class="flex-1 mt-2">
-                        <label class="text-[10px] text-cyan-500/70 font-bold uppercase mb-1 block">Funcionalidades (1 por linha)</label>
-                        <textarea id="p2-features" rows="10" class="w-full bg-slate-950 border border-slate-700 text-slate-200 rounded-xl p-3 text-sm outline-none focus:border-cyan-500 resize-none leading-relaxed"></textarea>
+                    <div class="flex-1 mt-2 flex flex-col min-h-0">
+                        <label class="text-[10px] text-cyan-500/70 font-bold uppercase mb-2 block">Selecione as Funcionalidades:</label>
+                        <div id="listbox-p2" class="flex-1 overflow-y-auto space-y-1 custom-scroll pr-2 pb-2">
+                            </div>
                     </div>
                 </div>
 
-                <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl flex flex-col gap-4">
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl flex flex-col gap-4 max-h-[800px]">
                     <h3 class="font-black text-amber-500 uppercase tracking-widest text-xs border-b border-slate-800 pb-3">Plano Avançado (Nível 3)</h3>
                     <div>
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Nome do Plano</label>
-                        <input type="text" id="p3-nome" value="Plano Elite" class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-3 text-sm font-bold outline-none focus:border-amber-500">
+                        <input type="text" id="p3-nome" class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-3 text-sm font-bold outline-none focus:border-amber-500">
                     </div>
                     <div>
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Preço Mensal (R$)</label>
-                        <input type="number" id="p3-preco" value="89.90" class="w-full bg-slate-950 border border-slate-800 text-amber-500 rounded-xl p-3 text-sm font-mono font-black outline-none focus:border-amber-500">
+                        <input type="number" id="p3-preco" class="w-full bg-slate-950 border border-slate-800 text-amber-500 rounded-xl p-3 text-sm font-mono font-black outline-none focus:border-amber-500">
                     </div>
                     <div>
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Subtítulo (Pequena Descrição)</label>
-                        <input type="text" id="p3-desc" value="Automação total para grandes academias." class="w-full bg-slate-950 border border-slate-800 text-slate-400 rounded-xl p-3 text-xs outline-none focus:border-amber-500">
+                        <input type="text" id="p3-desc" class="w-full bg-slate-950 border border-slate-800 text-slate-400 rounded-xl p-3 text-xs outline-none focus:border-amber-500">
                     </div>
-                    <div class="flex-1 mt-2">
-                        <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Funcionalidades (1 por linha)</label>
-                        <textarea id="p3-features" rows="10" class="w-full bg-slate-950 border border-slate-800 text-slate-300 rounded-xl p-3 text-sm outline-none focus:border-amber-500 resize-none leading-relaxed"></textarea>
+                    <div class="flex-1 mt-2 flex flex-col min-h-0">
+                        <label class="text-[10px] text-slate-500 font-bold uppercase mb-2 block">Selecione as Funcionalidades:</label>
+                        <div id="listbox-p3" class="flex-1 overflow-y-auto space-y-1 custom-scroll pr-2 pb-2">
+                            </div>
                     </div>
                 </div>
             </div>
             
             <div class="bg-slate-800/30 border border-slate-800 rounded-2xl p-6 text-center">
-                <p class="text-xs text-slate-400">💡 Ao clicar em "Publicar Planos", o banco de dados será atualizado. Os sites <code class="text-rose-400 bg-rose-400/10 px-1 rounded">index.html</code> e <code class="text-rose-400 bg-rose-400/10 px-1 rounded">planos.html</code> vão puxar as informações exatas que você digitar nestas caixas automaticamente.</p>
+                <p class="text-xs text-slate-400">💡 Ao clicar em "Publicar Planos", o banco de dados será atualizado. Os sites vão exibir as funcionalidades marcadas com um check verde (<span class="text-emerald-500">✓</span>) e as desmarcadas com um X vermelho (<span class="text-rose-500">❌</span>).</p>
             </div>
         </div>
 
@@ -365,7 +373,7 @@
             btnAtivo.className = "w-full flex items-center gap-3 px-4 py-3 bg-rose-500/10 text-rose-500 rounded-xl font-bold text-xs uppercase tracking-widest border border-rose-500/20 transition-all";
 
             if(abaID === 'faturamento') renderizarFaturamento();
-            if(abaID === 'planos') carregarConfigPlanos(); // Carrega os planos do banco
+            if(abaID === 'planos') carregarConfigPlanos(); 
         }
 
         // ==========================================
@@ -577,40 +585,94 @@
         }
 
         // ==========================================
-        // GESTÃO DOS PLANOS DO SITE (CONSTRUTOR)
+        // GESTÃO DOS PLANOS DO SITE (CHECKBOXES / LISTBOX)
         // ==========================================
         const PLANOS_DOC_REF = doc(db, "sistema", "config_planos");
+
+        const TODAS_FUNCIONALIDADES = [
+            "Cadastro até 10 alunos",
+            "Cadastro de Alunos Ilimitados",
+            "Gestão de Turmas e Frequência",
+            "Link de Auto-Cadastro",
+            "Portal do Aluno Completo (App)",
+            "Relatórios e Frequência em PDF",
+            "Carteirinhas Digitais (QR Code)",
+            "Anamnese e Termos LGPD Eletrônicos",
+            "Emissão de Certificados Profissionais",
+            "Automação Asaas (PIX/Cartão)",
+            "Vitrine Virtual (Loja Online)",
+            "Check-in com GPS Ativo",
+            "Baixa Automática de Faturas"
+        ];
+
+        function renderizarCheckboxes(planId, savedText, accentColor) {
+            const container = document.getElementById(`listbox-${planId}`);
+            container.innerHTML = '';
+            
+            const savedLines = savedText ? savedText.split('\n') : [];
+            
+            TODAS_FUNCIONALIDADES.forEach((feat, index) => {
+                let isChecked = false;
+                const lineMatch = savedLines.find(l => l.includes(feat));
+                
+                if (lineMatch && lineMatch.startsWith('✓')) {
+                    isChecked = true;
+                }
+
+                const label = document.createElement('label');
+                label.className = "flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-800/60 cursor-pointer transition-colors border border-transparent hover:border-slate-700/50";
+                label.innerHTML = `
+                    <input type="checkbox" id="chk-${planId}-${index}" class="w-4 h-4 rounded text-${accentColor}-500 border-slate-700 bg-slate-950 focus:ring-${accentColor}-500" ${isChecked ? 'checked' : ''}>
+                    <span class="text-xs font-medium text-slate-300 select-none leading-none">${feat}</span>
+                `;
+                container.appendChild(label);
+            });
+        }
+
+        function getFeaturesSelecionadas(planId) {
+            let result = [];
+            TODAS_FUNCIONALIDADES.forEach((feat, index) => {
+                const chk = document.getElementById(`chk-${planId}-${index}`);
+                if(chk && chk.checked) {
+                    result.push(`✓ ${feat}`);
+                } else {
+                    result.push(`❌ ${feat}`);
+                }
+            });
+            return result.join('\n');
+        }
 
         window.carregarConfigPlanos = async function() {
             try {
                 const docSnap = await getDoc(PLANOS_DOC_REF);
                 
-                // Valores padrão caso não exista nada no banco ainda
                 let dados = {
-                    p1: { nome: "Plano Tatame", preco: 0, desc: "Para validar o sistema e organizar o básico.", features: "✓ Até 10 alunos\n✓ Gestão de Turmas\n✓ Link de Auto-Cadastro\n❌ Sem Portal do Aluno" },
-                    p2: { nome: "Plano Black Belt", preco: 49.90, desc: "Experiência digital premium completa.", features: "✓ Alunos Ilimitados\n✓ Portal do Aluno Completo\n✓ Relatórios e Frequência PDF\n✓ Carteirinhas QR Code\n✓ Anamnese e Termos LGPD\n✓ Emissão de Certificados" },
-                    p3: { nome: "Plano Elite", preco: 89.90, desc: "Automação total para grandes academias.", features: "✓ Tudo do plano Black Belt\n✓ Automação Asaas (PIX/Cartão)\n✓ Vitrine Virtual (Loja)\n✓ Check-in com GPS Ativo\n✓ Baixa Automática de Faturas" }
+                    p1: { nome: "Plano Tatame", preco: 0, desc: "Para validar o sistema e organizar o básico.", features: "✓ Cadastro até 10 alunos\n✓ Gestão de Turmas e Frequência\n✓ Link de Auto-Cadastro\n❌ Portal do Aluno Completo (App)\n❌ Carteirinhas Digitais (QR Code)" },
+                    p2: { nome: "Plano Black Belt", preco: 49.90, desc: "Experiência digital premium completa.", features: "✓ Cadastro de Alunos Ilimitados\n✓ Gestão de Turmas e Frequência\n✓ Link de Auto-Cadastro\n✓ Portal do Aluno Completo (App)\n✓ Relatórios e Frequência em PDF\n✓ Carteirinhas Digitais (QR Code)\n✓ Anamnese e Termos LGPD Eletrônicos\n✓ Emissão de Certificados Profissionais\n❌ Automação Asaas (PIX/Cartão)" },
+                    p3: { nome: "Plano Elite", preco: 89.90, desc: "Automação total para grandes academias.", features: "✓ Cadastro de Alunos Ilimitados\n✓ Gestão de Turmas e Frequência\n✓ Link de Auto-Cadastro\n✓ Portal do Aluno Completo (App)\n✓ Relatórios e Frequência em PDF\n✓ Carteirinhas Digitais (QR Code)\n✓ Anamnese e Termos LGPD Eletrônicos\n✓ Emissão de Certificados Profissionais\n✓ Automação Asaas (PIX/Cartão)\n✓ Vitrine Virtual (Loja Online)\n✓ Check-in com GPS Ativo\n✓ Baixa Automática de Faturas" }
                 };
 
                 if (docSnap.exists()) {
                     dados = docSnap.data();
                 }
 
-                // Preenche o formulário visual
+                // Inputs de Texto
                 document.getElementById('p1-nome').value = dados.p1.nome;
                 document.getElementById('p1-preco').value = dados.p1.preco;
                 document.getElementById('p1-desc').value = dados.p1.desc;
-                document.getElementById('p1-features').value = dados.p1.features;
 
                 document.getElementById('p2-nome').value = dados.p2.nome;
                 document.getElementById('p2-preco').value = dados.p2.preco;
                 document.getElementById('p2-desc').value = dados.p2.desc;
-                document.getElementById('p2-features').value = dados.p2.features;
 
                 document.getElementById('p3-nome').value = dados.p3.nome;
                 document.getElementById('p3-preco').value = dados.p3.preco;
                 document.getElementById('p3-desc').value = dados.p3.desc;
-                document.getElementById('p3-features').value = dados.p3.features;
+
+                // Renderiza os Checkboxes (Listboxes)
+                renderizarCheckboxes('p1', dados.p1.features, 'rose');
+                renderizarCheckboxes('p2', dados.p2.features, 'cyan');
+                renderizarCheckboxes('p3', dados.p3.features, 'amber');
 
             } catch (error) {
                 console.error("Erro ao carregar configurações dos planos:", error);
@@ -619,29 +681,37 @@
 
         window.salvarConfigPlanos = async function() {
             try {
+                const btn = document.querySelector('button[onclick="salvarConfigPlanos()"]');
+                const btnTxt = btn.innerHTML;
+                btn.innerHTML = "⏳ Salvando...";
+                btn.disabled = true;
+
                 const dadosParaSalvar = {
                     p1: {
                         nome: document.getElementById('p1-nome').value,
                         preco: parseFloat(document.getElementById('p1-preco').value) || 0,
                         desc: document.getElementById('p1-desc').value,
-                        features: document.getElementById('p1-features').value
+                        features: getFeaturesSelecionadas('p1')
                     },
                     p2: {
                         nome: document.getElementById('p2-nome').value,
                         preco: parseFloat(document.getElementById('p2-preco').value) || 0,
                         desc: document.getElementById('p2-desc').value,
-                        features: document.getElementById('p2-features').value
+                        features: getFeaturesSelecionadas('p2')
                     },
                     p3: {
                         nome: document.getElementById('p3-nome').value,
                         preco: parseFloat(document.getElementById('p3-preco').value) || 0,
                         desc: document.getElementById('p3-desc').value,
-                        features: document.getElementById('p3-features').value
+                        features: getFeaturesSelecionadas('p3')
                     }
                 };
 
                 await setDoc(PLANOS_DOC_REF, dadosParaSalvar);
                 showToast("Planos publicados com sucesso! O site já está atualizado.", "success");
+
+                btn.innerHTML = btnTxt;
+                btn.disabled = false;
 
             } catch (error) {
                 console.error("Erro ao salvar configurações dos planos:", error);

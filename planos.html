@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -20,7 +20,7 @@
 
     <div class="w-full bg-slate-900 p-3 text-center relative z-50 shrink-0 shadow-md flex items-center justify-center h-16">
         <a href="dashboard.html" class="absolute left-4 top-1/2 -translate-y-1/2 transition-opacity hover:opacity-80 flex items-center gap-2 text-white text-xs font-bold bg-slate-800 px-3 py-2 rounded-lg border border-slate-700 shadow-sm">
-            <span>←</span> Voltar
+            <span>←</span> Painel
         </a>
         <img src="logo_bjj_maneger.png" class="h-8 md:h-10 filter drop-shadow-lg" alt="BJJ Manager">
     </div>
@@ -33,7 +33,7 @@
                     <div id="status-icon" class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-3xl shadow-inner shrink-0">⏳</div>
                     <div>
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Status da sua Licença</p>
-                        <h2 id="nome-equipe" class="text-xl font-black text-slate-800 tracking-tight">Carregando dados...</h2>
+                        <h2 id="nome-equipe" class="text-xl font-black text-slate-800 tracking-tight">A carregar dados...</h2>
                         <p id="plano-vencimento" class="text-sm text-slate-500 font-medium">A analisar o seu plano...</p>
                     </div>
                 </div>
@@ -44,7 +44,7 @@
 
             <div class="text-center mt-12 mb-8">
                 <h2 class="text-2xl md:text-3xl font-black text-slate-800 uppercase tracking-tight mb-2">Escolha o seu plano</h2>
-                <p class="text-slate-500 font-medium text-sm">Faça o upgrade para desbloquear todo o poder do BJJ Manager.</p>
+                <p class="text-slate-500 font-medium text-sm">Atualize para desbloquear todas as ferramentas de gestão.</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-center">
@@ -58,12 +58,12 @@
                     </div>
                     <ul class="space-y-4 mb-8 flex-1 text-sm text-slate-600">
                         <li class="flex items-start gap-3"><span class="text-emerald-500 font-bold">✓</span> Cadastro até 10 alunos</li>
-                        <li class="flex items-start gap-3"><span class="text-emerald-500 font-bold">✓</span> Gestão de Turmas e Frequência</li>
+                        <li class="flex items-start gap-3"><span class="text-emerald-500 font-bold">✓</span> Gestão de Turmas</li>
                         <li class="flex items-start gap-3"><span class="text-emerald-500 font-bold">✓</span> Link de Auto-Cadastro</li>
-                        <li class="flex items-start gap-3"><span class="text-slate-300 font-bold">❌</span> Sem acesso ao Portal do Aluno</li>
+                        <li class="flex items-start gap-3"><span class="text-slate-300 font-bold">❌</span> Sem Portal do Aluno</li>
                     </ul>
-                    <button id="btn-branca" disabled class="w-full bg-slate-100 text-slate-400 font-black py-4 rounded-xl text-center text-xs uppercase tracking-widest border border-slate-200 cursor-not-allowed">
-                        Plano Base
+                    <button id="btn-branca" disabled class="w-full bg-slate-100 text-slate-400 font-black py-4 rounded-xl text-center text-xs uppercase border border-slate-200 cursor-not-allowed">
+                        Plano de Teste
                     </button>
                 </div>
 
@@ -72,7 +72,7 @@
                         Mais Escolhido
                     </div>
                     <h3 class="text-xl font-black text-cyan-400 mb-2">Plano Black Belt</h3>
-                    <p class="text-xs text-slate-300 mb-6 min-h-[40px]">A experiência digital premium para a sua equipe crescer.</p>
+                    <p class="text-xs text-slate-300 mb-6 min-h-[40px]">Experiência digital premium para a sua equipa crescer.</p>
                     <div class="mb-2 flex flex-col border-b border-slate-700 pb-4">
                         <span class="text-sm text-slate-500 line-through font-bold">De R$ 99,90</span>
                         <div>
@@ -80,15 +80,14 @@
                             <span class="text-4xl font-black text-white">49,90</span>
                             <span class="text-slate-500 text-sm font-bold">/ mês</span>
                         </div>
-                        <span class="text-[10px] text-cyan-500/80 mt-1 uppercase tracking-widest font-bold">Preço Fixo Promocional</span>
                     </div>
                     
                     <ul class="space-y-4 mb-8 flex-1 text-sm text-slate-200 mt-4">
                         <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> <b>Alunos Ilimitados</b></li>
-                        <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> <b>Portal do Aluno Liberado</b></li>
-                        <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> Relatórios em PDF (Frequência, Saúde)</li>
+                        <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> <b>Portal do Aluno Completo</b></li>
+                        <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> Relatórios e Frequência em PDF</li>
                         <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> Carteirinhas QR Code</li>
-                        <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> Termos LGPD Eletrônicos</li>
+                        <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> Anamnese e Termos LGPD</li>
                         <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> Emissão de Certificados</li>
                     </ul>
                     <button id="btn-black" onclick="iniciarCheckout('BLACK_BELT')" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-all shadow-lg transform hover:-translate-y-0.5">
@@ -97,8 +96,8 @@
                 </div>
 
                 <div id="card-elite" class="bg-white rounded-3xl p-8 border border-slate-200 flex flex-col relative overflow-hidden transition-all shadow-sm">
-                    <h3 class="text-xl font-black text-slate-800 mb-2">Plano Elite <span class="text-[9px] bg-amber-100 text-amber-600 px-2 py-1 rounded ml-2 uppercase">Automação</span></h3>
-                    <p class="text-xs text-slate-500 mb-6 min-h-[40px]">Para academias estruturadas que querem faturar no piloto automático.</p>
+                    <h3 class="text-xl font-black text-slate-800 mb-2">Plano Elite <span class="text-[9px] bg-amber-100 text-amber-600 px-2 py-1 rounded ml-2 uppercase font-black">Automação</span></h3>
+                    <p class="text-xs text-slate-500 mb-6 min-h-[40px]">Para academias que querem faturar em piloto automático.</p>
                     <div class="mb-6 border-b border-slate-100 pb-6">
                         <span class="text-sm text-slate-400 line-through font-bold">De R$ 149,90</span>
                         <div class="mt-1">
@@ -109,12 +108,12 @@
                     </div>
                     <ul class="space-y-4 mb-8 flex-1 text-sm text-slate-600">
                         <li class="flex items-start gap-3"><span class="text-amber-500 font-bold">✓</span> Tudo do plano Black Belt</li>
-                        <li class="flex items-start gap-3"><span class="text-amber-500 font-bold">✓</span> <b>Automação Asaas (PIX e Cartão)</b></li>
-                        <li class="flex items-start gap-3"><span class="text-amber-500 font-bold">✓</span> <b>Vitrine Virtual (Loja Online)</b></li>
-                        <li class="flex items-start gap-3"><span class="text-amber-500 font-bold">✓</span> <b>Check-in com GPS (Morada Exata)</b></li>
+                        <li class="flex items-start gap-3"><span class="text-amber-500 font-bold">✓</span> <b>Automação Asaas (PIX/Cartão)</b></li>
+                        <li class="flex items-start gap-3"><span class="text-amber-500 font-bold">✓</span> <b>Vitrine Virtual (Loja)</b></li>
+                        <li class="flex items-start gap-3"><span class="text-amber-500 font-bold">✓</span> <b>Check-in com GPS Ativo</b></li>
                         <li class="flex items-start gap-3"><span class="text-amber-500 font-bold">✓</span> Baixa Automática de Faturas</li>
                     </ul>
-                    <a href="https://wa.me/5521981716074?text=Olá! Gostaria de entrar na lista de espera do Plano Elite do BJJ Manager." target="_blank" class="w-full bg-white hover:bg-slate-50 text-amber-500 font-black py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-colors border-2 border-amber-400 hover:border-amber-500 flex justify-center items-center">
+                    <a href="https://wa.me/5521981716074?text=Olá! Gostaria de saber mais sobre o Plano Elite." target="_blank" class="w-full bg-white hover:bg-slate-50 text-amber-500 font-black py-4 rounded-xl text-center text-xs uppercase border-2 border-amber-400 flex justify-center items-center">
                         Lista de Espera
                     </a>
                 </div>
@@ -122,8 +121,8 @@
             </div>
             
             <div class="mt-12 text-center border-t border-slate-200 pt-8">
-                <p class="text-sm text-slate-500 font-medium">Tem um projeto social, franquia grande ou precisa de um <span class="text-slate-800 font-bold">desconto especial</span>?</p>
-                <a href="https://wa.me/5521981716074" target="_blank" class="inline-block mt-2 text-cyan-600 hover:text-cyan-500 font-bold underline decoration-cyan-500/30 underline-offset-4 transition-colors">Converse connosco no WhatsApp.</a>
+                <p class="text-sm text-slate-500 font-medium">Precisa de um plano para projetos sociais ou franquias?</p>
+                <a href="https://wa.me/5521981716074" target="_blank" class="inline-block mt-2 text-cyan-600 hover:text-cyan-500 font-bold underline decoration-cyan-500/30 underline-offset-4 transition-colors">Fale connosco no WhatsApp.</a>
             </div>
         </div>
     </main>
@@ -132,6 +131,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
@@ -145,38 +145,29 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        const functions = getFunctions(app);
 
         let equipeId = null;
         let dadosEquipe = null;
-
-        // ⚠️ ATENÇÃO ADMINISTRADOR: COLE AQUI OS SEUS LINKS DO ASAAS
-        const LINKS_ASAAS = {
-            'BLACK_BELT': 'https://sandbox.asaas.com/c/COLE_AQUI_O_LINK_DO_PLANO_BLACK_BELT',
-            'ELITE': 'https://sandbox.asaas.com/c/COLE_AQUI_O_LINK_DO_PLANO_ELITE'
-        };
 
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             const bgColor = type === 'success' ? 'bg-emerald-500' : 'bg-rose-500';
-            const icon = type === 'success' ? '✅' : '🚨';
-            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transform transition-all duration-300 translate-x-full opacity-0 flex items-center gap-3 font-bold text-sm z-[9999] max-w-sm`;
-            toast.innerHTML = `<span class="text-xl">${icon}</span> <span class="flex-1">${message}</span>`;
+            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transition-all font-bold text-sm z-[9999]`;
+            toast.innerText = message;
             container.appendChild(toast);
-            setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 10);
-            setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4500);
+            setTimeout(() => toast.remove(), 4500);
         }
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // Tenta pegar como mestre
                 const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
                 if (mestreDoc.exists()) {
                     equipeId = user.uid;
                     dadosEquipe = mestreDoc.data();
                     atualizarInterface();
                 } else {
-                    // Colaborador não pode assinar plano, volta pro dashboard
                     window.location.href = "dashboard.html";
                 }
             } else {
@@ -185,79 +176,69 @@
         });
 
         function atualizarInterface() {
-            document.getElementById('nome-equipe').innerText = dadosEquipe.nome_equipe || dadosEquipe.nome || "Sua Equipe";
+            document.getElementById('nome-equipe').innerText = (dadosEquipe.nome_equipe || "Sua Equipe").toUpperCase();
             
             const badge = document.getElementById('status-badge');
             const icon = document.getElementById('status-icon');
             const txtVencimento = document.getElementById('plano-vencimento');
-            
             const status = dadosEquipe.status_plano || 'TESTE';
-            let diasTeste = 0;
 
             if (status === 'TESTE') {
-                if(dadosEquipe.data_cadastro) {
-                    const dataCad = new Date(dadosEquipe.data_cadastro);
-                    const hoje = new Date();
-                    const diferencaTempo = hoje.getTime() - dataCad.getTime();
-                    const diasPassados = Math.floor(diferencaTempo / (1000 * 3600 * 24));
-                    diasTeste = 7 - diasPassados;
-                }
-                
-                if (diasTeste > 0) {
-                    badge.innerText = "PERÍODO DE TESTE";
-                    badge.className = "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-amber-500 text-white shadow-lg shadow-amber-500/20";
-                    icon.innerText = "⏳";
-                    icon.className = "w-16 h-16 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-3xl shadow-inner shrink-0";
-                    txtVencimento.innerText = `Você tem ${diasTeste} dias restantes de teste grátis.`;
-                    txtVencimento.classList.add('text-amber-600', 'font-bold');
-                } else {
-                    badge.innerText = "TESTE EXPIRADO";
-                    badge.className = "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-rose-500 text-white shadow-lg shadow-rose-500/20";
-                    icon.innerText = "🔒";
-                    icon.className = "w-16 h-16 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-3xl shadow-inner shrink-0";
-                    txtVencimento.innerText = "O seu período de teste acabou. Assine para continuar a usar.";
-                    txtVencimento.classList.add('text-rose-500', 'font-bold');
-                }
+                badge.innerText = "PERÍODO DE TESTE";
+                badge.className = "px-4 py-1.5 rounded-full text-[10px] font-black uppercase bg-amber-500 text-white shadow-lg";
+                icon.innerText = "⏳";
+                txtVencimento.innerText = "Aproveite os seus 7 dias de teste grátis.";
             } 
-            else if (status === 'BLACK_BELT' || status === 'BRANCA' || status === 'ELITE') {
-                badge.innerText = `PLANO ${status.replace('_', ' ')}`;
-                badge.className = "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-emerald-500 text-white shadow-lg shadow-emerald-500/20";
+            else if (status === 'BLACK_BELT' || status === 'ELITE' || status === 'ATIVO') {
+                badge.innerText = "ASSINATURA ATIVA";
+                badge.className = "px-4 py-1.5 rounded-full text-[10px] font-black uppercase bg-emerald-500 text-white shadow-lg";
                 icon.innerText = "✅";
-                icon.className = "w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl shadow-inner shrink-0";
-                txtVencimento.innerText = "A sua licença está ativa. Obrigado por confiar no BJJ Manager!";
-                txtVencimento.classList.add('text-emerald-600', 'font-bold');
-
-                // Bloqueia o botão do plano que ele já possui
+                txtVencimento.innerText = "O seu acesso está garantido. Oss!";
+                
                 if(status === 'BLACK_BELT') {
-                    const btnBlack = document.getElementById('btn-black');
-                    btnBlack.disabled = true;
-                    btnBlack.innerHTML = "✓ O SEU PLANO ATUAL";
-                    btnBlack.className = "w-full bg-slate-800 text-slate-400 font-black py-4 rounded-xl text-center text-xs uppercase tracking-widest cursor-not-allowed border border-slate-700";
+                    const btn = document.getElementById('btn-black');
+                    btn.disabled = true;
+                    btn.innerHTML = "✓ O SEU PLANO ATUAL";
+                    btn.className = "w-full bg-slate-800 text-slate-500 font-black py-4 rounded-xl text-xs cursor-not-allowed border border-slate-700";
                 }
-            }
-            else if (status === 'BLOQUEADO') {
-                badge.innerText = "ACESSO BLOQUEADO";
-                badge.className = "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-rose-500 text-white shadow-lg shadow-rose-500/20";
-                icon.innerText = "🚨";
-                icon.className = "w-16 h-16 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-3xl shadow-inner shrink-0";
-                txtVencimento.innerText = "O seu acesso foi suspenso. Assine ou regularize a sua mensalidade.";
-                txtVencimento.classList.add('text-rose-500', 'font-bold');
             }
         }
 
-        window.iniciarCheckout = function(planoEscolhido) {
-            const link = LINKS_ASAAS[planoEscolhido];
+        window.iniciarCheckout = async function(planoEscolhido) {
+            const btn = document.getElementById('btn-black');
+            const originalTxt = btn.innerHTML;
             
-            if(!link || link.includes('COLE_AQUI')) {
-                showToast("Link de pagamento não configurado no sistema.", "error");
-                return;
-            }
+            btn.innerHTML = "⏳ A GERAR PAGAMENTO...";
+            btn.disabled = true;
 
-            showToast("A redirecionar para o pagamento seguro Asaas...", "success");
-            
-            setTimeout(() => {
-                window.open(link, '_blank');
-            }, 1500);
+            try {
+                const valorPlano = planoEscolhido === 'BLACK_BELT' ? 49.90 : 89.90;
+                const gerarAssinatura = httpsCallable(functions, 'gerarAssinaturaSistema');
+                
+                const resultado = await gerarAssinatura({
+                    equipeId: equipeId,
+                    nomePlano: planoEscolhido,
+                    valor: valorPlano,
+                    email: auth.currentUser.email,
+                    nome: dadosEquipe.nome_equipe || "Professor"
+                });
+
+                if (resultado.data.success) {
+                    showToast("A redirecionar para o Checkout Seguro...", "success");
+                    setTimeout(() => {
+                        window.open(resultado.data.url, '_blank');
+                        btn.innerHTML = originalTxt;
+                        btn.disabled = false;
+                    }, 2000);
+                } else {
+                    throw new Error(resultado.data.error);
+                }
+            } catch (error) {
+                console.error(error);
+                showToast("Erro ao gerar link: " + error.message, "error");
+                btn.innerHTML = originalTxt;
+                btn.disabled = false;
+            }
         }
     </script>
 </body>

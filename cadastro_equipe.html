@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -97,7 +97,7 @@
                         
                         <div class="grid grid-cols-1 gap-4">
                             <div>
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Nome da Equipa *</label>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Nome da Equipe *</label>
                                 <input type="text" id="cad-equipe" required placeholder="Digite o nome de sua equipe" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all uppercase placeholder:text-slate-600">
                             </div>
                             <div>
@@ -201,6 +201,16 @@
                         </div>
                     </div>
 
+                    <div class="space-y-4 pt-2">
+                        <h4 class="text-[10px] font-black text-emerald-400 uppercase tracking-widest border-b border-slate-800 pb-2">5. Código Promocional (Opcional)</h4>
+                        <div class="relative flex items-center">
+                            <span class="absolute left-4 text-slate-500">🎟️</span>
+                            <input type="text" id="cad-cupom" placeholder="Insira o código do seu parceiro" class="w-full p-3.5 pl-11 pr-24 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-emerald-500 transition-all uppercase placeholder:text-slate-600 placeholder:normal-case tracking-widest">
+                            <button type="button" onclick="validarCupomCadastro()" id="btn-validar-cupom" class="absolute right-2 bg-emerald-500 hover:bg-emerald-600 text-white font-black py-1.5 px-3 rounded-lg text-[9px] uppercase tracking-widest transition-colors">Validar</button>
+                        </div>
+                        <p id="msg-cupom-cadastro" class="text-[11px] font-bold mt-1 ml-1 hidden"></p>
+                    </div>
+
                     <div class="flex items-start gap-3 mt-6 p-4 bg-slate-800/50 rounded-xl border border-slate-700">
                         <input type="checkbox" id="cad-termos" required class="mt-1 w-4 h-4 rounded bg-slate-900 border-slate-600 text-cyan-500 focus:ring-cyan-500 focus:ring-offset-slate-900 cursor-pointer shrink-0">
                         <label for="cad-termos" class="text-xs text-slate-400 leading-relaxed cursor-pointer">
@@ -223,7 +233,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
         // Configuração do Firebase
@@ -240,6 +250,8 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         const storage = getStorage(app);
+
+        let cupomValidado = null; // Variável global para armazenar o cupom se o cliente validar
 
         // --- SISTEMA DE TOASTS ---
         window.showToast = function(message, type = 'error') {
@@ -299,11 +311,71 @@
             }
         };
 
+        // --- VALIDAÇÃO DE CUPOM ---
+        window.validarCupomCadastro = async function() {
+            const input = document.getElementById('cad-cupom');
+            const msgTexto = document.getElementById('msg-cupom-cadastro');
+            const btn = document.getElementById('btn-validar-cupom');
+            
+            const codigo = input.value.trim().toUpperCase();
+            if(!codigo) return;
+
+            btn.innerHTML = "⏳";
+            btn.disabled = true;
+            msgTexto.classList.add('hidden');
+
+            try {
+                const docSnap = await getDoc(doc(db, "cupons", codigo));
+                
+                if(docSnap.exists()) {
+                    const cupom = docSnap.data();
+                    
+                    if(cupom.limite_uso > 0 && (cupom.vezes_usado || 0) >= cupom.limite_uso) {
+                        msgTexto.innerText = "Este cupom atingiu o limite de usos.";
+                        msgTexto.className = "text-[11px] font-bold mt-1 ml-1 text-rose-500 block";
+                        cupomValidado = null;
+                        input.classList.add('border-rose-500');
+                        input.classList.remove('border-emerald-500');
+                    } else {
+                        // Cupom Válido!
+                        cupomValidado = codigo;
+                        let txtDuracao = cupom.duracao === 'PRIMEIRA_MENSALIDADE' ? 'na 1ª mensalidade' : 'recorrente';
+                        msgTexto.innerText = `✅ Válido! Você terá ${cupom.desconto_perc}% de desconto ${txtDuracao}.`;
+                        msgTexto.className = "text-[11px] font-bold mt-1 ml-1 text-emerald-400 block";
+                        
+                        input.classList.add('border-emerald-500');
+                        input.classList.remove('border-rose-500');
+                    }
+                } else {
+                    msgTexto.innerText = "Cupom inválido ou não existe.";
+                    msgTexto.className = "text-[11px] font-bold mt-1 ml-1 text-rose-500 block";
+                    cupomValidado = null;
+                    input.classList.add('border-rose-500');
+                    input.classList.remove('border-emerald-500');
+                }
+            } catch(e) {
+                msgTexto.innerText = "Erro ao consultar banco. Tente novamente.";
+                msgTexto.className = "text-[11px] font-bold mt-1 ml-1 text-rose-500 block";
+            } finally {
+                btn.innerHTML = "Validar";
+                btn.disabled = false;
+            }
+        }
+
+        // Se a pessoa apagar o texto do cupom, resetamos a validação
+        document.getElementById('cad-cupom').addEventListener('input', function(e) {
+            if(e.target.value.trim() === '') {
+                cupomValidado = null;
+                document.getElementById('msg-cupom-cadastro').classList.add('hidden');
+                e.target.classList.remove('border-emerald-500', 'border-rose-500');
+            }
+        });
+
+
         // --- LÓGICA DE SUBMISSÃO E INTEGRAÇÃO FIREBASE ---
         document.getElementById('form-cadastro').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // Pega todos os dados do formulário
             const nomeEquipe = document.getElementById('cad-equipe').value.trim();
             const arquivoLogo = document.getElementById('cad-logo').files[0];
             const nomeResp = document.getElementById('cad-nome-resp').value.trim();
@@ -322,13 +394,17 @@
             const senha = document.getElementById('cad-senha').value;
             const senhaConfirma = document.getElementById('cad-senha-confirma').value;
 
-            // Validações
             if (senha !== senhaConfirma) {
                 document.getElementById('cad-senha-confirma').classList.add('border-rose-500');
                 return showToast("As senhas não coincidem!", "error");
             }
 
-            // Bloqueia botão para evitar duplo clique
+            // Avisa o cliente se ele digitou um cupom, mas esqueceu de clicar em "Validar"
+            const cupomDigitado = document.getElementById('cad-cupom').value.trim().toUpperCase();
+            if (cupomDigitado && !cupomValidado) {
+                return showToast("Por favor, clique em 'VALIDAR' para confirmar o seu cupom promocional antes de continuar.", "info");
+            }
+
             const btn = document.getElementById('btn-cadastrar');
             const btnOriginal = btn.innerHTML;
             btn.innerHTML = "<span class='mr-2 text-lg'>⏳</span> Construindo a sua base...";
@@ -366,7 +442,8 @@
                     data_cadastro: new Date().toISOString(),
                     status_plano: 'TESTE',
                     valor_prazo: 100.0, 
-                    valor_atraso: 120.0
+                    valor_atraso: 120.0,
+                    cupom_usado: cupomValidado // <- SALVA O CUPOM AQUI PARA USO FUTURO!
                 });
 
                 // 4. Envia e-mail de verificação de segurança

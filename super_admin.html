@@ -43,8 +43,8 @@
             <h2 class="text-lg font-black tracking-tight text-white flex items-center gap-2">
                 <span>📊</span> Controle de Assinantes
             </h2>
-            <div class="text-xs font-bold text-slate-400 bg-slate-800 px-3 py-1 rounded-lg border border-slate-700">
-                Acesso Restrito
+            <div class="text-xs font-bold text-slate-400 bg-slate-800 px-3 py-1 rounded-lg border border-slate-700 shadow-inner">
+                Acesso Restrito (Modo Deus)
             </div>
         </header>
 
@@ -72,7 +72,7 @@
                         <div class="absolute -right-4 -top-4 text-6xl opacity-5">💰</div>
                         <div class="w-12 h-12 rounded-full bg-rose-500/20 text-rose-500 flex items-center justify-center text-2xl font-black">💰</div>
                         <div>
-                            <p class="text-[10px] font-black text-slate-400 tracking-widest uppercase">Assinaturas</p>
+                            <p class="text-[10px] font-black text-slate-400 tracking-widest uppercase">Assinaturas Pagas</p>
                             <h3 id="dash-assinaturas" class="text-3xl font-black text-white">0</h3>
                         </div>
                     </div>
@@ -81,7 +81,9 @@
                 <div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-xl overflow-hidden mt-6">
                     <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-800/20">
                         <h3 class="text-sm font-black uppercase tracking-widest text-slate-300">Lista de Clientes (Equipes)</h3>
-                        <button onclick="carregarEquipes()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg font-bold transition-colors">🔄 Atualizar</button>
+                        <button onclick="carregarEquipes()" class="text-xs bg-slate-800 hover:bg-cyan-600 px-4 py-2 rounded-lg font-bold transition-colors flex items-center gap-2 shadow-sm text-white">
+                            <span>🔄</span> Atualizar
+                        </button>
                     </div>
                     <div class="overflow-x-auto w-full">
                         <table class="w-full text-left border-collapse whitespace-nowrap min-w-[900px]">
@@ -92,7 +94,7 @@
                                     <th class="px-6 py-4 text-center">Atletas</th>
                                     <th class="px-6 py-4 text-center">Plano</th>
                                     <th class="px-6 py-4 text-center">Asaas</th>
-                                    <th class="px-6 py-4 text-center">Ações</th>
+                                    <th class="px-6 py-4 text-center">Ações de Gestão</th>
                                 </tr>
                             </thead>
                             <tbody id="tabela-equipes" class="divide-y divide-slate-800/50">
@@ -134,21 +136,21 @@
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Mensalidade (R$)</label>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Mensalidade Padrão (R$)</label>
                         <input type="number" id="edit-valor-plano" placeholder="Ex: 49.90" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white outline-none focus:border-cyan-500 transition-colors">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Desconto (%)</label>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Desconto Concedido (%)</label>
                         <input type="number" id="edit-desconto" placeholder="Ex: 10" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white outline-none focus:border-cyan-500 transition-colors">
                     </div>
                 </div>
 
-                <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700 mt-2">
+                <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700 mt-2 hover:border-cyan-500 transition-colors">
                     <label class="flex items-center gap-3 cursor-pointer">
                         <input type="checkbox" id="edit-isento" class="w-5 h-5 rounded text-cyan-500 border-slate-600 focus:ring-cyan-500 cursor-pointer bg-slate-900">
                         <div>
                             <span class="text-sm font-black text-white uppercase tracking-widest block">Equipe 100% Isenta</span>
-                            <span class="text-[9px] text-slate-400">Não gerar cobranças no Asaas para esta conta.</span>
+                            <span class="text-[9px] text-slate-400">Marque para projetos sociais ou parceiros VIP.</span>
                         </div>
                     </label>
                 </div>
@@ -156,7 +158,9 @@
 
             <div class="p-5 bg-slate-950 border-t border-slate-800 flex justify-end gap-3">
                 <button onclick="fecharModalEditar()" class="px-6 py-2.5 rounded-xl font-bold text-slate-400 hover:bg-slate-800 transition-colors text-xs uppercase tracking-widest">Cancelar</button>
-                <button onclick="salvarEdicaoEquipe()" id="btn-salvar-edicao" class="bg-cyan-600 hover:bg-cyan-500 text-white font-black py-2.5 px-6 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest">💾 Salvar Licença</button>
+                <button onclick="salvarEdicaoEquipe()" id="btn-salvar-edicao" class="bg-cyan-600 hover:bg-cyan-500 text-white font-black py-2.5 px-6 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest flex items-center gap-2">
+                    <span>💾</span> Salvar Licença
+                </button>
             </div>
         </div>
     </div>
@@ -164,7 +168,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
@@ -311,11 +315,14 @@
                         ${asaasBadge}
                     </td>
                     <td class="px-6 py-4 text-center flex items-center justify-center gap-2">
-                        <button onclick="abrirModalEditarEquipe('${eq.id}')" class="bg-cyan-600 hover:bg-cyan-500 text-white font-black py-2 px-3 rounded-lg text-[9px] uppercase tracking-widest transition-all shadow-md flex items-center justify-center gap-1">
-                            <span>✏️</span> Editar
+                        <button onclick="abrirModalEditarEquipe('${eq.id}')" class="bg-slate-700 hover:bg-slate-600 text-white font-black py-2 px-3 rounded-lg text-[9px] uppercase tracking-widest transition-all shadow-md flex items-center justify-center gap-1" title="Editar Licença e Planos">
+                            <span>⚙️</span> Editar
                         </button>
-                        <button onclick="acessarComoEquipe('${eq.id}')" class="bg-rose-600 hover:bg-rose-500 text-white font-black py-2 px-3 rounded-lg text-[9px] uppercase tracking-widest transition-all shadow-md flex items-center justify-center gap-1">
+                        <button onclick="acessarComoEquipe('${eq.id}')" class="bg-cyan-600 hover:bg-cyan-500 text-white font-black py-2 px-3 rounded-lg text-[9px] uppercase tracking-widest transition-all shadow-md flex items-center justify-center gap-1" title="Acessar como Mestre">
                             <span>👁️</span> Acesso
+                        </button>
+                        <button onclick="excluirEquipe('${eq.id}')" class="bg-rose-600 hover:bg-rose-500 text-white font-black py-2 px-3 rounded-lg text-[9px] uppercase tracking-widest transition-all shadow-md flex items-center justify-center gap-1" title="Apagar Equipe Permanentemente">
+                            <span>🗑️</span> Excluir
                         </button>
                     </td>
                 `;
@@ -377,13 +384,34 @@
         }
 
         // ==========================================
+        // EXCLUIR EQUIPE (SUPER ADMIN APENAS)
+        // ==========================================
+        window.excluirEquipe = async function(id) {
+            const confirmacao = confirm("⚠️ ATENÇÃO: Tem a certeza absoluta que deseja excluir esta Equipe?\n\nEsta ação apagará o acesso da academia ao sistema e NÃO poderá ser desfeita.");
+            if(!confirmacao) return;
+
+            try {
+                // Remove o documento principal da equipe
+                await deleteDoc(doc(db, "equipes", id));
+                showToast("Equipe excluída com sucesso.", "success");
+                
+                // Recarrega a tabela para remover a linha apagada
+                carregarEquipes();
+            } catch(e) {
+                console.error(e);
+                showToast("Erro ao excluir equipe. Verifique as permissões.", "error");
+            }
+        }
+
+        // ==========================================
         // ENTRAR NO PAINEL DO CLIENTE (DEUS MODE)
         // ==========================================
         window.acessarComoEquipe = function(equipeId) {
             // Salva o ID da equipe no navegador
             sessionStorage.setItem('admin_impersonate', equipeId);
             
-            // Redireciona para o painel principal (você vai entrar como se fosse ele)
+            // O Modo Deus do BJJ Manager permite o redirecionamento ignorando a trava de "BLOQUEADO"
+            // O ficheiro dashboard.html e financeiro.html estão programados para ler este sessionStorage
             window.location.href = "financeiro.html"; 
         }
 

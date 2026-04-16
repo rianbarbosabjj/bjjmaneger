@@ -14,7 +14,6 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Barra de rolagem customizada para a lista de funcionalidades */
         .custom-scroll::-webkit-scrollbar { width: 4px; }
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
@@ -78,7 +77,7 @@
                 </div>
                 <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl relative overflow-hidden">
                     <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl">🥋</div>
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total de Atletas (Sistema)</p>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total de Atletas</p>
                     <h3 class="text-4xl font-black text-cyan-400 mt-2" id="dash-atletas">0</h3>
                 </div>
                 <div class="bg-gradient-to-br from-rose-900 to-slate-900 p-6 rounded-3xl border border-rose-800 shadow-xl relative overflow-hidden">
@@ -176,7 +175,7 @@
             <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
                     <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight">Construtor de Planos</h2>
-                    <p class="text-sm text-slate-400 mt-1 font-medium">Defina os preços promocionais, preços originais (riscados) e as caixas de seleção.</p>
+                    <p class="text-sm text-slate-400 mt-1 font-medium">Defina preços e use as caixas de seleção para montar o que cada plano oferece.</p>
                 </div>
                 <button onclick="salvarConfigPlanos()" class="bg-emerald-500 hover:bg-emerald-400 text-white font-black py-3 px-8 rounded-xl shadow-lg shadow-emerald-500/20 text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2">
                     <span>💾</span> Publicar Planos no Site
@@ -190,26 +189,23 @@
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Nome do Plano</label>
                         <input type="text" id="p1-nome" class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-3 text-sm font-bold outline-none focus:border-rose-500">
                     </div>
-                    
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block" title="Ficará riscado no site">Preço Real (Riscado)</label>
-                            <input type="number" id="p1-preco-original" class="w-full bg-slate-950 border border-slate-800 text-slate-500 rounded-xl p-3 text-sm font-mono font-bold outline-none focus:border-rose-500 line-through placeholder:text-slate-700" placeholder="Ex: 0.00">
+                            <input type="number" id="p1-preco-original" class="w-full bg-slate-950 border border-slate-800 text-slate-500 rounded-xl p-3 text-sm font-mono font-bold outline-none focus:border-rose-500 line-through placeholder:text-slate-700">
                         </div>
                         <div>
                             <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Preço Promocional</label>
                             <input type="number" id="p1-preco" class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-3 text-sm font-mono font-bold outline-none focus:border-rose-500">
                         </div>
                     </div>
-
                     <div>
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Subtítulo (Pequena Descrição)</label>
                         <input type="text" id="p1-desc" class="w-full bg-slate-950 border border-slate-800 text-slate-400 rounded-xl p-3 text-xs outline-none focus:border-rose-500">
                     </div>
                     <div class="flex-1 mt-2 flex flex-col min-h-0">
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-2 block">Selecione as Funcionalidades:</label>
-                        <div id="listbox-p1" class="flex-1 overflow-y-auto space-y-1 custom-scroll pr-2 pb-2">
-                            </div>
+                        <div id="listbox-p1" class="flex-1 overflow-y-auto space-y-1 custom-scroll pr-2 pb-2"></div>
                     </div>
                 </div>
 
@@ -220,26 +216,23 @@
                         <label class="text-[10px] text-cyan-500/70 font-bold uppercase mb-1 block">Nome do Plano</label>
                         <input type="text" id="p2-nome" class="w-full bg-slate-950 border border-slate-700 text-white rounded-xl p-3 text-sm font-bold outline-none focus:border-cyan-500">
                     </div>
-                    
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="text-[10px] text-cyan-500/70 font-bold uppercase mb-1 block" title="Ficará riscado no site">Preço Real (Riscado)</label>
-                            <input type="number" id="p2-preco-original" class="w-full bg-slate-950 border border-slate-700 text-slate-500 rounded-xl p-3 text-sm font-mono font-bold outline-none focus:border-cyan-500 line-through placeholder:text-slate-700" placeholder="Ex: 99.90">
+                            <input type="number" id="p2-preco-original" class="w-full bg-slate-950 border border-slate-700 text-slate-500 rounded-xl p-3 text-sm font-mono font-bold outline-none focus:border-cyan-500 line-through placeholder:text-slate-700">
                         </div>
                         <div>
                             <label class="text-[10px] text-cyan-500/70 font-bold uppercase mb-1 block">Preço Promocional</label>
                             <input type="number" id="p2-preco" class="w-full bg-slate-950 border border-slate-700 text-cyan-400 rounded-xl p-3 text-sm font-mono font-black outline-none focus:border-cyan-500">
                         </div>
                     </div>
-
                     <div>
                         <label class="text-[10px] text-cyan-500/70 font-bold uppercase mb-1 block">Subtítulo (Pequena Descrição)</label>
                         <input type="text" id="p2-desc" class="w-full bg-slate-950 border border-slate-700 text-slate-300 rounded-xl p-3 text-xs outline-none focus:border-cyan-500">
                     </div>
                     <div class="flex-1 mt-2 flex flex-col min-h-0">
                         <label class="text-[10px] text-cyan-500/70 font-bold uppercase mb-2 block">Selecione as Funcionalidades:</label>
-                        <div id="listbox-p2" class="flex-1 overflow-y-auto space-y-1 custom-scroll pr-2 pb-2">
-                            </div>
+                        <div id="listbox-p2" class="flex-1 overflow-y-auto space-y-1 custom-scroll pr-2 pb-2"></div>
                     </div>
                 </div>
 
@@ -249,35 +242,28 @@
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Nome do Plano</label>
                         <input type="text" id="p3-nome" class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-3 text-sm font-bold outline-none focus:border-amber-500">
                     </div>
-
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block" title="Ficará riscado no site">Preço Real (Riscado)</label>
-                            <input type="number" id="p3-preco-original" class="w-full bg-slate-950 border border-slate-800 text-slate-500 rounded-xl p-3 text-sm font-mono font-bold outline-none focus:border-amber-500 line-through placeholder:text-slate-700" placeholder="Ex: 149.90">
+                            <input type="number" id="p3-preco-original" class="w-full bg-slate-950 border border-slate-800 text-slate-500 rounded-xl p-3 text-sm font-mono font-bold outline-none focus:border-amber-500 line-through placeholder:text-slate-700">
                         </div>
                         <div>
                             <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Preço Promocional</label>
                             <input type="number" id="p3-preco" class="w-full bg-slate-950 border border-slate-800 text-amber-500 rounded-xl p-3 text-sm font-mono font-black outline-none focus:border-amber-500">
                         </div>
                     </div>
-
                     <div>
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Subtítulo (Pequena Descrição)</label>
                         <input type="text" id="p3-desc" class="w-full bg-slate-950 border border-slate-800 text-slate-400 rounded-xl p-3 text-xs outline-none focus:border-amber-500">
                     </div>
                     <div class="flex-1 mt-2 flex flex-col min-h-0">
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-2 block">Selecione as Funcionalidades:</label>
-                        <div id="listbox-p3" class="flex-1 overflow-y-auto space-y-1 custom-scroll pr-2 pb-2">
-                            </div>
+                        <div id="listbox-p3" class="flex-1 overflow-y-auto space-y-1 custom-scroll pr-2 pb-2"></div>
                     </div>
                 </div>
             </div>
             
-            <div class="bg-slate-800/30 border border-slate-800 rounded-2xl p-6 text-center">
-                <p class="text-xs text-slate-400">💡 Ao clicar em "Publicar Planos", o banco de dados será atualizado. Os sites vão exibir as funcionalidades marcadas com um check verde (<span class="text-emerald-500">✓</span>) e as desmarcadas com um X vermelho (<span class="text-rose-500">❌</span>).</p>
-            </div>
         </div>
-
     </main>
 
     <div id="modal-editar-equipe" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
@@ -375,9 +361,6 @@
             setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4000);
         }
 
-        // ==========================================
-        // SISTEMA DE NAVEGAÇÃO ENTRE ABAS
-        // ==========================================
         window.mudarAbaMaster = function(abaID) {
             document.getElementById('aba-academias').classList.add('hidden');
             document.getElementById('aba-faturamento').classList.add('hidden');
@@ -399,9 +382,6 @@
             if(abaID === 'planos') carregarConfigPlanos(); 
         }
 
-        // ==========================================
-        // 1. VERIFICAÇÃO DE SEGURANÇA MÁXIMA
-        // ==========================================
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
@@ -423,9 +403,6 @@
             }
         });
 
-        // ==========================================
-        // 2. CARREGAR DADOS DO SAAS (DASHBOARD)
-        // ==========================================
         window.carregarImperio = async function() {
             document.getElementById('tabela-equipes').innerHTML = '<tr><td colspan="5" class="text-center p-8 text-slate-500 italic text-xs">Atualizando dados...</td></tr>';
             try {
@@ -539,9 +516,6 @@
             });
         }
 
-        // ==========================================
-        // RENDERIZAR FATURAMENTO
-        // ==========================================
         window.renderizarFaturamento = function() {
             const tabela = document.getElementById('tabela-faturamento');
             tabela.innerHTML = '';
@@ -554,6 +528,9 @@
                 document.getElementById('fat-mrr-ativo').innerText = "R$ 0,00";
                 document.getElementById('fat-mrr-perdido').innerText = "R$ 0,00";
                 document.getElementById('fat-ticket-medio').innerText = "R$ 0,00";
+                
+                document.getElementById('fat-qtd-ativos').innerText = "0 assinaturas ativas pagantes";
+                document.getElementById('fat-qtd-bloqueados').innerText = "0 academias bloqueadas";
                 return;
             }
 
@@ -628,15 +605,11 @@
             "Baixa Automática de Faturas"
         ];
 
-        function renderizarCheckboxes(planId, savedText) {
+        function renderizarCheckboxes(planId, savedText, accentColor) {
             const container = document.getElementById(`listbox-${planId}`);
             if(!container) return;
             container.innerHTML = '';
             
-            let colorClass = 'text-rose-500 focus:ring-rose-500';
-            if (planId === 'p2') colorClass = 'text-cyan-500 focus:ring-cyan-500';
-            if (planId === 'p3') colorClass = 'text-amber-500 focus:ring-amber-500';
-
             const savedLines = savedText ? savedText.split('\n') : [];
             
             TODAS_FUNCIONALIDADES.forEach((feat, index) => {
@@ -648,9 +621,9 @@
                 }
 
                 const label = document.createElement('label');
-                label.className = "flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-800/60 cursor-pointer transition-colors border border-transparent hover:border-slate-700/50";
+                label.className = `flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-800/60 cursor-pointer transition-colors border border-transparent hover:border-slate-700/50`;
                 label.innerHTML = `
-                    <input type="checkbox" id="chk-${planId}-${index}" class="w-4 h-4 rounded border-slate-700 bg-slate-950 ${colorClass}" ${isChecked ? 'checked' : ''}>
+                    <input type="checkbox" id="chk-${planId}-${index}" class="w-4 h-4 rounded text-${accentColor}-500 border-slate-700 bg-slate-950 focus:ring-${accentColor}-500" ${isChecked ? 'checked' : ''}>
                     <span class="text-xs font-medium text-slate-300 select-none leading-none">${feat}</span>
                 `;
                 container.appendChild(label);
@@ -671,43 +644,43 @@
         }
 
         function preencherCamposPlanos(dados) {
-            if(document.getElementById('p1-nome')) document.getElementById('p1-nome').value = dados.p1.nome;
+            if(document.getElementById('p1-nome')) document.getElementById('p1-nome').value = dados.p1.nome || "";
             if(document.getElementById('p1-preco-original')) document.getElementById('p1-preco-original').value = dados.p1.preco_original || '';
-            if(document.getElementById('p1-preco')) document.getElementById('p1-preco').value = dados.p1.preco;
-            if(document.getElementById('p1-desc')) document.getElementById('p1-desc').value = dados.p1.desc;
+            if(document.getElementById('p1-preco')) document.getElementById('p1-preco').value = dados.p1.preco || "";
+            if(document.getElementById('p1-desc')) document.getElementById('p1-desc').value = dados.p1.desc || "";
 
-            if(document.getElementById('p2-nome')) document.getElementById('p2-nome').value = dados.p2.nome;
+            if(document.getElementById('p2-nome')) document.getElementById('p2-nome').value = dados.p2.nome || "";
             if(document.getElementById('p2-preco-original')) document.getElementById('p2-preco-original').value = dados.p2.preco_original || '';
-            if(document.getElementById('p2-preco')) document.getElementById('p2-preco').value = dados.p2.preco;
-            if(document.getElementById('p2-desc')) document.getElementById('p2-desc').value = dados.p2.desc;
+            if(document.getElementById('p2-preco')) document.getElementById('p2-preco').value = dados.p2.preco || "";
+            if(document.getElementById('p2-desc')) document.getElementById('p2-desc').value = dados.p2.desc || "";
 
-            if(document.getElementById('p3-nome')) document.getElementById('p3-nome').value = dados.p3.nome;
+            if(document.getElementById('p3-nome')) document.getElementById('p3-nome').value = dados.p3.nome || "";
             if(document.getElementById('p3-preco-original')) document.getElementById('p3-preco-original').value = dados.p3.preco_original || '';
-            if(document.getElementById('p3-preco')) document.getElementById('p3-preco').value = dados.p3.preco;
-            if(document.getElementById('p3-desc')) document.getElementById('p3-desc').value = dados.p3.desc;
+            if(document.getElementById('p3-preco')) document.getElementById('p3-preco').value = dados.p3.preco || "";
+            if(document.getElementById('p3-desc')) document.getElementById('p3-desc').value = dados.p3.desc || "";
 
-            renderizarCheckboxes('p1', dados.p1.features);
-            renderizarCheckboxes('p2', dados.p2.features);
-            renderizarCheckboxes('p3', dados.p3.features);
+            renderizarCheckboxes('p1', dados.p1.features, 'rose');
+            renderizarCheckboxes('p2', dados.p2.features, 'cyan');
+            renderizarCheckboxes('p3', dados.p3.features, 'amber');
         }
 
         window.carregarConfigPlanos = async function() {
-            let dados = {
+            let dadosPadrão = {
                 p1: { nome: "Plano Tatame", preco_original: 0, preco: 0, desc: "Para validar o sistema e organizar o básico.", features: "✓ Cadastro até 10 alunos\n✓ Gestão de Turmas e Frequência\n✓ Link de Auto-Cadastro\n❌ Portal do Aluno Completo (App)\n❌ Carteirinhas Digitais (QR Code)" },
                 p2: { nome: "Plano Black Belt", preco_original: 99.90, preco: 49.90, desc: "Experiência digital premium completa.", features: "✓ Cadastro de Alunos Ilimitados\n✓ Gestão de Turmas e Frequência\n✓ Link de Auto-Cadastro\n✓ Portal do Aluno Completo (App)\n✓ Relatórios e Frequência em PDF\n✓ Carteirinhas Digitais (QR Code)\n✓ Anamnese e Termos LGPD Eletrônicos\n✓ Emissão de Certificados Profissionais\n❌ Automação Asaas (PIX/Cartão)" },
                 p3: { nome: "Plano Elite", preco_original: 149.90, preco: 89.90, desc: "Automação total para grandes academias.", features: "✓ Cadastro de Alunos Ilimitados\n✓ Gestão de Turmas e Frequência\n✓ Link de Auto-Cadastro\n✓ Portal do Aluno Completo (App)\n✓ Relatórios e Frequência em PDF\n✓ Carteirinhas Digitais (QR Code)\n✓ Anamnese e Termos LGPD Eletrônicos\n✓ Emissão de Certificados Profissionais\n✓ Automação Asaas (PIX/Cartão)\n✓ Vitrine Virtual (Loja Online)\n✓ Check-in com GPS Ativo\n✓ Baixa Automática de Faturas" }
             };
 
-            preencherCamposPlanos(dados);
+            preencherCamposPlanos(dadosPadrão);
 
             try {
                 const docSnap = await getDoc(PLANOS_DOC_REF);
                 if (docSnap.exists()) {
-                    dados = docSnap.data();
-                    preencherCamposPlanos(dados);
+                    let dadosBando = docSnap.data();
+                    preencherCamposPlanos(dadosBando);
                 }
             } catch (error) {
-                console.error("Aviso: Documento 'sistema/config_planos' não existe ou está sem permissão. Usando dados padrão.", error);
+                console.error("Aviso de leitura de Planos:", error);
             }
         }
 
@@ -724,7 +697,7 @@
                         preco_original: parseFloat(document.getElementById('p1-preco-original').value) || 0,
                         preco: parseFloat(document.getElementById('p1-preco').value) || 0,
                         desc: document.getElementById('p1-desc').value,
-                        features: getFeaturesSelecionadas('p1') 
+                        features: getFeaturesSelecionadas('p1')
                     },
                     p2: {
                         nome: document.getElementById('p2-nome').value,
@@ -749,8 +722,8 @@
                 btn.disabled = false;
 
             } catch (error) {
-                console.error("Erro ao salvar configurações dos planos:", error);
-                showToast("Erro ao publicar os planos. Verifique as permissões do Firebase.", "error");
+                console.error("Erro ao salvar:", error);
+                showToast("Erro ao publicar os planos: " + error.message, "error");
                 
                 const btn = document.querySelector('button[onclick="salvarConfigPlanos()"]');
                 btn.innerHTML = "💾 Publicar Planos no Site";
@@ -758,9 +731,6 @@
             }
         }
 
-        // ==========================================
-        // GESTÃO DO MODAL DE EDIÇÃO DE EQUIPE
-        // ==========================================
         window.abrirModalEditarEquipe = function(id) {
             const eq = equipesCache.find(e => e.id === id);
             if(!eq) return;

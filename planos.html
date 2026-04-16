@@ -25,7 +25,7 @@
     </div>
 
     <main class="flex-1 overflow-y-auto p-4 md:p-8 hide-scrollbar">
-        <div class="max-w-6xl mx-auto space-y-8 pb-12">
+        <div class="max-w-7xl mx-auto space-y-8 pb-12">
             
             <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
                 <div class="flex items-center gap-4">
@@ -47,61 +47,69 @@
                 <p class="text-slate-500 font-medium text-sm">Upgrade imediato para o seu tatame digital.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-center">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 items-start">
                 
-                <div class="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm flex flex-col relative opacity-80">
-                    <h3 class="text-xl font-black text-slate-800 mb-2">Plano Tatame</h3>
-                    <p class="text-xs text-slate-400 mb-6 min-h-[40px]">Para validar o sistema e organizar o básico.</p>
-                    <div class="mb-6 border-b border-slate-100 pb-6">
-                        <span class="text-4xl font-black text-slate-800">Grátis</span>
-                        <span class="text-slate-400 text-sm font-bold"> / 7 dias</span>
+                <div class="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm flex flex-col relative opacity-90 h-full">
+                    <h3 id="p1-title" class="text-xl font-black text-slate-800 mb-2">A Carregar...</h3>
+                    <p id="p1-desc" class="text-xs text-slate-500 mb-6 min-h-[40px]">...</p>
+                    
+                    <div class="mb-6 border-b border-slate-100 pb-6 flex flex-col h-[70px] justify-end">
+                        <div>
+                            <span class="text-4xl font-black text-slate-800">Grátis</span>
+                            <span class="text-slate-400 text-sm font-bold"> / 7 dias</span>
+                        </div>
                     </div>
-                    <ul class="space-y-4 mb-8 flex-1 text-sm text-slate-600">
-                        <li class="flex items-start gap-3"><span>✓</span> Até 10 alunos</li>
-                        <li class="flex items-start gap-3"><span>✓</span> Gestão de Turmas</li>
-                        <li class="flex items-start gap-3"><span class="text-slate-300">❌ Sem Portal do Aluno</span></li>
-                    </ul>
-                    <button disabled class="w-full bg-slate-50 text-slate-400 font-black py-4 rounded-xl text-[10px] uppercase border border-slate-100 cursor-not-allowed">Plano de Teste</button>
+                    
+                    <ul id="p1-features-list" class="space-y-4 mb-8 flex-1 text-sm"></ul>
+                    
+                    <button disabled class="w-full bg-slate-50 text-slate-400 font-black py-4 rounded-xl text-[10px] uppercase border border-slate-200 cursor-not-allowed mt-auto">Plano de Teste</button>
                 </div>
 
-                <div id="card-black" class="bg-gradient-to-b from-slate-800 to-slate-900 rounded-3xl p-8 border-2 border-cyan-500 flex flex-col relative shadow-[0_0_30px_rgba(6,182,212,0.15)] transform md:scale-105 z-10">
+                <div id="card-black" class="bg-gradient-to-b from-slate-800 to-slate-900 rounded-3xl p-8 border-2 border-cyan-500 flex flex-col relative shadow-[0_0_30px_rgba(6,182,212,0.15)] transform lg:scale-105 z-10 h-full">
                     <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-cyan-500 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Mais Escolhido</div>
-                    <h3 class="text-xl font-black text-cyan-400 mb-2">Plano Black Belt</h3>
-                    <p class="text-xs text-slate-300 mb-6 min-h-[40px]">Experiência digital premium completa.</p>
+                    <h3 id="p2-title" class="text-xl font-black text-cyan-400 mb-2 mt-2">A Carregar...</h3>
+                    <p id="p2-desc" class="text-xs text-slate-300 mb-6 min-h-[40px]">...</p>
                     
-                    <div class="mb-4 flex flex-col border-b border-slate-700 pb-4">
-                        <div id="container-preco-original" class="hidden">
-                            <span id="preco-original" class="text-sm text-slate-500 line-through font-bold">R$ 49,90</span>
+                    <div class="mb-6 flex flex-col border-b border-slate-700 pb-6 h-[70px] justify-end">
+                        <div id="p2-container-preco-original" class="hidden">
+                            <span id="p2-preco-original" class="text-sm text-slate-500 line-through font-bold"></span>
                         </div>
-                        <div>
-                            <span class="text-sm text-cyan-400 font-bold">R$</span>
-                            <span id="txt-preco-black" class="text-4xl font-black text-white">49,90</span>
-                            <span class="text-slate-500 text-sm font-bold">/ mês</span>
+                        <div class="flex items-end gap-1">
+                            <span class="text-sm text-cyan-400 font-bold mb-1">R$</span>
+                            <span id="txt-preco-black" class="text-4xl font-black text-white leading-none">--,--</span>
+                            <span class="text-slate-500 text-sm font-bold mb-1">/ mês</span>
                         </div>
-                        <p id="tag-promocional" class="text-[10px] text-cyan-500/80 mt-1 uppercase tracking-widest font-bold">Valor Mensal</p>
+                        <p id="p2-tag-promocional" class="text-[10px] text-cyan-500/80 mt-1.5 uppercase tracking-widest font-bold">Valor Mensal</p>
                     </div>
                     
-                    <ul class="space-y-4 mb-8 flex-1 text-sm text-slate-200 mt-4">
-                        <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> Alunos Ilimitados</li>
-                        <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> Portal do Aluno Completo</li>
-                        <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> Relatórios e Frequência PDF</li>
-                        <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> Emissão de Certificados</li>
-                    </ul>
+                    <ul id="p2-features-list" class="space-y-4 mb-8 flex-1 text-sm"></ul>
                     
-                    <button id="btn-black" onclick="iniciarCheckout('BLACK_BELT')" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-all shadow-lg transform hover:-translate-y-0.5">
+                    <button id="btn-black" onclick="iniciarCheckout('BLACK_BELT')" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-all shadow-lg transform hover:-translate-y-0.5 mt-auto">
                         Assinar Black Belt
                     </button>
                 </div>
 
-                <div class="bg-white rounded-3xl p-8 border border-slate-200 flex flex-col relative shadow-sm opacity-90">
-                    <h3 class="text-xl font-black text-slate-800 mb-2">Plano Elite</h3>
-                    <p class="text-xs text-slate-500 mb-6 min-h-[40px]">Automação total para grandes academias.</p>
-                    <div class="mb-6 border-b border-slate-100 pb-6">
-                        <span class="text-sm text-amber-500 font-bold">R$</span>
-                        <span id="txt-preco-elite" class="text-4xl font-black text-slate-800">89,90</span>
-                        <span class="text-slate-400 text-sm font-bold">/ mês</span>
+                <div class="bg-white rounded-3xl p-8 border border-slate-200 flex flex-col relative shadow-sm opacity-95 h-full">
+                    <h3 id="p3-title" class="text-xl font-black text-slate-800 mb-2">A Carregar...</h3>
+                    <p id="p3-desc" class="text-xs text-slate-500 mb-6 min-h-[40px]">...</p>
+                    
+                    <div class="mb-6 flex flex-col border-b border-slate-100 pb-6 h-[70px] justify-end">
+                        <div id="p3-container-preco-original" class="hidden">
+                            <span id="p3-preco-original" class="text-sm text-slate-400 line-through font-bold"></span>
+                        </div>
+                        <div class="flex items-end gap-1">
+                            <span class="text-sm text-amber-500 font-bold mb-1">R$</span>
+                            <span id="txt-preco-elite" class="text-4xl font-black text-slate-800 leading-none">--,--</span>
+                            <span class="text-slate-400 text-sm font-bold mb-1">/ mês</span>
+                        </div>
+                        <p id="p3-tag-promocional" class="text-[10px] text-amber-500/80 mt-1.5 uppercase tracking-widest font-bold">Valor Mensal</p>
                     </div>
-                    <a href="https://wa.me/5521981716074" target="_blank" class="w-full bg-white hover:bg-slate-50 text-amber-500 font-black py-4 rounded-xl text-center text-[10px] uppercase border-2 border-amber-400">Lista de Espera</a>
+                    
+                    <ul id="p3-features-list" class="space-y-4 mb-8 flex-1 text-sm"></ul>
+                    
+                    <button id="btn-elite" onclick="iniciarCheckout('ELITE')" class="w-full bg-amber-500 hover:bg-amber-400 text-white font-black py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-all shadow-lg transform hover:-translate-y-0.5 mt-auto">
+                        Assinar Elite
+                    </button>
                 </div>
             </div>
         </div>
@@ -129,6 +137,7 @@
 
         let equipeId = null;
         let dadosEquipe = null;
+        let configPlanosSaaS = null; 
 
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
@@ -146,6 +155,7 @@
                 if (mestreDoc.exists()) {
                     equipeId = user.uid;
                     dadosEquipe = mestreDoc.data();
+                    await carregarConfiguracoesSaaS();
                     atualizarInterface();
                 } else {
                     window.location.href = "dashboard.html";
@@ -155,36 +165,139 @@
             }
         });
 
+        // 1. CARREGA AS REGRAS DEFINIDAS NO SUPER ADMIN
+        async function carregarConfiguracoesSaaS() {
+            try {
+                const docSnap = await getDoc(doc(db, "sistema", "config_planos"));
+                if (docSnap.exists()) {
+                    configPlanosSaaS = docSnap.data();
+                } else {
+                    // Fallback se não houver configurações salvas ainda
+                    configPlanosSaaS = {
+                        p1: { nome: "Plano Tatame", desc: "Básico", features: "✓ 10 Alunos\n❌ Portal" },
+                        p2: { nome: "Plano Black Belt", desc: "Premium", preco_original: 99.9, preco: 49.9, features: "✓ Ilimitado\n✓ Portal" },
+                        p3: { nome: "Plano Elite", desc: "Automação", preco_original: 149.9, preco: 89.9, features: "✓ Asaas\n✓ Loja" }
+                    };
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // Função para desenhar os checks e cruzes na tela
+        function renderFeatures(containerId, featuresStr, highlightColor, textColor) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            if(!featuresStr) return;
+            
+            const lines = featuresStr.split('\n');
+            lines.forEach(line => {
+                if(!line.trim()) return;
+                const li = document.createElement('li');
+                li.className = "flex items-start gap-3";
+                
+                if (line.startsWith('✓')) {
+                    const txt = line.replace('✓', '').trim();
+                    li.innerHTML = `<span class="text-${highlightColor}-500 font-black mt-0.5">✓</span> <span class="text-${textColor} font-medium">${txt}</span>`;
+                } else if (line.startsWith('❌')) {
+                    const txt = line.replace('❌', '').trim();
+                    li.innerHTML = `<span class="text-slate-400 font-bold mt-0.5">❌</span> <span class="text-slate-400 line-through opacity-70">${txt}</span>`;
+                }
+                container.appendChild(li);
+            });
+        }
+
+        function formatarMoeda(valor) {
+            return parseFloat(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
         function atualizarInterface() {
             document.getElementById('nome-equipe').innerText = (dadosEquipe.nome_equipe || "Sua Equipe").toUpperCase();
-            
             const badge = document.getElementById('status-badge');
             const icon = document.getElementById('status-icon');
             const txtVencimento = document.getElementById('plano-vencimento');
             const status = dadosEquipe.status_plano || 'TESTE';
+            const isento = (dadosEquipe.isento === true || dadosEquipe.isento === "true");
 
-            // 1. APLICAR PREÇOS DINÂMICOS CONFORME CONFIGURAÇÃO DO SUPER ADMIN
-            let valorBase = dadosEquipe.valor_plano !== undefined ? parseFloat(dadosEquipe.valor_plano) : 49.90;
-            let desconto = dadosEquipe.desconto_plano !== undefined ? parseFloat(dadosEquipe.desconto_plano) : 0;
-            let valorFinal = valorBase * (1 - (desconto / 100));
+            // ==========================================
+            // RENDERIZAÇÃO PLANO 1 (TATAME)
+            // ==========================================
+            document.getElementById('p1-title').innerText = configPlanosSaaS.p1.nome;
+            document.getElementById('p1-desc').innerText = configPlanosSaaS.p1.desc;
+            renderFeatures('p1-features-list', configPlanosSaaS.p1.features, 'emerald', 'slate-600');
 
-            // Atualiza visualmente o preço no card
-            const elPrecoBlack = document.getElementById('txt-preco-black');
-            elPrecoBlack.innerText = valorFinal.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+            // ==========================================
+            // RENDERIZAÇÃO PLANO 2 (BLACK BELT)
+            // ==========================================
+            document.getElementById('p2-title').innerText = configPlanosSaaS.p2.nome;
+            document.getElementById('p2-desc').innerText = configPlanosSaaS.p2.desc;
+            renderFeatures('p2-features-list', configPlanosSaaS.p2.features, 'cyan', 'slate-200');
 
-            if (desconto > 0) {
-                document.getElementById('container-preco-original').classList.remove('hidden');
-                document.getElementById('preco-original').innerText = `R$ ${valorBase.toFixed(2)}`;
-                document.getElementById('tag-promocional').innerText = `Valor com ${desconto}% de desconto`;
+            let descontoEquipe = dadosEquipe.desconto_plano ? parseFloat(dadosEquipe.desconto_plano) : 0;
+            let p2Base = parseFloat(configPlanosSaaS.p2.preco) || 49.90;
+            let p2Orig = parseFloat(configPlanosSaaS.p2.preco_original) || 0;
+
+            const p2CtnOrig = document.getElementById('p2-container-preco-original');
+            const p2TxtOrig = document.getElementById('p2-preco-original');
+            const p2TxtFinal = document.getElementById('txt-preco-black');
+            const p2Tag = document.getElementById('p2-tag-promocional');
+
+            if(isento) {
+                p2TxtFinal.innerText = "0,00";
+                p2CtnOrig.classList.add('hidden');
+                p2Tag.innerText = "EQUIPE ISENTA";
+            } else if (descontoEquipe > 0) {
+                p2CtnOrig.classList.remove('hidden');
+                p2TxtOrig.innerText = `R$ ${formatarMoeda(p2Base)}`;
+                p2TxtFinal.innerText = formatarMoeda(p2Base * (1 - (descontoEquipe/100)));
+                p2Tag.innerText = `SEU DESCONTO: ${descontoEquipe}%`;
+            } else {
+                if (p2Orig > p2Base) {
+                    p2CtnOrig.classList.remove('hidden');
+                    p2TxtOrig.innerText = `De R$ ${formatarMoeda(p2Orig)}`;
+                }
+                p2TxtFinal.innerText = formatarMoeda(p2Base);
             }
 
-            // 2. TRATAR ISENÇÃO
-            if (dadosEquipe.isento) {
+            // ==========================================
+            // RENDERIZAÇÃO PLANO 3 (ELITE)
+            // ==========================================
+            document.getElementById('p3-title').innerText = configPlanosSaaS.p3.nome;
+            document.getElementById('p3-desc').innerText = configPlanosSaaS.p3.desc;
+            renderFeatures('p3-features-list', configPlanosSaaS.p3.features, 'amber', 'slate-600');
+
+            let p3Base = parseFloat(configPlanosSaaS.p3.preco) || 89.90;
+            let p3Orig = parseFloat(configPlanosSaaS.p3.preco_original) || 0;
+
+            const p3CtnOrig = document.getElementById('p3-container-preco-original');
+            const p3TxtOrig = document.getElementById('p3-preco-original');
+            const p3TxtFinal = document.getElementById('txt-preco-elite');
+            const p3Tag = document.getElementById('p3-tag-promocional');
+
+            if(isento) {
+                p3TxtFinal.innerText = "0,00";
+                p3CtnOrig.classList.add('hidden');
+                p3Tag.innerText = "EQUIPE ISENTA";
+            } else if (descontoEquipe > 0) {
+                p3CtnOrig.classList.remove('hidden');
+                p3TxtOrig.innerText = `R$ ${formatarMoeda(p3Base)}`;
+                p3TxtFinal.innerText = formatarMoeda(p3Base * (1 - (descontoEquipe/100)));
+                p3Tag.innerText = `SEU DESCONTO: ${descontoEquipe}%`;
+            } else {
+                if (p3Orig > p3Base) {
+                    p3CtnOrig.classList.remove('hidden');
+                    p3TxtOrig.innerText = `De R$ ${formatarMoeda(p3Orig)}`;
+                }
+                p3TxtFinal.innerText = formatarMoeda(p3Base);
+            }
+
+            // ==========================================
+            // STATUS GERAL DO CABEÇALHO
+            // ==========================================
+            if (isento) {
                 document.getElementById('msg-isento').classList.remove('hidden');
-                elPrecoBlack.innerText = "0,00";
             }
 
-            // 3. STATUS DA LICENÇA
             if (status === 'TESTE') {
                 badge.innerText = "PERÍODO DE TESTE";
                 badge.className = "px-4 py-1.5 rounded-full text-[10px] font-black uppercase bg-amber-500 text-white shadow-lg";
@@ -197,11 +310,17 @@
                 icon.innerText = "✅";
                 txtVencimento.innerText = "O seu acesso está garantido. Oss!";
                 
+                // Bloqueia o botão do plano atual
                 if(status === 'BLACK_BELT') {
                     const btn = document.getElementById('btn-black');
                     btn.disabled = true;
                     btn.innerHTML = "✓ SEU PLANO ATUAL";
-                    btn.className = "w-full bg-slate-800 text-slate-500 font-black py-4 rounded-xl text-xs cursor-not-allowed border border-slate-700 shadow-none";
+                    btn.className = "w-full bg-slate-800 text-slate-500 font-black py-4 rounded-xl text-xs cursor-not-allowed border border-slate-700 mt-auto";
+                } else if (status === 'ELITE') {
+                    const btn = document.getElementById('btn-elite');
+                    btn.disabled = true;
+                    btn.innerHTML = "✓ SEU PLANO ATUAL";
+                    btn.className = "w-full bg-slate-200 text-slate-400 font-black py-4 rounded-xl text-xs cursor-not-allowed border border-slate-300 mt-auto";
                 }
             }
             else if (status === 'BLOQUEADO') {
@@ -213,24 +332,22 @@
         }
 
         window.iniciarCheckout = async function(planoEscolhido) {
-            const btn = document.getElementById('btn-black');
-            const originalTxt = btn.innerHTML;
-            
-            // Verifica isenção antes de tentar cobrar
-            if(dadosEquipe.isento) {
+            const isento = (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true");
+            if(isento) {
                 return showToast("Sua conta é isenta. O acesso já deveria estar ativo. Fale com o suporte.", "info");
             }
 
+            const btnId = planoEscolhido === 'ELITE' ? 'btn-elite' : 'btn-black';
+            const btn = document.getElementById(btnId);
+            const originalTxt = btn.innerHTML;
+            
             btn.innerHTML = "⏳ GERANDO LINK...";
             btn.disabled = true;
 
             try {
-                // Cálculo do valor real para enviar ao Cloud Function (Asaas)
-                let valorBase = dadosEquipe.valor_plano !== undefined ? parseFloat(dadosEquipe.valor_plano) : 49.90;
-                let desconto = dadosEquipe.desconto_plano !== undefined ? parseFloat(dadosEquipe.desconto_plano) : 0;
-                if(planoEscolhido === 'ELITE') valorBase = 89.90; // Exemplo para o Elite
-
-                let valorACobrar = valorBase * (1 - (desconto / 100));
+                let valorBase = planoEscolhido === 'ELITE' ? configPlanosSaaS.p3.preco : configPlanosSaaS.p2.preco;
+                let desconto = dadosEquipe.desconto_plano ? parseFloat(dadosEquipe.desconto_plano) : 0;
+                let valorACobrar = parseFloat(valorBase) * (1 - (desconto / 100));
 
                 const gerarAssinatura = httpsCallable(functions, 'gerarAssinaturaSistema');
                 

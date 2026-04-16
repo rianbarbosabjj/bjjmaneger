@@ -119,14 +119,46 @@
         </div>
 
         <div id="aba-faturamento" class="p-6 md:p-10 max-w-7xl mx-auto w-full space-y-8 hidden">
+            
             <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight">Receitas do Sistema</h2>
-                    <p class="text-sm text-slate-400 mt-1 font-medium">Acompanhe a saúde financeira da sua plataforma.</p>
+                    <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight">Receitas & Carteira</h2>
+                    <p class="text-sm text-slate-400 mt-1 font-medium">Faça transferências PIX e acompanhe o balanço.</p>
                 </div>
                 <button onclick="renderizarFaturamento()" class="bg-slate-800 hover:bg-slate-700 text-white font-black py-3 px-6 rounded-xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2">
-                    <span>🔄</span> Atualizar Relatório
+                    <span>🔄</span> Atualizar
                 </button>
+            </div>
+
+            <div class="bg-gradient-to-r from-slate-800 to-slate-900 border border-slate-700 p-6 rounded-3xl shadow-xl flex flex-col lg:flex-row items-center justify-between gap-6">
+                <div class="flex items-center gap-4 w-full lg:w-auto">
+                    <div class="w-14 h-14 bg-blue-500/20 text-blue-400 rounded-full flex items-center justify-center text-2xl font-black shrink-0">🏦</div>
+                    <div>
+                        <h3 class="text-white font-black text-lg uppercase tracking-tight">Cofre Asaas (Master)</h3>
+                        <p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest">Seu Saldo Pessoal de SaaS</p>
+                    </div>
+                </div>
+
+                <div id="wallet-disconnected" class="flex flex-col md:flex-row w-full lg:w-auto items-center gap-3">
+                    <input type="password" id="input-master-api-key" placeholder="Cole sua API Key do Asaas (Master)" class="w-full md:w-64 p-3 bg-slate-950 border border-slate-700 rounded-xl font-bold text-white outline-none focus:border-blue-500 text-xs">
+                    <button onclick="conectarAsaasMaster()" class="w-full md:w-auto bg-blue-600 hover:bg-blue-500 text-white font-black py-3 px-6 rounded-xl text-xs uppercase tracking-widest transition-all shadow-md shrink-0">Acessar Saldo</button>
+                </div>
+
+                <div id="wallet-connected" class="hidden w-full lg:w-auto flex-col md:flex-row items-center gap-6">
+                    <div class="text-center md:text-right bg-slate-950/50 px-6 py-2 rounded-xl border border-slate-700">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Saldo Disponível</p>
+                        <h3 id="wallet-saldo" class="text-2xl font-black text-emerald-400">R$ 0,00</h3>
+                        <p id="wallet-saldo-pendente" class="text-[9px] font-bold text-amber-500 mt-0.5">A liberar: R$ 0,00</p>
+                    </div>
+                    <div class="flex gap-2 w-full md:w-auto">
+                        <button onclick="abrirModalPixMaster()" class="flex-1 md:flex-none bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 px-5 rounded-xl text-xs uppercase tracking-widest transition-all shadow-md flex items-center justify-center gap-2">
+                            <span>💸</span> Sacar PIX
+                        </button>
+                        <button onclick="desconectarAsaasMaster()" class="bg-slate-700 hover:bg-rose-600 text-slate-300 hover:text-white font-black p-3 rounded-xl transition-all shadow-md shrink-0" title="Desconectar Carteira">
+                            ✖
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -262,9 +294,46 @@
                     </div>
                 </div>
             </div>
-            
         </div>
     </main>
+
+    <div id="modal-pix-master" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-[60] p-4 transition-opacity">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col transform transition-transform">
+            <div class="bg-slate-950 p-5 flex justify-between items-center text-white border-b border-slate-800">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-emerald-500/20 text-emerald-400 rounded-lg flex items-center justify-center text-lg font-black">💸</div>
+                    <h3 class="font-black text-sm tracking-widest uppercase">Transferência PIX (Master)</h3>
+                </div>
+                <button onclick="fecharModalPixMaster()" class="text-slate-500 hover:text-white text-2xl leading-none">&times;</button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Valor a Transferir (R$)</label>
+                    <input type="number" id="pix-master-valor" placeholder="Ex: 1500.00" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white outline-none focus:border-emerald-500 transition-colors">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Tipo de Chave PIX</label>
+                    <select id="pix-master-tipo" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white outline-none focus:border-emerald-500 transition-colors">
+                        <option value="CPF">CPF</option>
+                        <option value="CNPJ">CNPJ</option>
+                        <option value="EMAIL">E-mail</option>
+                        <option value="PHONE">Telefone / Celular</option>
+                        <option value="EVP">Chave Aleatória (EVP)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Sua Chave PIX</label>
+                    <input type="text" id="pix-master-chave" placeholder="Digite a chave..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white outline-none focus:border-emerald-500 transition-colors">
+                </div>
+            </div>
+            <div class="p-5 bg-slate-950 border-t border-slate-800 flex justify-end gap-3">
+                <button onclick="fecharModalPixMaster()" class="px-6 py-2.5 rounded-xl font-bold text-slate-400 hover:bg-slate-800 transition-colors text-xs uppercase tracking-widest">Cancelar</button>
+                <button onclick="solicitarPixMaster()" id="btn-sacar-master" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 px-6 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest flex items-center gap-2">
+                    Enviar PIX
+                </button>
+            </div>
+        </div>
+    </div>
 
     <div id="modal-editar-equipe" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col transform transition-transform">
@@ -327,6 +396,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, collection, getDocs, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
@@ -340,8 +410,13 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        const functions = getFunctions(app);
 
         const SUPER_ADMIN_EMAIL = "rianbarbosa@gmail.com";
+
+        // Funções Cloud para lidar com a Carteira do CEO
+        const consultarSaldoAsaas = httpsCallable(functions, 'consultarSaldoAsaas');
+        const solicitarSaqueAsaas = httpsCallable(functions, 'solicitarSaqueAsaas');
 
         let masterUid = null;
         let equipesCache = [];
@@ -361,6 +436,97 @@
             setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4000);
         }
 
+        // ==========================================
+        // GESTÃO DA CARTEIRA MASTER ASAAS
+        // ==========================================
+        window.conectarAsaasMaster = async function() {
+            const key = document.getElementById('input-master-api-key').value.trim();
+            if(!key) return showToast("Por favor, insira a sua API Key do Asaas.", "error");
+            
+            localStorage.setItem('asaas_master_key', key);
+            await carregarSaldoMaster();
+        }
+
+        window.desconectarAsaasMaster = function() {
+            localStorage.removeItem('asaas_master_key');
+            document.getElementById('input-master-api-key').value = '';
+            document.getElementById('wallet-disconnected').classList.remove('hidden');
+            document.getElementById('wallet-disconnected').classList.add('flex');
+            document.getElementById('wallet-connected').classList.remove('flex');
+            document.getElementById('wallet-connected').classList.add('hidden');
+        }
+
+        window.carregarSaldoMaster = async function() {
+            const key = localStorage.getItem('asaas_master_key');
+            if(!key) return; // Não tem chave salva, mantém o estado desconectado
+
+            try {
+                // Ajuste de layout
+                document.getElementById('wallet-disconnected').classList.add('hidden');
+                document.getElementById('wallet-disconnected').classList.remove('flex');
+                document.getElementById('wallet-connected').classList.remove('hidden');
+                document.getElementById('wallet-connected').classList.add('flex');
+                
+                document.getElementById('wallet-saldo').innerText = "⏳...";
+                document.getElementById('wallet-saldo-pendente').innerText = "Aguarde...";
+
+                const res = await consultarSaldoAsaas({ apiKey: key });
+                if(res.data.success) {
+                    document.getElementById('wallet-saldo').innerText = `R$ ${res.data.balance.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+                    document.getElementById('wallet-saldo-pendente').innerText = `A liberar: R$ ${res.data.estimatedBalance.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+                } else {
+                    desconectarAsaasMaster();
+                    showToast("Erro ao verificar saldo. API Key inválida?", "error");
+                }
+            } catch(e) {
+                desconectarAsaasMaster();
+                showToast("Falha de comunicação com o servidor financeiro.", "error");
+            }
+        }
+
+        // Lógica Modal PIX Master
+        window.abrirModalPixMaster = function() {
+            document.getElementById('pix-master-valor').value = '';
+            document.getElementById('pix-master-chave').value = '';
+            document.getElementById('modal-pix-master').classList.replace('hidden', 'flex');
+        }
+        window.fecharModalPixMaster = function() {
+            document.getElementById('modal-pix-master').classList.replace('flex', 'hidden');
+        }
+        window.solicitarPixMaster = async function() {
+            const valor = parseFloat(document.getElementById('pix-master-valor').value);
+            const tipo = document.getElementById('pix-master-tipo').value;
+            const chave = document.getElementById('pix-master-chave').value.trim();
+            const apiKey = localStorage.getItem('asaas_master_key');
+
+            if(!valor || valor <= 0) return showToast("Valor inválido.", "error");
+            if(!chave) return showToast("Insira a chave PIX de destino.", "error");
+
+            const btn = document.getElementById('btn-sacar-master');
+            const txtOriginal = btn.innerHTML;
+            btn.innerHTML = "⏳ Solicitando...";
+            btn.disabled = true;
+
+            try {
+                const res = await solicitarSaqueAsaas({ apiKey: apiKey, valor: valor, chavePix: chave, tipoChave: tipo });
+                if(res.data.success) {
+                    showToast("PIX solicitado com sucesso!", "success");
+                    fecharModalPixMaster();
+                    carregarSaldoMaster(); // Atualiza o saldo na tela
+                } else {
+                    showToast("Erro do Asaas: " + res.data.error, "error");
+                }
+            } catch(e) {
+                showToast("Erro ao processar transferência.", "error");
+            } finally {
+                btn.innerHTML = txtOriginal;
+                btn.disabled = false;
+            }
+        }
+
+        // ==========================================
+        // SISTEMA DE NAVEGAÇÃO ENTRE ABAS
+        // ==========================================
         window.mudarAbaMaster = function(abaID) {
             document.getElementById('aba-academias').classList.add('hidden');
             document.getElementById('aba-faturamento').classList.add('hidden');
@@ -378,10 +544,16 @@
             const btnAtivo = document.getElementById('menu-' + abaID);
             btnAtivo.className = "w-full flex items-center gap-3 px-4 py-3 bg-rose-500/10 text-rose-500 rounded-xl font-bold text-xs uppercase tracking-widest border border-rose-500/20 transition-all";
 
-            if(abaID === 'faturamento') renderizarFaturamento();
+            if(abaID === 'faturamento') {
+                renderizarFaturamento();
+                carregarSaldoMaster(); // Tenta puxar a carteira se já tiver chave salva
+            }
             if(abaID === 'planos') carregarConfigPlanos(); 
         }
 
+        // ==========================================
+        // INICIALIZAÇÃO E AUTENTICAÇÃO
+        // ==========================================
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
@@ -403,6 +575,9 @@
             }
         });
 
+        // ==========================================
+        // DADOS GERAIS DE EQUIPES
+        // ==========================================
         window.carregarImperio = async function() {
             document.getElementById('tabela-equipes').innerHTML = '<tr><td colspan="5" class="text-center p-8 text-slate-500 italic text-xs">Atualizando dados...</td></tr>';
             try {
@@ -433,10 +608,14 @@
             
             let mrrCalculado = 0;
             equipesCache.forEach(eq => {
-                const isIsento = (eq.isento === true || eq.isento === "true");
+                const isIsento = (eq.isento === true || eq.isento === "true" || String(eq.isento) === "true");
                 if(eq.status_plano !== 'TESTE' && eq.status_plano !== 'BLOQUEADO' && !isIsento) {
-                    let valorBase = eq.valor_plano !== undefined ? parseFloat(eq.valor_plano) : 49.90;
-                    let desconto = eq.desconto_plano !== undefined ? parseFloat(eq.desconto_plano) : 0;
+                    let valorBase = parseFloat(eq.valor_plano);
+                    if (isNaN(valorBase)) valorBase = 49.90; // Fallback se estiver vazio
+                    
+                    let desconto = parseFloat(eq.desconto_plano);
+                    if (isNaN(desconto)) desconto = 0;
+                    
                     mrrCalculado += valorBase * (1 - (desconto / 100));
                 }
             });
@@ -466,7 +645,7 @@
             filtradas.forEach(eq => {
                 const nomeEquipe = (eq.nome_equipe || "Equipe Sem Nome").toUpperCase();
                 const responsavel = (eq.responsavel || "Responsável não informado");
-                const isIsento = (eq.isento === true || eq.isento === "true");
+                const isIsento = (eq.isento === true || String(eq.isento) === "true");
                 
                 let planoBadge = "";
                 const st = eq.status_plano || "TESTE";
@@ -528,18 +707,20 @@
                 document.getElementById('fat-mrr-ativo').innerText = "R$ 0,00";
                 document.getElementById('fat-mrr-perdido').innerText = "R$ 0,00";
                 document.getElementById('fat-ticket-medio').innerText = "R$ 0,00";
-                
-                document.getElementById('fat-qtd-ativos').innerText = "0 assinaturas ativas pagantes";
-                document.getElementById('fat-qtd-bloqueados').innerText = "0 academias bloqueadas";
                 return;
             }
 
             eqParaFaturar.sort((a,b) => (a.nome_equipe || "").localeCompare(b.nome_equipe || ""));
 
             eqParaFaturar.forEach(eq => {
-                const isIsento = (eq.isento === true || eq.isento === "true");
-                let valorBase = eq.valor_plano !== undefined ? parseFloat(eq.valor_plano) : 49.90;
-                let desconto = eq.desconto_plano !== undefined ? parseFloat(eq.desconto_plano) : 0;
+                const isIsento = (eq.isento === true || String(eq.isento) === "true");
+                
+                let valorBase = parseFloat(eq.valor_plano);
+                if(isNaN(valorBase)) valorBase = 49.90;
+
+                let desconto = parseFloat(eq.desconto_plano);
+                if(isNaN(desconto)) desconto = 0;
+
                 let valorLiquido = isIsento ? 0 : valorBase * (1 - (desconto / 100));
 
                 if (eq.status_plano === 'BLOQUEADO') {
@@ -585,40 +766,27 @@
         }
 
         // ==========================================
-        // GESTÃO DOS PLANOS DO SITE (CHECKBOXES)
+        // GESTÃO DOS PLANOS DO SITE
         // ==========================================
         const PLANOS_DOC_REF = doc(db, "sistema", "config_planos");
-
         const TODAS_FUNCIONALIDADES = [
-            "Cadastro até 10 alunos",
-            "Cadastro de Alunos Ilimitados",
-            "Gestão de Turmas e Frequência",
-            "Link de Auto-Cadastro",
-            "Portal do Aluno Completo (App)",
-            "Relatórios e Frequência em PDF",
-            "Carteirinhas Digitais (QR Code)",
-            "Anamnese e Termos LGPD Eletrônicos",
-            "Emissão de Certificados Profissionais",
-            "Automação Asaas (PIX/Cartão)",
-            "Vitrine Virtual (Loja Online)",
-            "Check-in com GPS Ativo",
-            "Baixa Automática de Faturas"
+            "Cadastro até 10 alunos", "Cadastro de Alunos Ilimitados", "Gestão de Turmas e Frequência",
+            "Link de Auto-Cadastro", "Portal do Aluno Completo (App)", "Relatórios e Frequência em PDF",
+            "Carteirinhas Digitais (QR Code)", "Anamnese e Termos LGPD Eletrônicos",
+            "Emissão de Certificados Profissionais", "Automação Asaas (PIX/Cartão)",
+            "Vitrine Virtual (Loja Online)", "Check-in com GPS Ativo", "Baixa Automática de Faturas"
         ];
 
         function renderizarCheckboxes(planId, savedText, accentColor) {
             const container = document.getElementById(`listbox-${planId}`);
             if(!container) return;
             container.innerHTML = '';
-            
             const savedLines = savedText ? savedText.split('\n') : [];
             
             TODAS_FUNCIONALIDADES.forEach((feat, index) => {
                 let isChecked = false;
                 const lineMatch = savedLines.find(l => l.includes(feat));
-                
-                if (lineMatch && lineMatch.startsWith('✓')) {
-                    isChecked = true;
-                }
+                if (lineMatch && lineMatch.startsWith('✓')) isChecked = true;
 
                 const label = document.createElement('label');
                 label.className = `flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-800/60 cursor-pointer transition-colors border border-transparent hover:border-slate-700/50`;
@@ -634,11 +802,8 @@
             let result = [];
             TODAS_FUNCIONALIDADES.forEach((feat, index) => {
                 const chk = document.getElementById(`chk-${planId}-${index}`);
-                if(chk && chk.checked) {
-                    result.push(`✓ ${feat}`);
-                } else {
-                    result.push(`❌ ${feat}`);
-                }
+                if(chk && chk.checked) result.push(`✓ ${feat}`);
+                else result.push(`❌ ${feat}`);
             });
             return result.join('\n');
         }
@@ -716,21 +881,22 @@
                 };
 
                 await setDoc(PLANOS_DOC_REF, dadosParaSalvar);
-                showToast("Planos publicados com sucesso! O site já está atualizado.", "success");
+                showToast("Planos publicados com sucesso!", "success");
 
                 btn.innerHTML = btnTxt;
                 btn.disabled = false;
 
             } catch (error) {
-                console.error("Erro ao salvar:", error);
                 showToast("Erro ao publicar os planos: " + error.message, "error");
-                
                 const btn = document.querySelector('button[onclick="salvarConfigPlanos()"]');
                 btn.innerHTML = "💾 Publicar Planos no Site";
                 btn.disabled = false;
             }
         }
 
+        // ==========================================
+        // GESTÃO DO MODAL DE EDIÇÃO DE EQUIPE
+        // ==========================================
         window.abrirModalEditarEquipe = function(id) {
             const eq = equipesCache.find(e => e.id === id);
             if(!eq) return;
@@ -739,7 +905,7 @@
             document.getElementById('edit-status-plano').value = eq.status_plano || "TESTE";
             document.getElementById('edit-valor-plano').value = eq.valor_plano !== undefined ? eq.valor_plano : 49.90;
             document.getElementById('edit-desconto').value = eq.desconto_plano || 0;
-            document.getElementById('edit-isento').checked = (eq.isento === true || eq.isento === "true");
+            document.getElementById('edit-isento').checked = (eq.isento === true || String(eq.isento) === "true");
             document.getElementById('modal-editar-equipe').classList.replace('hidden', 'flex');
         }
 
@@ -784,7 +950,7 @@
                 showToast("Equipe excluída permanentemente.", "success");
                 carregarImperio(); 
             } catch(e) {
-                showToast("Erro ao excluir equipe. Verifique as permissões de segurança.", "error");
+                showToast("Erro ao excluir equipe.", "error");
             }
         }
 

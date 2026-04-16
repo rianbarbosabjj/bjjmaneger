@@ -320,12 +320,16 @@
                 </div>
 
                 <div id="aba-anamnese" class="aba-content hidden space-y-5">
+                    
                     <div id="anamnese-vazia" class="hidden bg-slate-100 p-8 rounded-2xl text-center border border-slate-200">
                         <span class="text-4xl block mb-3">⏳</span>
                         <h4 class="text-slate-500 font-black uppercase tracking-widest text-sm">Ficha Pendente</h4>
                         <p class="text-xs text-slate-400 mt-2">O aluno (ou responsável) ainda não preencheu a ficha de saúde e inclusão no Portal do Atleta.</p>
                     </div>
-                    <div id="anamnese-preenchida" class="hidden space-y-4"></div>
+
+                    <div id="anamnese-preenchida" class="hidden space-y-4">
+                        </div>
+
                 </div>
 
                 <div id="aba-lgpd" class="aba-content hidden space-y-5">
@@ -393,7 +397,9 @@
             <div class="p-4 md:p-6 bg-slate-50 border-t border-slate-200 flex flex-wrap justify-end gap-3 rounded-b-3xl shrink-0">
                 <button onclick="abrirModalCarteirinha()" id="btn-abrir-carteirinha" class="flex-1 md:flex-none bg-indigo-500 hover:bg-indigo-600 text-white font-black py-3 px-6 rounded-xl text-sm hidden uppercase tracking-widest shadow-md transition-all">🪪 Carteirinha</button>
                 <button onclick="fecharModal()" class="flex-1 md:flex-none px-6 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-200 transition-colors text-sm">Cancelar</button>
+                
                 <button onclick="proximaAba()" id="btn-proximo" class="flex-1 md:flex-none bg-slate-800 hover:bg-slate-900 text-white font-black py-3 px-8 rounded-xl shadow-md transition-all text-sm uppercase tracking-widest">Próximo ➔</button>
+                
                 <button onclick="salvarAluno()" id="btn-salvar-aluno" class="flex-1 md:flex-none bg-cyan-500 hover:bg-cyan-600 text-white font-black py-3 px-8 rounded-xl shadow-md transition-all text-sm uppercase tracking-widest hidden">💾 Salvar</button>
             </div>
         </div>
@@ -503,7 +509,7 @@
         let alunoEditandoId = null;
         let ficheiroFotoSelecionado = null;
         
-        let checkinsDoAlunoAtualCache = []; // Cache para não sobrecarregar Firebase ao trocar o mês do filtro
+        let checkinsDoAlunoAtualCache = []; 
 
         const ordemDasAbas = ['aba-pessoal', 'aba-contato', 'aba-admin', 'aba-frequencia', 'aba-lgpd', 'aba-anamnese'];
         let abaIndexAtual = 0;
@@ -516,7 +522,6 @@
             selectVenc.value = "10";
         }
 
-        // --- SISTEMA DO OLHO DA SENHA ---
         window.toggleSenha = function(inputId, btnElement) {
             const input = document.getElementById(inputId);
             if (input.type === "password") {
@@ -699,30 +704,6 @@
             return 'bg-slate-100 text-slate-600 border border-slate-200';
         }
 
-        function getCorFaixaDupla(faixaTexto) {
-            const f = faixaTexto ? faixaTexto.toLowerCase() : '';
-            if (f.includes('cinza e branca')) return 'linear-gradient(to bottom, #94A3B8 50%, #f8fafc 50%)';
-            if (f.includes('cinza e preta')) return 'linear-gradient(to bottom, #94A3B8 50%, #0F172A 50%)';
-            if (f.includes('amarela e branca')) return 'linear-gradient(to bottom, #FACC15 50%, #f8fafc 50%)';
-            if (f.includes('amarela e preta')) return 'linear-gradient(to bottom, #FACC15 50%, #0F172A 50%)';
-            if (f.includes('laranja e branca')) return 'linear-gradient(to bottom, #F97316 50%, #f8fafc 50%)';
-            if (f.includes('laranja e preta')) return 'linear-gradient(to bottom, #F97316 50%, #0F172A 50%)';
-            if (f.includes('verde e branca')) return 'linear-gradient(to bottom, #16A34A 50%, #f8fafc 50%)';
-            if (f.includes('verde e preta')) return 'linear-gradient(to bottom, #16A34A 50%, #0F172A 50%)';
-            
-            if (f.includes('branca')) return '#f8fafc';
-            if (f.includes('cinza')) return '#94A3B8';
-            if (f.includes('amarela')) return '#FACC15';
-            if (f.includes('laranja')) return '#F97316';
-            if (f.includes('verde')) return '#16A34A';
-            if (f.includes('azul')) return '#3b82f6';
-            if (f.includes('roxa')) return '#a855f7';
-            if (f.includes('marrom')) return '#78350f';
-            if (f.includes('preta')) return '#0F172A';
-            
-            return '#cbd5e1'; 
-        }
-
         window.renderizarTabela = function() {
             const tab = document.getElementById('tabela-alunos');
             const busca = document.getElementById('input-busca').value.toLowerCase();
@@ -796,23 +777,20 @@
                 // Pega todos os alunos ativos da equipe
                 const alunosAtivos = todosAlunosCache.filter(a => a.status === 'ATIVO');
 
-                // Define as datas limite do mês para buscar no banco
                 const dataInicio = `${anoAtual}-${mesStr}-01`;
                 const dataFim = `${anoAtual}-${mesStr}-31`;
 
-                const qCheck = query(collection(db, "checkins"), 
-                    where("equipe_id", "==", teamId),
-                    where("data", ">=", dataInicio),
-                    where("data", "<=", dataFim)
-                );
-                
+                // SOLUÇÃO: Fazer a busca apenas por equipe_id para não exigir index composto no Firebase
+                const qCheck = query(collection(db, "checkins"), where("equipe_id", "==", teamId));
                 const snap = await getDocs(qCheck);
 
-                // Conta quantos checkins cada aluno fez
                 let contagem = {};
                 snap.forEach(doc => {
                     const c = doc.data();
-                    contagem[c.aluno_id] = (contagem[c.aluno_id] || 0) + 1;
+                    // Filtramos a data aqui no JavaScript!
+                    if (c.data >= dataInicio && c.data <= dataFim) {
+                        contagem[c.aluno_id] = (contagem[c.aluno_id] || 0) + 1;
+                    }
                 });
 
                 // Ordena os alunos por quem mais treinou
@@ -841,7 +819,7 @@
                 element.innerHTML = `
                     <div style="font-family: Arial, sans-serif; padding: 30px; color: #333;">
                         <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px;">
-                            ${equipeDados.logo ? `<img src="${equipeDados.logo}" style="height: 50px; margin-bottom: 10px; border-radius: 8px;">` : ''}
+                            ${equipeDados.logo ? `<img src="${equipeDados.logo}" style="height: 50px; margin-bottom: 10px; border-radius: 8px;" crossorigin="anonymous">` : ''}
                             <h1 style="font-size: 22px; font-weight: 900; margin: 0; color: #0f172a; text-transform: uppercase;">RELATÓRIO DE ASSIDUIDADE</h1>
                             <p style="font-size: 14px; margin: 5px 0; font-weight: bold; color: #475569;">${equipeDados.nome.toUpperCase()}</p>
                             <p style="font-size: 12px; color: #64748b; background-color: #f1f5f9; display: inline-block; padding: 4px 12px; border-radius: 20px; margin-top: 10px;">Referência: Mês ${mesStr}/${anoAtual}</p>
@@ -871,12 +849,12 @@
                     margin:       10,
                     filename:     `Relatorio_Frequencia_${mesStr}_${anoAtual}.pdf`,
                     image:        { type: 'jpeg', quality: 0.98 },
-                    html2canvas:  { scale: 2 },
+                    html2canvas:  { scale: 2, useCORS: true }, // Add useCORS here just in case of logo
                     jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
                 };
 
                 showToast("Gerando PDF...", "success");
-                html2pdf().set(opt).from(element).save();
+                await html2pdf().set(opt).from(element).save();
 
             } catch (error) {
                 console.error(error);
@@ -886,6 +864,7 @@
                 btn.disabled = false;
             }
         }
+
 
         // ========================================================
         // 🚀 FUNÇÕES DE FREQUÊNCIA NO PAINEL DO PROFESSOR (PERFIL INDIVIDUAL)
@@ -934,7 +913,7 @@
         }
 
         window.filtrarFrequenciaAdmin = async function() {
-            const valFiltro = document.getElementById('filtro-mes-freq-admin').value; // Formato YYYY-MM
+            const valFiltro = document.getElementById('filtro-mes-freq-admin').value; 
             if (!valFiltro) return;
 
             const partes = valFiltro.split('-');
@@ -1019,7 +998,6 @@
             
             if(document.getElementById('aluno-senha-portal')) {
                 document.getElementById('aluno-senha-portal').value = a.senha_portal || '';
-                // Garante que o input volte a ser tipo senha se foi alternado antes
                 document.getElementById('aluno-senha-portal').type = "password";
             }
 
@@ -1051,7 +1029,6 @@
                 placeholder.classList.remove('hidden');
             }
 
-            // BUSCA O HISTÓRICO DE FREQUÊNCIA LOGO QUE ABRE A FICHA
             carregarFrequenciaDoAluno(id);
 
             const divVazia = document.getElementById('anamnese-vazia');

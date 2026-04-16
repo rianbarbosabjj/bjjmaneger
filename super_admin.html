@@ -313,7 +313,7 @@
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl flex items-center gap-4">
                     <div class="w-14 h-14 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center text-2xl font-black shrink-0">🤝</div>
                     <div>
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Comissões Pevistas</p>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Comissões Previstas</p>
                         <h3 class="text-3xl font-black text-emerald-400 mt-1" id="kpi-comissoes">R$ 0,00</h3>
                     </div>
                 </div>
@@ -329,13 +329,14 @@
                             <tr class="bg-slate-950/50 border-b border-slate-800 text-slate-400">
                                 <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Código</th>
                                 <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Desconto</th>
+                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Duração</th>
                                 <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Tipo / Uso</th>
                                 <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Parceiro (Comissão)</th>
                                 <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Ações</th>
                             </tr>
                         </thead>
                         <tbody id="tabela-cupons" class="divide-y divide-slate-800/50 text-sm">
-                            <tr><td colspan="5" class="text-center p-8 text-slate-500 italic text-xs">Carregando cupons...</td></tr>
+                            <tr><td colspan="6" class="text-center p-8 text-slate-500 italic text-xs">Carregando cupons...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -349,7 +350,7 @@
             <div class="bg-slate-950 p-5 flex justify-between items-center text-white border-b border-slate-800">
                 <div class="flex items-center space-x-3">
                     <div class="w-8 h-8 bg-emerald-500/20 text-emerald-400 rounded-lg flex items-center justify-center text-lg font-black">💸</div>
-                    <h3 class="font-black text-sm tracking-widest uppercase">Transferência PIX (Master)</h3>
+                    <h3 class="font-black text-sm tracking-widest uppercase">Transferência PIX</h3>
                 </div>
                 <button onclick="fecharModalPixMaster()" class="text-slate-500 hover:text-white text-2xl leading-none">&times;</button>
             </div>
@@ -455,13 +456,21 @@
                     <input type="text" id="cupom-codigo" placeholder="Ex: MESTRE20 ou GRATIS100" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-black text-white uppercase outline-none focus:border-rose-500 transition-colors tracking-widest">
                 </div>
                 
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Duração do Desconto / Comissão</label>
+                    <select id="cupom-duracao" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white outline-none focus:border-rose-500 transition-colors">
+                        <option value="RECORRENTE">♾️ Recorrente (Todas as mensalidades)</option>
+                        <option value="PRIMEIRA_MENSALIDADE">🥇 Apenas na 1ª Mensalidade</option>
+                    </select>
+                </div>
+                
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Desconto (%) *</label>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Desconto Cliente (%) *</label>
                         <input type="number" id="cupom-desconto" placeholder="Ex: 20" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white outline-none focus:border-rose-500 transition-colors">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2" title="0 = Uso Infinito">Limite de Uso</label>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2" title="0 = Uso Infinito">Limite de Usos</label>
                         <input type="number" id="cupom-limite" placeholder="0 = Infinito" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white outline-none focus:border-rose-500 transition-colors">
                     </div>
                 </div>
@@ -473,7 +482,7 @@
                         <input type="text" id="cupom-parceiro" placeholder="Nome de quem vai divulgar..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white outline-none focus:border-indigo-500 transition-colors">
                     </div>
                     <div class="mt-4">
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Comissão por Venda (%)</label>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Comissão do Parceiro (%)</label>
                         <input type="number" id="cupom-comissao" placeholder="Ex: 15" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white outline-none focus:border-indigo-500 transition-colors">
                     </div>
                 </div>
@@ -513,8 +522,8 @@
 
         let masterUid = null;
         let equipesCache = [];
-        let equipeEditandoId = null;
         let cuponsCache = [];
+        let equipeEditandoId = null;
         let totalAlunosGeral = 0;
 
         window.showToast = function(message, type = 'error') {
@@ -600,7 +609,7 @@
             document.getElementById('aba-academias').classList.add('hidden');
             document.getElementById('aba-faturamento').classList.add('hidden');
             document.getElementById('aba-planos').classList.add('hidden');
-            document.getElementById('aba-cupons').classList.add('hidden'); // Esconde a aba nova
+            document.getElementById('aba-cupons').classList.add('hidden');
             
             document.getElementById('aba-' + abaID).classList.remove('hidden');
             document.getElementById('aba-' + abaID).classList.add('block');
@@ -619,7 +628,7 @@
                 carregarSaldoMaster();
             }
             if(abaID === 'planos') carregarConfigPlanos(); 
-            if(abaID === 'cupons') carregarCupons(); // Carega os cupons ao abrir a aba
+            if(abaID === 'cupons') carregarCupons(); 
         }
 
         onAuthStateChanged(auth, async (user) => {
@@ -1034,14 +1043,14 @@
         // ==========================================
 
         window.carregarCupons = async function() {
-            document.getElementById('tabela-cupons').innerHTML = '<tr><td colspan="5" class="text-center p-8 text-slate-500 italic text-xs">Carregando cupons...</td></tr>';
+            document.getElementById('tabela-cupons').innerHTML = '<tr><td colspan="6" class="text-center p-8 text-slate-500 italic text-xs">Carregando cupons...</td></tr>';
             try {
                 const snap = await getDocs(collection(db, "cupons"));
                 cuponsCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 renderizarCupons();
             } catch(e) {
                 showToast("Erro ao carregar os cupons.", "error");
-                document.getElementById('tabela-cupons').innerHTML = '<tr><td colspan="5" class="text-center p-8 text-rose-500 font-bold text-xs">Erro na leitura do banco.</td></tr>';
+                document.getElementById('tabela-cupons').innerHTML = '<tr><td colspan="6" class="text-center p-8 text-rose-500 font-bold text-xs">Erro na leitura do banco.</td></tr>';
             }
         }
 
@@ -1051,16 +1060,14 @@
 
             document.getElementById('kpi-cupons-ativos').innerText = cuponsCache.length;
             
-            // Simulação de cálculo de comissão (isso virá do financeiro real depois)
             let somaComissoes = 0;
 
             if (cuponsCache.length === 0) {
-                tabela.innerHTML = `<tr><td colspan="5" class="text-center p-8 text-slate-500 italic text-xs">Nenhum cupom gerado ainda.</td></tr>`;
+                tabela.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-slate-500 italic text-xs">Nenhum cupom gerado ainda.</td></tr>`;
                 document.getElementById('kpi-comissoes').innerText = "R$ 0,00";
                 return;
             }
 
-            // Ordena os mais recentes primeiro
             cuponsCache.sort((a, b) => b.data_criacao.localeCompare(a.data_criacao));
 
             cuponsCache.forEach(cupom => {
@@ -1074,11 +1081,18 @@
                 } else {
                     tipoBadge = `<span class="px-2 py-1 rounded bg-emerald-500/20 text-emerald-400 text-[9px] font-black uppercase border border-emerald-500/30">♾️ INFINITO</span>`;
                 }
+                
+                // NOVO: BADGE DE DURAÇÃO (RECORRENTE VS 1ª MENSALIDADE)
+                let duracaoBadge = "";
+                if(cupom.duracao === 'PRIMEIRA_MENSALIDADE') {
+                    duracaoBadge = `<span class="px-2 py-1 rounded bg-rose-500/10 text-rose-400 text-[9px] font-black uppercase border border-rose-500/20">🥇 Apenas 1ª Mensalidade</span>`;
+                } else {
+                    duracaoBadge = `<span class="px-2 py-1 rounded bg-slate-800 text-slate-400 text-[9px] font-black uppercase border border-slate-700">♾️ Recorrente (Para Sempre)</span>`;
+                }
 
                 const usos = cupom.vezes_usado || 0;
                 const limite = cupom.limite_uso > 0 ? cupom.limite_uso : '∞';
                 
-                // Info do Parceiro
                 const parceiroStr = cupom.nome_parceiro ? cupom.nome_parceiro : `<span class="text-slate-600">Sem Afiliado</span>`;
                 const comissaoStr = cupom.comissao_perc ? `(${cupom.comissao_perc}% comissão)` : '';
 
@@ -1091,6 +1105,9 @@
                     </td>
                     <td class="px-6 py-4 text-center">
                         <span class="text-rose-500 font-black text-lg">-${desconto}</span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        ${duracaoBadge}
                     </td>
                     <td class="px-6 py-4 text-center">
                         <div class="flex flex-col items-center gap-1">
@@ -1118,6 +1135,7 @@
             document.getElementById('cupom-limite').value = '';
             document.getElementById('cupom-parceiro').value = '';
             document.getElementById('cupom-comissao').value = '';
+            document.getElementById('cupom-duracao').value = 'RECORRENTE'; // Reseta o select
             document.getElementById('modal-cupom').classList.replace('hidden', 'flex');
         }
 
@@ -1131,12 +1149,12 @@
             let limite = parseInt(document.getElementById('cupom-limite').value);
             let parceiro = document.getElementById('cupom-parceiro').value.trim();
             let comissao = parseFloat(document.getElementById('cupom-comissao').value);
+            let duracao = document.getElementById('cupom-duracao').value; // RECORRENTE ou PRIMEIRA_MENSALIDADE
 
-            // Validações básicas
             if(!codigo) return showToast("Digite o código do cupom.", "error");
             if(codigo.includes(' ')) return showToast("O código não pode ter espaços.", "error");
             if(isNaN(desconto) || desconto < 1 || desconto > 100) return showToast("O desconto deve ser entre 1% e 100%.", "error");
-            if(isNaN(limite) || limite < 0) limite = 0; // 0 = infinito
+            if(isNaN(limite) || limite < 0) limite = 0; 
             if(isNaN(comissao) || comissao < 0) comissao = 0;
 
             const btn = document.getElementById('btn-salvar-cupom');
@@ -1145,7 +1163,6 @@
             btn.disabled = true;
 
             try {
-                // Verifica se o cupom já existe
                 const docVerifica = await getDoc(doc(db, "cupons", codigo));
                 if(docVerifica.exists()) {
                     showToast("Este código já existe. Escolha outro.", "error");
@@ -1156,6 +1173,7 @@
 
                 const dadosCupom = {
                     desconto_perc: desconto,
+                    duracao: duracao, // Salva se é pra sempre ou só no 1º mês
                     limite_uso: limite,
                     vezes_usado: 0,
                     nome_parceiro: parceiro || null,

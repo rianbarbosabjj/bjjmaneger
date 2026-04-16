@@ -138,7 +138,7 @@
                     <p class="text-[9px] text-slate-500 mt-2 uppercase tracking-widest" id="fat-qtd-ativos">0 assinaturas ativas</p>
                 </div>
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-lg relative overflow-hidden">
-                    <p class="text-[10px] font-black text-rose-500 uppercase tracking-widest">Inadimplência (Perdido)</p>
+                    <p class="text-[10px] font-black text-rose-500 uppercase tracking-widest">Inadimplência (Bloqueado)</p>
                     <h3 class="text-4xl font-black text-white mt-2" id="fat-mrr-perdido">R$ 0,00</h3>
                     <p class="text-[9px] text-slate-500 mt-2 uppercase tracking-widest" id="fat-qtd-bloqueados">0 academias bloqueadas</p>
                 </div>
@@ -218,7 +218,7 @@
                         <input type="checkbox" id="edit-isento" class="w-5 h-5 rounded text-cyan-500 border-slate-600 focus:ring-cyan-500 cursor-pointer bg-slate-900">
                         <div>
                             <span class="text-sm font-black text-white uppercase tracking-widest block">Equipe 100% Isenta</span>
-                            <span class="text-[9px] text-slate-400">Marque para projetos sociais ou parceiros VIP.</span>
+                            <span class="text-[9px] text-slate-400">Equipa não será faturada e não soma no MRR.</span>
                         </div>
                     </label>
                 </div>
@@ -282,14 +282,12 @@
             document.getElementById('aba-' + abaID).classList.remove('hidden');
             document.getElementById('aba-' + abaID).classList.add('block');
 
-            // Resetar estilos do menu
             const menus = ['academias', 'faturamento'];
             menus.forEach(m => {
                 const btn = document.getElementById('menu-' + m);
                 btn.className = "w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-xl font-bold text-xs uppercase tracking-widest transition-all border border-transparent";
             });
 
-            // Ativar estilo atual
             const btnAtivo = document.getElementById('menu-' + abaID);
             btnAtivo.className = "w-full flex items-center gap-3 px-4 py-3 bg-rose-500/10 text-rose-500 rounded-xl font-bold text-xs uppercase tracking-widest border border-rose-500/20 transition-all";
 
@@ -298,7 +296,9 @@
             }
         }
 
+        // ==========================================
         // 1. VERIFICAÇÃO DE SEGURANÇA MÁXIMA
+        // ==========================================
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
@@ -324,7 +324,9 @@
             }
         });
 
+        // ==========================================
         // 2. CARREGAR DADOS DO SAAS
+        // ==========================================
         window.carregarImperio = async function() {
             document.getElementById('tabela-equipes').innerHTML = '<tr><td colspan="5" class="text-center p-8 text-slate-500 italic text-xs">Atualizando dados...</td></tr>';
             try {
@@ -343,7 +345,6 @@
                 atualizarDashboard();
                 renderizarEquipes();
                 
-                // Se a aba faturamento estiver visível, atualiza ela também
                 if(!document.getElementById('aba-faturamento').classList.contains('hidden')) {
                     renderizarFaturamento();
                 }
@@ -360,7 +361,10 @@
             
             let mrrCalculado = 0;
             equipesCache.forEach(eq => {
-                if(eq.status_plano !== 'TESTE' && eq.status_plano !== 'BLOQUEADO' && !eq.isento) {
+                // BLINDAGEM: Verifica explicitamente se a equipa é ISENTA
+                const isIsento = (eq.isento === true || eq.isento === "true");
+                
+                if(eq.status_plano !== 'TESTE' && eq.status_plano !== 'BLOQUEADO' && !isIsento) {
                     let valorBase = eq.valor_plano !== undefined ? parseFloat(eq.valor_plano) : 49.90;
                     let desconto = eq.desconto_plano !== undefined ? parseFloat(eq.desconto_plano) : 0;
                     mrrCalculado += valorBase * (1 - (desconto / 100));
@@ -394,6 +398,7 @@
             filtradas.forEach(eq => {
                 const nomeEquipe = (eq.nome_equipe || "Equipe Sem Nome").toUpperCase();
                 const responsavel = (eq.responsavel || "Responsável não informado");
+                const isIsento = (eq.isento === true || eq.isento === "true");
                 
                 let planoBadge = "";
                 const st = eq.status_plano || "TESTE";
@@ -403,7 +408,8 @@
                 else if(st === 'BLOQUEADO') planoBadge = `<span class="px-2 py-1 rounded bg-rose-500/20 text-rose-500 text-[9px] font-black uppercase border border-rose-500/30">BLOQUEADO</span>`;
                 else planoBadge = `<span class="px-2 py-1 rounded bg-slate-700 text-slate-300 text-[9px] font-black uppercase border border-slate-600">${st}</span>`;
 
-                if(eq.isento) {
+                // Aplica badge de ISENTO se for o caso
+                if(isIsento) {
                     planoBadge += ` <span class="px-2 py-1 rounded bg-indigo-500/20 text-indigo-400 text-[9px] font-black uppercase border border-indigo-500/30 ml-1" title="Equipe Isenta">ISENTO</span>`;
                 }
 
@@ -456,7 +462,7 @@
         }
 
         // ==========================================
-        // RENDERIZAR FATURAMENTO (NOVA ABA)
+        // RENDERIZAR FATURAMENTO (ABA SECUNDÁRIA)
         // ==========================================
         window.renderizarFaturamento = function() {
             const tabela = document.getElementById('tabela-faturamento');
@@ -480,21 +486,22 @@
             eqParaFaturar.sort((a,b) => (a.nome_equipe || "").localeCompare(b.nome_equipe || ""));
 
             eqParaFaturar.forEach(eq => {
+                const isIsento = (eq.isento === true || eq.isento === "true");
+                
                 let valorBase = eq.valor_plano !== undefined ? parseFloat(eq.valor_plano) : 49.90;
                 let desconto = eq.desconto_plano !== undefined ? parseFloat(eq.desconto_plano) : 0;
-                let isento = eq.isento === true;
                 
-                let valorLiquido = isento ? 0 : valorBase * (1 - (desconto / 100));
+                // Se isento for verdadeiro, o valorLíquido é forçado a 0 para não somar!
+                let valorLiquido = isIsento ? 0 : valorBase * (1 - (desconto / 100));
 
                 if (eq.status_plano === 'BLOQUEADO') {
                     mrrPerdido += valorLiquido;
-                    qtdBloqueados++;
+                    if(!isIsento) qtdBloqueados++;
                 } else {
                     mrrAtivo += valorLiquido;
-                    qtdAtivos++;
+                    if(!isIsento) qtdAtivos++; // Equipe isenta NÃO conta para o ticket médio!
                 }
 
-                // Linha da Tabela
                 const tr = document.createElement('tr');
                 tr.className = "border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors";
                 
@@ -503,27 +510,31 @@
                 else if(eq.status_plano === 'ELITE') planoBadge = `<span class="text-emerald-400 font-bold">ELITE</span>`;
                 else if(eq.status_plano === 'BLOQUEADO') planoBadge = `<span class="text-rose-500 font-bold">BLOQUEADO</span>`;
                 
-                if(isento) planoBadge += ` <span class="text-indigo-400 font-black text-[9px]">(ISENTO)</span>`;
+                if(isIsento) planoBadge += ` <span class="text-indigo-400 font-black text-[9px]">(ISENTO)</span>`;
 
                 let dtPagamento = eq.data_pagamento_plano ? new Date(eq.data_pagamento_plano).toLocaleDateString('pt-BR') : '--/--/----';
+
+                // Formatação visual blindada para não exibir valores em isentos
+                let txtValorBase = isIsento ? `<span class="text-slate-600">ISENTO</span>` : `R$ ${valorBase.toFixed(2)}`;
+                let txtDesconto = isIsento ? "-" : (desconto > 0 ? '-'+desconto+'%' : '-');
+                let txtLiquido = isIsento ? `<span class="text-slate-600">R$ 0.00</span>` : `R$ ${valorLiquido.toFixed(2)}`;
 
                 tr.innerHTML = `
                     <td class="px-6 py-4">
                         <span class="font-bold text-slate-200 text-xs">${(eq.nome_equipe || 'Equipe Sem Nome').toUpperCase()}</span>
                     </td>
                     <td class="px-6 py-4 text-center text-xs uppercase tracking-widest">${planoBadge}</td>
-                    <td class="px-6 py-4 text-right font-mono text-xs text-slate-400">R$ ${valorBase.toFixed(2)}</td>
-                    <td class="px-6 py-4 text-right font-mono text-xs text-amber-500">${desconto > 0 ? '-'+desconto+'%' : '-'}</td>
-                    <td class="px-6 py-4 text-right font-mono text-sm font-black text-emerald-400">R$ ${valorLiquido.toFixed(2)}</td>
+                    <td class="px-6 py-4 text-right font-mono text-xs text-slate-400">${txtValorBase}</td>
+                    <td class="px-6 py-4 text-right font-mono text-xs text-amber-500">${txtDesconto}</td>
+                    <td class="px-6 py-4 text-right font-mono text-sm font-black text-emerald-400">${txtLiquido}</td>
                     <td class="px-6 py-4 text-center font-mono text-xs text-slate-500">${dtPagamento}</td>
                 `;
                 tabela.appendChild(tr);
             });
 
-            // Atualiza os painéis numéricos superiores
             document.getElementById('fat-mrr-ativo').innerText = `R$ ${mrrAtivo.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
             document.getElementById('fat-mrr-perdido').innerText = `R$ ${mrrPerdido.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-            document.getElementById('fat-qtd-ativos').innerText = `${qtdAtivos} assinaturas ativas`;
+            document.getElementById('fat-qtd-ativos').innerText = `${qtdAtivos} assinaturas ativas pagantes`;
             document.getElementById('fat-qtd-bloqueados').innerText = `${qtdBloqueados} academias bloqueadas`;
 
             let ticketMedio = qtdAtivos > 0 ? (mrrAtivo / qtdAtivos) : 0;
@@ -531,7 +542,7 @@
         }
 
         // ==========================================
-        // FUNCIONALIDADES DESBLOQUEADAS (MODAL EDIÇÃO)
+        // GESTÃO DO MODAL DE EDIÇÃO DE EQUIPE
         // ==========================================
         window.abrirModalEditarEquipe = function(id) {
             const eq = equipesCache.find(e => e.id === id);
@@ -542,7 +553,9 @@
             document.getElementById('edit-status-plano').value = eq.status_plano || "TESTE";
             document.getElementById('edit-valor-plano').value = eq.valor_plano !== undefined ? eq.valor_plano : 49.90;
             document.getElementById('edit-desconto').value = eq.desconto_plano || 0;
-            document.getElementById('edit-isento').checked = eq.isento === true;
+            
+            // Força a leitura correta do booleano ou string
+            document.getElementById('edit-isento').checked = (eq.isento === true || eq.isento === "true");
 
             document.getElementById('modal-editar-equipe').classList.replace('hidden', 'flex');
         }
@@ -561,11 +574,13 @@
             btn.disabled = true;
 
             try {
+                const isentoAtivo = document.getElementById('edit-isento').checked;
+                
                 const dadosUpdate = {
                     status_plano: document.getElementById('edit-status-plano').value,
                     valor_plano: parseFloat(document.getElementById('edit-valor-plano').value) || 0,
                     desconto_plano: parseFloat(document.getElementById('edit-desconto').value) || 0,
-                    isento: document.getElementById('edit-isento').checked
+                    isento: isentoAtivo
                 };
 
                 await updateDoc(doc(db, "equipes", equipeEditandoId), dadosUpdate);

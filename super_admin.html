@@ -14,7 +14,7 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Custom Scrollbar for Listboxes */
+        /* Barra de rolagem customizada para a lista de funcionalidades */
         .custom-scroll::-webkit-scrollbar { width: 4px; }
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
@@ -100,7 +100,6 @@
                         <button onclick="carregarImperio()" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-xl transition-colors shrink-0" title="Atualizar Lista">🔄</button>
                     </div>
                 </div>
-                
                 <div class="overflow-x-auto w-full">
                     <table class="w-full text-left border-collapse whitespace-nowrap min-w-[800px]">
                         <thead>
@@ -285,11 +284,11 @@
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Mensal. Específica (R$)</label>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Mensalidade Padrão (R$)</label>
                         <input type="number" id="edit-valor-plano" placeholder="Ex: 49.90" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white outline-none focus:border-rose-500 transition-colors">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Desconto (%)</label>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Desconto Concedido (%)</label>
                         <input type="number" id="edit-desconto" placeholder="Ex: 10" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white outline-none focus:border-rose-500 transition-colors">
                     </div>
                 </div>
@@ -585,10 +584,11 @@
         }
 
         // ==========================================
-        // GESTÃO DOS PLANOS DO SITE (CHECKBOXES / LISTBOX)
+        // GESTÃO DOS PLANOS DO SITE (CHECKBOXES)
         // ==========================================
         const PLANOS_DOC_REF = doc(db, "sistema", "config_planos");
 
+        // Lista mestra com TODAS as funcionalidades possíveis no sistema
         const TODAS_FUNCIONALIDADES = [
             "Cadastro até 10 alunos",
             "Cadastro de Alunos Ilimitados",
@@ -605,8 +605,10 @@
             "Baixa Automática de Faturas"
         ];
 
+        // Função que gera os quadradinhos na tela baseados na lista acima
         function renderizarCheckboxes(planId, savedText, accentColor) {
             const container = document.getElementById(`listbox-${planId}`);
+            if(!container) return;
             container.innerHTML = '';
             
             const savedLines = savedText ? savedText.split('\n') : [];
@@ -615,12 +617,13 @@
                 let isChecked = false;
                 const lineMatch = savedLines.find(l => l.includes(feat));
                 
+                // Se no banco estiver salvo com "✓", o quadradinho aparece marcado
                 if (lineMatch && lineMatch.startsWith('✓')) {
                     isChecked = true;
                 }
 
                 const label = document.createElement('label');
-                label.className = "flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-800/60 cursor-pointer transition-colors border border-transparent hover:border-slate-700/50";
+                label.className = `flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-800/60 cursor-pointer transition-colors border border-transparent hover:border-slate-700/50`;
                 label.innerHTML = `
                     <input type="checkbox" id="chk-${planId}-${index}" class="w-4 h-4 rounded text-${accentColor}-500 border-slate-700 bg-slate-950 focus:ring-${accentColor}-500" ${isChecked ? 'checked' : ''}>
                     <span class="text-xs font-medium text-slate-300 select-none leading-none">${feat}</span>
@@ -629,6 +632,7 @@
             });
         }
 
+        // Quando você clica em Salvar, esta função pega os quadradinhos e transforma no texto com ✓ e ❌
         function getFeaturesSelecionadas(planId) {
             let result = [];
             TODAS_FUNCIONALIDADES.forEach((feat, index) => {
@@ -657,19 +661,19 @@
                 }
 
                 // Inputs de Texto
-                document.getElementById('p1-nome').value = dados.p1.nome;
-                document.getElementById('p1-preco').value = dados.p1.preco;
-                document.getElementById('p1-desc').value = dados.p1.desc;
+                if(document.getElementById('p1-nome')) document.getElementById('p1-nome').value = dados.p1.nome;
+                if(document.getElementById('p1-preco')) document.getElementById('p1-preco').value = dados.p1.preco;
+                if(document.getElementById('p1-desc')) document.getElementById('p1-desc').value = dados.p1.desc;
 
-                document.getElementById('p2-nome').value = dados.p2.nome;
-                document.getElementById('p2-preco').value = dados.p2.preco;
-                document.getElementById('p2-desc').value = dados.p2.desc;
+                if(document.getElementById('p2-nome')) document.getElementById('p2-nome').value = dados.p2.nome;
+                if(document.getElementById('p2-preco')) document.getElementById('p2-preco').value = dados.p2.preco;
+                if(document.getElementById('p2-desc')) document.getElementById('p2-desc').value = dados.p2.desc;
 
-                document.getElementById('p3-nome').value = dados.p3.nome;
-                document.getElementById('p3-preco').value = dados.p3.preco;
-                document.getElementById('p3-desc').value = dados.p3.desc;
+                if(document.getElementById('p3-nome')) document.getElementById('p3-nome').value = dados.p3.nome;
+                if(document.getElementById('p3-preco')) document.getElementById('p3-preco').value = dados.p3.preco;
+                if(document.getElementById('p3-desc')) document.getElementById('p3-desc').value = dados.p3.desc;
 
-                // Renderiza os Checkboxes (Listboxes)
+                // Renderiza os Checkboxes
                 renderizarCheckboxes('p1', dados.p1.features, 'rose');
                 renderizarCheckboxes('p2', dados.p2.features, 'cyan');
                 renderizarCheckboxes('p3', dados.p3.features, 'amber');
@@ -691,7 +695,7 @@
                         nome: document.getElementById('p1-nome').value,
                         preco: parseFloat(document.getElementById('p1-preco').value) || 0,
                         desc: document.getElementById('p1-desc').value,
-                        features: getFeaturesSelecionadas('p1')
+                        features: getFeaturesSelecionadas('p1') // <-- Captura os checkboxes!
                     },
                     p2: {
                         nome: document.getElementById('p2-nome').value,

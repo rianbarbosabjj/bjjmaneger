@@ -444,13 +444,14 @@
                     document.getElementById('wallet-saldo').innerText = `R$ ${res.data.balance.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
                     document.getElementById('wallet-saldo-pendente').innerText = `A liberar: R$ ${res.data.estimatedBalance.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
                 } else {
-                    document.getElementById('wallet-saldo').innerText = "R$ --";
-                    document.getElementById('wallet-saldo-pendente').innerText = "Sem comunicação";
+                    document.getElementById('wallet-saldo').innerText = "Erro!";
+                    // 👇 AQUI ESTÁ O SEGREDO: Vai mostrar o erro real vindo do servidor
+                    document.getElementById('wallet-saldo-pendente').innerText = res.data.error; 
                     console.error(res.data.error);
                 }
             } catch(e) {
-                document.getElementById('wallet-saldo').innerText = "R$ --";
-                document.getElementById('wallet-saldo-pendente').innerText = "Falha na conexão";
+                document.getElementById('wallet-saldo').innerText = "Falha";
+                document.getElementById('wallet-saldo-pendente').innerText = e.message;
                 console.error(e);
             }
         }

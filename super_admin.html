@@ -78,7 +78,7 @@
                 </div>
                 <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl relative overflow-hidden">
                     <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl">🥋</div>
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total de Atletas</p>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total de Atletas (Sistema)</p>
                     <h3 class="text-4xl font-black text-cyan-400 mt-2" id="dash-atletas">0</h3>
                 </div>
                 <div class="bg-gradient-to-br from-rose-900 to-slate-900 p-6 rounded-3xl border border-rose-800 shadow-xl relative overflow-hidden">
@@ -284,11 +284,11 @@
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Mensalidade Padrão (R$)</label>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Mensal. Específica (R$)</label>
                         <input type="number" id="edit-valor-plano" placeholder="Ex: 49.90" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white outline-none focus:border-rose-500 transition-colors">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Desconto Concedido (%)</label>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Desconto (%)</label>
                         <input type="number" id="edit-desconto" placeholder="Ex: 10" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white outline-none focus:border-rose-500 transition-colors">
                     </div>
                 </div>
@@ -606,11 +606,16 @@
         ];
 
         // Função que gera os quadradinhos na tela baseados na lista acima
-        function renderizarCheckboxes(planId, savedText, accentColor) {
+        function renderizarCheckboxes(planId, savedText) {
             const container = document.getElementById(`listbox-${planId}`);
             if(!container) return;
             container.innerHTML = '';
             
+            // Define explicitamente as cores do Tailwind para evitar bugs de compilação
+            let colorClass = 'text-rose-500 focus:ring-rose-500';
+            if (planId === 'p2') colorClass = 'text-cyan-500 focus:ring-cyan-500';
+            if (planId === 'p3') colorClass = 'text-amber-500 focus:ring-amber-500';
+
             const savedLines = savedText ? savedText.split('\n') : [];
             
             TODAS_FUNCIONALIDADES.forEach((feat, index) => {
@@ -623,9 +628,9 @@
                 }
 
                 const label = document.createElement('label');
-                label.className = `flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-800/60 cursor-pointer transition-colors border border-transparent hover:border-slate-700/50`;
+                label.className = "flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-800/60 cursor-pointer transition-colors border border-transparent hover:border-slate-700/50";
                 label.innerHTML = `
-                    <input type="checkbox" id="chk-${planId}-${index}" class="w-4 h-4 rounded text-${accentColor}-500 border-slate-700 bg-slate-950 focus:ring-${accentColor}-500" ${isChecked ? 'checked' : ''}>
+                    <input type="checkbox" id="chk-${planId}-${index}" class="w-4 h-4 rounded border-slate-700 bg-slate-950 ${colorClass}" ${isChecked ? 'checked' : ''}>
                     <span class="text-xs font-medium text-slate-300 select-none leading-none">${feat}</span>
                 `;
                 container.appendChild(label);
@@ -646,40 +651,44 @@
             return result.join('\n');
         }
 
+        // Função utilitária para preencher a tela (usada no sucesso e na falha do banco)
+        function preencherCamposPlanos(dados) {
+            if(document.getElementById('p1-nome')) document.getElementById('p1-nome').value = dados.p1.nome;
+            if(document.getElementById('p1-preco')) document.getElementById('p1-preco').value = dados.p1.preco;
+            if(document.getElementById('p1-desc')) document.getElementById('p1-desc').value = dados.p1.desc;
+
+            if(document.getElementById('p2-nome')) document.getElementById('p2-nome').value = dados.p2.nome;
+            if(document.getElementById('p2-preco')) document.getElementById('p2-preco').value = dados.p2.preco;
+            if(document.getElementById('p2-desc')) document.getElementById('p2-desc').value = dados.p2.desc;
+
+            if(document.getElementById('p3-nome')) document.getElementById('p3-nome').value = dados.p3.nome;
+            if(document.getElementById('p3-preco')) document.getElementById('p3-preco').value = dados.p3.preco;
+            if(document.getElementById('p3-desc')) document.getElementById('p3-desc').value = dados.p3.desc;
+
+            renderizarCheckboxes('p1', dados.p1.features);
+            renderizarCheckboxes('p2', dados.p2.features);
+            renderizarCheckboxes('p3', dados.p3.features);
+        }
+
         window.carregarConfigPlanos = async function() {
+            // 1. Carrega dados PADRÃO imediatamente para a tela NUNCA ficar vazia
+            let dados = {
+                p1: { nome: "Plano Tatame", preco: 0, desc: "Para validar o sistema e organizar o básico.", features: "✓ Cadastro até 10 alunos\n✓ Gestão de Turmas e Frequência\n✓ Link de Auto-Cadastro\n❌ Portal do Aluno Completo (App)\n❌ Carteirinhas Digitais (QR Code)" },
+                p2: { nome: "Plano Black Belt", preco: 49.90, desc: "Experiência digital premium completa.", features: "✓ Cadastro de Alunos Ilimitados\n✓ Gestão de Turmas e Frequência\n✓ Link de Auto-Cadastro\n✓ Portal do Aluno Completo (App)\n✓ Relatórios e Frequência em PDF\n✓ Carteirinhas Digitais (QR Code)\n✓ Anamnese e Termos LGPD Eletrônicos\n✓ Emissão de Certificados Profissionais\n❌ Automação Asaas (PIX/Cartão)" },
+                p3: { nome: "Plano Elite", preco: 89.90, desc: "Automação total para grandes academias.", features: "✓ Cadastro de Alunos Ilimitados\n✓ Gestão de Turmas e Frequência\n✓ Link de Auto-Cadastro\n✓ Portal do Aluno Completo (App)\n✓ Relatórios e Frequência em PDF\n✓ Carteirinhas Digitais (QR Code)\n✓ Anamnese e Termos LGPD Eletrônicos\n✓ Emissão de Certificados Profissionais\n✓ Automação Asaas (PIX/Cartão)\n✓ Vitrine Virtual (Loja Online)\n✓ Check-in com GPS Ativo\n✓ Baixa Automática de Faturas" }
+            };
+
+            preencherCamposPlanos(dados);
+
+            // 2. Tenta buscar as configurações REAIS gravadas no banco de dados
             try {
                 const docSnap = await getDoc(PLANOS_DOC_REF);
-                
-                let dados = {
-                    p1: { nome: "Plano Tatame", preco: 0, desc: "Para validar o sistema e organizar o básico.", features: "✓ Cadastro até 10 alunos\n✓ Gestão de Turmas e Frequência\n✓ Link de Auto-Cadastro\n❌ Portal do Aluno Completo (App)\n❌ Carteirinhas Digitais (QR Code)" },
-                    p2: { nome: "Plano Black Belt", preco: 49.90, desc: "Experiência digital premium completa.", features: "✓ Cadastro de Alunos Ilimitados\n✓ Gestão de Turmas e Frequência\n✓ Link de Auto-Cadastro\n✓ Portal do Aluno Completo (App)\n✓ Relatórios e Frequência em PDF\n✓ Carteirinhas Digitais (QR Code)\n✓ Anamnese e Termos LGPD Eletrônicos\n✓ Emissão de Certificados Profissionais\n❌ Automação Asaas (PIX/Cartão)" },
-                    p3: { nome: "Plano Elite", preco: 89.90, desc: "Automação total para grandes academias.", features: "✓ Cadastro de Alunos Ilimitados\n✓ Gestão de Turmas e Frequência\n✓ Link de Auto-Cadastro\n✓ Portal do Aluno Completo (App)\n✓ Relatórios e Frequência em PDF\n✓ Carteirinhas Digitais (QR Code)\n✓ Anamnese e Termos LGPD Eletrônicos\n✓ Emissão de Certificados Profissionais\n✓ Automação Asaas (PIX/Cartão)\n✓ Vitrine Virtual (Loja Online)\n✓ Check-in com GPS Ativo\n✓ Baixa Automática de Faturas" }
-                };
-
                 if (docSnap.exists()) {
                     dados = docSnap.data();
+                    preencherCamposPlanos(dados); // Sobrescreve com os do banco
                 }
-
-                // Inputs de Texto
-                if(document.getElementById('p1-nome')) document.getElementById('p1-nome').value = dados.p1.nome;
-                if(document.getElementById('p1-preco')) document.getElementById('p1-preco').value = dados.p1.preco;
-                if(document.getElementById('p1-desc')) document.getElementById('p1-desc').value = dados.p1.desc;
-
-                if(document.getElementById('p2-nome')) document.getElementById('p2-nome').value = dados.p2.nome;
-                if(document.getElementById('p2-preco')) document.getElementById('p2-preco').value = dados.p2.preco;
-                if(document.getElementById('p2-desc')) document.getElementById('p2-desc').value = dados.p2.desc;
-
-                if(document.getElementById('p3-nome')) document.getElementById('p3-nome').value = dados.p3.nome;
-                if(document.getElementById('p3-preco')) document.getElementById('p3-preco').value = dados.p3.preco;
-                if(document.getElementById('p3-desc')) document.getElementById('p3-desc').value = dados.p3.desc;
-
-                // Renderiza os Checkboxes
-                renderizarCheckboxes('p1', dados.p1.features, 'rose');
-                renderizarCheckboxes('p2', dados.p2.features, 'cyan');
-                renderizarCheckboxes('p3', dados.p3.features, 'amber');
-
             } catch (error) {
-                console.error("Erro ao carregar configurações dos planos:", error);
+                console.error("Aviso: Documento 'sistema/config_planos' não existe ou está sem permissão. Usando dados padrão.", error);
             }
         }
 
@@ -695,7 +704,7 @@
                         nome: document.getElementById('p1-nome').value,
                         preco: parseFloat(document.getElementById('p1-preco').value) || 0,
                         desc: document.getElementById('p1-desc').value,
-                        features: getFeaturesSelecionadas('p1') // <-- Captura os checkboxes!
+                        features: getFeaturesSelecionadas('p1') // Captura os checkboxes!
                     },
                     p2: {
                         nome: document.getElementById('p2-nome').value,
@@ -719,7 +728,11 @@
 
             } catch (error) {
                 console.error("Erro ao salvar configurações dos planos:", error);
-                showToast("Erro ao publicar os planos.", "error");
+                showToast("Erro ao publicar os planos. Verifique as permissões do Firebase.", "error");
+                
+                const btn = document.querySelector('button[onclick="salvarConfigPlanos()"]');
+                btn.innerHTML = "💾 Publicar Planos no Site";
+                btn.disabled = false;
             }
         }
 

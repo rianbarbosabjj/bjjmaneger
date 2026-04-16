@@ -550,6 +550,10 @@
         let equipeEditandoId = null;
         let totalAlunosGeral = 0;
 
+        // IMPORTANTE: Foi aqui que as funções do Asaas voltaram pro Super Admin!
+        const consultarSaldoMaster = httpsCallable(functions, 'consultarSaldoMaster');
+        const solicitarSaqueMaster = httpsCallable(functions, 'solicitarSaqueMaster');
+
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');

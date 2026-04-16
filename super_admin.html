@@ -176,7 +176,7 @@
             <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
                     <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight">Construtor de Planos</h2>
-                    <p class="text-sm text-slate-400 mt-1 font-medium">Defina preços e use as caixas de seleção para montar o que cada plano oferece no site.</p>
+                    <p class="text-sm text-slate-400 mt-1 font-medium">Defina os preços promocionais, preços originais (riscados) e as caixas de seleção.</p>
                 </div>
                 <button onclick="salvarConfigPlanos()" class="bg-emerald-500 hover:bg-emerald-400 text-white font-black py-3 px-8 rounded-xl shadow-lg shadow-emerald-500/20 text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2">
                     <span>💾</span> Publicar Planos no Site
@@ -190,10 +190,18 @@
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Nome do Plano</label>
                         <input type="text" id="p1-nome" class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-3 text-sm font-bold outline-none focus:border-rose-500">
                     </div>
-                    <div>
-                        <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Preço Mensal (R$)</label>
-                        <input type="number" id="p1-preco" class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-3 text-sm font-mono font-bold outline-none focus:border-rose-500">
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block" title="Ficará riscado no site">Preço Real (Riscado)</label>
+                            <input type="number" id="p1-preco-original" class="w-full bg-slate-950 border border-slate-800 text-slate-500 rounded-xl p-3 text-sm font-mono font-bold outline-none focus:border-rose-500 line-through placeholder:text-slate-700" placeholder="Ex: 0.00">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Preço Promocional</label>
+                            <input type="number" id="p1-preco" class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-3 text-sm font-mono font-bold outline-none focus:border-rose-500">
+                        </div>
                     </div>
+
                     <div>
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Subtítulo (Pequena Descrição)</label>
                         <input type="text" id="p1-desc" class="w-full bg-slate-950 border border-slate-800 text-slate-400 rounded-xl p-3 text-xs outline-none focus:border-rose-500">
@@ -212,10 +220,18 @@
                         <label class="text-[10px] text-cyan-500/70 font-bold uppercase mb-1 block">Nome do Plano</label>
                         <input type="text" id="p2-nome" class="w-full bg-slate-950 border border-slate-700 text-white rounded-xl p-3 text-sm font-bold outline-none focus:border-cyan-500">
                     </div>
-                    <div>
-                        <label class="text-[10px] text-cyan-500/70 font-bold uppercase mb-1 block">Preço Mensal (R$)</label>
-                        <input type="number" id="p2-preco" class="w-full bg-slate-950 border border-slate-700 text-cyan-400 rounded-xl p-3 text-sm font-mono font-black outline-none focus:border-cyan-500">
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[10px] text-cyan-500/70 font-bold uppercase mb-1 block" title="Ficará riscado no site">Preço Real (Riscado)</label>
+                            <input type="number" id="p2-preco-original" class="w-full bg-slate-950 border border-slate-700 text-slate-500 rounded-xl p-3 text-sm font-mono font-bold outline-none focus:border-cyan-500 line-through placeholder:text-slate-700" placeholder="Ex: 99.90">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-cyan-500/70 font-bold uppercase mb-1 block">Preço Promocional</label>
+                            <input type="number" id="p2-preco" class="w-full bg-slate-950 border border-slate-700 text-cyan-400 rounded-xl p-3 text-sm font-mono font-black outline-none focus:border-cyan-500">
+                        </div>
                     </div>
+
                     <div>
                         <label class="text-[10px] text-cyan-500/70 font-bold uppercase mb-1 block">Subtítulo (Pequena Descrição)</label>
                         <input type="text" id="p2-desc" class="w-full bg-slate-950 border border-slate-700 text-slate-300 rounded-xl p-3 text-xs outline-none focus:border-cyan-500">
@@ -233,10 +249,18 @@
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Nome do Plano</label>
                         <input type="text" id="p3-nome" class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-3 text-sm font-bold outline-none focus:border-amber-500">
                     </div>
-                    <div>
-                        <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Preço Mensal (R$)</label>
-                        <input type="number" id="p3-preco" class="w-full bg-slate-950 border border-slate-800 text-amber-500 rounded-xl p-3 text-sm font-mono font-black outline-none focus:border-amber-500">
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block" title="Ficará riscado no site">Preço Real (Riscado)</label>
+                            <input type="number" id="p3-preco-original" class="w-full bg-slate-950 border border-slate-800 text-slate-500 rounded-xl p-3 text-sm font-mono font-bold outline-none focus:border-amber-500 line-through placeholder:text-slate-700" placeholder="Ex: 149.90">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Preço Promocional</label>
+                            <input type="number" id="p3-preco" class="w-full bg-slate-950 border border-slate-800 text-amber-500 rounded-xl p-3 text-sm font-mono font-black outline-none focus:border-amber-500">
+                        </div>
                     </div>
+
                     <div>
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Subtítulo (Pequena Descrição)</label>
                         <input type="text" id="p3-desc" class="w-full bg-slate-950 border border-slate-800 text-slate-400 rounded-xl p-3 text-xs outline-none focus:border-amber-500">
@@ -588,7 +612,6 @@
         // ==========================================
         const PLANOS_DOC_REF = doc(db, "sistema", "config_planos");
 
-        // Lista mestra com TODAS as funcionalidades possíveis no sistema
         const TODAS_FUNCIONALIDADES = [
             "Cadastro até 10 alunos",
             "Cadastro de Alunos Ilimitados",
@@ -605,13 +628,11 @@
             "Baixa Automática de Faturas"
         ];
 
-        // Função que gera os quadradinhos na tela baseados na lista acima
         function renderizarCheckboxes(planId, savedText) {
             const container = document.getElementById(`listbox-${planId}`);
             if(!container) return;
             container.innerHTML = '';
             
-            // Define explicitamente as cores do Tailwind para evitar bugs de compilação
             let colorClass = 'text-rose-500 focus:ring-rose-500';
             if (planId === 'p2') colorClass = 'text-cyan-500 focus:ring-cyan-500';
             if (planId === 'p3') colorClass = 'text-amber-500 focus:ring-amber-500';
@@ -622,7 +643,6 @@
                 let isChecked = false;
                 const lineMatch = savedLines.find(l => l.includes(feat));
                 
-                // Se no banco estiver salvo com "✓", o quadradinho aparece marcado
                 if (lineMatch && lineMatch.startsWith('✓')) {
                     isChecked = true;
                 }
@@ -637,7 +657,6 @@
             });
         }
 
-        // Quando você clica em Salvar, esta função pega os quadradinhos e transforma no texto com ✓ e ❌
         function getFeaturesSelecionadas(planId) {
             let result = [];
             TODAS_FUNCIONALIDADES.forEach((feat, index) => {
@@ -651,17 +670,19 @@
             return result.join('\n');
         }
 
-        // Função utilitária para preencher a tela (usada no sucesso e na falha do banco)
         function preencherCamposPlanos(dados) {
             if(document.getElementById('p1-nome')) document.getElementById('p1-nome').value = dados.p1.nome;
+            if(document.getElementById('p1-preco-original')) document.getElementById('p1-preco-original').value = dados.p1.preco_original || '';
             if(document.getElementById('p1-preco')) document.getElementById('p1-preco').value = dados.p1.preco;
             if(document.getElementById('p1-desc')) document.getElementById('p1-desc').value = dados.p1.desc;
 
             if(document.getElementById('p2-nome')) document.getElementById('p2-nome').value = dados.p2.nome;
+            if(document.getElementById('p2-preco-original')) document.getElementById('p2-preco-original').value = dados.p2.preco_original || '';
             if(document.getElementById('p2-preco')) document.getElementById('p2-preco').value = dados.p2.preco;
             if(document.getElementById('p2-desc')) document.getElementById('p2-desc').value = dados.p2.desc;
 
             if(document.getElementById('p3-nome')) document.getElementById('p3-nome').value = dados.p3.nome;
+            if(document.getElementById('p3-preco-original')) document.getElementById('p3-preco-original').value = dados.p3.preco_original || '';
             if(document.getElementById('p3-preco')) document.getElementById('p3-preco').value = dados.p3.preco;
             if(document.getElementById('p3-desc')) document.getElementById('p3-desc').value = dados.p3.desc;
 
@@ -671,21 +692,19 @@
         }
 
         window.carregarConfigPlanos = async function() {
-            // 1. Carrega dados PADRÃO imediatamente para a tela NUNCA ficar vazia
             let dados = {
-                p1: { nome: "Plano Tatame", preco: 0, desc: "Para validar o sistema e organizar o básico.", features: "✓ Cadastro até 10 alunos\n✓ Gestão de Turmas e Frequência\n✓ Link de Auto-Cadastro\n❌ Portal do Aluno Completo (App)\n❌ Carteirinhas Digitais (QR Code)" },
-                p2: { nome: "Plano Black Belt", preco: 49.90, desc: "Experiência digital premium completa.", features: "✓ Cadastro de Alunos Ilimitados\n✓ Gestão de Turmas e Frequência\n✓ Link de Auto-Cadastro\n✓ Portal do Aluno Completo (App)\n✓ Relatórios e Frequência em PDF\n✓ Carteirinhas Digitais (QR Code)\n✓ Anamnese e Termos LGPD Eletrônicos\n✓ Emissão de Certificados Profissionais\n❌ Automação Asaas (PIX/Cartão)" },
-                p3: { nome: "Plano Elite", preco: 89.90, desc: "Automação total para grandes academias.", features: "✓ Cadastro de Alunos Ilimitados\n✓ Gestão de Turmas e Frequência\n✓ Link de Auto-Cadastro\n✓ Portal do Aluno Completo (App)\n✓ Relatórios e Frequência em PDF\n✓ Carteirinhas Digitais (QR Code)\n✓ Anamnese e Termos LGPD Eletrônicos\n✓ Emissão de Certificados Profissionais\n✓ Automação Asaas (PIX/Cartão)\n✓ Vitrine Virtual (Loja Online)\n✓ Check-in com GPS Ativo\n✓ Baixa Automática de Faturas" }
+                p1: { nome: "Plano Tatame", preco_original: 0, preco: 0, desc: "Para validar o sistema e organizar o básico.", features: "✓ Cadastro até 10 alunos\n✓ Gestão de Turmas e Frequência\n✓ Link de Auto-Cadastro\n❌ Portal do Aluno Completo (App)\n❌ Carteirinhas Digitais (QR Code)" },
+                p2: { nome: "Plano Black Belt", preco_original: 99.90, preco: 49.90, desc: "Experiência digital premium completa.", features: "✓ Cadastro de Alunos Ilimitados\n✓ Gestão de Turmas e Frequência\n✓ Link de Auto-Cadastro\n✓ Portal do Aluno Completo (App)\n✓ Relatórios e Frequência em PDF\n✓ Carteirinhas Digitais (QR Code)\n✓ Anamnese e Termos LGPD Eletrônicos\n✓ Emissão de Certificados Profissionais\n❌ Automação Asaas (PIX/Cartão)" },
+                p3: { nome: "Plano Elite", preco_original: 149.90, preco: 89.90, desc: "Automação total para grandes academias.", features: "✓ Cadastro de Alunos Ilimitados\n✓ Gestão de Turmas e Frequência\n✓ Link de Auto-Cadastro\n✓ Portal do Aluno Completo (App)\n✓ Relatórios e Frequência em PDF\n✓ Carteirinhas Digitais (QR Code)\n✓ Anamnese e Termos LGPD Eletrônicos\n✓ Emissão de Certificados Profissionais\n✓ Automação Asaas (PIX/Cartão)\n✓ Vitrine Virtual (Loja Online)\n✓ Check-in com GPS Ativo\n✓ Baixa Automática de Faturas" }
             };
 
             preencherCamposPlanos(dados);
 
-            // 2. Tenta buscar as configurações REAIS gravadas no banco de dados
             try {
                 const docSnap = await getDoc(PLANOS_DOC_REF);
                 if (docSnap.exists()) {
                     dados = docSnap.data();
-                    preencherCamposPlanos(dados); // Sobrescreve com os do banco
+                    preencherCamposPlanos(dados);
                 }
             } catch (error) {
                 console.error("Aviso: Documento 'sistema/config_planos' não existe ou está sem permissão. Usando dados padrão.", error);
@@ -702,18 +721,21 @@
                 const dadosParaSalvar = {
                     p1: {
                         nome: document.getElementById('p1-nome').value,
+                        preco_original: parseFloat(document.getElementById('p1-preco-original').value) || 0,
                         preco: parseFloat(document.getElementById('p1-preco').value) || 0,
                         desc: document.getElementById('p1-desc').value,
-                        features: getFeaturesSelecionadas('p1') // Captura os checkboxes!
+                        features: getFeaturesSelecionadas('p1') 
                     },
                     p2: {
                         nome: document.getElementById('p2-nome').value,
+                        preco_original: parseFloat(document.getElementById('p2-preco-original').value) || 0,
                         preco: parseFloat(document.getElementById('p2-preco').value) || 0,
                         desc: document.getElementById('p2-desc').value,
                         features: getFeaturesSelecionadas('p2')
                     },
                     p3: {
                         nome: document.getElementById('p3-nome').value,
+                        preco_original: parseFloat(document.getElementById('p3-preco-original').value) || 0,
                         preco: parseFloat(document.getElementById('p3-preco').value) || 0,
                         desc: document.getElementById('p3-desc').value,
                         features: getFeaturesSelecionadas('p3')

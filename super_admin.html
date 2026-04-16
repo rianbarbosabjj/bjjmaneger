@@ -41,6 +41,9 @@
                 <button onclick="mudarAbaMaster('planos')" id="menu-planos" class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-xl font-bold text-xs uppercase tracking-widest transition-all border border-transparent">
                     <span class="text-lg">⚙️</span> Planos do Site
                 </button>
+                <button onclick="mudarAbaMaster('cupons')" id="menu-cupons" class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-xl font-bold text-xs uppercase tracking-widest transition-all border border-transparent">
+                    <span class="text-lg">🎟️</span> Cupons & Afiliados
+                </button>
             </nav>
         </div>
         <div class="p-4 border-t border-slate-800">
@@ -288,6 +291,57 @@
             </div>
         </div>
 
+        <div id="aba-cupons" class="p-6 md:p-10 max-w-7xl mx-auto w-full space-y-8 hidden">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight">Vouchers & Afiliados</h2>
+                    <p class="text-sm text-slate-400 mt-1 font-medium">Crie códigos de desconto e rastreie parceiros de vendas.</p>
+                </div>
+                <button onclick="abrirModalNovoCupom()" class="bg-rose-600 hover:bg-rose-500 text-white font-black py-3 px-6 rounded-xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-lg shadow-rose-600/20">
+                    <span>➕</span> Novo Cupom
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl flex items-center gap-4">
+                    <div class="w-14 h-14 bg-indigo-500/20 text-indigo-400 rounded-full flex items-center justify-center text-2xl font-black shrink-0">🎟️</div>
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Cupons Ativos</p>
+                        <h3 class="text-3xl font-black text-white mt-1" id="kpi-cupons-ativos">0</h3>
+                    </div>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl flex items-center gap-4">
+                    <div class="w-14 h-14 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center text-2xl font-black shrink-0">🤝</div>
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Comissões Pevistas</p>
+                        <h3 class="text-3xl font-black text-emerald-400 mt-1" id="kpi-comissoes">R$ 0,00</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 rounded-3xl border border-slate-800 shadow-xl overflow-hidden flex flex-col">
+                <div class="p-6 border-b border-slate-800 bg-slate-800/20">
+                    <h3 class="text-sm font-black text-white uppercase tracking-widest">Lista de Cupons Gerados</h3>
+                </div>
+                <div class="overflow-x-auto w-full">
+                    <table class="w-full text-left border-collapse whitespace-nowrap min-w-[900px]">
+                        <thead>
+                            <tr class="bg-slate-950/50 border-b border-slate-800 text-slate-400">
+                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Código</th>
+                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Desconto</th>
+                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Tipo / Uso</th>
+                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Parceiro (Comissão)</th>
+                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-cupons" class="divide-y divide-slate-800/50 text-sm">
+                            <tr><td colspan="5" class="text-center p-8 text-slate-500 italic text-xs">Carregando cupons...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <div id="modal-pix-master" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-[60] p-4 transition-opacity">
@@ -385,6 +439,55 @@
         </div>
     </div>
 
+    <div id="modal-cupom" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-[60] p-4 transition-opacity">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col transform transition-transform">
+            <div class="bg-slate-950 p-5 flex justify-between items-center text-white border-b border-slate-800">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-rose-500/20 text-rose-400 rounded-lg flex items-center justify-center text-lg font-black">🎟️</div>
+                    <h3 class="font-black text-sm tracking-widest uppercase">Criar Novo Cupom</h3>
+                </div>
+                <button onclick="fecharModalCupom()" class="text-slate-500 hover:text-white text-2xl leading-none">&times;</button>
+            </div>
+
+            <div class="p-6 space-y-4 flex-1 overflow-y-auto">
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Código do Cupom *</label>
+                    <input type="text" id="cupom-codigo" placeholder="Ex: MESTRE20 ou GRATIS100" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-black text-white uppercase outline-none focus:border-rose-500 transition-colors tracking-widest">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Desconto (%) *</label>
+                        <input type="number" id="cupom-desconto" placeholder="Ex: 20" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white outline-none focus:border-rose-500 transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2" title="0 = Uso Infinito">Limite de Uso</label>
+                        <input type="number" id="cupom-limite" placeholder="0 = Infinito" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white outline-none focus:border-rose-500 transition-colors">
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-800 pt-4 mt-2">
+                    <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-3">Área de Parceria (Afiliados)</p>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Nome do Parceiro</label>
+                        <input type="text" id="cupom-parceiro" placeholder="Nome de quem vai divulgar..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white outline-none focus:border-indigo-500 transition-colors">
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Comissão por Venda (%)</label>
+                        <input type="number" id="cupom-comissao" placeholder="Ex: 15" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white outline-none focus:border-indigo-500 transition-colors">
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-5 bg-slate-950 border-t border-slate-800 flex justify-end gap-3">
+                <button onclick="fecharModalCupom()" class="px-6 py-2.5 rounded-xl font-bold text-slate-400 hover:bg-slate-800 transition-colors text-xs uppercase tracking-widest">Cancelar</button>
+                <button onclick="salvarCupom()" id="btn-salvar-cupom" class="bg-rose-600 hover:bg-rose-500 text-white font-black py-2.5 px-6 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest flex items-center gap-2">
+                    Gerar Cupom
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -411,6 +514,7 @@
         let masterUid = null;
         let equipesCache = [];
         let equipeEditandoId = null;
+        let cuponsCache = [];
         let totalAlunosGeral = 0;
 
         window.showToast = function(message, type = 'error') {
@@ -433,25 +537,19 @@
             try {
                 document.getElementById('wallet-saldo').innerText = "⏳...";
                 document.getElementById('wallet-saldo-pendente').innerText = "Aguarde...";
-
                 const res = await consultarSaldoMaster({ uid: masterUid });
-                
                 if(res.data.success) {
-                    // CONVERSÃO SEGURA PARA EVITAR ERRO DE 'null'
                     const saldoReal = Number(res.data.balance) || 0;
                     const saldoEst = Number(res.data.estimatedBalance) || 0;
-
                     document.getElementById('wallet-saldo').innerText = `R$ ${saldoReal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
                     document.getElementById('wallet-saldo-pendente').innerText = `A liberar: R$ ${saldoEst.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
                 } else {
                     document.getElementById('wallet-saldo').innerText = "Erro!";
                     document.getElementById('wallet-saldo-pendente').innerText = res.data.error; 
-                    console.error(res.data.error);
                 }
             } catch(e) {
                 document.getElementById('wallet-saldo').innerText = "Falha";
                 document.getElementById('wallet-saldo-pendente').innerText = e.message;
-                console.error(e);
             }
         }
 
@@ -502,11 +600,12 @@
             document.getElementById('aba-academias').classList.add('hidden');
             document.getElementById('aba-faturamento').classList.add('hidden');
             document.getElementById('aba-planos').classList.add('hidden');
+            document.getElementById('aba-cupons').classList.add('hidden'); // Esconde a aba nova
             
             document.getElementById('aba-' + abaID).classList.remove('hidden');
             document.getElementById('aba-' + abaID).classList.add('block');
 
-            const menus = ['academias', 'faturamento', 'planos'];
+            const menus = ['academias', 'faturamento', 'planos', 'cupons'];
             menus.forEach(m => {
                 const btn = document.getElementById('menu-' + m);
                 btn.className = "w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-xl font-bold text-xs uppercase tracking-widest transition-all border border-transparent";
@@ -520,6 +619,7 @@
                 carregarSaldoMaster();
             }
             if(abaID === 'planos') carregarConfigPlanos(); 
+            if(abaID === 'cupons') carregarCupons(); // Carega os cupons ao abrir a aba
         }
 
         onAuthStateChanged(auth, async (user) => {
@@ -927,6 +1027,166 @@
         window.sairDoMaster = function() {
             sessionStorage.removeItem('admin_impersonate');
             signOut(auth).then(() => window.location.href = "index.html");
+        }
+
+        // ==========================================
+        // GESTÃO DE CUPONS E PARCEIROS (MÓDULO NOVO)
+        // ==========================================
+
+        window.carregarCupons = async function() {
+            document.getElementById('tabela-cupons').innerHTML = '<tr><td colspan="5" class="text-center p-8 text-slate-500 italic text-xs">Carregando cupons...</td></tr>';
+            try {
+                const snap = await getDocs(collection(db, "cupons"));
+                cuponsCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderizarCupons();
+            } catch(e) {
+                showToast("Erro ao carregar os cupons.", "error");
+                document.getElementById('tabela-cupons').innerHTML = '<tr><td colspan="5" class="text-center p-8 text-rose-500 font-bold text-xs">Erro na leitura do banco.</td></tr>';
+            }
+        }
+
+        window.renderizarCupons = function() {
+            const tabela = document.getElementById('tabela-cupons');
+            tabela.innerHTML = '';
+
+            document.getElementById('kpi-cupons-ativos').innerText = cuponsCache.length;
+            
+            // Simulação de cálculo de comissão (isso virá do financeiro real depois)
+            let somaComissoes = 0;
+
+            if (cuponsCache.length === 0) {
+                tabela.innerHTML = `<tr><td colspan="5" class="text-center p-8 text-slate-500 italic text-xs">Nenhum cupom gerado ainda.</td></tr>`;
+                document.getElementById('kpi-comissoes').innerText = "R$ 0,00";
+                return;
+            }
+
+            // Ordena os mais recentes primeiro
+            cuponsCache.sort((a, b) => b.data_criacao.localeCompare(a.data_criacao));
+
+            cuponsCache.forEach(cupom => {
+                const desconto = cupom.desconto_perc ? cupom.desconto_perc + '%' : '0%';
+                
+                let tipoBadge = "";
+                if(cupom.limite_uso === 1 && cupom.desconto_perc === 100) {
+                    tipoBadge = `<span class="px-2 py-1 rounded bg-amber-500/20 text-amber-500 text-[9px] font-black uppercase border border-amber-500/30">🎫 GRATUIDADE</span>`;
+                } else if(cupom.limite_uso > 0) {
+                    tipoBadge = `<span class="px-2 py-1 rounded bg-blue-500/20 text-blue-400 text-[9px] font-black uppercase border border-blue-500/30">LIMITADO (${cupom.limite_uso}x)</span>`;
+                } else {
+                    tipoBadge = `<span class="px-2 py-1 rounded bg-emerald-500/20 text-emerald-400 text-[9px] font-black uppercase border border-emerald-500/30">♾️ INFINITO</span>`;
+                }
+
+                const usos = cupom.vezes_usado || 0;
+                const limite = cupom.limite_uso > 0 ? cupom.limite_uso : '∞';
+                
+                // Info do Parceiro
+                const parceiroStr = cupom.nome_parceiro ? cupom.nome_parceiro : `<span class="text-slate-600">Sem Afiliado</span>`;
+                const comissaoStr = cupom.comissao_perc ? `(${cupom.comissao_perc}% comissão)` : '';
+
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors";
+                
+                tr.innerHTML = `
+                    <td class="px-6 py-4">
+                        <span class="font-mono text-white text-sm font-black tracking-widest bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-700">${cupom.id}</span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="text-rose-500 font-black text-lg">-${desconto}</span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <div class="flex flex-col items-center gap-1">
+                            ${tipoBadge}
+                            <span class="text-[9px] text-slate-500 font-bold mt-1">Usos: ${usos} / ${limite}</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <p class="text-xs text-indigo-300 font-bold uppercase">${parceiroStr}</p>
+                        <p class="text-[9px] text-slate-500 mt-0.5">${comissaoStr}</p>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <button onclick="excluirCupom('${cupom.id}')" class="text-slate-500 hover:text-rose-500 transition-colors p-2" title="Excluir Cupom">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                        </button>
+                    </td>
+                `;
+                tabela.appendChild(tr);
+            });
+        }
+
+        window.abrirModalNovoCupom = function() {
+            document.getElementById('cupom-codigo').value = '';
+            document.getElementById('cupom-desconto').value = '';
+            document.getElementById('cupom-limite').value = '';
+            document.getElementById('cupom-parceiro').value = '';
+            document.getElementById('cupom-comissao').value = '';
+            document.getElementById('modal-cupom').classList.replace('hidden', 'flex');
+        }
+
+        window.fecharModalCupom = function() {
+            document.getElementById('modal-cupom').classList.replace('flex', 'hidden');
+        }
+
+        window.salvarCupom = async function() {
+            let codigo = document.getElementById('cupom-codigo').value.trim().toUpperCase();
+            let desconto = parseFloat(document.getElementById('cupom-desconto').value);
+            let limite = parseInt(document.getElementById('cupom-limite').value);
+            let parceiro = document.getElementById('cupom-parceiro').value.trim();
+            let comissao = parseFloat(document.getElementById('cupom-comissao').value);
+
+            // Validações básicas
+            if(!codigo) return showToast("Digite o código do cupom.", "error");
+            if(codigo.includes(' ')) return showToast("O código não pode ter espaços.", "error");
+            if(isNaN(desconto) || desconto < 1 || desconto > 100) return showToast("O desconto deve ser entre 1% e 100%.", "error");
+            if(isNaN(limite) || limite < 0) limite = 0; // 0 = infinito
+            if(isNaN(comissao) || comissao < 0) comissao = 0;
+
+            const btn = document.getElementById('btn-salvar-cupom');
+            const txtOrig = btn.innerHTML;
+            btn.innerHTML = "⏳ Salvando...";
+            btn.disabled = true;
+
+            try {
+                // Verifica se o cupom já existe
+                const docVerifica = await getDoc(doc(db, "cupons", codigo));
+                if(docVerifica.exists()) {
+                    showToast("Este código já existe. Escolha outro.", "error");
+                    btn.innerHTML = txtOrig;
+                    btn.disabled = false;
+                    return;
+                }
+
+                const dadosCupom = {
+                    desconto_perc: desconto,
+                    limite_uso: limite,
+                    vezes_usado: 0,
+                    nome_parceiro: parceiro || null,
+                    comissao_perc: comissao || 0,
+                    data_criacao: new Date().toISOString(),
+                    criado_por: masterUid
+                };
+
+                await setDoc(doc(db, "cupons", codigo), dadosCupom);
+                showToast("Cupom criado com sucesso!", "success");
+                fecharModalCupom();
+                carregarCupons();
+
+            } catch (error) {
+                console.error(error);
+                showToast("Erro ao criar cupom.", "error");
+            } finally {
+                btn.innerHTML = txtOrig;
+                btn.disabled = false;
+            }
+        }
+
+        window.excluirCupom = async function(codigo) {
+            if(!confirm(`Tem a certeza que deseja excluir o cupom ${codigo}?`)) return;
+            try {
+                await deleteDoc(doc(db, "cupons", codigo));
+                showToast("Cupom excluído.", "success");
+                carregarCupons();
+            } catch(e) {
+                showToast("Erro ao excluir.", "error");
+            }
         }
     </script>
 </body>

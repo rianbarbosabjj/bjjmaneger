@@ -397,9 +397,7 @@
             <div class="p-4 md:p-6 bg-slate-50 border-t border-slate-200 flex flex-wrap justify-end gap-3 rounded-b-3xl shrink-0">
                 <button onclick="abrirModalCarteirinha()" id="btn-abrir-carteirinha" class="flex-1 md:flex-none bg-indigo-500 hover:bg-indigo-600 text-white font-black py-3 px-6 rounded-xl text-sm hidden uppercase tracking-widest shadow-md transition-all">🪪 Carteirinha</button>
                 <button onclick="fecharModal()" class="flex-1 md:flex-none px-6 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-200 transition-colors text-sm">Cancelar</button>
-                
                 <button onclick="proximaAba()" id="btn-proximo" class="flex-1 md:flex-none bg-slate-800 hover:bg-slate-900 text-white font-black py-3 px-8 rounded-xl shadow-md transition-all text-sm uppercase tracking-widest">Próximo ➔</button>
-                
                 <button onclick="salvarAluno()" id="btn-salvar-aluno" class="flex-1 md:flex-none bg-cyan-500 hover:bg-cyan-600 text-white font-black py-3 px-8 rounded-xl shadow-md transition-all text-sm uppercase tracking-widest hidden">💾 Salvar</button>
             </div>
         </div>
@@ -522,6 +520,7 @@
             selectVenc.value = "10";
         }
 
+        // --- SISTEMA DO OLHO DA SENHA ---
         window.toggleSenha = function(inputId, btnElement) {
             const input = document.getElementById(inputId);
             if (input.type === "password") {
@@ -704,6 +703,30 @@
             return 'bg-slate-100 text-slate-600 border border-slate-200';
         }
 
+        function getCorFaixaDupla(faixaTexto) {
+            const f = faixaTexto ? faixaTexto.toLowerCase() : '';
+            if (f.includes('cinza e branca')) return 'linear-gradient(to bottom, #94A3B8 50%, #f8fafc 50%)';
+            if (f.includes('cinza e preta')) return 'linear-gradient(to bottom, #94A3B8 50%, #0F172A 50%)';
+            if (f.includes('amarela e branca')) return 'linear-gradient(to bottom, #FACC15 50%, #f8fafc 50%)';
+            if (f.includes('amarela e preta')) return 'linear-gradient(to bottom, #FACC15 50%, #0F172A 50%)';
+            if (f.includes('laranja e branca')) return 'linear-gradient(to bottom, #F97316 50%, #f8fafc 50%)';
+            if (f.includes('laranja e preta')) return 'linear-gradient(to bottom, #F97316 50%, #0F172A 50%)';
+            if (f.includes('verde e branca')) return 'linear-gradient(to bottom, #16A34A 50%, #f8fafc 50%)';
+            if (f.includes('verde e preta')) return 'linear-gradient(to bottom, #16A34A 50%, #0F172A 50%)';
+            
+            if (f.includes('branca')) return '#f8fafc';
+            if (f.includes('cinza')) return '#94A3B8';
+            if (f.includes('amarela')) return '#FACC15';
+            if (f.includes('laranja')) return '#F97316';
+            if (f.includes('verde')) return '#16A34A';
+            if (f.includes('azul')) return '#3b82f6';
+            if (f.includes('roxa')) return '#a855f7';
+            if (f.includes('marrom')) return '#78350f';
+            if (f.includes('preta')) return '#0F172A';
+            
+            return '#cbd5e1'; 
+        }
+
         window.renderizarTabela = function() {
             const tab = document.getElementById('tabela-alunos');
             const busca = document.getElementById('input-busca').value.toLowerCase();
@@ -774,33 +797,28 @@
                 const anoAtual = hoje.getFullYear();
                 const mesStr = String(mesAtual).padStart(2, '0');
                 
-                // Pega todos os alunos ativos da equipe
                 const alunosAtivos = todosAlunosCache.filter(a => a.status === 'ATIVO');
 
                 const dataInicio = `${anoAtual}-${mesStr}-01`;
                 const dataFim = `${anoAtual}-${mesStr}-31`;
 
-                // SOLUÇÃO: Fazer a busca apenas por equipe_id para não exigir index composto no Firebase
                 const qCheck = query(collection(db, "checkins"), where("equipe_id", "==", teamId));
                 const snap = await getDocs(qCheck);
 
                 let contagem = {};
                 snap.forEach(doc => {
                     const c = doc.data();
-                    // Filtramos a data aqui no JavaScript!
                     if (c.data >= dataInicio && c.data <= dataFim) {
                         contagem[c.aluno_id] = (contagem[c.aluno_id] || 0) + 1;
                     }
                 });
 
-                // Ordena os alunos por quem mais treinou
                 alunosAtivos.sort((a, b) => {
                     const treinosA = contagem[a.id] || 0;
                     const treinosB = contagem[b.id] || 0;
                     return treinosB - treinosA; 
                 });
 
-                // Constrói a tabela HTML
                 let linhasHtml = '';
                 alunosAtivos.forEach(a => {
                     const treinos = contagem[a.id] || 0;
@@ -819,8 +837,8 @@
                 element.innerHTML = `
                     <div style="font-family: Arial, sans-serif; padding: 30px; color: #333;">
                         <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px;">
-                            ${equipeDados.logo ? `<img src="${equipeDados.logo}" style="height: 50px; margin-bottom: 10px; border-radius: 8px;" crossorigin="anonymous">` : ''}
-                            <h1 style="font-size: 22px; font-weight: 900; margin: 0; color: #0f172a; text-transform: uppercase;">RELATÓRIO DE ASSIDUIDADE</h1>
+                            ${equipeDados.logo ? `<img src="${equipeDados.logo}" style="height: 85px; max-width: 200px; display: block; margin: 0 auto 15px auto; object-fit: contain;" crossorigin="anonymous">` : ''}
+                            <h1 style="font-size: 22px; font-weight: 900; margin: 0; color: #0f172a; text-transform: uppercase;">RELATÓRIO DE FREQUÊNCIA</h1>
                             <p style="font-size: 14px; margin: 5px 0; font-weight: bold; color: #475569;">${equipeDados.nome.toUpperCase()}</p>
                             <p style="font-size: 12px; color: #64748b; background-color: #f1f5f9; display: inline-block; padding: 4px 12px; border-radius: 20px; margin-top: 10px;">Referência: Mês ${mesStr}/${anoAtual}</p>
                         </div>
@@ -849,7 +867,7 @@
                     margin:       10,
                     filename:     `Relatorio_Frequencia_${mesStr}_${anoAtual}.pdf`,
                     image:        { type: 'jpeg', quality: 0.98 },
-                    html2canvas:  { scale: 2, useCORS: true }, // Add useCORS here just in case of logo
+                    html2canvas:  { scale: 2, useCORS: true },
                     jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
                 };
 
@@ -913,7 +931,7 @@
         }
 
         window.filtrarFrequenciaAdmin = async function() {
-            const valFiltro = document.getElementById('filtro-mes-freq-admin').value; 
+            const valFiltro = document.getElementById('filtro-mes-freq-admin').value; // Formato YYYY-MM
             if (!valFiltro) return;
 
             const partes = valFiltro.split('-');
@@ -998,6 +1016,7 @@
             
             if(document.getElementById('aluno-senha-portal')) {
                 document.getElementById('aluno-senha-portal').value = a.senha_portal || '';
+                // Garante que o input volte a ser tipo senha se foi alternado antes
                 document.getElementById('aluno-senha-portal').type = "password";
             }
 

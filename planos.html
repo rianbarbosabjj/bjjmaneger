@@ -54,11 +54,11 @@
                     <button onclick="validarCupom()" id="btn-aplicar-cupom" class="bg-slate-900 hover:bg-slate-800 text-white font-black py-2.5 px-5 rounded-xl text-[10px] uppercase tracking-widest transition-colors shrink-0">Aplicar</button>
                 </div>
                 
-                <div id="msg-cupom" class="hidden mt-3 text-center">
-                    </div>
+                <div id="msg-cupom" class="hidden mt-3 text-center"></div>
             </div>
             
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 items-start">
+                
                 <div class="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm flex flex-col relative opacity-90 h-full">
                     <h3 id="plano1-nome" class="text-xl font-black text-slate-800 mb-2">Carregando...</h3>
                     <p id="plano1-desc" class="text-xs text-slate-500 mb-6 min-h-[40px]">...</p>
@@ -151,8 +151,6 @@
         let equipeId = null;
         let equipePlanoAtual = null;
         let dadosEquipe = null;
-        
-        // NOVO: Guarda o cupom ativo na tela
         let cupomAtivo = null;
 
         window.showToast = function(message, type = 'error') {
@@ -173,20 +171,24 @@
                     dadosEquipe = mestreDoc.data();
                     equipePlanoAtual = dadosEquipe.status_plano || 'TESTE';
                     atualizarStatusCabecalho();
+                    
+                    // Se ele usou cupom no cadastro, nós puxamos automaticamente!
+                    if(dadosEquipe.cupom_usado && !cupomAtivo) {
+                        document.getElementById('input-cupom').value = dadosEquipe.cupom_usado;
+                        await window.validarCupom(true); // O 'true' indica que foi auto-load
+                    } else {
+                        construirTelaDePlanos();
+                    }
                 } else {
                     window.location.href = "dashboard.html";
                     return;
                 }
-                construirTelaDePlanos();
             } else {
                 window.location.href = "login.html";
             }
         });
 
-        // ========================================================
-        // 🎟️ LÓGICA DO CUPOM DE DESCONTO
-        // ========================================================
-        window.validarCupom = async function() {
+        window.validarCupom = async function(isAutoLoad = false) {
             const input = document.getElementById('input-cupom');
             const codigo = input.value.trim().toUpperCase();
             if(!codigo) return;
@@ -201,16 +203,14 @@
                 if(docSnap.exists()) {
                     const cupom = docSnap.data();
                     
-                    // Valida se o cupom já passou do limite de uso
                     if(cupom.limite_uso > 0 && (cupom.vezes_usado || 0) >= cupom.limite_uso) {
-                        showToast("Este cupom já atingiu o limite máximo de utilizações.", "error");
+                        if(!isAutoLoad) showToast("Este cupom já atingiu o limite máximo de utilizações.", "error");
                         cupomAtivo = null;
+                        input.value = '';
                     } else {
-                        // Cupom Válido!
                         cupomAtivo = { codigo: codigo, ...cupom };
-                        showToast(`Cupom ${codigo} ativado com sucesso!`, "success");
+                        if(!isAutoLoad) showToast(`Cupom ${codigo} ativado com sucesso!`, "success");
                         
-                        // Atualiza a UI para mostrar que o cupom está ativado
                         input.disabled = true;
                         document.getElementById('caixa-input-cupom').classList.add('opacity-50');
                         btn.classList.add('hidden');
@@ -224,14 +224,14 @@
                         msgDiv.classList.remove('hidden');
                     }
                 } else {
-                    showToast("Cupom inválido ou não encontrado.", "error");
+                    if(!isAutoLoad) showToast("Cupom inválido ou não encontrado.", "error");
                     cupomAtivo = null;
+                    input.value = '';
                 }
-                // Manda reconstruir os cards com os novos preços
                 construirTelaDePlanos();
             } catch(e) {
                 console.error(e);
-                showToast("Erro ao validar cupom. Tente novamente.", "error");
+                if(!isAutoLoad) showToast("Erro ao validar cupom. Tente novamente.", "error");
             } finally {
                 btn.innerHTML = "Aplicar";
                 btn.disabled = false;
@@ -250,10 +250,6 @@
             construirTelaDePlanos();
         }
 
-
-        // ========================================================
-        // 🚀 LÓGICA DE RENDERIZAÇÃO DE LISTA E PREÇOS
-        // ========================================================
         function renderizarListaFuncionalidades(containerId, featuresStr, corCheck, corTexto) {
             const container = document.getElementById(containerId);
             container.innerHTML = '';
@@ -323,34 +319,28 @@
                     const isento = (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true");
                     const descontoEquipe = dadosEquipe.desconto_plano ? parseFloat(dadosEquipe.desconto_plano) : 0;
 
-                    // Desconto do Cupom que o cliente digitou agora
                     const descCupomPerc = cupomAtivo ? parseFloat(cupomAtivo.desconto_perc) : 0;
                     const descCupomApenas1oMes = cupomAtivo && cupomAtivo.duracao === 'PRIMEIRA_MENSALIDADE';
 
-                    // ==========================================
-                    // PREENCHER PLANO 1 (BASE)
-                    // ==========================================
+                    // P1 (BASE)
                     document.getElementById('plano1-nome').innerText = planos.p1.nome;
                     document.getElementById('plano1-desc').innerText = planos.p1.desc;
                     renderizarListaFuncionalidades('plano1-features', planos.p1.features, 'emerald', 'slate-600');
 
-                    // ==========================================
-                    // PREENCHER PLANO 2 (BLACK BELT)
-                    // ==========================================
+                    // P2 (BLACK BELT)
                     document.getElementById('plano2-nome').innerText = planos.p2.nome;
                     document.getElementById('plano2-desc').innerText = planos.p2.desc;
                     const p2Base = parseFloat(planos.p2.preco) || 49.90;
-                    const p2Orig = parseFloat(planos.p2.preco_original) || 0;
                     const p2TxtFinal = document.getElementById('plano2-preco');
                     const p2TxtAviso = document.getElementById('plano2-aviso-duracao');
                     
-                    p2TxtAviso.classList.add('hidden'); // reseta aviso
+                    p2TxtAviso.classList.add('hidden');
 
                     if (isento) {
+                        document.getElementById('plano2-preco-antigo-container').classList.remove('hidden');
+                        document.getElementById('plano2-preco-antigo').innerText = `De R$ ${formatarMoeda(p2Base)}`;
                         p2TxtFinal.innerText = "0,00";
-                        document.getElementById('plano2-preco-antigo-container').classList.add('hidden');
                     } else if (descCupomPerc > 0) {
-                        // Aplica o Desconto do Cupom (Ignora o desconto de equipe se houver cupom ativo)
                         document.getElementById('plano2-preco-antigo-container').classList.remove('hidden');
                         document.getElementById('plano2-preco-antigo').innerText = `R$ ${formatarMoeda(p2Base)}`;
                         p2TxtFinal.innerText = formatarMoeda(p2Base * (1 - (descCupomPerc/100)));
@@ -364,33 +354,25 @@
                         document.getElementById('plano2-preco-antigo').innerText = `R$ ${formatarMoeda(p2Base)}`;
                         p2TxtFinal.innerText = formatarMoeda(p2Base * (1 - (descontoEquipe/100)));
                     } else {
-                        if (p2Orig > p2Base) {
-                            document.getElementById('plano2-preco-antigo-container').classList.remove('hidden');
-                            document.getElementById('plano2-preco-antigo').innerText = `De R$ ${formatarMoeda(p2Orig)}`;
-                        } else {
-                            document.getElementById('plano2-preco-antigo-container').classList.add('hidden');
-                        }
+                        document.getElementById('plano2-preco-antigo-container').classList.add('hidden');
                         p2TxtFinal.innerText = formatarMoeda(p2Base);
                     }
                     renderizarListaFuncionalidades('plano2-features', planos.p2.features, 'cyan', 'slate-200');
 
-                    // ==========================================
-                    // PREENCHER PLANO 3 (ELITE)
-                    // ==========================================
+                    // P3 (ELITE)
                     document.getElementById('plano3-nome').innerText = planos.p3.nome;
                     document.getElementById('plano3-desc').innerText = planos.p3.desc;
                     const p3Base = parseFloat(planos.p3.preco) || 89.90;
-                    const p3Orig = parseFloat(planos.p3.preco_original) || 0;
                     const p3TxtFinal = document.getElementById('plano3-preco');
                     const p3TxtAviso = document.getElementById('plano3-aviso-duracao');
                     
-                    p3TxtAviso.classList.add('hidden'); // reseta aviso
+                    p3TxtAviso.classList.add('hidden');
 
                     if (isento) {
+                        document.getElementById('plano3-preco-antigo-container').classList.remove('hidden');
+                        document.getElementById('plano3-preco-antigo').innerText = `De R$ ${formatarMoeda(p3Base)}`;
                         p3TxtFinal.innerText = "0,00";
-                        document.getElementById('plano3-preco-antigo-container').classList.add('hidden');
                     } else if (descCupomPerc > 0) {
-                        // Aplica o Desconto do Cupom
                         document.getElementById('plano3-preco-antigo-container').classList.remove('hidden');
                         document.getElementById('plano3-preco-antigo').innerText = `R$ ${formatarMoeda(p3Base)}`;
                         p3TxtFinal.innerText = formatarMoeda(p3Base * (1 - (descCupomPerc/100)));
@@ -404,17 +386,11 @@
                         document.getElementById('plano3-preco-antigo').innerText = `R$ ${formatarMoeda(p3Base)}`;
                         p3TxtFinal.innerText = formatarMoeda(p3Base * (1 - (descontoEquipe/100)));
                     } else {
-                        if (p3Orig > p3Base) {
-                            document.getElementById('plano3-preco-antigo-container').classList.remove('hidden');
-                            document.getElementById('plano3-preco-antigo').innerText = `De R$ ${formatarMoeda(p3Orig)}`;
-                        } else {
-                            document.getElementById('plano3-preco-antigo-container').classList.add('hidden');
-                        }
+                        document.getElementById('plano3-preco-antigo-container').classList.add('hidden');
                         p3TxtFinal.innerText = formatarMoeda(p3Base);
                     }
                     renderizarListaFuncionalidades('plano3-features', planos.p3.features, 'amber', 'slate-600');
 
-                    // BLOQUEIOS VISUAIS DE BOTÕES
                     if (equipePlanoAtual === 'BLACK_BELT') {
                         const btn2 = document.getElementById('btn-plano2');
                         btn2.disabled = true;
@@ -426,17 +402,12 @@
                         btn3.innerHTML = "✓ SEU PLANO ATUAL";
                         btn3.className = "w-full bg-slate-200 text-slate-400 font-black py-4 rounded-xl text-xs cursor-not-allowed border border-slate-300 mt-auto";
                     }
-                } else {
-                    console.warn("Planos ainda não configurados no Super Admin.");
                 }
             } catch (error) {
-                console.error("Erro ao construir tela de planos:", error);
+                console.error("Erro:", error);
             }
         }
 
-        // ========================================================
-        // 💳 CHECKOUT COM CUPOM INJETADO
-        // ========================================================
         window.iniciarCheckout = async function(planoEscolhido) {
             const isento = (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true");
             if(isento) {
@@ -460,7 +431,6 @@
                     if(planoEscolhido === 'BLACK_BELT') valorParaCobrar = parseFloat(planos.p2.preco);
                 }
 
-                // Calcula o preço a cobrar priorizando o Cupom. Se não tiver cupom, tenta ver se a equipe tem desconto fixo.
                 let valorFinalACobrar = valorParaCobrar;
                 let codigoCupomParaEnviar = null;
 
@@ -473,14 +443,13 @@
 
                 const gerarAssinatura = httpsCallable(functions, 'gerarAssinaturaSistema');
                 
-                // Envia todos os dados para o Backend, inclusive o código do cupom (O Backend vai validar de novo por segurança)
                 const resultado = await gerarAssinatura({
                     equipeId: equipeId,
                     nomePlano: planoEscolhido,
                     valor: valorFinalACobrar,
                     email: auth.currentUser.email,
                     nome: "Assinante BJJ Manager",
-                    cupom: codigoCupomParaEnviar // <- NOVO: Envia o cupom!
+                    cupom: codigoCupomParaEnviar
                 });
 
                 if (resultado.data.success) {

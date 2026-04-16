@@ -21,154 +21,106 @@
 
     <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between hidden md:flex shrink-0 relative z-20 shadow-2xl">
         <div>
-            <div class="p-6 border-b border-slate-800 text-center">
-                <img src="logo_bjj_maneger.png" class="h-10 mx-auto mb-2 filter drop-shadow-md" alt="Logo">
-                <span class="text-[9px] font-black text-rose-500 tracking-widest uppercase bg-rose-500/10 px-2 py-1 rounded">Super Admin</span>
+            <div class="p-6 border-b border-slate-800 flex flex-col items-center justify-center">
+                <img src="logo_bjj_maneger.png" alt="Logo" class="h-16 w-auto mb-3 filter drop-shadow-[0_0_8px_rgba(244,63,94,0.5)]">
+                <h1 class="text-xs font-black tracking-widest uppercase text-white">SaaS Master</h1>
+                <p class="text-[9px] text-rose-500 font-bold uppercase tracking-widest mt-1">Sala de Comando</p>
             </div>
             <nav class="p-4 space-y-2">
-                <a href="#" class="flex items-center px-4 py-3 text-sm font-black text-white bg-gradient-to-r from-rose-500/20 to-transparent border-l-4 border-rose-500 rounded-r-lg transition-all group">
-                    <span class="text-xl mr-3">🏢</span> Academias Clientes
+                <a href="#" class="flex items-center gap-3 px-4 py-3 bg-rose-500/10 text-rose-500 rounded-xl font-bold text-xs uppercase tracking-widest border border-rose-500/20 transition-all">
+                    <span class="text-lg">🏢</span> Academias
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-xl font-bold text-xs uppercase tracking-widest transition-all cursor-not-allowed opacity-50">
+                    <span class="text-lg">💳</span> Faturamento
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-xl font-bold text-xs uppercase tracking-widest transition-all cursor-not-allowed opacity-50">
+                    <span class="text-lg">⚙️</span> Planos Asaas
                 </a>
             </nav>
         </div>
-        <div class="p-4 border-t border-slate-800 text-center">
-            <button onclick="sairDoMaster()" class="text-xs font-bold text-slate-500 hover:text-rose-400 transition-colors uppercase tracking-widest flex items-center justify-center w-full gap-2">
-                <span>🚪</span> Sair do Sistema
-            </button>
+        <div class="p-4 border-t border-slate-800">
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center">
+                <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Logado como CEO</p>
+                <p id="master-email" class="text-xs font-black text-white truncate mb-3">carregando...</p>
+                <button onclick="sairDoMaster()" class="w-full py-2 bg-rose-600 hover:bg-rose-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition-colors">Encerrar Sessão</button>
+            </div>
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col h-full relative z-10 overflow-hidden">
-        <header class="h-16 border-b border-slate-800 flex items-center justify-between px-6 shrink-0 bg-slate-900/50 backdrop-blur-md">
-            <h2 class="text-lg font-black tracking-tight text-white flex items-center gap-2">
-                <span>📊</span> Controle de Assinantes
-            </h2>
-            <div class="text-xs font-bold text-slate-400 bg-slate-800 px-3 py-1 rounded-lg border border-slate-700 shadow-inner">
-                Acesso Restrito (Modo Deus)
+    <main class="flex-1 flex flex-col h-full relative overflow-y-auto hide-scrollbar">
+        <header class="md:hidden bg-slate-900 border-b border-slate-800 p-4 flex justify-between items-center sticky top-0 z-30">
+            <div class="flex items-center gap-2">
+                <span class="text-xl">👑</span>
+                <h1 class="text-xs font-black tracking-widest uppercase text-white">SaaS Master</h1>
             </div>
+            <button onclick="sairDoMaster()" class="text-xs font-bold text-rose-500 uppercase tracking-widest">Sair</button>
         </header>
 
-        <div class="flex-1 overflow-y-auto p-6 hide-scrollbar">
-            <div class="max-w-6xl mx-auto space-y-6">
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-lg flex items-center gap-4 relative overflow-hidden">
-                        <div class="absolute -right-4 -top-4 text-6xl opacity-5">🏢</div>
-                        <div class="w-12 h-12 rounded-full bg-cyan-500/20 text-cyan-500 flex items-center justify-center text-2xl font-black">🏢</div>
-                        <div>
-                            <p class="text-[10px] font-black text-slate-400 tracking-widest uppercase">Equipes Ativas</p>
-                            <h3 id="dash-total-equipes" class="text-3xl font-black text-white">0</h3>
-                        </div>
-                    </div>
-                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-lg flex items-center gap-4 relative overflow-hidden">
-                        <div class="absolute -right-4 -top-4 text-6xl opacity-5">🥋</div>
-                        <div class="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center text-2xl font-black">🥋</div>
-                        <div>
-                            <p class="text-[10px] font-black text-slate-400 tracking-widest uppercase">Total de Atletas</p>
-                            <h3 id="dash-total-alunos" class="text-3xl font-black text-white">0</h3>
-                        </div>
-                    </div>
-                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-lg flex items-center gap-4 relative overflow-hidden">
-                        <div class="absolute -right-4 -top-4 text-6xl opacity-5">💰</div>
-                        <div class="w-12 h-12 rounded-full bg-rose-500/20 text-rose-500 flex items-center justify-center text-2xl font-black">💰</div>
-                        <div>
-                            <p class="text-[10px] font-black text-slate-400 tracking-widest uppercase">Assinaturas Pagas</p>
-                            <h3 id="dash-assinaturas" class="text-3xl font-black text-white">0</h3>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-xl overflow-hidden mt-6">
-                    <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-800/20">
-                        <h3 class="text-sm font-black uppercase tracking-widest text-slate-300">Lista de Clientes (Equipes)</h3>
-                        <button onclick="carregarEquipes()" class="text-xs bg-slate-800 hover:bg-cyan-600 px-4 py-2 rounded-lg font-bold transition-colors flex items-center gap-2 shadow-sm text-white">
-                            <span>🔄</span> Atualizar
-                        </button>
-                    </div>
-                    <div class="overflow-x-auto w-full">
-                        <table class="w-full text-left border-collapse whitespace-nowrap min-w-[900px]">
-                            <thead>
-                                <tr class="bg-slate-900/80 border-b border-slate-800 uppercase text-[10px] font-black text-slate-500 tracking-widest">
-                                    <th class="px-6 py-4">Nome da Equipe</th>
-                                    <th class="px-6 py-4">Responsável</th>
-                                    <th class="px-6 py-4 text-center">Atletas</th>
-                                    <th class="px-6 py-4 text-center">Plano</th>
-                                    <th class="px-6 py-4 text-center">Asaas</th>
-                                    <th class="px-6 py-4 text-center">Ações de Gestão</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tabela-equipes" class="divide-y divide-slate-800/50">
-                                <tr><td colspan="6" class="text-center py-12 text-slate-500 font-medium">A carregar banco de dados...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </main>
-
-    <div id="modal-editar-equipe" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
-        <div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col transform transition-transform">
-            <div class="bg-slate-950 p-5 flex justify-between items-center text-white border-b border-slate-800">
-                <div class="flex items-center space-x-3">
-                    <div class="w-8 h-8 bg-cyan-500/20 text-cyan-400 rounded-lg flex items-center justify-center text-lg font-black">⚙️</div>
-                    <h3 class="font-black text-sm tracking-widest uppercase">Gestão da Licença</h3>
-                </div>
-                <button onclick="fecharModalEditar()" class="text-slate-500 hover:text-white text-2xl leading-none">&times;</button>
-            </div>
-
-            <div class="p-6 space-y-5 flex-1 overflow-y-auto">
+        <div class="p-6 md:p-10 max-w-7xl mx-auto w-full space-y-8">
+            
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Equipe Selecionada</p>
-                    <h4 id="edit-nome-equipe" class="text-lg font-black text-white">Nome da Equipe</h4>
+                    <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight">Visão Geral do Império</h2>
+                    <p class="text-sm text-slate-400 mt-1 font-medium">Controle total das academias assinantes do BJJ Manager.</p>
                 </div>
-
-                <div>
-                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Status do Plano</label>
-                    <select id="edit-status-plano" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white outline-none focus:border-cyan-500 transition-colors">
-                        <option value="TESTE">⏳ PERÍODO DE TESTE</option>
-                        <option value="BLACK_BELT">🥋 BLACK BELT (Ativo)</option>
-                        <option value="ELITE">⚡ ELITE (Ativo)</option>
-                        <option value="BLOQUEADO">🚨 BLOQUEADO (Inadimplente)</option>
-                    </select>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Mensalidade Padrão (R$)</label>
-                        <input type="number" id="edit-valor-plano" placeholder="Ex: 49.90" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white outline-none focus:border-cyan-500 transition-colors">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Desconto Concedido (%)</label>
-                        <input type="number" id="edit-desconto" placeholder="Ex: 10" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl font-bold text-white outline-none focus:border-cyan-500 transition-colors">
-                    </div>
-                </div>
-
-                <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700 mt-2 hover:border-cyan-500 transition-colors">
-                    <label class="flex items-center gap-3 cursor-pointer">
-                        <input type="checkbox" id="edit-isento" class="w-5 h-5 rounded text-cyan-500 border-slate-600 focus:ring-cyan-500 cursor-pointer bg-slate-900">
-                        <div>
-                            <span class="text-sm font-black text-white uppercase tracking-widest block">Equipe 100% Isenta</span>
-                            <span class="text-[9px] text-slate-400">Marque para projetos sociais ou parceiros VIP.</span>
-                        </div>
-                    </label>
-                </div>
-            </div>
-
-            <div class="p-5 bg-slate-950 border-t border-slate-800 flex justify-end gap-3">
-                <button onclick="fecharModalEditar()" class="px-6 py-2.5 rounded-xl font-bold text-slate-400 hover:bg-slate-800 transition-colors text-xs uppercase tracking-widest">Cancelar</button>
-                <button onclick="salvarEdicaoEquipe()" id="btn-salvar-edicao" class="bg-cyan-600 hover:bg-cyan-500 text-white font-black py-2.5 px-6 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest flex items-center gap-2">
-                    <span>💾</span> Salvar Licença
+                <button class="bg-emerald-500 hover:bg-emerald-400 text-white font-black py-3 px-6 rounded-xl shadow-lg shadow-emerald-500/20 text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2" onclick="showToast('Em breve: Cadastro manual de equipe', 'info')">
+                    <span>➕</span> Nova Academia
                 </button>
             </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl">🏢</div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Academias Ativas</p>
+                    <h3 class="text-4xl font-black text-white mt-2" id="dash-equipes">0</h3>
+                </div>
+                <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl">🥋</div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total de Atletas (Sistema)</p>
+                    <h3 class="text-4xl font-black text-cyan-400 mt-2" id="dash-atletas">0</h3>
+                </div>
+                <div class="bg-gradient-to-br from-rose-900 to-slate-900 p-6 rounded-3xl border border-rose-800 shadow-xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl">💰</div>
+                    <p class="text-[10px] font-black text-rose-300 uppercase tracking-widest">MRR Estimado (SaaS)</p>
+                    <h3 class="text-4xl font-black text-white mt-2" id="dash-mrr">R$ 0,00</h3>
+                    <p class="text-[9px] text-rose-400/60 mt-1 uppercase tracking-widest">Baseado em R$ 89,90/mês</p>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 rounded-3xl border border-slate-800 shadow-xl overflow-hidden flex flex-col">
+                <div class="p-6 border-b border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <h3 class="text-sm font-black text-white uppercase tracking-widest">Academias / Assinantes</h3>
+                    <div class="relative w-full sm:w-64">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-500">🔍</div>
+                        <input type="text" id="busca-equipe" onkeyup="renderizarEquipes()" class="bg-slate-950 border border-slate-800 text-white text-xs rounded-xl w-full pl-9 p-3 outline-none focus:border-rose-500 transition-all" placeholder="Buscar equipe...">
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto w-full">
+                    <table class="w-full text-left border-collapse whitespace-nowrap min-w-[800px]">
+                        <thead>
+                            <tr class="bg-slate-950/50 border-b border-slate-800 text-slate-400">
+                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Equipe / Mestre</th>
+                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Atletas</th>
+                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Plano SaaS</th>
+                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Status Asaas</th>
+                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Ação (Suporte)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-equipes" class="divide-y divide-slate-800/50 text-sm">
+                            <tr><td colspan="5" class="text-center p-8 text-slate-500 italic text-xs">Carregando império...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
-    </div>
+    </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, getDocs, query, where, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
@@ -183,130 +135,141 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Somente o email do Super Admin tem acesso
-        const SUPER_ADMIN_EMAIL = "rianbarbosa@gmail.com";
-
+        let masterUid = null;
         let equipesCache = [];
-        let equipeEditandoId = null;
+        let totalAlunosGeral = 0;
 
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            const bgColor = type === 'success' ? 'bg-emerald-500' : 'bg-rose-500';
-            const icon = type === 'success' ? '✅' : '🚨';
-            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transition-all font-bold text-sm z-[9999] flex items-center gap-3`;
-            toast.innerHTML = `<span class="text-xl">${icon}</span> <span>${message}</span>`;
+            const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'info' ? 'bg-blue-500' : 'bg-rose-500');
+            const icon = type === 'success' ? '✅' : (type === 'info' ? 'ℹ️' : '🚨');
+            
+            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transform transition-all duration-300 translate-x-full opacity-0 flex items-center gap-3 font-bold text-sm z-50`;
+            toast.innerHTML = `<span class="text-xl">${icon}</span> <span class="flex-1">${message}</span>`;
             container.appendChild(toast);
-            setTimeout(() => toast.remove(), 4500);
+            setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 10);
+            setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4000);
         }
 
+        // 1. VERIFICAÇÃO DE SEGURANÇA MÁXIMA
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                if (user.email !== SUPER_ADMIN_EMAIL) {
-                    window.location.href = "dashboard.html";
-                } else {
-                    carregarEquipes();
+                try {
+                    const superSnap = await getDoc(doc(db, "super_admins", user.uid));
+                    if (!superSnap.exists()) {
+                        alert("Acesso Negado. Esta área é restrita para a administração do BJJ Manager.");
+                        signOut(auth).then(() => window.location.href = "index.html");
+                        return;
+                    }
+                    
+                    masterUid = user.uid;
+                    document.getElementById('master-email').innerText = user.email;
+                    
+                    // Limpa qualquer impersonation ativo
+                    sessionStorage.removeItem('admin_impersonate');
+                    
+                    carregarImperio();
+
+                } catch (error) {
+                    console.error(error);
+                    showToast("Erro ao verificar credenciais master.", "error");
                 }
             } else {
-                window.location.href = "login.html";
+                window.location.href = "index.html";
             }
         });
 
-        window.carregarEquipes = async function() {
-            const tabela = document.getElementById('tabela-equipes');
-            tabela.innerHTML = '<tr><td colspan="6" class="text-center py-12 text-slate-500 font-medium">Buscando academias...</td></tr>';
-            
+        // 2. CARREGAR DADOS DO SAAS
+        async function carregarImperio() {
             try {
-                const snapEq = await getDocs(collection(db, "equipes"));
-                equipesCache = [];
-                let totalAssinaturas = 0;
-                
-                // Precisamos contar os alunos também
+                // Busca todas as equipes
+                const snapEquipes = await getDocs(collection(db, "equipes"));
+                equipesCache = snapEquipes.docs.map(d => ({ id: d.id, ...d.data() }));
+
+                // Busca todos os alunos para estatística
                 const snapAlunos = await getDocs(collection(db, "alunos"));
-                const contagemAlunos = {};
-                let totalAlunosGeral = 0;
+                const alunosData = snapAlunos.docs.map(d => d.data());
+                
+                // Conta total de ativos globalmente
+                totalAlunosGeral = alunosData.filter(a => a.status === 'ATIVO').length;
 
-                snapAlunos.forEach(doc => {
-                    const eqId = doc.data().equipe_id;
-                    if (eqId) {
-                        contagemAlunos[eqId] = (contagemAlunos[eqId] || 0) + 1;
-                        totalAlunosGeral++;
-                    }
+                // Associa a contagem de alunos para cada equipe
+                equipesCache.forEach(eq => {
+                    eq.total_alunos = alunosData.filter(a => a.equipe_id === eq.id && a.status === 'ATIVO').length;
                 });
 
-                document.getElementById('dash-total-equipes').innerText = snapEq.size;
-                document.getElementById('dash-total-alunos').innerText = totalAlunosGeral;
-
-                snapEq.forEach(doc => {
-                    const data = doc.data();
-                    data.id = doc.id;
-                    data.total_alunos = contagemAlunos[doc.id] || 0;
-                    equipesCache.push(data);
-                    
-                    if(data.status_plano === 'BLACK_BELT' || data.status_plano === 'ELITE') {
-                        totalAssinaturas++;
-                    }
-                });
-
-                document.getElementById('dash-assinaturas').innerText = totalAssinaturas;
-
-                // Ordenar por nome
-                equipesCache.sort((a,b) => (a.nome_equipe || "").localeCompare(b.nome_equipe || ""));
-                renderizarTabela();
+                atualizarDashboard();
+                renderizarEquipes();
 
             } catch (error) {
                 console.error(error);
-                tabela.innerHTML = '<tr><td colspan="6" class="text-center py-12 text-rose-500 font-bold">Erro ao carregar dados.</td></tr>';
+                showToast("Erro ao carregar banco de dados.", "error");
             }
         }
 
-        function renderizarTabela() {
-            const tabela = document.getElementById('tabela-equipes');
-            tabela.innerHTML = "";
+        function atualizarDashboard() {
+            document.getElementById('dash-equipes').innerText = equipesCache.length;
+            document.getElementById('dash-atletas').innerText = totalAlunosGeral;
+            
+            // Simulação de MRR (Mensalidade base x número de academias)
+            const mrrEstimado = equipesCache.length * 89.90;
+            document.getElementById('dash-mrr').innerText = `R$ ${mrrEstimado.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+        }
 
-            if (equipesCache.length === 0) {
-                tabela.innerHTML = '<tr><td colspan="6" class="text-center py-12 text-slate-500 font-medium">Nenhuma equipe encontrada.</td></tr>';
+        window.renderizarEquipes = function() {
+            const termo = document.getElementById('busca-equipe').value.toLowerCase();
+            const tabela = document.getElementById('tabela-equipes');
+            tabela.innerHTML = '';
+
+            let filtradas = equipesCache;
+            if (termo) {
+                filtradas = equipesCache.filter(eq => 
+                    (eq.nome_equipe && eq.nome_equipe.toLowerCase().includes(termo)) ||
+                    (eq.responsavel && eq.responsavel.toLowerCase().includes(termo))
+                );
+            }
+
+            if (filtradas.length === 0) {
+                tabela.innerHTML = `<tr><td colspan="5" class="text-center p-8 text-slate-500 italic text-xs">Nenhuma equipe encontrada.</td></tr>`;
                 return;
             }
 
-            equipesCache.forEach(eq => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-800/30 transition-colors border-b border-slate-800/50";
-
-                // Definir cores do Status do Plano
+            filtradas.forEach(eq => {
+                const nomeEquipe = (eq.nome_equipe || "Equipe Sem Nome").toUpperCase();
+                const responsavel = (eq.responsavel || "Responsável não informado");
+                
+                // Tratar Plano
+                let planoId = eq.plano_id || "essencial";
                 let planoBadge = "";
-                const st = eq.status_plano || "TESTE";
-                if(st === 'TESTE') planoBadge = `<span class="px-2 py-1 rounded bg-amber-500/20 text-amber-500 text-[9px] font-black uppercase border border-amber-500/30">TESTE</span>`;
-                else if(st === 'BLACK_BELT') planoBadge = `<span class="px-2 py-1 rounded bg-cyan-500/20 text-cyan-400 text-[9px] font-black uppercase border border-cyan-500/30">BLACK BELT</span>`;
-                else if(st === 'ELITE') planoBadge = `<span class="px-2 py-1 rounded bg-emerald-500/20 text-emerald-400 text-[9px] font-black uppercase border border-emerald-500/30">ELITE</span>`;
-                else if(st === 'BLOQUEADO') planoBadge = `<span class="px-2 py-1 rounded bg-rose-500/20 text-rose-400 text-[9px] font-black uppercase border border-rose-500/30">BLOQUEADO</span>`;
-                else planoBadge = `<span class="px-2 py-1 rounded bg-slate-500/20 text-slate-400 text-[9px] font-black uppercase border border-slate-500/30">${st}</span>`;
+                if(planoId === 'ultimate') planoBadge = `<span class="bg-amber-500/20 text-amber-500 border border-amber-500/30 px-2 py-1 rounded text-[9px] font-black tracking-widest uppercase">Ultimate</span>`;
+                else if(planoId === 'pro') planoBadge = `<span class="bg-purple-500/20 text-purple-400 border border-purple-500/30 px-2 py-1 rounded text-[9px] font-black tracking-widest uppercase">Pro</span>`;
+                else planoBadge = `<span class="bg-slate-700 text-slate-300 px-2 py-1 rounded text-[9px] font-black tracking-widest uppercase">Essencial</span>`;
 
-                if(eq.isento) {
-                    planoBadge += ` <span class="px-2 py-1 rounded bg-indigo-500/20 text-indigo-400 text-[9px] font-black uppercase border border-indigo-500/30 ml-1" title="Equipe Isenta de Mensalidade">ISENTO</span>`;
-                }
+                // Tratar Asaas
+                let asaasStatus = eq.status_asaas || "INATIVO";
+                let asaasBadge = "";
+                if(asaasStatus === 'ATIVO') asaasBadge = `<span class="text-emerald-400 font-bold text-[10px] flex items-center justify-center gap-1">🟢 Conectado</span>`;
+                else if(asaasStatus === 'PENDENTE') asaasBadge = `<span class="text-amber-400 font-bold text-[10px] flex items-center justify-center gap-1">🟡 Pendente</span>`;
+                else asaasBadge = `<span class="text-slate-500 font-bold text-[10px] flex items-center justify-center gap-1">⚪ Sem Asaas</span>`;
 
-                // Status do Asaas
-                let asaasBadge = `<span class="px-2 py-1 rounded bg-slate-800 text-slate-500 text-[9px] font-black uppercase border border-slate-700">INATIVO</span>`;
-                if(eq.status_asaas === 'ATIVO') {
-                    asaasBadge = `<span class="px-2 py-1 rounded bg-emerald-500/20 text-emerald-400 text-[9px] font-black uppercase border border-emerald-500/30">CONECTADO</span>`;
-                }
-
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors";
+                
                 tr.innerHTML = `
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 border border-slate-700 overflow-hidden">
-                                ${eq.url_logo ? `<img src="${eq.url_logo}" class="w-full h-full object-cover">` : `<span class="text-xs font-black text-slate-500">${(eq.nome_equipe||'E')[0]}</span>`}
+                            <div class="h-10 w-10 bg-slate-800 rounded-full flex items-center justify-center text-slate-400 font-black text-lg overflow-hidden border border-slate-700">
+                                ${eq.url_logo ? `<img src="${eq.url_logo}" class="h-full w-full object-cover">` : nomeEquipe.charAt(0)}
                             </div>
-                            <span class="font-bold text-sm text-slate-200">${eq.nome_equipe || 'Sem Nome'}</span>
+                            <div>
+                                <p class="font-black text-white text-xs tracking-wide">${nomeEquipe}</p>
+                                <p class="text-[9px] text-slate-400 uppercase mt-0.5 tracking-widest">${responsavel}</p>
+                            </div>
                         </div>
                     </td>
-                    <td class="px-6 py-4">
-                        <p class="text-xs text-slate-300 font-bold">${eq.responsavel || '-'}</p>
-                        <p class="text-[10px] text-slate-500 font-mono mt-0.5">${eq.email_responsavel || ''}</p>
-                    </td>
                     <td class="px-6 py-4 text-center">
-                        <span class="text-xs font-black text-slate-300 bg-slate-800 px-3 py-1 rounded-lg border border-slate-700">${eq.total_alunos || 0}</span>
+                        <span class="text-xs font-black text-cyan-400">${eq.total_alunos || 0}</span>
                     </td>
                     <td class="px-6 py-4 text-center">
                         ${planoBadge}
@@ -314,15 +277,9 @@
                     <td class="px-6 py-4 text-center">
                         ${asaasBadge}
                     </td>
-                    <td class="px-6 py-4 text-center flex items-center justify-center gap-2">
-                        <button onclick="abrirModalEditarEquipe('${eq.id}')" class="bg-slate-700 hover:bg-slate-600 text-white font-black py-2 px-3 rounded-lg text-[9px] uppercase tracking-widest transition-all shadow-md flex items-center justify-center gap-1" title="Editar Licença e Planos">
-                            <span>⚙️</span> Editar
-                        </button>
-                        <button onclick="acessarComoEquipe('${eq.id}')" class="bg-cyan-600 hover:bg-cyan-500 text-white font-black py-2 px-3 rounded-lg text-[9px] uppercase tracking-widest transition-all shadow-md flex items-center justify-center gap-1" title="Acessar como Mestre">
-                            <span>👁️</span> Acesso
-                        </button>
-                        <button onclick="excluirEquipe('${eq.id}')" class="bg-rose-600 hover:bg-rose-500 text-white font-black py-2 px-3 rounded-lg text-[9px] uppercase tracking-widest transition-all shadow-md flex items-center justify-center gap-1" title="Apagar Equipe Permanentemente">
-                            <span>🗑️</span> Excluir
+                    <td class="px-6 py-4 text-center">
+                        <button onclick="acessarComoEquipe('${eq.id}')" class="bg-rose-600 hover:bg-rose-500 text-white font-black py-2 px-4 rounded-lg text-[9px] uppercase tracking-widest transition-all shadow-md flex items-center justify-center mx-auto gap-1">
+                            <span>👁️</span> Acessar Painel
                         </button>
                     </td>
                 `;
@@ -330,89 +287,14 @@
             });
         }
 
-        // ==========================================
-        // GESTÃO DA LICENÇA
-        // ==========================================
-        window.abrirModalEditarEquipe = function(id) {
-            const eq = equipesCache.find(e => e.id === id);
-            if(!eq) return;
-
-            equipeEditandoId = id;
-            document.getElementById('edit-nome-equipe').innerText = (eq.nome_equipe || "Sem Nome").toUpperCase();
-            document.getElementById('edit-status-plano').value = eq.status_plano || "TESTE";
-            document.getElementById('edit-valor-plano').value = eq.valor_plano !== undefined ? eq.valor_plano : 49.90;
-            document.getElementById('edit-desconto').value = eq.desconto_plano || 0;
-            document.getElementById('edit-isento').checked = eq.isento === true;
-
-            document.getElementById('modal-editar-equipe').classList.replace('hidden', 'flex');
-        }
-
-        window.fecharModalEditar = function() {
-            equipeEditandoId = null;
-            document.getElementById('modal-editar-equipe').classList.replace('flex', 'hidden');
-        }
-
-        window.salvarEdicaoEquipe = async function() {
-            if(!equipeEditandoId) return;
-
-            const btn = document.getElementById('btn-salvar-edicao');
-            const txt = btn.innerHTML;
-            btn.innerHTML = "⏳ Salvando...";
-            btn.disabled = true;
-
-            try {
-                const dadosUpdate = {
-                    status_plano: document.getElementById('edit-status-plano').value,
-                    valor_plano: parseFloat(document.getElementById('edit-valor-plano').value) || 0,
-                    desconto_plano: parseFloat(document.getElementById('edit-desconto').value) || 0,
-                    isento: document.getElementById('edit-isento').checked
-                };
-
-                await updateDoc(doc(db, "equipes", equipeEditandoId), dadosUpdate);
-                
-                showToast("Licença atualizada com sucesso!", "success");
-                fecharModalEditar();
-                carregarEquipes(); // recarrega a tabela
-
-            } catch(e) {
-                console.error(e);
-                showToast("Erro ao atualizar a equipe.", "error");
-            } finally {
-                btn.innerHTML = txt;
-                btn.disabled = false;
-            }
-        }
-
-        // ==========================================
-        // EXCLUIR EQUIPE (SUPER ADMIN APENAS)
-        // ==========================================
-        window.excluirEquipe = async function(id) {
-            const confirmacao = confirm("⚠️ ATENÇÃO: Tem a certeza absoluta que deseja excluir esta Equipe?\n\nEsta ação apagará o acesso da academia ao sistema e NÃO poderá ser desfeita.");
-            if(!confirmacao) return;
-
-            try {
-                // Remove o documento principal da equipe
-                await deleteDoc(doc(db, "equipes", id));
-                showToast("Equipe excluída com sucesso.", "success");
-                
-                // Recarrega a tabela para remover a linha apagada
-                carregarEquipes();
-            } catch(e) {
-                console.error(e);
-                showToast("Erro ao excluir equipe. Verifique as permissões.", "error");
-            }
-        }
-
-        // ==========================================
-        // ENTRAR NO PAINEL DO CLIENTE (DEUS MODE)
-        // ==========================================
+        // 3. A MÁGICA: ENTRAR COMO CLIENTE
         window.acessarComoEquipe = function(equipeId) {
             // Salva o ID da equipe no navegador
             sessionStorage.setItem('admin_impersonate', equipeId);
             
-            // O Modo Deus do BJJ Manager permite o redirecionamento ignorando a trava de "BLOQUEADO"
-            // O ficheiro dashboard.html e financeiro.html estão programados para ler este sessionStorage
+            // Redireciona para o painel principal (você vai entrar como se fosse ele)
             window.location.href = "financeiro.html"; 
+            // *Nota: O financeiro.html já tem a inteligência para ler esse sessionStorage!*
         }
 
         window.sairDoMaster = function() {

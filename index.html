@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BJJ Manager | O Sistema Definitivo para Academias de Jiu-Jitsu</title>
     
-    <meta name="description" content="Automatize cobranças, emita certificados com QR Code e tenha o raio-x da sua equipe na palma da mão.">
+    <meta name="description" content="Portal do aluno completo, carteirinhas, certificados e controle financeiro automático. Personalizado com a logo da sua equipe.">
     <link rel="icon" type="image/png" href="logo_bjj_maneger.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -24,18 +24,18 @@
         }
         .btn-whatsapp {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
+            bottom: 20px;
+            right: 20px;
             background-color: #25D366;
             color: white;
-            border-radius: 50px;
-            width: 60px;
-            height: 60px;
+            border-radius: 50%;
+            width: 55px;
+            height: 55px;
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            z-index: 1000;
+            z-index: 9999;
             transition: all 0.3s ease;
             animation: pulse-whatsapp 2s infinite;
         }
@@ -45,7 +45,7 @@
 <body class="bg-slate-900 text-slate-200 overflow-x-hidden selection:bg-cyan-500 selection:text-white">
 
     <a href="https://wa.me/5521981716074?text=Olá! Gostaria de saber mais sobre o BJJ Manager." target="_blank" class="btn-whatsapp">
-        <svg class="w-8 h-8 fill-current" viewBox="0 0 24 24">
+        <svg class="w-7 h-7 fill-current shrink-0" viewBox="0 0 24 24">
             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
         </svg>
     </a>
@@ -61,13 +61,14 @@
 
                 <div class="hidden md:flex items-center space-x-8 text-sm font-bold text-slate-400">
                     <a href="#galeria" class="hover:text-cyan-400 transition-colors">Plataforma</a>
-                    <a href="#recursos" class="hover:text-cyan-400 transition-colors">Funcionalidades</a>
+                    <a href="#modulos" class="hover:text-cyan-400 transition-colors">Módulos</a>
+                    <a href="#recursos" class="hover:text-cyan-400 transition-colors">Destaques</a>
                     <a href="#precos" class="hover:text-cyan-400 transition-colors">Planos</a>
                 </div>
                 
                 <div class="flex items-center gap-3 sm:gap-4">
-                    <a href="login.html" class="text-sm font-bold text-slate-300 hover:text-white transition-colors">Entrar</a>
-                    <a href="#precos" class="bg-cyan-500 hover:bg-cyan-600 text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all transform hover:-translate-y-0.5">Criar Conta</a>
+                    <a href="login.html" class="text-[11px] sm:text-sm font-bold text-slate-300 hover:text-white transition-colors">Entrar</a>
+                    <a href="#precos" class="bg-cyan-500 hover:bg-cyan-600 text-white px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl text-[9px] sm:text-xs font-black uppercase tracking-widest shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all transform hover:-translate-y-0.5 whitespace-nowrap">Criar Conta</a>
                 </div>
             </div>
         </div>
@@ -80,7 +81,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
             <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-[10px] font-black uppercase tracking-widest text-cyan-400 mb-8">
                 <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span></span>
-                Lançamento Oficial
+                O App da sua Equipe
             </div>
             
             <h1 class="text-4xl md:text-6xl lg:text-7xl font-black text-white leading-tight mb-6 tracking-tight">
@@ -89,7 +90,7 @@
             </h1>
             
             <p class="mt-4 text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-10 font-medium leading-relaxed">
-                Abandone as planilhas e a papelada. Faça a gestão completa dos seus alunos, controle mensalidades e emita diplomas e carteirinhas com QR Code de autenticidade.
+                Portal do aluno exclusivo com a sua logomarca. Automatize cobranças, registre presenças com GPS, emita certificados oficiais e venda produtos na sua vitrine virtual.
             </p>
             
             <div class="flex flex-col sm:flex-row justify-center gap-4">
@@ -109,7 +110,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 text-center md:text-left flex flex-col md:flex-row items-center justify-between">
             <div>
                 <h2 class="text-2xl md:text-3xl font-black text-white mb-2">Conheça o sistema por dentro</h2>
-                <p class="text-slate-400 text-sm">Deslize para ver como o seu painel vai ficar.</p>
+                <p class="text-slate-400 text-sm">Deslize para ver como o seu painel e o portal do aluno vão ficar.</p>
             </div>
             <div class="hidden md:flex gap-2">
                 <button onclick="document.getElementById('carrossel').scrollBy({left: -400, behavior: 'smooth'})" class="w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center text-white transition-colors">←</button>
@@ -139,7 +140,7 @@
                 <div class="absolute inset-0 bg-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
                 <img src="telas/alunos.png" alt="Gestão de Alunos" class="w-full h-auto object-cover" loading="lazy">
                 <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-slate-900 via-slate-900/80 to-transparent p-6 pt-12">
-                    <h3 class="text-white font-black text-xl">Gestão de Alunos</h3>
+                    <h3 class="text-white font-black text-xl">Gestão Completa de Atletas</h3>
                 </div>
             </div>
 
@@ -155,7 +156,7 @@
                 <div class="absolute inset-0 bg-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
                 <img src="telas/certificados.png" alt="Emissão de Certificados" class="w-full h-auto object-cover" loading="lazy">
                 <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-slate-900 via-slate-900/80 to-transparent p-6 pt-12">
-                    <h3 class="text-white font-black text-xl">Diplomas com QR Code</h3>
+                    <h3 class="text-white font-black text-xl">Diplomas com QR Code e sua Logo</h3>
                 </div>
             </div>
 
@@ -171,92 +172,151 @@
                 <div class="absolute inset-0 bg-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
                 <img src="telas/turmas.png" alt="Mais telas do sistema" class="w-full h-auto object-cover bg-slate-800 flex items-center justify-center text-slate-600" loading="lazy">
                 <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-slate-900 via-slate-900/80 to-transparent p-6 pt-12">
-                    <h3 class="text-white font-black text-xl">Gestão de Turmas</h3>
+                    <h3 class="text-white font-black text-xl">Gestão Inteligente de Turmas</h3>
                 </div>
             </div>
 
         </div>
     </section>
 
+    <section id="modulos" class="py-20 bg-slate-50 relative border-t border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-black text-slate-900 mb-4">O que tem em <span class="text-cyan-600">cada tela?</span></h2>
+                <p class="text-slate-500 font-medium max-w-2xl mx-auto">Módulo por módulo: veja exatamente o que você e os seus alunos vão ter acesso ao utilizar a nossa plataforma.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-lg transition-shadow">
+                    <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-2xl mb-6">📊</div>
+                    <h3 class="text-xl font-black text-slate-800 mb-4">Dashboard Principal</h3>
+                    <ul class="space-y-3 text-sm text-slate-600">
+                        <li class="flex items-start gap-2"><span>✓</span> Indicadores de Receitas e Inadimplência</li>
+                        <li class="flex items-start gap-2"><span>✓</span> Gráfico de distribuição de alunos por faixa</li>
+                        <li class="flex items-start gap-2"><span>✓</span> Lista de aniversariantes do mês atual</li>
+                        <li class="flex items-start gap-2"><span>✓</span> Painel em tempo real de quem fez check-in</li>
+                    </ul>
+                </div>
+
+                <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-lg transition-shadow">
+                    <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center text-2xl mb-6">🥋</div>
+                    <h3 class="text-xl font-black text-slate-800 mb-4">Gestão de Atletas</h3>
+                    <ul class="space-y-3 text-sm text-slate-600">
+                        <li class="flex items-start gap-2"><span>✓</span> Ficha cadastral com foto, faixa e validade</li>
+                        <li class="flex items-start gap-2"><span>✓</span> Termos de Consentimento (LGPD)</li>
+                        <li class="flex items-start gap-2"><span>✓</span> Ficha de Saúde (Anamnese/Neurodivergências)</li>
+                        <li class="flex items-start gap-2"><span>✓</span> Exportação de prontuários em PDF com Logo</li>
+                    </ul>
+                </div>
+
+                <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-lg transition-shadow">
+                    <div class="w-12 h-12 bg-cyan-100 text-cyan-600 rounded-xl flex items-center justify-center text-2xl mb-6">💰</div>
+                    <h3 class="text-xl font-black text-slate-800 mb-4">Centro Financeiro</h3>
+                    <ul class="space-y-3 text-sm text-slate-600">
+                        <li class="flex items-start gap-2"><span>✓</span> Lançamento de Mensalidades, Receitas e Despesas</li>
+                        <li class="flex items-start gap-2"><span>✓</span> Integração bancária com Asaas (Pix/Cartão)</li>
+                        <li class="flex items-start gap-2"><span>✓</span> Envio inteligente de cobrança via WhatsApp</li>
+                        <li class="flex items-start gap-2"><span>✓</span> Gestão de bolsas, descontos e isenções</li>
+                    </ul>
+                </div>
+
+                <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-lg transition-shadow">
+                    <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center text-2xl mb-6">📍</div>
+                    <h3 class="text-xl font-black text-slate-800 mb-4">Turmas & Frequência</h3>
+                    <ul class="space-y-3 text-sm text-slate-600">
+                        <li class="flex items-start gap-2"><span>✓</span> Criação de grades (Kids, Competição, etc)</li>
+                        <li class="flex items-start gap-2"><span>✓</span> Check-in mobile apenas 10min antes da aula</li>
+                        <li class="flex items-start gap-2"><span>✓</span> Validação de presença através do GPS do celular</li>
+                        <li class="flex items-start gap-2"><span>✓</span> Relatório mensal de assiduidade do atleta</li>
+                    </ul>
+                </div>
+
+                <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-lg transition-shadow">
+                    <div class="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-xl flex items-center justify-center text-2xl mb-6">🏆</div>
+                    <h3 class="text-xl font-black text-slate-800 mb-4">Carreira & Graduação</h3>
+                    <ul class="space-y-3 text-sm text-slate-600">
+                        <li class="flex items-start gap-2"><span>✓</span> Linha do tempo de graduações e tempo de faixa</li>
+                        <li class="flex items-start gap-2"><span>✓</span> Registo de competições, medalhas e categorias</li>
+                        <li class="flex items-start gap-2"><span>✓</span> Controle de filiações (IBJJF, CBJJ, Federações)</li>
+                        <li class="flex items-start gap-2"><span>✓</span> Gerador de Certificados/Diplomas com QR Code</li>
+                    </ul>
+                </div>
+
+                <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-lg transition-shadow border-b-4 border-b-cyan-500">
+                    <div class="w-12 h-12 bg-slate-900 text-white rounded-xl flex items-center justify-center text-2xl mb-6">📱</div>
+                    <h3 class="text-xl font-black text-slate-800 mb-4">Portal do Aluno</h3>
+                    <ul class="space-y-3 text-sm text-slate-600">
+                        <li class="flex items-start gap-2"><span>✓</span> Acesso seguro e exclusivo (Painel Mobile)</li>
+                        <li class="flex items-start gap-2"><span>✓</span> Carteirinha Digital para apresentação oficial</li>
+                        <li class="flex items-start gap-2"><span>✓</span> Vitrine Virtual para compra de kimonos e itens</li>
+                        <li class="flex items-start gap-2"><span>✓</span> Pagamento autônomo das próprias faturas</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
     <section id="recursos" class="py-20 bg-slate-900 relative border-t border-slate-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-black text-white mb-4">Tudo o que um <span class="text-cyan-500">Faixa Preta</span> precisa</h2>
-                <p class="text-slate-400 font-medium">O ecossistema mais completo do mercado, desenhado para quem vive de Jiu-Jitsu.</p>
+                <h2 class="text-3xl md:text-4xl font-black text-white mb-4">Mais que um sistema. <span class="text-cyan-500">O seu próprio App.</span></h2>
+                <p class="text-slate-400 font-medium max-w-2xl mx-auto">Os diferenciais e automações de elite que fazem o BJJ Manager ser único no mercado.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 
-                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-emerald-500/50 hover:bg-slate-800/80 transition-all group">
-                    <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">💰</div>
-                    <h3 class="text-lg font-black text-white mb-2">Caixa Blindado</h3>
-                    <p class="text-slate-400 text-xs leading-relaxed">Controle de mensalidades, registro de receitas extras (exames, seminários) e despesas. Saiba quem deve e quem pagou.</p>
-                </div>
-
-                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-cyan-500/50 hover:bg-slate-800/80 transition-all group">
-                    <div class="w-12 h-12 bg-cyan-500/20 text-cyan-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">📊</div>
-                    <h3 class="text-lg font-black text-white mb-2">Visão Geral (Raio-X)</h3>
-                    <p class="text-slate-400 text-xs leading-relaxed">Gráficos de lucro e inadimplência. Saiba instantaneamente quantos alunos tem em cada faixa e os aniversariantes do mês.</p>
-                </div>
-
-                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-[#25D366]/50 hover:bg-slate-800/80 transition-all group">
-                    <div class="w-12 h-12 bg-[#25D366]/20 text-[#25D366] rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">💬</div>
-                    <h3 class="text-lg font-black text-white mb-2">Cobrança no Zap</h3>
-                    <p class="text-slate-400 text-xs leading-relaxed">Com 1 clique, o sistema abre o seu WhatsApp com uma mensagem de cobrança (ou recibo) amigável e pronta a enviar ao atleta.</p>
-                </div>
-
-                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-amber-500/50 hover:bg-slate-800/80 transition-all group">
-                    <div class="w-12 h-12 bg-amber-500/20 text-amber-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">📜</div>
-                    <h3 class="text-lg font-black text-white mb-2">Diplomas Oficiais</h3>
-                    <p class="text-slate-400 text-xs leading-relaxed">Gere certificados em PDF com a sua logo e um QR Code rastreável que comprova a autenticidade da graduação.</p>
-                </div>
-
-                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-violet-500/50 hover:bg-slate-800/80 transition-all group">
-                    <div class="w-12 h-12 bg-violet-500/20 text-violet-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">🪪</div>
-                    <h3 class="text-lg font-black text-white mb-2">Carteirinha Digital</h3>
-                    <p class="text-slate-400 text-xs leading-relaxed">Gere instantaneamente carteirinhas premium de identificação para os seus atletas, com a foto, faixa e validade oficial da equipe.</p>
-                </div>
-
-                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-purple-500/50 hover:bg-slate-800/80 transition-all group">
-                    <div class="w-12 h-12 bg-purple-500/20 text-purple-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">🎓</div>
-                    <h3 class="text-lg font-black text-white mb-2">Linha do Tempo</h3>
-                    <p class="text-slate-400 text-xs leading-relaxed">Registre todos os graus e faixas. O sistema calcula automaticamente o "Tempo na Faixa" e mantém o histórico intocável.</p>
-                </div>
-
-                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-blue-500/50 hover:bg-slate-800/80 transition-all group">
-                    <div class="w-12 h-12 bg-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">📱</div>
-                    <h3 class="text-lg font-black text-white mb-2">App de Tatame</h3>
-                    <p class="text-slate-400 text-xs leading-relaxed">Design "Mobile First" com menu fluido tipo aplicação. Faça matrículas e dê baixas financeiras diretamente pelo celular no meio do treino.</p>
-                </div>
-
-                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-rose-500/50 hover:bg-slate-800/80 transition-all group">
-                    <div class="w-12 h-12 bg-rose-500/20 text-rose-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">🗓️</div>
-                    <h3 class="text-lg font-black text-white mb-2">Turmas e Horários</h3>
-                    <p class="text-slate-400 text-xs leading-relaxed">Crie as suas grades de horários (Ex: Kids, Adultos Noite) e separe os alunos para saber exatamente quem treina onde.</p>
-                </div>
-
-                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-indigo-500/50 hover:bg-slate-800/80 transition-all group">
-                    <div class="w-12 h-12 bg-indigo-500/20 text-indigo-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">🔗</div>
-                    <h3 class="text-lg font-black text-white mb-2">Link de Auto-Cadastro</h3>
-                    <p class="text-slate-400 text-xs leading-relaxed">Não perca tempo digitando dados. Envie o link da equipe e o aluno preenche a própria ficha no celular dele.</p>
-                </div>
-
-                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-teal-500/50 hover:bg-slate-800/80 transition-all group">
-                    <div class="w-12 h-12 bg-teal-500/20 text-teal-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">👥</div>
-                    <h3 class="text-lg font-black text-white mb-2">Co-Administradores</h3>
-                    <p class="text-slate-400 text-xs leading-relaxed">Dê acesso ao sistema aos seus professores auxiliares para ajudarem a gerir a academia e lançar presenças/pagamentos.</p>
-                </div>
-
-                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-yellow-500/50 hover:bg-slate-800/80 transition-all group">
-                    <div class="w-12 h-12 bg-yellow-500/20 text-yellow-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">🏆</div>
-                    <h3 class="text-lg font-black text-white mb-2">Área Esportiva</h3>
-                    <p class="text-slate-400 text-xs leading-relaxed">Controle as documentações das federações, registre medalhas e crie o currículo competitivo completo de cada atleta.</p>
+                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-cyan-500/50 hover:bg-slate-800/80 transition-all group lg:col-span-3 lg:flex lg:items-center lg:gap-8 relative overflow-hidden">
+                    <div class="absolute right-0 top-0 w-64 h-64 bg-cyan-500/10 blur-[80px] rounded-full pointer-events-none"></div>
+                    <div class="w-16 h-16 bg-cyan-500 text-white rounded-2xl flex items-center justify-center text-2xl mb-4 lg:mb-0 shrink-0 shadow-lg shadow-cyan-500/20 group-hover:scale-110 transition-transform">📱</div>
+                    <div>
+                        <h3 class="text-2xl font-black text-white mb-2">O Portal do Aluno</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">Entregue uma experiência premium. Os seus alunos terão acesso a uma plataforma exclusiva (que podem salvar no telemóvel como App) para ver treinos, pagar mensalidades, acessar a lojinha, ver a sua carteirinha e preencher a própria anamnese de saúde.</p>
+                    </div>
                 </div>
 
                 <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-pink-500/50 hover:bg-slate-800/80 transition-all group">
                     <div class="w-12 h-12 bg-pink-500/20 text-pink-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">🎨</div>
-                    <h3 class="text-lg font-black text-white mb-2">A Sua Marca</h3>
-                    <p class="text-slate-400 text-xs leading-relaxed">O sistema adapta-se à sua academia. Faça o upload da sua logo e ela aparecerá nos dashboards, recibos e certificados.</p>
+                    <h3 class="text-lg font-black text-white mb-2">Sua Marca em Destaque</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">Adicione a sua logomarca no sistema. Ela será aplicada automaticamente em todos os painéis, certificados, carteirinhas e documentos em PDF gerados.</p>
+                </div>
+
+                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-emerald-500/50 hover:bg-slate-800/80 transition-all group">
+                    <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">📍</div>
+                    <h3 class="text-lg font-black text-white mb-2">Check-in com Geolocalização</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">Acabe com as "presenças de casa". O botão de check-in só é liberado 10 min antes da aula e o sistema regista a coordenada exata do aluno no tatame.</p>
+                </div>
+
+                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-[#25D366]/50 hover:bg-slate-800/80 transition-all group">
+                    <div class="w-12 h-12 bg-[#25D366]/20 text-[#25D366] rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">💳</div>
+                    <h3 class="text-lg font-black text-white mb-2">Pix, Cartão e WhatsApp</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">Integração nativa com o Asaas para baixa automática de mensalidades. Envie cobranças e links de pagamento com 1 clique pelo WhatsApp.</p>
+                </div>
+
+                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-violet-500/50 hover:bg-slate-800/80 transition-all group">
+                    <div class="w-12 h-12 bg-violet-500/20 text-violet-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">🪪</div>
+                    <h3 class="text-lg font-black text-white mb-2">Carteirinhas c/ QR Code</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">Identidades oficiais com foto, faixa, equipe e validade. O QR Code permite que qualquer organizador de campeonato valide o status do atleta no sistema.</p>
+                </div>
+
+                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-rose-500/50 hover:bg-slate-800/80 transition-all group">
+                    <div class="w-12 h-12 bg-rose-500/20 text-rose-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">⚖️</div>
+                    <h3 class="text-lg font-black text-white mb-2">Relatórios Oficiais em PDF</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">Gere PDFs assinados digitalmente com Ficha de Anamnese (Saúde e Neurodivergência), Termos de Uso de Imagem (LGPD) e Certificados de Graduação.</p>
+                </div>
+
+                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-amber-500/50 hover:bg-slate-800/80 transition-all group">
+                    <div class="w-12 h-12 bg-amber-500/20 text-amber-400 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">🛒</div>
+                    <h3 class="text-lg font-black text-white mb-2">Vitrine da Equipe (Loja)</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">Cadastre os kimonos, rash guards e produtos da sua marca num carrossel de fotos. Os alunos podem ver e comprar diretamente pelo Portal deles.</p>
+                </div>
+
+                <div class="bg-slate-800/40 p-6 rounded-3xl border border-slate-700/50 hover:border-sky-500/50 hover:bg-slate-800/80 transition-all group lg:col-span-3 flex flex-col md:flex-row items-start md:items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-black text-white mb-2 flex items-center gap-2">🔗 Link de Auto-Cadastro & Turmas</h3>
+                        <p class="text-slate-400 text-sm max-w-3xl">Pare de anotar dados no papel. Envie o seu link exclusivo; o próprio atleta preenche a ficha completa no celular, aceita os termos e entra automaticamente para a sua lista de alunos e turmas.</p>
+                    </div>
                 </div>
 
             </div>
@@ -267,22 +327,23 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-4xl font-black text-white mb-4">Escolha o seu plano</h2>
-                <p class="text-slate-400 font-medium">Preços acessíveis de lançamento para organizar a sua academia hoje mesmo.</p>
+                <p class="text-slate-400 font-medium">Eleve a gestão e a percepção de valor da sua academia hoje mesmo.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
                 
                 <div class="bg-slate-900 rounded-3xl p-8 border border-slate-800 flex flex-col">
                     <h3 class="text-xl font-black text-white mb-2">Plano Tatame</h3>
-                    <p class="text-xs text-slate-400 mb-6 min-h-[40px]">Para equipes que estão começando e querem validar o sistema.</p>
-                    <div class="mb-6">
+                    <p class="text-xs text-slate-400 mb-6 min-h-[40px]">Para validar o sistema e organizar o básico da academia.</p>
+                    <div class="mb-6 border-b border-slate-800 pb-6">
                         <span class="text-4xl font-black text-white">Grátis</span>
                         <span class="text-slate-500 text-sm"> / 7 dias</span>
                     </div>
                     <ul class="space-y-4 mb-8 flex-1 text-sm text-slate-300">
-                        <li class="flex items-center gap-3"><span class="text-emerald-500">✓</span> Teste todas as funções</li>
-                        <li class="flex items-center gap-3"><span class="text-emerald-500">✓</span> Cadastro até 10 alunos</li>
-                        <li class="flex items-center gap-3"><span class="text-emerald-500">✓</span> Suporte via e-mail</li>
+                        <li class="flex items-start gap-3"><span class="text-emerald-500 font-bold">✓</span> Cadastro até 10 alunos</li>
+                        <li class="flex items-start gap-3"><span class="text-emerald-500 font-bold">✓</span> Gestão de Turmas e CRM</li>
+                        <li class="flex items-start gap-3"><span class="text-emerald-500 font-bold">✓</span> Link de Auto-Cadastro</li>
+                        <li class="flex items-start gap-3"><span class="text-slate-600 font-bold">❌</span> Sem acesso ao Portal do Aluno</li>
                     </ul>
                     <a href="cadastro_equipe.html" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-xl text-center text-xs uppercase tracking-widest transition-colors border border-slate-700">
                         Testar Agora
@@ -294,23 +355,24 @@
                         Mais Escolhido
                     </div>
                     <h3 class="text-xl font-black text-cyan-400 mb-2">Plano Black Belt</h3>
-                    <p class="text-xs text-slate-400 mb-6 min-h-[40px]">O sistema completo para gestão financeira e acadêmica da equipe.</p>
-                    <div class="mb-2 flex flex-col">
+                    <p class="text-xs text-slate-300 mb-6 min-h-[40px]">A experiência digital premium para a sua equipe crescer.</p>
+                    <div class="mb-2 flex flex-col border-b border-slate-700 pb-4">
                         <span class="text-sm text-slate-500 line-through font-bold">De R$ 99,90</span>
                         <div>
                             <span class="text-sm text-cyan-400 font-bold">R$</span>
                             <span class="text-4xl font-black text-white">49,90</span>
                             <span class="text-slate-500 text-sm">/ mês</span>
                         </div>
+                        <span class="text-[10px] text-cyan-500/80 mt-1 uppercase tracking-widest font-bold">Preço Fixo Promocional</span>
                     </div>
-                    <p class="text-[10px] text-cyan-500/80 mb-6 uppercase tracking-widest font-bold">Preço Fixo Promocional</p>
                     
-                    <ul class="space-y-4 mb-8 flex-1 text-sm text-slate-200">
-                        <li class="flex items-center gap-3"><span class="text-cyan-400">✓</span> <b>Alunos Ilimitados</b></li>
-                        <li class="flex items-center gap-3"><span class="text-cyan-400">✓</span> Todas as 12 funcionalidades</li>
-                        <li class="flex items-center gap-3"><span class="text-cyan-400">✓</span> Certificados com QR Code</li>
-                        <li class="flex items-center gap-3"><span class="text-cyan-400">✓</span> Emissão de Carteirinhas</li>
-                        <li class="flex items-center gap-3"><span class="text-cyan-400">✓</span> Co-Administradores incluídos</li>
+                    <ul class="space-y-4 mb-8 flex-1 text-sm text-slate-200 mt-4">
+                        <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> <b>Alunos Ilimitados</b></li>
+                        <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> <b>Portal do Aluno Liberado</b></li>
+                        <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> Relatórios e Documentos com sua Logo</li>
+                        <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> Carteirinhas de Identificação QR Code</li>
+                        <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> Ficha de Anamnese / LGPD (PDF)</li>
+                        <li class="flex items-start gap-3"><span class="text-cyan-400 font-bold">✓</span> Emissão de Certificados Profissionais</li>
                     </ul>
                     <a href="cadastro_equipe.html" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-all shadow-lg transform hover:-translate-y-0.5">
                         Assinar Black Belt
@@ -319,8 +381,8 @@
 
                 <div class="bg-slate-900 rounded-3xl p-8 border border-slate-800 flex flex-col relative overflow-hidden">
                     <h3 class="text-xl font-black text-white mb-2">Plano Elite <span class="text-[9px] bg-amber-500/20 text-amber-500 px-2 py-1 rounded ml-2 uppercase">Automação</span></h3>
-                    <p class="text-xs text-slate-400 mb-6 min-h-[40px]">Para academias grandes que querem cobrança 100% no piloto automático.</p>
-                    <div class="mb-6">
+                    <p class="text-xs text-slate-400 mb-6 min-h-[40px]">Para academias estruturadas que querem faturar mais no piloto automático.</p>
+                    <div class="mb-6 border-b border-slate-800 pb-6">
                         <span class="text-sm text-slate-500 line-through font-bold">De R$ 149,90</span>
                         <div class="mt-1">
                             <span class="text-sm text-amber-500 font-bold">R$</span>
@@ -329,10 +391,11 @@
                         </div>
                     </div>
                     <ul class="space-y-4 mb-8 flex-1 text-sm text-slate-300">
-                        <li class="flex items-center gap-3"><span class="text-amber-500">✓</span> Tudo do plano Black Belt</li>
-                        <li class="flex items-center gap-3"><span class="text-amber-500">✓</span> Emissão de PIX Integrada</li>
-                        <li class="flex items-center gap-3"><span class="text-amber-500">✓</span> Baixa Automática de Faturas</li>
-                        <li class="flex items-center gap-3"><span class="text-amber-500">✓</span> Mensagens de Cobrança Auto</li>
+                        <li class="flex items-start gap-3"><span class="text-amber-500 font-bold">✓</span> Tudo do plano Black Belt</li>
+                        <li class="flex items-start gap-3"><span class="text-amber-500 font-bold">✓</span> <b>Automação Asaas (PIX e Cartão)</b></li>
+                        <li class="flex items-start gap-3"><span class="text-amber-500 font-bold">✓</span> <b>Vitrine Virtual (Sua Loja Online)</b></li>
+                        <li class="flex items-start gap-3"><span class="text-amber-500 font-bold">✓</span> <b>Check-in Geofencing (GPS Ativo)</b></li>
+                        <li class="flex items-start gap-3"><span class="text-amber-500 font-bold">✓</span> Múltiplos Co-Administradores</li>
                     </ul>
                     <a href="https://wa.me/5521981716074?text=Tenho interesse no Plano Elite do BJJ Manager." target="_blank" class="w-full bg-transparent hover:bg-slate-800 text-amber-500 font-bold py-3 rounded-xl text-center text-xs uppercase tracking-widest transition-colors border border-amber-500/50 hover:border-amber-500">
                         Lista de Espera

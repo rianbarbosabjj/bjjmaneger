@@ -14,26 +14,40 @@
     </style>
 </head>
 <body class="flex flex-col h-[100dvh] overflow-hidden text-slate-800 bg-[#F8FAFC]">
-
+    
     <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
-
+    
     <div class="w-full bg-slate-900 p-3 text-center relative z-50 shrink-0 shadow-md flex items-center justify-center h-16">
-        <a href="dashboard.html" class="absolute left-4 top-1/2 -translate-y-1/2 transition-opacity hover:opacity-80 flex items-center gap-2 text-white text-xs font-bold bg-slate-800 px-3 py-2 rounded-lg border border-slate-700 shadow-sm">
+        <a class='absolute left-4 top-1/2 -translate-y-1/2 transition-opacity hover:opacity-80 flex items-center gap-2 text-white text-xs font-bold bg-slate-800 px-3 py-2 rounded-lg border border-slate-700 shadow-sm' href='dashboard.html'>
             <span>←</span> Voltar
         </a>
         <img src="logo_bjj_maneger.png" class="h-8 md:h-10 filter drop-shadow-lg" alt="BJJ Manager">
     </div>
-
+    
     <main class="flex-1 overflow-y-auto p-4 md:p-8 hide-scrollbar">
         <div class="max-w-7xl mx-auto space-y-8 pb-12">
             
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div id="status-icon" class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-3xl shadow-inner shrink-0">⏳</div>
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Status da sua Licença</p>
+                        <h2 id="nome-equipe" class="text-xl font-black text-slate-800 tracking-tight uppercase">Carregando...</h2>
+                        <p id="plano-vencimento" class="text-sm text-slate-500 font-medium">A analisar o seu plano...</p>
+                    </div>
+                </div>
+                <div class="shrink-0 text-center md:text-right">
+                    <span id="status-badge" class="px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest bg-slate-200 text-slate-500">A CARREGAR</span>
+                    <p id="msg-isento" class="hidden text-[9px] text-indigo-500 font-black mt-2 uppercase tracking-widest">Equipe Isenta de Cobrança</p>
+                </div>
+            </div>
+
             <div class="text-center mt-4 mb-8">
                 <h2 class="text-2xl md:text-3xl font-black text-slate-800 uppercase tracking-tight mb-2">Escolha o seu plano</h2>
                 <p class="text-slate-500 font-medium text-sm">Upgrade imediato para o seu tatame digital.</p>
             </div>
-
+            
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 items-start">
-                
                 <div class="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm flex flex-col relative opacity-90 h-full">
                     <h3 id="plano1-nome" class="text-xl font-black text-slate-800 mb-2">Carregando...</h3>
                     <p id="plano1-desc" class="text-xs text-slate-500 mb-6 min-h-[40px]">...</p>
@@ -55,7 +69,6 @@
 
                 <div class="bg-gradient-to-b from-slate-800 to-slate-900 rounded-3xl p-8 border-2 border-cyan-500 flex flex-col relative shadow-[0_0_30px_rgba(6,182,212,0.15)] transform lg:scale-105 z-10 h-full">
                     <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-cyan-500 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Mais Escolhido</div>
-                    
                     <h3 id="plano2-nome" class="text-xl font-black text-cyan-400 mb-2 mt-2">Carregando...</h3>
                     <p id="plano2-desc" class="text-xs text-slate-300 mb-6 min-h-[40px]">...</p>
                     
@@ -124,6 +137,7 @@
 
         let equipeId = null;
         let equipePlanoAtual = null;
+        let dadosEquipe = null;
 
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
@@ -138,22 +152,24 @@
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 equipeId = user.uid;
-                
-                // 1. Busca qual o plano que o professor tem ativo no momento
                 const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
                 if (mestreDoc.exists()) {
-                    equipePlanoAtual = mestreDoc.data().status_plano || 'TESTE';
+                    dadosEquipe = mestreDoc.data();
+                    equipePlanoAtual = dadosEquipe.status_plano || 'TESTE';
+                    atualizarStatusCabecalho();
+                } else {
+                    window.location.href = "dashboard.html";
+                    return;
                 }
-                
-                // 2. Busca e constrói a tela baseada no Super Admin
                 construirTelaDePlanos();
-                
             } else {
                 window.location.href = "login.html";
             }
         });
 
-        // Função que converte o texto do banco de dados (✓ e ❌) numa lista visual bonita
+        // ========================================================
+        // 🚀 LÓGICA DE RENDERIZAÇÃO DA LISTA (OCULTA O "ATÉ 10 ALUNOS")
+        // ========================================================
         function renderizarListaFuncionalidades(containerId, featuresStr, corCheck, corTexto) {
             const container = document.getElementById(containerId);
             container.innerHTML = '';
@@ -162,17 +178,25 @@
             const linhas = featuresStr.split('\n');
             linhas.forEach(linha => {
                 if(!linha.trim()) return;
+                
                 const li = document.createElement('li');
                 li.className = "flex items-start gap-3";
                 
                 if (linha.startsWith('✓')) {
                     const txt = linha.replace('✓', '').trim();
                     li.innerHTML = `<span class="text-${corCheck}-500 font-black mt-0.5">✓</span> <span class="text-${corTexto} font-medium">${txt}</span>`;
+                    container.appendChild(li);
                 } else if (linha.startsWith('❌')) {
                     const txt = linha.replace('❌', '').trim();
+                    
+                    // SE FOR O "CADASTRO ATÉ 10 ALUNOS" DESMARCADO, NÃO MOSTRA NA TELA!
+                    if (txt.includes('Cadastro até 10 alunos')) {
+                        return; // Interrompe a função, a linha não será desenhada
+                    }
+                    
                     li.innerHTML = `<span class="text-slate-400 font-bold mt-0.5">❌</span> <span class="text-slate-400 line-through opacity-70">${txt}</span>`;
+                    container.appendChild(li);
                 }
-                container.appendChild(li);
             });
         }
 
@@ -180,20 +204,52 @@
             return parseFloat(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
+        function atualizarStatusCabecalho() {
+            document.getElementById('nome-equipe').innerText = (dadosEquipe.nome_equipe || "Sua Equipe").toUpperCase();
+            const badge = document.getElementById('status-badge');
+            const icon = document.getElementById('status-icon');
+            const txtVencimento = document.getElementById('plano-vencimento');
+            const status = dadosEquipe.status_plano || 'TESTE';
+            const isento = (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true");
+
+            if (isento) {
+                document.getElementById('msg-isento').classList.remove('hidden');
+            }
+
+            if (status === 'TESTE') {
+                badge.innerText = "PERÍODO DE TESTE";
+                badge.className = "px-4 py-1.5 rounded-full text-[10px] font-black uppercase bg-amber-500 text-white shadow-lg";
+                icon.innerText = "⏳";
+                txtVencimento.innerText = "Aproveite os seus 7 dias de teste grátis.";
+            } 
+            else if (status === 'BLACK_BELT' || status === 'ELITE' || status === 'ATIVO') {
+                badge.innerText = "ASSINATURA ATIVA";
+                badge.className = "px-4 py-1.5 rounded-full text-[10px] font-black uppercase bg-emerald-500 text-white shadow-lg";
+                icon.innerText = "✅";
+                txtVencimento.innerText = "O seu acesso está garantido. Oss!";
+            }
+            else if (status === 'BLOQUEADO') {
+                badge.innerText = "ACESSO SUSPENSO";
+                badge.className = "px-4 py-1.5 rounded-full text-[10px] font-black uppercase bg-rose-600 text-white shadow-lg";
+                icon.innerText = "🔒";
+                txtVencimento.innerText = "Sua assinatura expirou. Regularize para continuar.";
+            }
+        }
+
         async function construirTelaDePlanos() {
             try {
-                // Puxa os dados que você salvou lá no super_admin.html
                 const docSnap = await getDoc(doc(db, "sistema", "config_planos"));
-                
                 if (docSnap.exists()) {
                     const planos = docSnap.data();
+                    const isento = (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true");
+                    const descontoEquipe = dadosEquipe.desconto_plano ? parseFloat(dadosEquipe.desconto_plano) : 0;
 
                     // ==========================================
-                    // PREENCHER PLANO 1
+                    // PREENCHER PLANO 1 (BASE)
                     // ==========================================
                     document.getElementById('plano1-nome').innerText = planos.p1.nome;
                     document.getElementById('plano1-desc').innerText = planos.p1.desc;
-                    document.getElementById('plano1-preco').innerText = formatarMoeda(planos.p1.preco);
+                    // Plano 1 sempre mantido a R$ 0,00 por ser teste
                     renderizarListaFuncionalidades('plano1-features', planos.p1.features, 'emerald', 'slate-600');
 
                     // ==========================================
@@ -201,13 +257,24 @@
                     // ==========================================
                     document.getElementById('plano2-nome').innerText = planos.p2.nome;
                     document.getElementById('plano2-desc').innerText = planos.p2.desc;
-                    document.getElementById('plano2-preco').innerText = formatarMoeda(planos.p2.preco);
                     
-                    if(planos.p2.preco_original && parseFloat(planos.p2.preco_original) > parseFloat(planos.p2.preco)) {
+                    const p2Base = parseFloat(planos.p2.preco) || 49.90;
+                    const p2Orig = parseFloat(planos.p2.preco_original) || 0;
+                    const p2TxtFinal = document.getElementById('plano2-preco');
+                    
+                    if (isento) {
+                        p2TxtFinal.innerText = "0,00";
+                    } else if (descontoEquipe > 0) {
                         document.getElementById('plano2-preco-antigo-container').classList.remove('hidden');
-                        document.getElementById('plano2-preco-antigo').innerText = `De R$ ${formatarMoeda(planos.p2.preco_original)}`;
+                        document.getElementById('plano2-preco-antigo').innerText = `R$ ${formatarMoeda(p2Base)}`;
+                        p2TxtFinal.innerText = formatarMoeda(p2Base * (1 - (descontoEquipe/100)));
+                    } else {
+                        if (p2Orig > p2Base) {
+                            document.getElementById('plano2-preco-antigo-container').classList.remove('hidden');
+                            document.getElementById('plano2-preco-antigo').innerText = `De R$ ${formatarMoeda(p2Orig)}`;
+                        }
+                        p2TxtFinal.innerText = formatarMoeda(p2Base);
                     }
-                    
                     renderizarListaFuncionalidades('plano2-features', planos.p2.features, 'cyan', 'slate-200');
 
                     // ==========================================
@@ -215,44 +282,52 @@
                     // ==========================================
                     document.getElementById('plano3-nome').innerText = planos.p3.nome;
                     document.getElementById('plano3-desc').innerText = planos.p3.desc;
-                    document.getElementById('plano3-preco').innerText = formatarMoeda(planos.p3.preco);
-                    
-                    if(planos.p3.preco_original && parseFloat(planos.p3.preco_original) > parseFloat(planos.p3.preco)) {
-                        document.getElementById('plano3-preco-antigo-container').classList.remove('hidden');
-                        document.getElementById('plano3-preco-antigo').innerText = `De R$ ${formatarMoeda(planos.p3.preco_original)}`;
-                    }
 
+                    const p3Base = parseFloat(planos.p3.preco) || 89.90;
+                    const p3Orig = parseFloat(planos.p3.preco_original) || 0;
+                    const p3TxtFinal = document.getElementById('plano3-preco');
+                    
+                    if (isento) {
+                        p3TxtFinal.innerText = "0,00";
+                    } else if (descontoEquipe > 0) {
+                        document.getElementById('plano3-preco-antigo-container').classList.remove('hidden');
+                        document.getElementById('plano3-preco-antigo').innerText = `R$ ${formatarMoeda(p3Base)}`;
+                        p3TxtFinal.innerText = formatarMoeda(p3Base * (1 - (descontoEquipe/100)));
+                    } else {
+                        if (p3Orig > p3Base) {
+                            document.getElementById('plano3-preco-antigo-container').classList.remove('hidden');
+                            document.getElementById('plano3-preco-antigo').innerText = `De R$ ${formatarMoeda(p3Orig)}`;
+                        }
+                        p3TxtFinal.innerText = formatarMoeda(p3Base);
+                    }
                     renderizarListaFuncionalidades('plano3-features', planos.p3.features, 'amber', 'slate-600');
 
-
-                    // ==========================================
-                    // BLOQUEAR BOTÃO SE O CLIENTE JÁ TEM O PLANO
-                    // ==========================================
-                    if(equipePlanoAtual === 'BLACK_BELT') {
+                    // BLOQUEIOS VISUAIS DE BOTÕES
+                    if (equipePlanoAtual === 'BLACK_BELT') {
                         const btn2 = document.getElementById('btn-plano2');
                         btn2.disabled = true;
                         btn2.innerHTML = "✓ SEU PLANO ATUAL";
                         btn2.className = "w-full bg-slate-800 text-slate-500 font-black py-4 rounded-xl text-xs cursor-not-allowed border border-slate-700 shadow-none mt-auto";
-                    } 
-                    else if (equipePlanoAtual === 'ELITE') {
+                    } else if (equipePlanoAtual === 'ELITE') {
                         const btn3 = document.getElementById('btn-plano3');
                         btn3.disabled = true;
                         btn3.innerHTML = "✓ SEU PLANO ATUAL";
                         btn3.className = "w-full bg-slate-200 text-slate-400 font-black py-4 rounded-xl text-xs cursor-not-allowed border border-slate-300 mt-auto";
                     }
-
                 } else {
-                    console.warn("Nenhum plano configurado no Super Admin ainda.");
+                    console.warn("Planos ainda não configurados no Super Admin.");
                 }
             } catch (error) {
-                console.error("Erro ao puxar planos do banco:", error);
+                console.error("Erro ao construir tela de planos:", error);
             }
         }
 
-        // ==========================================
-        // CHECKOUT: GERA O LINK DE PAGAMENTO
-        // ==========================================
         window.iniciarCheckout = async function(planoEscolhido) {
+            const isento = (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true");
+            if(isento) {
+                return showToast("Sua conta é isenta. O acesso já deveria estar ativo. Fale com o suporte.", "info");
+            }
+
             const btnId = planoEscolhido === 'ELITE' ? 'btn-plano3' : 'btn-plano2';
             const btn = document.getElementById(btnId);
             const originalTxt = btn.innerHTML;
@@ -261,9 +336,8 @@
             btn.disabled = true;
 
             try {
-                // Puxa o valor do plano diretamente do banco de dados do Construtor para cobrar certo
                 const docSnap = await getDoc(doc(db, "sistema", "config_planos"));
-                let valorParaCobrar = 49.90; // Default
+                let valorParaCobrar = 49.90;
                 
                 if (docSnap.exists()) {
                     const planos = docSnap.data();
@@ -271,13 +345,14 @@
                     if(planoEscolhido === 'BLACK_BELT') valorParaCobrar = parseFloat(planos.p2.preco);
                 }
 
-                // Chama a Função do Asaas para gerar o PIX/Cartão
+                let desconto = dadosEquipe.desconto_plano ? parseFloat(dadosEquipe.desconto_plano) : 0;
+                let valorACobrar = valorParaCobrar * (1 - (desconto / 100));
+
                 const gerarAssinatura = httpsCallable(functions, 'gerarAssinaturaSistema');
-                
                 const resultado = await gerarAssinatura({
                     equipeId: equipeId,
                     nomePlano: planoEscolhido,
-                    valor: valorParaCobrar,
+                    valor: valorACobrar,
                     email: auth.currentUser.email,
                     nome: "Assinante BJJ Manager"
                 });

@@ -227,7 +227,25 @@
                                                 <div class="flex items-center gap-3"><span class="text-xl">💳</span><div><p class="text-xs font-black text-slate-700">Cartão de Crédito</p><p class="text-[9px] font-bold text-rose-500">Compensa em 30 dias</p></div></div>
                                                 <input type="checkbox" id="asaas-aceita-cartao" class="w-5 h-5 text-cyan-600 rounded border-slate-300 focus:ring-cyan-500">
                                             </label>
+                                            
+                                            <label class="flex items-center justify-between p-3.5 bg-white border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50 transition-colors shadow-sm mt-3">
+                                                <div class="flex items-center gap-3">
+                                                    <span class="text-xl">🔄</span>
+                                                    <div>
+                                                        <p class="text-xs font-black text-slate-700">Repassar Taxas p/ Aluno</p>
+                                                        <p class="text-[9px] font-bold text-slate-500">Soma um valor extra na fatura para cobrir o banco</p>
+                                                    </div>
+                                                </div>
+                                                <input type="checkbox" id="asaas-repassar-taxa" onchange="toggleTaxaInput()" class="w-5 h-5 text-cyan-600 rounded border-slate-300 focus:ring-cyan-500">
+                                            </label>
+
+                                            <div id="box-valor-taxa" class="hidden mt-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Valor da Taxa a somar (R$)</label>
+                                                <input type="text" id="asaas-valor-taxa" oninput="mascaraMoeda(this)" placeholder="Ex: 1,99" class="w-full p-3 bg-white border border-slate-300 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none">
+                                                <p class="text-[9px] text-slate-500 mt-2 leading-relaxed">Ex: Se a mensalidade é R$ 100,00 e a taxa é R$ 1,99, o link de cobrança será de <b>R$ 101,99</b>. O Asaas desconta a taxa do aluno e você recebe seus R$ 100,00 limpos.</p>
+                                            </div>
                                         </div>
+
                                         <button onclick="salvarConfigPagamento()" id="btn-salvar-pagamentos" class="mt-4 bg-cyan-600 hover:bg-cyan-700 text-white text-[10px] font-black px-6 py-4 rounded-2xl transition-colors uppercase tracking-widest w-full shadow-md">
                                             💾 Salvar Preferências
                                         </button>
@@ -320,7 +338,8 @@
                                         </button>
                                     </div>
                                 </div>
-                            </div> <form id="asaas-form-panel" class="card-premium p-8 space-y-6 bg-white" onsubmit="event.preventDefault(); criarSubcontaAsaas();">
+                            </div> 
+                            <form id="asaas-form-panel" class="card-premium p-8 space-y-6 bg-white" onsubmit="event.preventDefault(); criarSubcontaAsaas();">
                                 <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl">
                                     <p class="text-xs font-bold text-amber-700">⚠️ Para garantir a sua segurança e obedecer às regras do Banco Central, preencha os dados do responsável financeiro da equipe para habilitarmos a emissão de cobranças e baixa de pagamentos automáticos.</p>
                                 </div>
@@ -556,6 +575,17 @@
             setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4500);
         }
 
+        // NOVO: Toggle do campo de valor da taxa
+        window.toggleTaxaInput = function() {
+            const check = document.getElementById('asaas-repassar-taxa').checked;
+            const box = document.getElementById('box-valor-taxa');
+            if(check) {
+                box.classList.remove('hidden');
+            } else {
+                box.classList.add('hidden');
+            }
+        }
+
         const acaoVenc = document.getElementById('acao-venc');
         for(let i=1; i<=31; i++) { acaoVenc.appendChild(new Option(i, i)); }
 
@@ -730,6 +760,11 @@
 
                     document.getElementById('asaas-aceita-boleto').checked = equipeDados.asaas_aceita_boleto === true;
                     document.getElementById('asaas-aceita-cartao').checked = equipeDados.asaas_aceita_cartao === true;
+                    
+                    // CARREGA A CONFIGURAÇÃO DE REPASSE DE TAXA
+                    document.getElementById('asaas-repassar-taxa').checked = equipeDados.asaas_repassar_taxa === true;
+                    document.getElementById('asaas-valor-taxa').value = equipeDados.asaas_valor_taxa ? floatToStr(equipeDados.asaas_valor_taxa) : "1,99";
+                    window.toggleTaxaInput();
 
                     if(equipeDados.status_asaas === 'ATIVO') {
                         document.getElementById('asaas-ativo-panel').classList.remove('hidden');
@@ -742,7 +777,6 @@
                         }
 
                         carregarSaldoAsaas();
-                        // carregarHistoricoSaques();
                     } else {
                         document.getElementById('asaas-ativo-panel').classList.add('hidden');
                         document.getElementById('asaas-form-panel').classList.remove('hidden');
@@ -772,6 +806,8 @@
         window.salvarConfigPagamento = async function() {
             const aceitaBoleto = document.getElementById('asaas-aceita-boleto').checked;
             const aceitaCartao = document.getElementById('asaas-aceita-cartao').checked;
+            const repassarTaxa = document.getElementById('asaas-repassar-taxa').checked;
+            const valorTaxa = strToFloat(document.getElementById('asaas-valor-taxa').value);
             
             const btn = document.getElementById('btn-salvar-pagamentos');
             const origTxt = btn.innerHTML;
@@ -780,10 +816,16 @@
             try {
                 await updateDoc(doc(db, "equipes", uid), {
                     asaas_aceita_boleto: aceitaBoleto,
-                    asaas_aceita_cartao: aceitaCartao
+                    asaas_aceita_cartao: aceitaCartao,
+                    asaas_repassar_taxa: repassarTaxa,
+                    asaas_valor_taxa: valorTaxa
                 });
+                
                 equipeDados.asaas_aceita_boleto = aceitaBoleto;
                 equipeDados.asaas_aceita_cartao = aceitaCartao;
+                equipeDados.asaas_repassar_taxa = repassarTaxa;
+                equipeDados.asaas_valor_taxa = valorTaxa;
+                
                 showToast("Preferências de pagamento atualizadas com sucesso!", "success");
             } catch(e) {
                 showToast("Erro ao salvar preferências.", "error");
@@ -867,7 +909,6 @@
                     });
 
                     carregarSaldoAsaas(); 
-                    // carregarHistoricoSaques();
                 } else {
                     showToast("Erro do Banco: " + res.data.error, "error");
                 }
@@ -972,9 +1013,16 @@
                         geradas++;
 
                         if (equipeDados && equipeDados.status_asaas === 'ATIVO' && status !== 'ISENTO') {
+                            
+                            // APLICA O REPASSE DE TAXA SE ESTIVER LIGADO
+                            let valorCobrarAsaas = valor;
+                            if (equipeDados.asaas_repassar_taxa && equipeDados.asaas_valor_taxa > 0) {
+                                valorCobrarAsaas += parseFloat(equipeDados.asaas_valor_taxa);
+                            }
+
                             filaAsaas.push({
                                 alunoId: aluno.id,
-                                valor: valor,
+                                valor: valorCobrarAsaas,
                                 mesAno: mesAnoFiltro,
                                 descricao: `Mensalidade Jiu-Jitsu - Ref: ${mesAnoFiltro}`,
                                 aceitaBoleto: equipeDados.asaas_aceita_boleto === true,
@@ -1262,10 +1310,16 @@
             btn.innerHTML = "⏳ Gerando..."; btn.disabled = true;
 
             try {
+                // APLICA O REPASSE DE TAXA SE ESTIVER LIGADO
+                let valorCobrarAsaas = alunoSelecionadoMens._calc.valor;
+                if (equipeDados.asaas_repassar_taxa && equipeDados.asaas_valor_taxa > 0) {
+                    valorCobrarAsaas += parseFloat(equipeDados.asaas_valor_taxa);
+                }
+
                 const gerarCobranca = httpsCallable(functions, 'gerarCobrancaAsaas');
                 const resultado = await gerarCobranca({
                     alunoId: alunoSelecionadoMens.id,
-                    valor: alunoSelecionadoMens._calc.valor,
+                    valor: valorCobrarAsaas,
                     mesAno: fatura.mes_ano,
                     descricao: `Mensalidade Jiu-Jitsu - Ref: ${fatura.mes_ano}`,
                     aceitaBoleto: equipeDados.asaas_aceita_boleto === true,

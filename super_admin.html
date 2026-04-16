@@ -286,8 +286,8 @@
                     </div>
                 </div>
             </div>
-            
         </div>
+
     </main>
 
     <div id="modal-pix-master" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-[60] p-4 transition-opacity">
@@ -434,12 +434,15 @@
                 document.getElementById('wallet-saldo').innerText = "⏳...";
                 document.getElementById('wallet-saldo-pendente').innerText = "Aguarde...";
 
-                // 👇 AQUI ENVIAMOS O SEU UID PARA O SERVIDOR NÃO BLOQUEAR!
                 const res = await consultarSaldoMaster({ uid: masterUid });
                 
                 if(res.data.success) {
-                    document.getElementById('wallet-saldo').innerText = `R$ ${res.data.balance.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-                    document.getElementById('wallet-saldo-pendente').innerText = `A liberar: R$ ${res.data.estimatedBalance.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+                    // CONVERSÃO SEGURA PARA EVITAR ERRO DE 'null'
+                    const saldoReal = Number(res.data.balance) || 0;
+                    const saldoEst = Number(res.data.estimatedBalance) || 0;
+
+                    document.getElementById('wallet-saldo').innerText = `R$ ${saldoReal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+                    document.getElementById('wallet-saldo-pendente').innerText = `A liberar: R$ ${saldoEst.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
                 } else {
                     document.getElementById('wallet-saldo').innerText = "Erro!";
                     document.getElementById('wallet-saldo-pendente').innerText = res.data.error; 
@@ -476,7 +479,6 @@
             btn.disabled = true;
 
             try {
-                // 👇 ENVIANDO O PACOTE COMPLETO PARA NÃO SER BLOQUEADO
                 const res = await solicitarSaqueMaster({ uid: masterUid, valor: valor, chavePix: chave, tipoChave: tipo });
                 if(res.data.success) {
                     showToast("PIX solicitado com sucesso!", "success");
@@ -529,7 +531,7 @@
                         signOut(auth).then(() => window.location.href = "index.html");
                         return;
                     }
-                    masterUid = user.uid; // GUARDA O SEU ID DE CHEFE
+                    masterUid = user.uid;
                     document.getElementById('master-email').innerText = user.email;
                     sessionStorage.removeItem('admin_impersonate');
                     carregarImperio();

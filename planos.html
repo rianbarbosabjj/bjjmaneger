@@ -27,22 +27,7 @@
     <main class="flex-1 overflow-y-auto p-4 md:p-8 hide-scrollbar">
         <div class="max-w-7xl mx-auto space-y-8 pb-12">
             
-            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
-                <div class="flex items-center gap-4">
-                    <div id="status-icon" class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-3xl shadow-inner shrink-0">⏳</div>
-                    <div>
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Status da sua Licença</p>
-                        <h2 id="nome-equipe" class="text-xl font-black text-slate-800 tracking-tight uppercase">Carregando...</h2>
-                        <p id="plano-vencimento" class="text-sm text-slate-500 font-medium">A analisar o seu plano...</p>
-                    </div>
-                </div>
-                <div class="shrink-0 text-center md:text-right">
-                    <span id="status-badge" class="px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest bg-slate-200 text-slate-500">A CARREGAR</span>
-                    <p id="msg-isento" class="hidden text-[9px] text-indigo-500 font-black mt-2 uppercase tracking-widest">Equipe Isenta de Cobrança</p>
-                </div>
-            </div>
-
-            <div class="text-center mt-12 mb-8">
+            <div class="text-center mt-4 mb-8">
                 <h2 class="text-2xl md:text-3xl font-black text-slate-800 uppercase tracking-tight mb-2">Escolha o seu plano</h2>
                 <p class="text-slate-500 font-medium text-sm">Upgrade imediato para o seu tatame digital.</p>
             </div>
@@ -50,65 +35,67 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 items-start">
                 
                 <div class="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm flex flex-col relative opacity-90 h-full">
-                    <h3 id="p1-title" class="text-xl font-black text-slate-800 mb-2">A Carregar...</h3>
-                    <p id="p1-desc" class="text-xs text-slate-500 mb-6 min-h-[40px]">...</p>
+                    <h3 id="plano1-nome" class="text-xl font-black text-slate-800 mb-2">Carregando...</h3>
+                    <p id="plano1-desc" class="text-xs text-slate-500 mb-6 min-h-[40px]">...</p>
                     
                     <div class="mb-6 border-b border-slate-100 pb-6 flex flex-col h-[70px] justify-end">
                         <div>
-                            <span class="text-4xl font-black text-slate-800">Grátis</span>
-                            <span class="text-slate-400 text-sm font-bold"> / 7 dias</span>
+                            <span class="text-sm text-slate-800 font-bold mb-1">R$</span>
+                            <span id="plano1-preco" class="text-4xl font-black text-slate-800">0,00</span>
+                            <span class="text-slate-400 text-sm font-bold"> / mês</span>
                         </div>
                     </div>
                     
-                    <ul id="p1-features-list" class="space-y-4 mb-8 flex-1 text-sm"></ul>
+                    <ul id="plano1-features" class="space-y-4 mb-8 flex-1 text-sm"></ul>
                     
-                    <button disabled class="w-full bg-slate-50 text-slate-400 font-black py-4 rounded-xl text-[10px] uppercase border border-slate-200 cursor-not-allowed mt-auto">Plano de Teste</button>
+                    <button disabled class="w-full bg-slate-50 text-slate-400 font-black py-4 rounded-xl text-[10px] uppercase border border-slate-200 cursor-not-allowed mt-auto">
+                        Plano Base
+                    </button>
                 </div>
 
-                <div id="card-black" class="bg-gradient-to-b from-slate-800 to-slate-900 rounded-3xl p-8 border-2 border-cyan-500 flex flex-col relative shadow-[0_0_30px_rgba(6,182,212,0.15)] transform lg:scale-105 z-10 h-full">
+                <div class="bg-gradient-to-b from-slate-800 to-slate-900 rounded-3xl p-8 border-2 border-cyan-500 flex flex-col relative shadow-[0_0_30px_rgba(6,182,212,0.15)] transform lg:scale-105 z-10 h-full">
                     <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-cyan-500 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Mais Escolhido</div>
-                    <h3 id="p2-title" class="text-xl font-black text-cyan-400 mb-2 mt-2">A Carregar...</h3>
-                    <p id="p2-desc" class="text-xs text-slate-300 mb-6 min-h-[40px]">...</p>
+                    
+                    <h3 id="plano2-nome" class="text-xl font-black text-cyan-400 mb-2 mt-2">Carregando...</h3>
+                    <p id="plano2-desc" class="text-xs text-slate-300 mb-6 min-h-[40px]">...</p>
                     
                     <div class="mb-6 flex flex-col border-b border-slate-700 pb-6 h-[70px] justify-end">
-                        <div id="p2-container-preco-original" class="hidden">
-                            <span id="p2-preco-original" class="text-sm text-slate-500 line-through font-bold"></span>
+                        <div id="plano2-preco-antigo-container" class="hidden">
+                            <span id="plano2-preco-antigo" class="text-sm text-slate-500 line-through font-bold"></span>
                         </div>
                         <div class="flex items-end gap-1">
                             <span class="text-sm text-cyan-400 font-bold mb-1">R$</span>
-                            <span id="txt-preco-black" class="text-4xl font-black text-white leading-none">--,--</span>
+                            <span id="plano2-preco" class="text-4xl font-black text-white leading-none">--,--</span>
                             <span class="text-slate-500 text-sm font-bold mb-1">/ mês</span>
                         </div>
-                        <p id="p2-tag-promocional" class="text-[10px] text-cyan-500/80 mt-1.5 uppercase tracking-widest font-bold">Valor Mensal</p>
                     </div>
                     
-                    <ul id="p2-features-list" class="space-y-4 mb-8 flex-1 text-sm"></ul>
+                    <ul id="plano2-features" class="space-y-4 mb-8 flex-1 text-sm"></ul>
                     
-                    <button id="btn-black" onclick="iniciarCheckout('BLACK_BELT')" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-all shadow-lg transform hover:-translate-y-0.5 mt-auto">
-                        Assinar Black Belt
+                    <button id="btn-plano2" onclick="iniciarCheckout('BLACK_BELT')" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-all shadow-lg transform hover:-translate-y-0.5 mt-auto">
+                        Assinar Agora
                     </button>
                 </div>
 
                 <div class="bg-white rounded-3xl p-8 border border-slate-200 flex flex-col relative shadow-sm opacity-95 h-full">
-                    <h3 id="p3-title" class="text-xl font-black text-slate-800 mb-2">A Carregar...</h3>
-                    <p id="p3-desc" class="text-xs text-slate-500 mb-6 min-h-[40px]">...</p>
+                    <h3 id="plano3-nome" class="text-xl font-black text-slate-800 mb-2">Carregando...</h3>
+                    <p id="plano3-desc" class="text-xs text-slate-500 mb-6 min-h-[40px]">...</p>
                     
                     <div class="mb-6 flex flex-col border-b border-slate-100 pb-6 h-[70px] justify-end">
-                        <div id="p3-container-preco-original" class="hidden">
-                            <span id="p3-preco-original" class="text-sm text-slate-400 line-through font-bold"></span>
+                        <div id="plano3-preco-antigo-container" class="hidden">
+                            <span id="plano3-preco-antigo" class="text-sm text-slate-400 line-through font-bold"></span>
                         </div>
                         <div class="flex items-end gap-1">
                             <span class="text-sm text-amber-500 font-bold mb-1">R$</span>
-                            <span id="txt-preco-elite" class="text-4xl font-black text-slate-800 leading-none">--,--</span>
+                            <span id="plano3-preco" class="text-4xl font-black text-slate-800 leading-none">--,--</span>
                             <span class="text-slate-400 text-sm font-bold mb-1">/ mês</span>
                         </div>
-                        <p id="p3-tag-promocional" class="text-[10px] text-amber-500/80 mt-1.5 uppercase tracking-widest font-bold">Valor Mensal</p>
                     </div>
                     
-                    <ul id="p3-features-list" class="space-y-4 mb-8 flex-1 text-sm"></ul>
+                    <ul id="plano3-features" class="space-y-4 mb-8 flex-1 text-sm"></ul>
                     
-                    <button id="btn-elite" onclick="iniciarCheckout('ELITE')" class="w-full bg-amber-500 hover:bg-amber-400 text-white font-black py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-all shadow-lg transform hover:-translate-y-0.5 mt-auto">
-                        Assinar Elite
+                    <button id="btn-plano3" onclick="iniciarCheckout('ELITE')" class="w-full bg-amber-500 hover:bg-amber-400 text-white font-black py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-all shadow-lg transform hover:-translate-y-0.5 mt-auto">
+                        Assinar Agora
                     </button>
                 </div>
             </div>
@@ -136,8 +123,7 @@
         const functions = getFunctions(app);
 
         let equipeId = null;
-        let dadosEquipe = null;
-        let configPlanosSaaS = null; 
+        let equipePlanoAtual = null;
 
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
@@ -151,56 +137,39 @@
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
+                equipeId = user.uid;
+                
+                // 1. Busca qual o plano que o professor tem ativo no momento
                 const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
                 if (mestreDoc.exists()) {
-                    equipeId = user.uid;
-                    dadosEquipe = mestreDoc.data();
-                    await carregarConfiguracoesSaaS();
-                    atualizarInterface();
-                } else {
-                    window.location.href = "dashboard.html";
+                    equipePlanoAtual = mestreDoc.data().status_plano || 'TESTE';
                 }
+                
+                // 2. Busca e constrói a tela baseada no Super Admin
+                construirTelaDePlanos();
+                
             } else {
                 window.location.href = "login.html";
             }
         });
 
-        // 1. CARREGA AS REGRAS DEFINIDAS NO SUPER ADMIN
-        async function carregarConfiguracoesSaaS() {
-            try {
-                const docSnap = await getDoc(doc(db, "sistema", "config_planos"));
-                if (docSnap.exists()) {
-                    configPlanosSaaS = docSnap.data();
-                } else {
-                    // Fallback se não houver configurações salvas ainda
-                    configPlanosSaaS = {
-                        p1: { nome: "Plano Tatame", desc: "Básico", features: "✓ 10 Alunos\n❌ Portal" },
-                        p2: { nome: "Plano Black Belt", desc: "Premium", preco_original: 99.9, preco: 49.9, features: "✓ Ilimitado\n✓ Portal" },
-                        p3: { nome: "Plano Elite", desc: "Automação", preco_original: 149.9, preco: 89.9, features: "✓ Asaas\n✓ Loja" }
-                    };
-                }
-            } catch (e) {
-                console.error(e);
-            }
-        }
-
-        // Função para desenhar os checks e cruzes na tela
-        function renderFeatures(containerId, featuresStr, highlightColor, textColor) {
+        // Função que converte o texto do banco de dados (✓ e ❌) numa lista visual bonita
+        function renderizarListaFuncionalidades(containerId, featuresStr, corCheck, corTexto) {
             const container = document.getElementById(containerId);
             container.innerHTML = '';
             if(!featuresStr) return;
             
-            const lines = featuresStr.split('\n');
-            lines.forEach(line => {
-                if(!line.trim()) return;
+            const linhas = featuresStr.split('\n');
+            linhas.forEach(linha => {
+                if(!linha.trim()) return;
                 const li = document.createElement('li');
                 li.className = "flex items-start gap-3";
                 
-                if (line.startsWith('✓')) {
-                    const txt = line.replace('✓', '').trim();
-                    li.innerHTML = `<span class="text-${highlightColor}-500 font-black mt-0.5">✓</span> <span class="text-${textColor} font-medium">${txt}</span>`;
-                } else if (line.startsWith('❌')) {
-                    const txt = line.replace('❌', '').trim();
+                if (linha.startsWith('✓')) {
+                    const txt = linha.replace('✓', '').trim();
+                    li.innerHTML = `<span class="text-${corCheck}-500 font-black mt-0.5">✓</span> <span class="text-${corTexto} font-medium">${txt}</span>`;
+                } else if (linha.startsWith('❌')) {
+                    const txt = linha.replace('❌', '').trim();
                     li.innerHTML = `<span class="text-slate-400 font-bold mt-0.5">❌</span> <span class="text-slate-400 line-through opacity-70">${txt}</span>`;
                 }
                 container.appendChild(li);
@@ -211,133 +180,80 @@
             return parseFloat(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
-        function atualizarInterface() {
-            document.getElementById('nome-equipe').innerText = (dadosEquipe.nome_equipe || "Sua Equipe").toUpperCase();
-            const badge = document.getElementById('status-badge');
-            const icon = document.getElementById('status-icon');
-            const txtVencimento = document.getElementById('plano-vencimento');
-            const status = dadosEquipe.status_plano || 'TESTE';
-            const isento = (dadosEquipe.isento === true || dadosEquipe.isento === "true");
-
-            // ==========================================
-            // RENDERIZAÇÃO PLANO 1 (TATAME)
-            // ==========================================
-            document.getElementById('p1-title').innerText = configPlanosSaaS.p1.nome;
-            document.getElementById('p1-desc').innerText = configPlanosSaaS.p1.desc;
-            renderFeatures('p1-features-list', configPlanosSaaS.p1.features, 'emerald', 'slate-600');
-
-            // ==========================================
-            // RENDERIZAÇÃO PLANO 2 (BLACK BELT)
-            // ==========================================
-            document.getElementById('p2-title').innerText = configPlanosSaaS.p2.nome;
-            document.getElementById('p2-desc').innerText = configPlanosSaaS.p2.desc;
-            renderFeatures('p2-features-list', configPlanosSaaS.p2.features, 'cyan', 'slate-200');
-
-            let descontoEquipe = dadosEquipe.desconto_plano ? parseFloat(dadosEquipe.desconto_plano) : 0;
-            let p2Base = parseFloat(configPlanosSaaS.p2.preco) || 49.90;
-            let p2Orig = parseFloat(configPlanosSaaS.p2.preco_original) || 0;
-
-            const p2CtnOrig = document.getElementById('p2-container-preco-original');
-            const p2TxtOrig = document.getElementById('p2-preco-original');
-            const p2TxtFinal = document.getElementById('txt-preco-black');
-            const p2Tag = document.getElementById('p2-tag-promocional');
-
-            if(isento) {
-                p2TxtFinal.innerText = "0,00";
-                p2CtnOrig.classList.add('hidden');
-                p2Tag.innerText = "EQUIPE ISENTA";
-            } else if (descontoEquipe > 0) {
-                p2CtnOrig.classList.remove('hidden');
-                p2TxtOrig.innerText = `R$ ${formatarMoeda(p2Base)}`;
-                p2TxtFinal.innerText = formatarMoeda(p2Base * (1 - (descontoEquipe/100)));
-                p2Tag.innerText = `SEU DESCONTO: ${descontoEquipe}%`;
-            } else {
-                if (p2Orig > p2Base) {
-                    p2CtnOrig.classList.remove('hidden');
-                    p2TxtOrig.innerText = `De R$ ${formatarMoeda(p2Orig)}`;
-                }
-                p2TxtFinal.innerText = formatarMoeda(p2Base);
-            }
-
-            // ==========================================
-            // RENDERIZAÇÃO PLANO 3 (ELITE)
-            // ==========================================
-            document.getElementById('p3-title').innerText = configPlanosSaaS.p3.nome;
-            document.getElementById('p3-desc').innerText = configPlanosSaaS.p3.desc;
-            renderFeatures('p3-features-list', configPlanosSaaS.p3.features, 'amber', 'slate-600');
-
-            let p3Base = parseFloat(configPlanosSaaS.p3.preco) || 89.90;
-            let p3Orig = parseFloat(configPlanosSaaS.p3.preco_original) || 0;
-
-            const p3CtnOrig = document.getElementById('p3-container-preco-original');
-            const p3TxtOrig = document.getElementById('p3-preco-original');
-            const p3TxtFinal = document.getElementById('txt-preco-elite');
-            const p3Tag = document.getElementById('p3-tag-promocional');
-
-            if(isento) {
-                p3TxtFinal.innerText = "0,00";
-                p3CtnOrig.classList.add('hidden');
-                p3Tag.innerText = "EQUIPE ISENTA";
-            } else if (descontoEquipe > 0) {
-                p3CtnOrig.classList.remove('hidden');
-                p3TxtOrig.innerText = `R$ ${formatarMoeda(p3Base)}`;
-                p3TxtFinal.innerText = formatarMoeda(p3Base * (1 - (descontoEquipe/100)));
-                p3Tag.innerText = `SEU DESCONTO: ${descontoEquipe}%`;
-            } else {
-                if (p3Orig > p3Base) {
-                    p3CtnOrig.classList.remove('hidden');
-                    p3TxtOrig.innerText = `De R$ ${formatarMoeda(p3Orig)}`;
-                }
-                p3TxtFinal.innerText = formatarMoeda(p3Base);
-            }
-
-            // ==========================================
-            // STATUS GERAL DO CABEÇALHO
-            // ==========================================
-            if (isento) {
-                document.getElementById('msg-isento').classList.remove('hidden');
-            }
-
-            if (status === 'TESTE') {
-                badge.innerText = "PERÍODO DE TESTE";
-                badge.className = "px-4 py-1.5 rounded-full text-[10px] font-black uppercase bg-amber-500 text-white shadow-lg";
-                icon.innerText = "⏳";
-                txtVencimento.innerText = "Aproveite os seus 7 dias de teste grátis.";
-            } 
-            else if (status === 'BLACK_BELT' || status === 'ELITE' || status === 'ATIVO') {
-                badge.innerText = "ASSINATURA ATIVA";
-                badge.className = "px-4 py-1.5 rounded-full text-[10px] font-black uppercase bg-emerald-500 text-white shadow-lg";
-                icon.innerText = "✅";
-                txtVencimento.innerText = "O seu acesso está garantido. Oss!";
+        async function construirTelaDePlanos() {
+            try {
+                // Puxa os dados que você salvou lá no super_admin.html
+                const docSnap = await getDoc(doc(db, "sistema", "config_planos"));
                 
-                // Bloqueia o botão do plano atual
-                if(status === 'BLACK_BELT') {
-                    const btn = document.getElementById('btn-black');
-                    btn.disabled = true;
-                    btn.innerHTML = "✓ SEU PLANO ATUAL";
-                    btn.className = "w-full bg-slate-800 text-slate-500 font-black py-4 rounded-xl text-xs cursor-not-allowed border border-slate-700 mt-auto";
-                } else if (status === 'ELITE') {
-                    const btn = document.getElementById('btn-elite');
-                    btn.disabled = true;
-                    btn.innerHTML = "✓ SEU PLANO ATUAL";
-                    btn.className = "w-full bg-slate-200 text-slate-400 font-black py-4 rounded-xl text-xs cursor-not-allowed border border-slate-300 mt-auto";
+                if (docSnap.exists()) {
+                    const planos = docSnap.data();
+
+                    // ==========================================
+                    // PREENCHER PLANO 1
+                    // ==========================================
+                    document.getElementById('plano1-nome').innerText = planos.p1.nome;
+                    document.getElementById('plano1-desc').innerText = planos.p1.desc;
+                    document.getElementById('plano1-preco').innerText = formatarMoeda(planos.p1.preco);
+                    renderizarListaFuncionalidades('plano1-features', planos.p1.features, 'emerald', 'slate-600');
+
+                    // ==========================================
+                    // PREENCHER PLANO 2 (BLACK BELT)
+                    // ==========================================
+                    document.getElementById('plano2-nome').innerText = planos.p2.nome;
+                    document.getElementById('plano2-desc').innerText = planos.p2.desc;
+                    document.getElementById('plano2-preco').innerText = formatarMoeda(planos.p2.preco);
+                    
+                    if(planos.p2.preco_original && parseFloat(planos.p2.preco_original) > parseFloat(planos.p2.preco)) {
+                        document.getElementById('plano2-preco-antigo-container').classList.remove('hidden');
+                        document.getElementById('plano2-preco-antigo').innerText = `De R$ ${formatarMoeda(planos.p2.preco_original)}`;
+                    }
+                    
+                    renderizarListaFuncionalidades('plano2-features', planos.p2.features, 'cyan', 'slate-200');
+
+                    // ==========================================
+                    // PREENCHER PLANO 3 (ELITE)
+                    // ==========================================
+                    document.getElementById('plano3-nome').innerText = planos.p3.nome;
+                    document.getElementById('plano3-desc').innerText = planos.p3.desc;
+                    document.getElementById('plano3-preco').innerText = formatarMoeda(planos.p3.preco);
+                    
+                    if(planos.p3.preco_original && parseFloat(planos.p3.preco_original) > parseFloat(planos.p3.preco)) {
+                        document.getElementById('plano3-preco-antigo-container').classList.remove('hidden');
+                        document.getElementById('plano3-preco-antigo').innerText = `De R$ ${formatarMoeda(planos.p3.preco_original)}`;
+                    }
+
+                    renderizarListaFuncionalidades('plano3-features', planos.p3.features, 'amber', 'slate-600');
+
+
+                    // ==========================================
+                    // BLOQUEAR BOTÃO SE O CLIENTE JÁ TEM O PLANO
+                    // ==========================================
+                    if(equipePlanoAtual === 'BLACK_BELT') {
+                        const btn2 = document.getElementById('btn-plano2');
+                        btn2.disabled = true;
+                        btn2.innerHTML = "✓ SEU PLANO ATUAL";
+                        btn2.className = "w-full bg-slate-800 text-slate-500 font-black py-4 rounded-xl text-xs cursor-not-allowed border border-slate-700 shadow-none mt-auto";
+                    } 
+                    else if (equipePlanoAtual === 'ELITE') {
+                        const btn3 = document.getElementById('btn-plano3');
+                        btn3.disabled = true;
+                        btn3.innerHTML = "✓ SEU PLANO ATUAL";
+                        btn3.className = "w-full bg-slate-200 text-slate-400 font-black py-4 rounded-xl text-xs cursor-not-allowed border border-slate-300 mt-auto";
+                    }
+
+                } else {
+                    console.warn("Nenhum plano configurado no Super Admin ainda.");
                 }
-            }
-            else if (status === 'BLOQUEADO') {
-                badge.innerText = "ACESSO SUSPENSO";
-                badge.className = "px-4 py-1.5 rounded-full text-[10px] font-black uppercase bg-rose-600 text-white shadow-lg";
-                icon.innerText = "🔒";
-                txtVencimento.innerText = "Sua assinatura expirou. Regularize para continuar.";
+            } catch (error) {
+                console.error("Erro ao puxar planos do banco:", error);
             }
         }
 
+        // ==========================================
+        // CHECKOUT: GERA O LINK DE PAGAMENTO
+        // ==========================================
         window.iniciarCheckout = async function(planoEscolhido) {
-            const isento = (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true");
-            if(isento) {
-                return showToast("Sua conta é isenta. O acesso já deveria estar ativo. Fale com o suporte.", "info");
-            }
-
-            const btnId = planoEscolhido === 'ELITE' ? 'btn-elite' : 'btn-black';
+            const btnId = planoEscolhido === 'ELITE' ? 'btn-plano3' : 'btn-plano2';
             const btn = document.getElementById(btnId);
             const originalTxt = btn.innerHTML;
             
@@ -345,18 +261,25 @@
             btn.disabled = true;
 
             try {
-                let valorBase = planoEscolhido === 'ELITE' ? configPlanosSaaS.p3.preco : configPlanosSaaS.p2.preco;
-                let desconto = dadosEquipe.desconto_plano ? parseFloat(dadosEquipe.desconto_plano) : 0;
-                let valorACobrar = parseFloat(valorBase) * (1 - (desconto / 100));
+                // Puxa o valor do plano diretamente do banco de dados do Construtor para cobrar certo
+                const docSnap = await getDoc(doc(db, "sistema", "config_planos"));
+                let valorParaCobrar = 49.90; // Default
+                
+                if (docSnap.exists()) {
+                    const planos = docSnap.data();
+                    if(planoEscolhido === 'ELITE') valorParaCobrar = parseFloat(planos.p3.preco);
+                    if(planoEscolhido === 'BLACK_BELT') valorParaCobrar = parseFloat(planos.p2.preco);
+                }
 
+                // Chama a Função do Asaas para gerar o PIX/Cartão
                 const gerarAssinatura = httpsCallable(functions, 'gerarAssinaturaSistema');
                 
                 const resultado = await gerarAssinatura({
                     equipeId: equipeId,
                     nomePlano: planoEscolhido,
-                    valor: valorACobrar,
+                    valor: valorParaCobrar,
                     email: auth.currentUser.email,
-                    nome: dadosEquipe.nome_equipe || "Professor"
+                    nome: "Assinante BJJ Manager"
                 });
 
                 if (resultado.data.success) {
@@ -365,13 +288,13 @@
                         window.open(resultado.data.url, '_blank');
                         btn.innerHTML = originalTxt;
                         btn.disabled = false;
-                    }, 2000);
+                    }, 1500);
                 } else {
                     throw new Error(resultado.data.error);
                 }
             } catch (error) {
                 console.error(error);
-                showToast("Erro ao gerar link: " + error.message, "error");
+                showToast("Erro ao gerar link de pagamento.", "error");
                 btn.innerHTML = originalTxt;
                 btn.disabled = false;
             }

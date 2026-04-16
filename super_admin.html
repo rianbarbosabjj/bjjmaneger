@@ -287,11 +287,7 @@
                 </div>
             </div>
             
-            <div class="bg-slate-800/30 border border-slate-800 rounded-2xl p-6 text-center">
-                <p class="text-xs text-slate-400">💡 Ao clicar em "Publicar Planos", o banco de dados será atualizado. Os sites vão exibir as funcionalidades marcadas com um check verde (<span class="text-emerald-500">✓</span>) e as desmarcadas com um X vermelho (<span class="text-rose-500">❌</span>).</p>
-            </div>
         </div>
-
     </main>
 
     <div id="modal-pix-master" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-[60] p-4 transition-opacity">
@@ -409,7 +405,6 @@
         const db = getFirestore(app);
         const functions = getFunctions(app);
 
-        // Nossas Funções Master do Servidor
         const consultarSaldoMaster = httpsCallable(functions, 'consultarSaldoMaster');
         const solicitarSaqueMaster = httpsCallable(functions, 'solicitarSaqueMaster');
 
@@ -439,13 +434,14 @@
                 document.getElementById('wallet-saldo').innerText = "⏳...";
                 document.getElementById('wallet-saldo-pendente').innerText = "Aguarde...";
 
-                const res = await consultarSaldoMaster();
+                // 👇 AQUI ENVIAMOS O SEU UID PARA O SERVIDOR NÃO BLOQUEAR!
+                const res = await consultarSaldoMaster({ uid: masterUid });
+                
                 if(res.data.success) {
                     document.getElementById('wallet-saldo').innerText = `R$ ${res.data.balance.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
                     document.getElementById('wallet-saldo-pendente').innerText = `A liberar: R$ ${res.data.estimatedBalance.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
                 } else {
                     document.getElementById('wallet-saldo').innerText = "Erro!";
-                    // 👇 AQUI ESTÁ O SEGREDO: Vai mostrar o erro real vindo do servidor
                     document.getElementById('wallet-saldo-pendente').innerText = res.data.error; 
                     console.error(res.data.error);
                 }
@@ -480,13 +476,14 @@
             btn.disabled = true;
 
             try {
-                const res = await solicitarSaqueMaster({ valor: valor, chavePix: chave, tipoChave: tipo });
+                // 👇 ENVIANDO O PACOTE COMPLETO PARA NÃO SER BLOQUEADO
+                const res = await solicitarSaqueMaster({ uid: masterUid, valor: valor, chavePix: chave, tipoChave: tipo });
                 if(res.data.success) {
                     showToast("PIX solicitado com sucesso!", "success");
                     fecharModalPixMaster();
-                    carregarSaldoMaster(); // Atualiza o saldo na tela
+                    carregarSaldoMaster(); 
                 } else {
-                    showToast("Erro do Asaas: " + res.data.error, "error");
+                    showToast("Erro: " + res.data.error, "error");
                 }
             } catch(e) {
                 showToast("Erro ao processar transferência.", "error");
@@ -523,9 +520,6 @@
             if(abaID === 'planos') carregarConfigPlanos(); 
         }
 
-        // ==========================================
-        // INICIALIZAÇÃO E AUTENTICAÇÃO
-        // ==========================================
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
@@ -535,7 +529,7 @@
                         signOut(auth).then(() => window.location.href = "index.html");
                         return;
                     }
-                    masterUid = user.uid;
+                    masterUid = user.uid; // GUARDA O SEU ID DE CHEFE
                     document.getElementById('master-email').innerText = user.email;
                     sessionStorage.removeItem('admin_impersonate');
                     carregarImperio();
@@ -667,9 +661,6 @@
             });
         }
 
-        // ==========================================
-        // RENDERIZAR FATURAMENTO
-        // ==========================================
         window.renderizarFaturamento = function() {
             const tabela = document.getElementById('tabela-faturamento');
             tabela.innerHTML = '';
@@ -869,9 +860,6 @@
             }
         }
 
-        // ==========================================
-        // GESTÃO DO MODAL DE EDIÇÃO DE EQUIPE
-        // ==========================================
         window.abrirModalEditarEquipe = function(id) {
             const eq = equipesCache.find(e => e.id === id);
             if(!eq) return;
@@ -918,7 +906,7 @@
         }
 
         window.excluirEquipe = async function(id) {
-            const confirmacao = confirm("⚠️ ATENÇÃO: Tem a certeza absoluta que deseja excluir esta Equipe do sistema?\n\nEsta ação apagará o acesso da academia e NÃO poderá ser desfeita.");
+            const confirmacao = confirm("⚠️ ATENÇÃO: Tem a certeza absoluta que deseja excluir esta Equipe do sistema?");
             if(!confirmacao) return;
             try {
                 await deleteDoc(doc(db, "equipes", id));

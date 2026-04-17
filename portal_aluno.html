@@ -666,7 +666,6 @@
         const functions = getFunctions(app);
         const storage = getStorage(app); 
 
-        // O SEU JAVASCRIPT ORIGINAL DE ALUNO LOGADO FICA AQUI INTACTO...
         let alunoLogado = null;
         let equipeDados = null;
         let faturasCache = []; 
@@ -685,9 +684,6 @@
             setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4500);
         }
 
-        // ==========================================
-        // NOVAS FUNÇÕES PARA ESQUECI A SENHA
-        // ==========================================
         window.abrirModalEsqueciSenha = function() {
             document.getElementById('modal-esqueci-senha').classList.remove('hidden');
             document.getElementById('modal-esqueci-senha').classList.add('flex');
@@ -700,7 +696,7 @@
         }
 
         window.recuperarSenha = async function() {
-            const email = document.getElementById('recuperar-email').value.trim();
+            const email = document.getElementById('recuperar-email').value.trim().toLowerCase();
             if(!email || !email.includes('@')) return showToast("Digite um e-mail válido.", "error");
             
             const btn = document.getElementById('btn-recuperar');
@@ -718,7 +714,7 @@
                     showToast("E-mail não encontrado no sistema.", "error");
                 }
             } catch(e) {
-                showToast("Erro de comunicação.", "error");
+                showToast("Erro de comunicação com o servidor.", "error");
             } finally {
                 btn.innerHTML = "Pedir Recuperação";
                 btn.disabled = false;
@@ -770,7 +766,7 @@
             } catch (error) { 
                 console.error("ERRO LOGIN:", error);
                 if (error.code === 'permission-denied') {
-                    showToast("Erro de Permissão no Firebase! Verifique as regras.");
+                    showToast("Erro de Permissão no Firebase! Verifique as regras do banco.");
                 } else {
                     showToast("Erro ao conectar com o servidor."); 
                 }
@@ -1484,7 +1480,6 @@
                         const av = doc.data();
                         if (av.status === 'inativo') return;
                         
-                        // LÓGICA DE EXPIRAÇÃO: Vai até às 23:59:59 do dia escolhido
                         if (av.data_expiracao) {
                             const dataFimAviso = av.data_expiracao.split('T')[0] + "T23:59:59Z";
                             if (dataFimAviso < hojeIso) return; 

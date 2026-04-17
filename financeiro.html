@@ -620,7 +620,11 @@
             }
 
             const statusAtual = (equipeDados && equipeDados.status_plano) ? equipeDados.status_plano : 'TESTE';
-            const nivelDaEquipe = HIERARQUIA_PLANOS[statusAtual] || 1;
+            
+            // 🛡️ NOVO: Limpa a palavra. Ex: "BÁSICO (Ativo)" vira apenas "BÁSICO"
+            const planoLimpo = statusAtual.toUpperCase().split(' ')[0].trim();
+            
+            const nivelDaEquipe = HIERARQUIA_PLANOS[planoLimpo] || 1;
             const regra = REGRAS_DE_ACESSO[idRecurso];
             
             if (!regra) return true;

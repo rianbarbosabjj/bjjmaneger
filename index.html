@@ -494,9 +494,14 @@
         // MOSTRA A ETIQUETA COM OS DIAS DE TESTE
         function mostrarBadgeTrial(idElemento, dias) {
             const el = document.getElementById(idElemento);
-            if(el && dias > 0) {
-                el.innerText = `🎁 ${dias} dias de Teste Grátis`;
-                el.classList.remove('hidden');
+            // Se existir elemento e o número de dias for MAIOR que zero, mostra. Se for zero, esconde.
+            if(el) {
+                if (dias > 0) {
+                    el.innerText = `🎁 ${dias} dias de Teste Grátis`;
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
             }
         }
 

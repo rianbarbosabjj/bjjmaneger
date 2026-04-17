@@ -254,6 +254,17 @@
                 </button>
             </div>
 
+            <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+                <div>
+                    <h3 class="text-sm font-black text-emerald-400 uppercase tracking-widest flex items-center gap-2"><span class="text-xl">⏳</span> Período de Teste Grátis (Trial)</h3>
+                    <p class="text-[10px] text-slate-500 font-medium mt-1">Defina quantos dias as novas academias terão de acesso gratuito antes de precisarem assinar.</p>
+                </div>
+                <div class="flex items-center gap-3 bg-slate-950 p-2 rounded-xl border border-slate-800">
+                    <input type="number" id="config-trial-dias" class="w-24 bg-transparent text-white text-center text-xl font-black outline-none selection:bg-emerald-500" value="7">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-widest pr-3">Dias</span>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl flex flex-col gap-4 max-h-[800px]">
                     <h3 class="font-black text-slate-300 uppercase tracking-widest text-xs border-b border-slate-800 pb-3">Plano Básico (Nível 1)</h3>
@@ -935,6 +946,12 @@
                 const snap = await getDoc(PLANOS_DOC_REF);
                 if(snap.exists()) {
                     const d = snap.data();
+                    
+                    // CARREGA DIAS DE TRIAL NOVO!
+                    if(document.getElementById('config-trial-dias')) {
+                        document.getElementById('config-trial-dias').value = d.trial_dias || 7;
+                    }
+
                     ['p1','p2','p3','p4'].forEach(p => {
                         if(d[p]) {
                             document.getElementById(p+'-nome').value = d[p].nome || "";
@@ -977,7 +994,11 @@
             const txtOrig = btn.innerHTML;
             btn.innerHTML = "⏳ Salvando..."; btn.disabled = true;
 
-            const dados = {};
+            const dados = {
+                // SALVA DIAS DE TRIAL
+                trial_dias: parseInt(document.getElementById('config-trial-dias').value) || 7
+            };
+
             ['p1','p2','p3','p4'].forEach(p => {
                 let feats = [];
                 TODAS_FUNCIONALIDADES.forEach((f, i) => {
@@ -1006,11 +1027,10 @@
             equipeEditandoId = id;
             document.getElementById('edit-nome-equipe').innerText = (eq.nome_equipe || "Sem Nome").toUpperCase();
             
-            // Map old plans visually to new ones just in case the old value is saved.
             let st = eq.status_plano || "TESTE";
             if (st === 'BLACK_BELT') st = 'BASICO';
             if (st === 'MASTER') st = 'INTERMEDIARIO';
-            if (st === 'ELITE') st = 'ULTIMATE'; // Premium would be in between. We map to the UI options.
+            if (st === 'ELITE') st = 'ULTIMATE'; 
             
             document.getElementById('edit-status-plano').value = st;
             document.getElementById('edit-valor-plano').value = eq.valor_plano !== undefined ? eq.valor_plano : 49.90;
@@ -1026,11 +1046,9 @@
             const btn = document.getElementById('btn-salvar-edicao');
             const txt = btn.innerHTML; btn.innerHTML = "⏳..."; btn.disabled = true;
             try {
-                // 1. Pega os valores brutos
                 let valPlano = document.getElementById('edit-valor-plano').value;
                 let descPlano = document.getElementById('edit-desconto').value;
                 
-                // 2. Força a conversão de vírgula para ponto para o Firebase não dar erro
                 valPlano = parseFloat(String(valPlano).replace(',', '.')) || 0;
                 descPlano = parseFloat(String(descPlano).replace(',', '.')) || 0;
 
@@ -1039,14 +1057,13 @@
                     valor_plano: valPlano,
                     desconto_plano: descPlano,
                     isento: document.getElementById('edit-isento').checked
-             });
+                });
                 
                 showToast("Licença atualizada!", "success");
                 fecharModalEditar(); 
                 carregarImperio(); 
             } catch(e) { 
                 console.error(e);
-                // 3. ATENÇÃO: Esta linha vai exibir o erro exato na sua tela!
                 alert("O Firebase bloqueou a gravação. Motivo: " + e.message); 
                 showToast("Erro ao atualizar.", "error"); 
             } 

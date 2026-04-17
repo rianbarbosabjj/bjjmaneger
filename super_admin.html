@@ -138,7 +138,7 @@
                     <textarea id="aviso-texto" rows="3" class="w-full bg-slate-950 border border-slate-800 text-white rounded-2xl p-4 outline-none focus:border-rose-500 transition-all font-medium" placeholder="Ex: Olá Mestre! Nova função de Certificados liberada. Confira no menu lateral!"></textarea>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Cor do Banner</label>
                         <select id="aviso-cor" class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-3 outline-none cursor-pointer">
@@ -154,6 +154,10 @@
                             <option value="true">✅ ATIVO (Mostrar no site)</option>
                             <option value="false">❌ OCULTO (Esconder aviso)</option>
                         </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Expirar em (Opcional)</label>
+                        <input type="date" id="aviso-expiracao" class="w-full bg-slate-950 border border-slate-800 text-slate-400 rounded-xl p-3 outline-none focus:border-rose-500 cursor-pointer">
                     </div>
                 </div>
 
@@ -632,6 +636,7 @@
                     document.getElementById('aviso-texto').value = d.texto || "";
                     document.getElementById('aviso-cor').value = d.cor || "bg-indigo-600";
                     document.getElementById('aviso-ativo').value = String(d.ativo);
+                    document.getElementById('aviso-expiracao').value = d.data_expiracao || "";
                 }
             } catch(e) { console.log(e); }
         }
@@ -640,10 +645,11 @@
             const texto = document.getElementById('aviso-texto').value.trim();
             const cor = document.getElementById('aviso-cor').value;
             const ativo = document.getElementById('aviso-ativo').value === "true";
+            const data_expiracao = document.getElementById('aviso-expiracao').value;
 
             try {
                 await setDoc(doc(db, "sistema", "aviso_global"), {
-                    texto, cor, ativo, data_atualizacao: new Date().toISOString()
+                    texto, cor, ativo, data_expiracao, data_atualizacao: new Date().toISOString()
                 });
                 showToast("Aviso global atualizado com sucesso!", "success");
             } catch(e) { showToast("Erro ao salvar aviso.", "error"); }

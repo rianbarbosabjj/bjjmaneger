@@ -1323,50 +1323,56 @@
             }
         }
 
-        window.abrirModalCarteirinha = () => {
-            const a = todosAlunosCache.find(x => x.id === alunoEditandoId);
-            if(!a) return;
-
-            document.getElementById('cart-equipe-nome').innerText = equipeDados.nome.toUpperCase();
-            const imgL = document.getElementById('cart-equipe-logo');
-            const fallL = document.getElementById('cart-equipe-fallback');
-            const waterL = document.getElementById('cart-equipe-watermark');
-            const waterFall = document.getElementById('cart-equipe-watermark-fallback');
-
-            if(equipeDados.logo) {
-                imgL.src = equipeDados.logo; imgL.classList.remove('hidden'); fallL.classList.add('hidden');
-                waterL.src = equipeDados.logo; waterL.classList.remove('hidden'); waterFall.classList.add('hidden');
-            } else {
-                const letra = equipeDados.nome.charAt(0).toUpperCase();
-                fallL.innerText = letra; fallL.classList.remove('hidden'); imgL.classList.add('hidden');
-                waterFall.innerText = letra; waterFall.classList.remove('hidden'); waterL.classList.add('hidden');
+window.abrirModal = () => { 
+            // 🛑 LÓGICA DO PAYWALL DE LIMITE DE 10 ALUNOS (Plano Básico)
+            const isImpersonating = sessionStorage.getItem('admin_impersonate') !== null;
+            const isIsento = dadosEquipeCompleto && (dadosEquipeCompleto.isento === true || String(dadosEquipeCompleto.isento) === "true");
+            
+            if (!isImpersonating && !isIsento) {
+                // Lê o plano atual (se não houver, assume TESTE)
+                const statusAtual = (dadosEquipeCompleto && dadosEquipeCompleto.status_plano) ? dadosEquipeCompleto.status_plano : 'TESTE';
+                
+                // Mapeia os planos que sofrem o bloqueio de 10 alunos
+                const planosBasicos = ['TESTE', 'BASICO', 'BÁSICO'];
+                
+                if (planosBasicos.includes(statusAtual.toUpperCase())) {
+                    // Conta quantos alunos ATIVOS esta academia tem
+                    const alunosAtivos = todosAlunosCache.filter(a => a.status === 'ATIVO').length;
+                    
+                    if (alunosAtivos >= 10) {
+                        abrirPaywallLimite(); // Abre o cadeado dourado!
+                        return; // ⛔ Impede a execução e não deixa abrir a ficha de matrícula
+                    }
+                }
             }
 
-            document.getElementById('cart-aluno-nome-txt').innerText = a.nome;
+            // Se passou na segurança, limpa os campos e abre a ficha nova
+            alunoEditandoId = null; 
+            ficheiroFotoSelecionado = null;
             
-            const grau = a.grau && a.grau !== "Sem grau" ? ` - ${a.grau}` : "";
-            document.getElementById('cart-aluno-faixa-texto').innerText = ((a.faixa || 'BRANCA') + grau).toUpperCase();
+            document.querySelectorAll('#modal-aluno input[type="text"], #modal-aluno input[type="email"], #modal-aluno input[type="date"]').forEach(i => i.value = ''); 
+            document.querySelectorAll('#modal-aluno input[type="checkbox"]').forEach(i => i.checked = false);
             
-            document.getElementById('cart-aluno-matricula-txt').innerText = a.matricula || '0000';
-            document.getElementById('cart-aluno-nascimento-txt').innerText = a.data_nascimento ? a.data_nascimento.split('-').reverse().join('/') : '--/--/----';
+            document.getElementById('cad-foto').value = "";
+            document.getElementById('preview-foto').src = "";
+            document.getElementById('preview-foto').classList.add('hidden');
+            document.getElementById('placeholder-foto').classList.remove('hidden');
+
+            document.getElementById('modal-titulo').innerText = "Nova Matrícula"; 
+            document.getElementById('aluno-matricula').value = "Gerada Auto";
+            document.getElementById('aluno-faixa').value = "Branca";
+            document.getElementById('aluno-grau').value = "Sem grau";
+            document.getElementById('aluno-bolsa').value = "0";
+            document.getElementById('aluno-vencimento').value = "10";
+            document.getElementById('aluno-status').value = "ATIVO";
             
-            document.getElementById('cart-faixa-border').style.background = getCorFaixaDupla(a.faixa);
+            document.getElementById('btn-abrir-carteirinha').classList.add('hidden'); 
+            document.getElementById('btn-gerar-pdf').classList.add('hidden');
+            
+            calcularIdade();
 
-            if(a.foto_url) {
-                document.getElementById('cart-aluno-foto-modal').src = a.foto_url; 
-                document.getElementById('cart-aluno-foto-modal').classList.remove('hidden'); 
-                document.getElementById('cart-aluno-foto-fallback-modal').classList.add('hidden');
-            } else {
-                document.getElementById('cart-aluno-foto-fallback-modal').innerText = a.nome.charAt(0).toUpperCase(); 
-                document.getElementById('cart-aluno-foto-fallback-modal').classList.remove('hidden'); 
-                document.getElementById('cart-aluno-foto-modal').classList.add('hidden');
-            }
-
-            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.origin + '/validar.html?mat=' + a.matricula)}`;
-            document.getElementById('cart-qr-code').src = qrUrl;
-
-            document.getElementById('modal-aluno').classList.replace('flex', 'hidden');
-            document.getElementById('modal-carteirinha').classList.replace('hidden', 'flex');
+            mudarAba('aba-pessoal'); 
+            document.getElementById('modal-aluno').classList.replace('hidden', 'flex'); 
         }
 
         window.gerarPDF_LGPD = function() {

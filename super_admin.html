@@ -1013,7 +1013,7 @@ window.salvarConfigPlanos = async function() {
             preco: parseFloat(document.getElementById(p+'-preco').value) || 0,
             desc: document.getElementById(p+'-desc').value,
             // 🚀 SALVA O TRIAL INDIVIDUAL:
-            trial_dias: parseInt(document.getElementById(p+'-trial').value) || 7,
+            trial_dias: tInput ? parseInt(tInput.value) : 7,
             features: feats.join('\n')
         };
     });

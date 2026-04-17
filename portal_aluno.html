@@ -755,7 +755,7 @@
             }
         };
 
-window.fazerLoginAluno = async function() {
+        window.fazerLoginAluno = async function() {
             const emailBruto = document.getElementById('login-email').value;
             const email = emailBruto.replace(/\s/g, '').toLowerCase(); 
             const senha = document.getElementById('login-senha').value.trim();
@@ -801,7 +801,6 @@ window.fazerLoginAluno = async function() {
                 btn.disabled = false; btn.innerHTML = "Entrar no Tatame"; 
             }
         }
-
         window.sairDoPortal = function() { localStorage.removeItem('bjj_aluno_auth'); window.location.reload(); }
 
         window.mudarAbaAluno = function(idAba) {
@@ -1192,7 +1191,7 @@ window.fazerLoginAluno = async function() {
             try { const canvas = await gerarCanvasCarteirinha(); canvas.toBlob(async (blob) => { const file = new File([blob], `Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.png`, { type: "image/png" }); if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ title: 'Carteirinha BJJ', text: 'Minha carteirinha oficial', files: [file] }); } catch { } } else { window.open(`https://wa.me/?text=Minha carteirinha oficial`, '_blank'); } }); } catch(e) { showToast("Erro ao partilhar", "error"); } finally { btn.innerHTML = txtOriginal; btn.disabled = false; }
         }
 
-async function buscarFaturasResiliente() {
+    async function buscarFaturasResiliente() {
             const lista = document.getElementById('lista-faturas'); if(!lista) return; lista.innerHTML = '<div class="text-center p-6 text-slate-500 text-xs italic">A carregar mensalidades...</div>';
             let faturasMensalidade = [];
             try { const qEquipe = query(collection(db, "financeiro"), where("equipe_id", "==", alunoLogado.equipe_id)); const snapEquipe = await getDocs(qEquipe); snapEquipe.forEach(doc => { const data = doc.data(); if (data.aluno_id === alunoLogado.id && (data.tipo === 'MENSALIDADE' || !data.tipo)) { faturasMensalidade.push({ id: doc.id, ...data }); } }); } 
@@ -1210,7 +1209,7 @@ async function buscarFaturasResiliente() {
                 let icone = '⏳'; let corTexto = 'text-cyan-400'; let statusLabel = 'Pendente'; let textoStatusBtn = 'Pagar';
                 if(isPago) { icone = '✅'; corTexto = 'text-emerald-400'; statusLabel = 'Pago'; } else if(isAtrasado) { icone = '🚨'; corTexto = 'text-rose-400'; statusLabel = 'Atrasado'; } else if(isIsento) { icone = '⭐'; corTexto = 'text-blue-400'; statusLabel = 'Isento'; }
                 
-                // 🛑 A INTELIGÊNCIA DOS BOTÕES DE PAGAMENTO
+                // 🛑 A INTELIGÊNCIA DOS BOTÕES DE PAGAMENTO AQUI
                 let btnHtml = '';
                 if(isPago) {
                     const dataFormat = fat.data_pagamento || fat.data || fat.updated_at || fat.criado_em; let dataPag = '';
@@ -1227,7 +1226,7 @@ async function buscarFaturasResiliente() {
                         btnHtml = `<button onclick="copiarPixAluno('${fat.chave_pix_manual}')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm transition-colors mt-2 border border-emerald-400/50 flex items-center gap-1.5"><span class="text-sm">📄</span> Copiar Chave PIX</button>
                                    <p class="text-[8px] text-slate-500 text-right mt-1 w-full max-w-[130px] leading-tight">Mande o comprovante para o professor.</p>`;
                     } else {
-                        // BOTÃO FALLBACK (Abre a tela manual de pagamento original do portal)
+                        // BOTÃO FALLBACK (Abre a tela manual)
                         btnHtml = `<button onclick="abrirPagamento('${fat.id}')" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm transition-colors mt-2">Detalhes</button>`;
                     }
                 }
@@ -1249,27 +1248,40 @@ async function buscarFaturasResiliente() {
         
         window.abrirPagamento = async function(faturaId) {
             const fat = faturasCache.find(f => f.id === faturaId); if (!fat) return showToast("Fatura não encontrada.", "error");
-            const temPlanoAsaas = equipeDados && equipeDados.plano_asaas === true;
-            if (temPlanoAsaas) {
-                if (fat.link_pagamento) { window.open(fat.link_pagamento, '_blank'); return; }
-                showToast("⏳ Gerando link de pagamento seguro...", "success"); const btnPagamento = document.getElementById(`btn-pagar-${faturaId}`); let textoOriginal = "";
-                if(btnPagamento) { textoOriginal = btnPagamento.innerHTML; btnPagamento.innerHTML = "⏳ Aguarde..."; btnPagamento.disabled = true; }
-                try {
-                    const gerarCobranca = httpsCallable(functions, 'gerarCobrancaAsaas');
-                    const resultado = await gerarCobranca({ alunoId: alunoLogado.id, valor: fat.valor, mesAno: fat.mes_ano, descricao: `Mensalidade Jiu-Jitsu - Ref: ${fat.mes_ano}` });
-                    if (resultado.data.success) { showToast("✅ Fatura gerada com sucesso!", "success"); window.open(resultado.data.url, '_blank'); buscarFaturasResiliente(); } else { showToast("❌ Erro ao gerar cobrança: " + resultado.data.error, "error"); }
-                } catch (error) { showToast("🚨 Falha na conexão com o servidor financeiro.", "error"); } finally { if(btnPagamento) { btnPagamento.innerHTML = textoOriginal; btnPagamento.disabled = false; } }
+            const temPlanoAsaas = equipeDados && equipeDados.status_asaas === 'ATIVO';
+            
+            if (temPlanoAsaas && fat.link_pagamento) {
+                window.open(fat.link_pagamento, '_blank'); 
+                return; 
             } else {
                 let mesStr = "", anoStr = ""; if(fat.mes_ano && String(fat.mes_ano).includes('-')) { const partes = fat.mes_ano.split('-'); anoStr = partes[0]; mesStr = partes[1]; }
                 const tituloMes = (mesStr && anoStr) ? `${mesStr}/${anoStr}` : 'Atual';
-                document.getElementById('pix-ref').innerText = `Mensalidade - ${tituloMes}`; document.getElementById('pix-valor').innerText = `R$ ${parseFloat(fat.valor || 0).toFixed(2).replace('.', ',')}`;
+                document.getElementById('pix-ref').innerText = `Mensalidade - ${tituloMes}`; 
+                document.getElementById('pix-valor').innerText = `R$ ${parseFloat(fat.valor || 0).toFixed(2).replace('.', ',')}`;
+                
                 const inputPix = document.getElementById('pix-codigo');
-                if(equipeDados && equipeDados.chave_pix) { inputPix.value = equipeDados.chave_pix; document.getElementById('aviso-pagamento').innerText = "Após o pagamento, envie o comprovante ao professor para ele dar a baixa no sistema."; } else { inputPix.value = "Chave PIX não configurada pelo professor."; document.getElementById('aviso-pagamento').innerText = "Peça a chave PIX diretamente ao seu professor."; }
+                const chavePix = fat.chave_pix_manual || (equipeDados ? equipeDados.chave_pix : null);
+
+                if(chavePix) { 
+                    inputPix.value = chavePix; 
+                    document.getElementById('aviso-pagamento').innerText = "Após o pagamento, envie o comprovante ao professor para ele dar a baixa no sistema."; 
+                } else { 
+                    inputPix.value = "Chave PIX não configurada pelo professor."; 
+                    document.getElementById('aviso-pagamento').innerText = "Peça a chave PIX diretamente ao seu professor."; 
+                }
                 document.getElementById('modal-pix').classList.remove('hidden'); document.getElementById('modal-pix').classList.add('flex');
             }
         }
-        window.fecharModalPix = function() { document.getElementById('modal-pix').classList.add('hidden'); document.getElementById('modal-pix').classList.remove('flex'); }
-        window.copiarPix = function() { const input = document.getElementById('pix-codigo'); if(input.value === "Chave PIX não configurada pelo professor.") return showToast("Não há chave para copiar.", "error"); input.select(); input.setSelectionRange(0, 99999); navigator.clipboard.writeText(input.value); showToast("Chave PIX copiada para a área de transferência!", "success"); }
+        window.fecharModalPix = function() { 
+            document.getElementById('modal-pix').classList.add('hidden'); document.getElementById('modal-pix').classList.remove('flex');
+        }
+        window.copiarPixAluno = function(chave) {
+            navigator.clipboard.writeText(chave).then(() => {
+                showToast("Chave PIX copiada! Abra o app do seu banco para pagar.", "success");
+            }).catch(err => {
+                showToast("Erro ao copiar a chave.", "error");
+            });
+        }
 
         function atualizarWidgetMensalidade() {
             const elValor = document.getElementById('home-proxima-fatura-valor');

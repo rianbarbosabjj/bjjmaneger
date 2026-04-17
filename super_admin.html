@@ -17,6 +17,7 @@
         .custom-scroll::-webkit-scrollbar { width: 4px; }
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #475569; }
         
         .status-blink { animation: blink 2s infinite; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
@@ -31,6 +32,7 @@
             <div class="p-6 border-b border-slate-800 flex flex-col items-center justify-center">
                 <img src="logo_bjj_maneger.png" alt="Logo" class="h-16 w-auto mb-3 filter drop-shadow-[0_0_8px_rgba(244,63,94,0.5)]">
                 <h1 class="text-xs font-black tracking-widest uppercase text-white">SaaS Master</h1>
+                <p class="text-[9px] text-rose-500 font-bold uppercase tracking-widest mt-1">Sala de Comando</p>
             </div>
             <nav class="p-4 space-y-2">
                 <button onclick="mudarAbaMaster('academias')" id="menu-academias" class="w-full flex items-center gap-3 px-4 py-3 bg-rose-500/10 text-rose-500 rounded-xl font-bold text-xs uppercase tracking-widest border border-rose-500/20 transition-all">
@@ -52,8 +54,9 @@
         </div>
         <div class="p-4 border-t border-slate-800">
             <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center">
+                <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Logado como CEO</p>
                 <p id="master-email" class="text-[10px] font-black text-white truncate mb-3 uppercase tracking-tighter">carregando...</p>
-                <button onclick="sairDoMaster()" class="w-full py-2 bg-rose-600 hover:bg-rose-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition-colors">Sair</button>
+                <button onclick="sairDoMaster()" class="w-full py-2 bg-rose-600 hover:bg-rose-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition-colors">Encerrar Sessão</button>
             </div>
         </div>
     </aside>
@@ -243,7 +246,7 @@
                     <p class="text-sm text-slate-400 mt-1 font-medium">Defina preços e use as caixas de seleção para montar o que cada plano oferece.</p>
                 </div>
                 <button onclick="salvarConfigPlanos()" class="bg-emerald-500 hover:bg-emerald-400 text-white font-black py-3 px-8 rounded-xl shadow-lg shadow-emerald-500/20 text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2">
-                    <span>💾</span> Publicar Planos no Site
+                    <span>💾</span> Publicar Planos
                 </button>
             </div>
 
@@ -730,7 +733,7 @@
                             </div>
                             <div>
                                 <p class="font-black text-white uppercase text-xs">${eq.nome_equipe || 'SEM NOME'}</p>
-                                <p class="text-[9px] text-slate-500 uppercase">Criada há ${diasDeVida} dias</p>
+                                <p class="text-[9px] text-slate-500 uppercase mt-0.5 tracking-widest truncate w-40">Criada há ${diasDeVida} dias</p>
                             </div>
                         </div>
                     </td>
@@ -749,8 +752,29 @@
         }
 
         // ==========================================
-        // 💳 LÓGICA DE FATURAMENTO E FINANCEIRO
+        // 💳 LOGICA DE FATURAMENTO E FINANCEIRO
         // ==========================================
+        window.carregarSaldoMaster = async function() {
+            try {
+                if(document.getElementById('wallet-saldo')) document.getElementById('wallet-saldo').innerText = "⏳...";
+                if(document.getElementById('wallet-saldo-pendente')) document.getElementById('wallet-saldo-pendente').innerText = "Aguarde...";
+                
+                const res = await consultarSaldoMaster({ uid: masterUid });
+                if(res.data.success) {
+                    const saldoReal = Number(res.data.balance) || 0;
+                    const saldoEst = Number(res.data.estimatedBalance) || 0;
+                    if(document.getElementById('wallet-saldo')) document.getElementById('wallet-saldo').innerText = `R$ ${saldoReal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+                    if(document.getElementById('wallet-saldo-pendente')) document.getElementById('wallet-saldo-pendente').innerText = `A liberar: R$ ${saldoEst.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+                } else {
+                    if(document.getElementById('wallet-saldo')) document.getElementById('wallet-saldo').innerText = "Erro!";
+                    if(document.getElementById('wallet-saldo-pendente')) document.getElementById('wallet-saldo-pendente').innerText = res.data.error; 
+                }
+            } catch(e) {
+                if(document.getElementById('wallet-saldo')) document.getElementById('wallet-saldo').innerText = "Falha";
+                if(document.getElementById('wallet-saldo-pendente')) document.getElementById('wallet-saldo-pendente').innerText = "Sem conexão.";
+            }
+        }
+
         window.renderizarFaturamento = function() {
             const tabela = document.getElementById('tabela-faturamento');
             tabela.innerHTML = '';
@@ -815,7 +839,9 @@
 
             document.getElementById('fat-mrr-ativo').innerText = `R$ ${mrrAtivo.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
             document.getElementById('fat-mrr-perdido').innerText = `R$ ${mrrPerdido.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-            
+            document.getElementById('fat-qtd-ativos').innerText = `${qtdAtivos} assinaturas ativas pagantes`;
+            document.getElementById('fat-qtd-bloqueados').innerText = `${qtdBloqueados} academias bloqueadas`;
+
             let ticketMedio = qtdAtivos > 0 ? (mrrAtivo / qtdAtivos) : 0;
             document.getElementById('fat-ticket-medio').innerText = `R$ ${ticketMedio.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
         }
@@ -823,9 +849,46 @@
         window.abrirModalPixMaster = () => document.getElementById('modal-pix-master').classList.replace('hidden', 'flex');
         window.fecharModalPixMaster = () => document.getElementById('modal-pix-master').classList.replace('flex', 'hidden');
 
+        window.solicitarPixMaster = async function() {
+            const valor = parseFloat(document.getElementById('pix-master-valor').value);
+            const tipo = document.getElementById('pix-master-tipo').value;
+            const chave = document.getElementById('pix-master-chave').value.trim();
+
+            if(!valor || valor <= 0) return showToast("Valor inválido.", "error");
+            if(!chave) return showToast("Insira a chave PIX de destino.", "error");
+
+            const btn = document.getElementById('btn-sacar-master');
+            const txtOriginal = btn.innerHTML;
+            btn.innerHTML = "⏳ Solicitando...";
+            btn.disabled = true;
+
+            try {
+                const res = await solicitarSaqueMaster({ uid: masterUid, valor: valor, chavePix: chave, tipoChave: tipo });
+                if(res.data.success) {
+                    showToast("PIX solicitado com sucesso!", "success");
+                    fecharModalPixMaster();
+                    carregarSaldoMaster(); 
+                } else {
+                    showToast("Erro: " + res.data.error, "error");
+                }
+            } catch(e) {
+                showToast("Erro ao processar transferência.", "error");
+            } finally {
+                btn.innerHTML = txtOriginal;
+                btn.disabled = false;
+            }
+        }
+
+        // ==========================================
+        // NAVEGAÇÃO
+        // ==========================================
         window.mudarAbaMaster = function(abaID) {
-            document.querySelectorAll('[id^="aba-"]').forEach(a => a.classList.add('hidden'));
+            document.querySelectorAll('[id^="aba-"]').forEach(a => {
+                a.classList.add('hidden');
+                a.classList.remove('block');
+            });
             document.getElementById('aba-' + abaID).classList.remove('hidden');
+            document.getElementById('aba-' + abaID).classList.add('block');
             
             document.querySelectorAll('[id^="menu-"]').forEach(m => m.classList.remove('bg-rose-500/10', 'text-rose-500'));
             document.getElementById('menu-' + abaID).classList.add('bg-rose-500/10', 'text-rose-500');

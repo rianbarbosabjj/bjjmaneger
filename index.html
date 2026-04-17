@@ -349,11 +349,11 @@
                             <span id="p1-preco" class="text-4xl font-black text-white leading-none">⏳</span>
                             <span id="p1-periodo" class="text-slate-500 text-sm font-bold mb-1 hidden"> / mês</span>
                         </div>
-                        <span id="p1-trial-text" class="text-[10px] text-emerald-400 mt-3 uppercase tracking-widest font-bold block hidden bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded w-max"></span>
+                        <span id="p1-trial-text" class="text-[10px] text-emerald-400 mt-3 uppercase tracking-widest font-bold hidden bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded w-max"></span>
                     </div>
                     
                     <ul id="p1-features" class="space-y-4 mb-8 flex-1 text-[13px] text-slate-300"></ul>
-                    <a href="cadastro_equipe.html" class="w-full mt-auto bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-colors border border-slate-700">
+                    <a href="cadastro_equipe.html?plano=p1" class="w-full mt-auto bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-colors border border-slate-700">
                         Testar Agora
                     </a>
                 </div>
@@ -371,11 +371,11 @@
                             <span id="p2-preco" class="text-4xl font-black text-white leading-none">⏳</span>
                             <span class="text-slate-500 text-sm font-bold mb-1">/ mês</span>
                         </div>
-                        <span id="p2-trial-text" class="text-[10px] text-cyan-400 mt-3 uppercase tracking-widest font-bold block hidden bg-cyan-500/10 border border-cyan-500/20 px-2 py-1 rounded w-max"></span>
+                        <span id="p2-trial-text" class="text-[10px] text-cyan-400 mt-3 uppercase tracking-widest font-bold hidden bg-cyan-500/10 border border-cyan-500/20 px-2 py-1 rounded w-max"></span>
                     </div>
                     
                     <ul id="p2-features" class="space-y-4 mb-8 flex-1 text-[13px] text-slate-300"></ul>
-                    <a href="cadastro_equipe.html" class="w-full mt-auto bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-colors border border-slate-700 hover:border-cyan-500/50">
+                    <a href="cadastro_equipe.html?plano=p2" class="w-full mt-auto bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-colors border border-slate-700 hover:border-cyan-500/50">
                         Assinar Agora
                     </a>
                 </div>
@@ -396,11 +396,11 @@
                             <span id="p3-preco" class="text-4xl font-black text-white leading-none">⏳</span>
                             <span class="text-slate-400 text-sm font-bold mb-1">/ mês</span>
                         </div>
-                        <span id="p3-trial-text" class="text-[10px] text-purple-400 mt-3 uppercase tracking-widest font-bold block hidden bg-purple-500/10 border border-purple-500/20 px-2 py-1 rounded w-max"></span>
+                        <span id="p3-trial-text" class="text-[10px] text-purple-400 mt-3 uppercase tracking-widest font-bold hidden bg-purple-500/10 border border-purple-500/20 px-2 py-1 rounded w-max"></span>
                     </div>
                     
                     <ul id="p3-features" class="space-y-4 mb-8 flex-1 text-[13px] text-slate-200"></ul>
-                    <a href="cadastro_equipe.html" class="w-full mt-auto bg-purple-600 hover:bg-purple-700 text-white font-black py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-all shadow-lg transform hover:-translate-y-0.5">
+                    <a href="cadastro_equipe.html?plano=p3" class="w-full mt-auto bg-purple-600 hover:bg-purple-700 text-white font-black py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-all shadow-lg transform hover:-translate-y-0.5">
                         Assinar Agora
                     </a>
                 </div>
@@ -418,12 +418,12 @@
                             <span id="p4-preco" class="text-4xl font-black text-white leading-none">⏳</span>
                             <span class="text-slate-500 text-sm font-bold mb-1">/ mês</span>
                         </div>
-                        <span id="p4-trial-text" class="text-[10px] text-amber-500 mt-3 uppercase tracking-widest font-bold block hidden bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded w-max"></span>
+                        <span id="p4-trial-text" class="text-[10px] text-amber-500 mt-3 uppercase tracking-widest font-bold hidden bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded w-max"></span>
                     </div>
                     
                     <ul id="p4-features" class="space-y-4 mb-8 flex-1 text-[13px] text-slate-300"></ul>
-                    <a href="https://wa.me/5521981716074?text=Tenho interesse no Plano Elite do BJJ Manager." target="_blank" class="w-full mt-auto bg-transparent hover:bg-slate-800 text-amber-500 font-bold py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-colors border border-amber-500/50 hover:border-amber-500">
-                        Falar com Consultor
+                    <a href="cadastro_equipe.html?plano=p4" class="w-full mt-auto bg-transparent hover:bg-slate-800 text-amber-500 font-bold py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-colors border border-amber-500/50 hover:border-amber-500">
+                        Assinar Plano Elite
                     </a>
                 </div>
 
@@ -494,13 +494,14 @@
         // MOSTRA A ETIQUETA COM OS DIAS DE TESTE
         function mostrarBadgeTrial(idElemento, dias) {
             const el = document.getElementById(idElemento);
-            // Se existir elemento e o número de dias for MAIOR que zero, mostra. Se for zero, esconde.
             if(el) {
                 if (dias > 0) {
                     el.innerText = `🎁 ${dias} dias de Teste Grátis`;
                     el.classList.remove('hidden');
+                    el.classList.add('block');
                 } else {
                     el.classList.add('hidden');
+                    el.classList.remove('block');
                 }
             }
         }

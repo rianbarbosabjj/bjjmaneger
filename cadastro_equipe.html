@@ -251,7 +251,7 @@
         const db = getFirestore(app);
         const storage = getStorage(app);
 
-        let cupomValidado = null; // Variável global para armazenar o cupom se o cliente validar
+        let cupomValidado = null; 
 
         // --- SISTEMA DE TOASTS ---
         window.showToast = function(message, type = 'error') {
@@ -337,7 +337,6 @@
                         input.classList.add('border-rose-500');
                         input.classList.remove('border-emerald-500');
                     } else {
-                        // Cupom Válido!
                         cupomValidado = codigo;
                         let txtDuracao = cupom.duracao === 'PRIMEIRA_MENSALIDADE' ? 'na 1ª mensalidade' : 'recorrente';
                         msgTexto.innerText = `✅ Válido! Você terá ${cupom.desconto_perc}% de desconto ${txtDuracao}.`;
@@ -362,7 +361,6 @@
             }
         }
 
-        // Se a pessoa apagar o texto do cupom, resetamos a validação
         document.getElementById('cad-cupom').addEventListener('input', function(e) {
             if(e.target.value.trim() === '') {
                 cupomValidado = null;
@@ -372,7 +370,7 @@
         });
 
 
-        // --- LÓGICA DE SUBMISSÃO E INTEGRAÇÃO FIREBASE ---
+        // --- LÓGICA DE SUBMISSÃO E INTEGRAÇÃO FIREBASE COM PLANO SELECIONADO ---
         document.getElementById('form-cadastro').addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -399,7 +397,6 @@
                 return showToast("As senhas não coincidem!", "error");
             }
 
-            // Avisa o cliente se ele digitou um cupom, mas esqueceu de clicar em "Validar"
             const cupomDigitado = document.getElementById('cad-cupom').value.trim().toUpperCase();
             if (cupomDigitado && !cupomValidado) {
                 return showToast("Por favor, clique em 'VALIDAR' para confirmar o seu cupom promocional antes de continuar.", "info");
@@ -412,11 +409,36 @@
             btn.classList.add('opacity-70', 'cursor-not-allowed');
 
             try {
-                // 1. Cria utilizador no Firebase Auth
+                // 1. Lê o plano da URL e puxa os dias de Trial do Super Admin
+                const urlParams = new URLSearchParams(window.location.search);
+                const planoSelecionado = urlParams.get('plano') || 'p1'; // Se não vier na URL, assume p1
+
+                let trialDias = 7; 
+                let valorPlanoSelecionado = 0;
+
+                try {
+                    const snapPlanos = await getDoc(doc(db, "sistema", "config_planos"));
+                    if(snapPlanos.exists()) {
+                        const config = snapPlanos.data();
+                        if(config[planoSelecionado]) {
+                            trialDias = parseInt(config[planoSelecionado].trial_dias);
+                            if(isNaN(trialDias)) trialDias = 0;
+                            valorPlanoSelecionado = parseFloat(config[planoSelecionado].preco) || 0;
+                        }
+                    }
+                } catch(e) {
+                    console.error("Erro ao puxar configuração do plano. Usando padrão.", e);
+                }
+
+                // 2. Calcula a data de expiração (Hoje + Dias de Trial)
+                const dataExpiracao = new Date();
+                dataExpiracao.setDate(dataExpiracao.getDate() + trialDias);
+
+                // 3. Cria utilizador no Firebase Auth
                 const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
                 const user = userCredential.user;
 
-                // 2. Faz Upload da Logo (se existir)
+                // 4. Faz Upload da Logo (se existir)
                 let urlLogo = "";
                 if (arquivoLogo) {
                     const caminhoRef = ref(storage, `equipes_logos/${user.uid}_${arquivoLogo.name}`);
@@ -424,7 +446,7 @@
                     urlLogo = await getDownloadURL(caminhoRef);
                 }
 
-                // 3. Salva TODOS os dados da equipe no Firestore
+                // 5. Salva TODOS os dados da equipe no Firestore (COM VENCIMENTO!)
                 await setDoc(doc(db, "equipes", user.uid), {
                     nome_equipe: nomeEquipe.toUpperCase(),
                     responsavel_nome: nomeResp,
@@ -440,19 +462,22 @@
                     email_responsavel: email,
                     url_logo: urlLogo,
                     data_cadastro: new Date().toISOString(),
-                    status_plano: 'TESTE',
-                    valor_prazo: 100.0, 
-                    valor_atraso: 120.0,
-                    cupom_usado: cupomValidado // <- SALVA O CUPOM AQUI PARA USO FUTURO!
+                    status_plano: 'TESTE', 
+                    plano_escolhido: planoSelecionado,
+                    valor_plano: valorPlanoSelecionado, 
+                    data_pagamento_plano: dataExpiracao.toISOString(), // A MÁGICA ACONTECE AQUI!
+                    desconto_plano: 0,
+                    isento: false,
+                    cupom_usado: cupomValidado 
                 });
 
-                // 4. Envia e-mail de verificação de segurança
+                // 6. Envia e-mail de verificação de segurança
                 await sendEmailVerification(user);
                 await signOut(auth);
 
                 showToast("Conta criada! Verifique a sua caixa de e-mail para validar o acesso.", "success");
                 
-                // 5. Redireciona para o Login após o sucesso
+                // 7. Redireciona para o Login após o sucesso
                 setTimeout(() => {
                     window.location.href = "login.html";
                 }, 3500);

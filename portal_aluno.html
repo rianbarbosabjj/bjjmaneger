@@ -1239,6 +1239,14 @@ async function buscarFaturasResiliente() {
             atualizarWidgetMensalidade();
         }
 
+        window.copiarPixAluno = function(chave) {
+            navigator.clipboard.writeText(chave).then(() => {
+                showToast("Chave PIX copiada! Abra o app do seu banco para pagar.", "success");
+            }).catch(err => {
+                showToast("Erro ao copiar a chave.", "error");
+            });
+        }
+        
         window.abrirPagamento = async function(faturaId) {
             const fat = faturasCache.find(f => f.id === faturaId); if (!fat) return showToast("Fatura não encontrada.", "error");
             const temPlanoAsaas = equipeDados && equipeDados.plano_asaas === true;

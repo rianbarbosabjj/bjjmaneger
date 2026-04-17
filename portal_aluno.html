@@ -66,9 +66,12 @@
                 <p class="text-[10px] text-cyan-400 font-bold">Acesse rápido, sem navegador</p>
             </div>
         </div>
-        <div class="flex items-center gap-2 shrink-0">
-            <button onclick="fecharPwaBanner()" class="p-2 text-slate-400 hover:text-white font-bold">&times;</button>
-            <button onclick="instalarPwa()" class="bg-cyan-500 hover:bg-cyan-400 text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-md transition-colors">Baixar</button>
+        <div class="flex flex-col items-end gap-1 shrink-0">
+            <div class="flex items-center gap-2">
+                <button onclick="fecharPwaBanner()" class="p-2 text-slate-400 hover:text-white font-bold text-lg leading-none" title="Fechar agora">&times;</button>
+                <button onclick="instalarPwa()" class="bg-cyan-500 hover:bg-cyan-400 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-md transition-colors">Baixar</button>
+            </div>
+            <button onclick="dispensarPwaParaSempre()" class="text-[8px] text-slate-500 hover:text-slate-300 underline mr-1 transition-colors">Não mostrar mais</button>
         </div>
     </div>
 
@@ -1809,11 +1812,14 @@
         const sessaoSalva = localStorage.getItem('bjj_aluno_auth'); if(sessaoSalva) { alunoLogado = JSON.parse(sessaoSalva); iniciarPortal(); }
     </script>
 
-    <script>
+<script>
         let deferredPrompt;
         
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
         const isIosInstalled = window.navigator.standalone === true;
+        
+        // NOVO: Verifica se o aluno já pediu para esconder o banner para sempre
+        const pwaDispensado = localStorage.getItem('pwa_dispensado') === 'true';
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -1836,6 +1842,8 @@
         });
 
         function mostrarBannerPwa() {
+            if (pwaDispensado) return; // Se já dispensou para sempre, bloqueia a exibição.
+
             if(document.getElementById('tela-login').classList.contains('flex') || document.getElementById('tela-portal').classList.contains('flex')) {
                 setTimeout(() => {
                     document.getElementById('pwa-install-banner').classList.remove('translate-y-full');
@@ -1845,6 +1853,12 @@
 
         window.fecharPwaBanner = function() {
             document.getElementById('pwa-install-banner').classList.add('translate-y-full');
+        };
+
+        // NOVO: Função que guarda a escolha do aluno na memória do telemóvel
+        window.dispensarPwaParaSempre = function() {
+            localStorage.setItem('pwa_dispensado', 'true');
+            fecharPwaBanner();
         };
 
         window.instalarPwa = async function() {

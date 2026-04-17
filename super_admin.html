@@ -249,7 +249,7 @@
                     <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight">Construtor de Planos</h2>
                     <p class="text-sm text-slate-400 mt-1 font-medium">Defina preços e use as caixas de seleção para montar o que cada plano oferece.</p>
                 </div>
-                <button id="btn-salvar-planos" onclick="salvarConfigPlanos()" class="bg-emerald-500 hover:bg-emerald-400 text-white font-black py-3 px-8 rounded-xl shadow-lg shadow-emerald-500/20 text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2">
+                <button onclick="salvarConfigPlanos()" class="bg-emerald-500 hover:bg-emerald-400 text-white font-black py-3 px-8 rounded-xl shadow-lg shadow-emerald-500/20 text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2">
                     <span>💾</span> Publicar Planos
                 </button>
             </div>
@@ -302,7 +302,7 @@
                     </div>
                     <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 mt-2">
                         <label class="text-[10px] text-emerald-500 font-black uppercase mb-1 block">Dias de Teste (Trial)</label>
-                        <input type="number" id="p2-trial" class="w-full bg-transparent text-white font-black text-lg outline-none" value="7">
+                        <input type="number" id="p1-trial" class="w-full bg-transparent text-white font-black text-lg outline-none" value="7">
                     </div>
                     <div>
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Subtítulo</label>
@@ -333,7 +333,7 @@
                     </div>
                     <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 mt-2">
                         <label class="text-[10px] text-emerald-500 font-black uppercase mb-1 block">Dias de Teste (Trial)</label>
-                        <input type="number" id="p3-trial" class="w-full bg-transparent text-white font-black text-lg outline-none" value="7">
+                        <input type="number" id="p1-trial" class="w-full bg-transparent text-white font-black text-lg outline-none" value="7">
                     </div>
                     <div>
                         <label class="text-[10px] text-purple-500/70 font-bold uppercase mb-1 block">Subtítulo</label>
@@ -360,10 +360,10 @@
                             <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Preço Promo</label>
                             <input type="number" id="p4-preco" class="w-full bg-slate-950 border border-slate-800 text-amber-500 rounded-xl p-3 text-sm font-mono font-black outline-none focus:border-amber-500">
                         </div>
+                        <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 mt-2">
+                            <label class="text-[10px] text-emerald-500 font-black uppercase mb-1 block">Dias de Teste (Trial)</label>
+                            <input type="number" id="p1-trial" class="w-full bg-transparent text-white font-black text-lg outline-none" value="7">
                     </div>
-                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 mt-2">
-                        <label class="text-[10px] text-emerald-500 font-black uppercase mb-1 block">Dias de Teste (Trial)</label>
-                        <input type="number" id="p4-trial" class="w-full bg-transparent text-white font-black text-lg outline-none" value="7">
                     </div>
                     <div>
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Subtítulo</label>
@@ -946,42 +946,29 @@
         ];
 
 window.carregarConfigPlanos = async function() {
-    const defaults = {
-        p1: { nome: "Plano Básico", preco_original: "", preco: "", desc: "", trial_dias: 7, features: "" },
-        p2: { nome: "Plano Intermediário", preco_original: "", preco: "", desc: "", trial_dias: 7, features: "" },
-        p3: { nome: "Plano Premium", preco_original: "", preco: "", desc: "", trial_dias: 7, features: "" },
-        p4: { nome: "Plano Ultimate", preco_original: "", preco: "", desc: "", trial_dias: 7, features: "" }
-    };
-
     try {
         const snap = await getDoc(PLANOS_DOC_REF);
-        const data = snap.exists() ? snap.data() : {};
-
-        ['p1', 'p2', 'p3', 'p4'].forEach(p => {
-            const plano = { ...defaults[p], ...(data[p] || {}) };
-
-            const nomeEl = document.getElementById(`${p}-nome`);
-            const precoOriginalEl = document.getElementById(`${p}-preco-original`);
-            const precoEl = document.getElementById(`${p}-preco`);
-            const descEl = document.getElementById(`${p}-desc`);
-            const trialEl = document.getElementById(`${p}-trial`);
-
-            if (nomeEl) nomeEl.value = plano.nome || "";
-            if (precoOriginalEl) precoOriginalEl.value = plano.preco_original ?? "";
-            if (precoEl) precoEl.value = plano.preco ?? "";
-            if (descEl) descEl.value = plano.desc || "";
-            if (trialEl) trialEl.value = plano.trial_dias || 7;
-
-            const color = p === 'p1' ? 'rose' : p === 'p2' ? 'cyan' : p === 'p3' ? 'purple' : 'amber';
-            renderizarCheckboxes(p, plano.features || "", color);
-        });
-    } catch (e) {
-        console.error("Erro ao carregar planos:", e);
-        ['p1', 'p2', 'p3', 'p4'].forEach(p => {
-            const color = p === 'p1' ? 'rose' : p === 'p2' ? 'cyan' : p === 'p3' ? 'purple' : 'amber';
-            renderizarCheckboxes(p, "", color);
-        });
-        showToast("Erro ao carregar configuração dos planos.", "error");
+        if(snap.exists()) {
+            const d = snap.data();
+            ['p1','p2','p3','p4'].forEach(p => {
+                if(d[p]) {
+                    document.getElementById(p+'-nome').value = d[p].nome || "";
+                    document.getElementById(p+'-preco-original').value = d[p].preco_original || "";
+                    document.getElementById(p+'-preco').value = d[p].preco || "";
+                    document.getElementById(p+'-desc').value = d[p].desc || "";
+                    
+                    // 🚀 CARREGA O TRIAL INDIVIDUAL:
+                    if(document.getElementById(p+'-trial')) {
+                        document.getElementById(p+'-trial').value = d[p].trial_dias || 7;
+                    }
+                    
+                    let color = p==='p1'?'rose':p==='p2'?'cyan':p==='p3'?'purple':'amber';
+                    renderizarCheckboxes(p, d[p].features, color);
+                }
+            });
+        }
+    } catch(e) { 
+        console.error("Erro ao carregar planos:", e); 
     }
 }
 
@@ -989,8 +976,7 @@ window.carregarConfigPlanos = async function() {
             const container = document.getElementById(`listbox-${planId}`);
             if(!container) return;
             container.innerHTML = '';
-            const savedLines = savedText ? savedText.split('
-') : [];
+            const savedLines = savedText ? savedText.split('\n') : [];
             
             TODAS_FUNCIONALIDADES.forEach((feat, index) => {
                 let isChecked = false;
@@ -1008,44 +994,36 @@ window.carregarConfigPlanos = async function() {
         }
 
 window.salvarConfigPlanos = async function() {
-    const btn = document.getElementById('btn-salvar-planos') || document.querySelector('button[onclick="salvarConfigPlanos()"]');
-    const txtOrig = btn ? btn.innerHTML : 'Publicar Planos';
+    const btn = document.querySelector('button[onclick="salvarConfigPlanos()"]');
+    const txtOrig = btn.innerHTML;
+    btn.innerHTML = "⏳ Salvando..."; btn.disabled = true;
 
-    if (btn) {
-        btn.innerHTML = "⏳ Salvando...";
-        btn.disabled = true;
-    }
+    const dados = {};
+    ['p1','p2','p3','p4'].forEach(p => {
+        let feats = [];
+        TODAS_FUNCIONALIDADES.forEach((f, i) => {
+            const chk = document.getElementById(`chk-${p}-${i}`);
+            feats.push(`${chk.checked ? '✓' : '❌'} ${f}`);
+        });
+        dados[p] = {
+            nome: document.getElementById(p+'-nome').value,
+            preco_original: parseFloat(document.getElementById(p+'-preco-original').value) || 0,
+            preco: parseFloat(document.getElementById(p+'-preco').value) || 0,
+            desc: document.getElementById(p+'-desc').value,
+            // 🚀 SALVA O TRIAL INDIVIDUAL:
+            trial_dias: parseInt(document.getElementById(p+'-trial').value) || 7,
+            features: feats.join('\n')
+        };
+    });
 
     try {
-        const dados = {};
-
-        ['p1','p2','p3','p4'].forEach(p => {
-            const feats = TODAS_FUNCIONALIDADES.map((f, i) => {
-                const chk = document.getElementById(`chk-${p}-${i}`);
-                return `${chk && chk.checked ? '✓' : '❌'} ${f}`;
-            });
-
-            dados[p] = {
-                nome: document.getElementById(`${p}-nome`)?.value?.trim() || "",
-                preco_original: parseFloat(String(document.getElementById(`${p}-preco-original`)?.value || '').replace(',', '.')) || 0,
-                preco: parseFloat(String(document.getElementById(`${p}-preco`)?.value || '').replace(',', '.')) || 0,
-                desc: document.getElementById(`${p}-desc`)?.value?.trim() || "",
-                trial_dias: parseInt(document.getElementById(`${p}-trial`)?.value || '7', 10) || 7,
-                features: feats.join('
-')
-            };
-        });
-
-        await setDoc(PLANOS_DOC_REF, dados, { merge: true });
-        showToast("Planos e trials salvos com sucesso!", "success");
+        await setDoc(PLANOS_DOC_REF, dados);
+        showToast("Planos e Trials salvos com sucesso!", "success");
     } catch(e) { 
         showToast("Erro ao salvar planos.", "error"); 
         console.error(e);
     } finally { 
-        if (btn) {
-            btn.innerHTML = txtOrig;
-            btn.disabled = false;
-        }
+        btn.innerHTML = txtOrig; btn.disabled = false; 
     }
 }
 

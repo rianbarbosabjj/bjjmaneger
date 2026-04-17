@@ -1,24 +1,20 @@
 // menu.js
 
 function carregarMenu() {
-    // Descobre em qual página estamos agora (ex: "dashboard.html")
     const paginaAtual = window.location.pathname.split("/").pop() || "dashboard.html";
 
-    // Função auxiliar para definir a cor do botão ativo (Desktop) - Estilo SaaS Moderno
     const classDesktop = (pagina) => {
         return paginaAtual === pagina 
-            ? "flex items-center px-4 py-3 text-sm font-black text-white bg-gradient-to-r from-cyan-500/10 to-transparent border-l-4 border-cyan-500 transition-all group" 
-            : "flex items-center px-4 py-3 text-sm font-semibold text-slate-400 border-l-4 border-transparent hover:border-slate-700 hover:text-white hover:bg-slate-800/50 transition-all group";
+            ? "w-full text-left flex items-center px-4 py-3 text-sm font-black text-white bg-gradient-to-r from-cyan-500/10 to-transparent border-l-4 border-cyan-500 transition-all group cursor-pointer" 
+            : "w-full text-left flex items-center px-4 py-3 text-sm font-semibold text-slate-400 border-l-4 border-transparent hover:border-slate-700 hover:text-white hover:bg-slate-800/50 transition-all group cursor-pointer";
     };
 
-    // Função auxiliar para definir a cor do botão ativo (Mobile)
     const classMobile = (pagina) => {
         return paginaAtual === pagina 
-            ? "shrink-0 w-16 flex flex-col items-center justify-center h-full text-cyan-400 relative snap-center" 
-            : "shrink-0 w-16 flex flex-col items-center justify-center h-full text-slate-500 hover:text-slate-300 transition-colors snap-center";
+            ? "shrink-0 w-16 flex flex-col items-center justify-center h-full text-cyan-400 relative snap-center cursor-pointer" 
+            : "shrink-0 w-16 flex flex-col items-center justify-center h-full text-slate-500 hover:text-slate-300 transition-colors snap-center cursor-pointer";
     };
 
-    // Linha azul no topo do botão mobile ativo (mais moderna com brilho)
     const indicadorMobile = (pagina) => {
         return paginaAtual === pagina ? `<div class="absolute top-0 w-8 h-1 bg-cyan-500 rounded-b-full shadow-[0_0_10px_rgba(6,182,212,0.8)]"></div>` : "";
     };
@@ -33,26 +29,32 @@ function carregarMenu() {
                 <p class="text-[9px] text-cyan-500 font-black uppercase tracking-[0.2em] mt-1">BJJ Manager</p>
             </div>
             
-            <nav class="flex-1 py-6 space-y-1.5 overflow-y-auto hide-scrollbar">
-                <a href="dashboard.html" class="${classDesktop('dashboard.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'dashboard.html' ? 'drop-shadow-md' : 'opacity-70'}">📊</span> Visão Geral</a>
-                <a href="financeiro.html" class="${classDesktop('financeiro.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'financeiro.html' ? 'drop-shadow-md' : 'opacity-70'}">💰</span> Financeiro</a>
-                <a href="alunos.html" class="${classDesktop('alunos.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'alunos.html' ? 'drop-shadow-md' : 'opacity-70'}">🥋</span> Alunos</a>
-                <a href="turmas.html" class="${classDesktop('turmas.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'turmas.html' ? 'drop-shadow-md' : 'opacity-70'}">🗓️</span> Turmas</a>
+            <nav class="flex-1 py-6 space-y-1.5 overflow-y-auto hide-scrollbar flex flex-col">
+                <button onclick="window.location.href='dashboard.html'" class="${classDesktop('dashboard.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'dashboard.html' ? 'drop-shadow-md' : 'opacity-70'}">📊</span> Visão Geral</button>
+                <button onclick="window.location.href='financeiro.html'" class="${classDesktop('financeiro.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'financeiro.html' ? 'drop-shadow-md' : 'opacity-70'}">💰</span> Financeiro</button>
+                <button onclick="window.location.href='alunos.html'" class="${classDesktop('alunos.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'alunos.html' ? 'drop-shadow-md' : 'opacity-70'}">🥋</span> Alunos</button>
+                <button onclick="window.location.href='turmas.html'" class="${classDesktop('turmas.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'turmas.html' ? 'drop-shadow-md' : 'opacity-70'}">🗓️</span> Turmas</button>
                 
-                <a href="loja.html" class="${classDesktop('loja.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'loja.html' ? 'drop-shadow-md' : 'opacity-70'}">🛒</span> Vitrine Virtual</a>
+                <button onclick="if(window.verificarAcesso('loja_virtual')) window.location.href='loja.html'" class="${classDesktop('loja.html')}">
+                    <span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'loja.html' ? 'drop-shadow-md' : 'opacity-70'}">🛒</span> Vitrine Virtual
+                </button>
                 
                 <div class="px-5 pt-4 pb-2">
                     <p class="text-[10px] font-black text-slate-600 uppercase tracking-widest">Acadêmico</p>
                 </div>
-                <a href="certificados.html" class="${classDesktop('certificados.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'certificados.html' ? 'drop-shadow-md' : 'opacity-70'}">📜</span> Certificados</a>
-                <a href="curriculo.html" class="${classDesktop('curriculo.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'curriculo.html' ? 'drop-shadow-md' : 'opacity-70'}">📄</span> Currículo</a>
+                
+                <button onclick="if(window.verificarAcesso('certificados')) window.location.href='certificados.html'" class="${classDesktop('certificados.html')}">
+                    <span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'certificados.html' ? 'drop-shadow-md' : 'opacity-70'}">📜</span> Certificados
+                </button>
+                
+                <button onclick="window.location.href='curriculo.html'" class="${classDesktop('curriculo.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'curriculo.html' ? 'drop-shadow-md' : 'opacity-70'}">📄</span> Currículo</button>
                 
                 <div class="px-5 pt-4 pb-2">
                     <p class="text-[10px] font-black text-slate-600 uppercase tracking-widest">Gestão Extra</p>
                 </div>
-                <a href="competicoes.html" class="${classDesktop('competicoes.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'competicoes.html' ? 'drop-shadow-md' : 'opacity-70'}">🏆</span> Competições</a>
-                <a href="federacoes.html" class="${classDesktop('federacoes.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'federacoes.html' ? 'drop-shadow-md' : 'opacity-70'}">🪪</span> Federações</a>
-                <a href="historico.html" class="${classDesktop('historico.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'historico.html' ? 'drop-shadow-md' : 'opacity-70'}">🎓</span> Graduações</a>
+                <button onclick="window.location.href='competicoes.html'" class="${classDesktop('competicoes.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'competicoes.html' ? 'drop-shadow-md' : 'opacity-70'}">🏆</span> Competições</button>
+                <button onclick="window.location.href='federacoes.html'" class="${classDesktop('federacoes.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'federacoes.html' ? 'drop-shadow-md' : 'opacity-70'}">🪪</span> Federações</button>
+                <button onclick="window.location.href='historico.html'" class="${classDesktop('historico.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'historico.html' ? 'drop-shadow-md' : 'opacity-70'}">🎓</span> Graduações</button>
             </nav>
             
             <div class="p-4 border-t border-slate-800 bg-slate-900/50">
@@ -73,18 +75,23 @@ function carregarMenu() {
     // === HTML DO MENU MOBILE (Com Efeito de Vidro Fosco e Botão Sair) ===
     const menuMobile = `
         <nav class="md:hidden fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-md border-t border-slate-800 flex overflow-x-auto hide-scrollbar flex-nowrap items-center h-[72px] z-40 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.5)] snap-x scroll-smooth">
-            <a href="dashboard.html" class="${classMobile('dashboard.html')}">${indicadorMobile('dashboard.html')}<span class="text-xl mb-1 ${paginaAtual === 'dashboard.html' ? '' : 'opacity-60'}">📊</span><span class="text-[8px] font-bold uppercase tracking-wide">Visão</span></a>
-            <a href="financeiro.html" class="${classMobile('financeiro.html')}">${indicadorMobile('financeiro.html')}<span class="text-xl mb-1 ${paginaAtual === 'financeiro.html' ? '' : 'opacity-60'}">💰</span><span class="text-[8px] font-bold uppercase tracking-wide">Caixa</span></a>
-            <a href="alunos.html" class="${classMobile('alunos.html')}">${indicadorMobile('alunos.html')}<span class="text-xl mb-1 ${paginaAtual === 'alunos.html' ? '' : 'opacity-60'}">🥋</span><span class="text-[8px] font-bold uppercase tracking-wide">Alunos</span></a>
-            <a href="turmas.html" class="${classMobile('turmas.html')}">${indicadorMobile('turmas.html')}<span class="text-xl mb-1 ${paginaAtual === 'turmas.html' ? '' : 'opacity-60'}">🗓️</span><span class="text-[8px] font-bold uppercase tracking-wide">Turmas</span></a>
+            <button onclick="window.location.href='dashboard.html'" class="${classMobile('dashboard.html')}">${indicadorMobile('dashboard.html')}<span class="text-xl mb-1 ${paginaAtual === 'dashboard.html' ? '' : 'opacity-60'}">📊</span><span class="text-[8px] font-bold uppercase tracking-wide">Visão</span></button>
+            <button onclick="window.location.href='financeiro.html'" class="${classMobile('financeiro.html')}">${indicadorMobile('financeiro.html')}<span class="text-xl mb-1 ${paginaAtual === 'financeiro.html' ? '' : 'opacity-60'}">💰</span><span class="text-[8px] font-bold uppercase tracking-wide">Caixa</span></button>
+            <button onclick="window.location.href='alunos.html'" class="${classMobile('alunos.html')}">${indicadorMobile('alunos.html')}<span class="text-xl mb-1 ${paginaAtual === 'alunos.html' ? '' : 'opacity-60'}">🥋</span><span class="text-[8px] font-bold uppercase tracking-wide">Alunos</span></button>
+            <button onclick="window.location.href='turmas.html'" class="${classMobile('turmas.html')}">${indicadorMobile('turmas.html')}<span class="text-xl mb-1 ${paginaAtual === 'turmas.html' ? '' : 'opacity-60'}">🗓️</span><span class="text-[8px] font-bold uppercase tracking-wide">Turmas</span></button>
             
-            <a href="loja.html" class="${classMobile('loja.html')}">${indicadorMobile('loja.html')}<span class="text-xl mb-1 ${paginaAtual === 'loja.html' ? '' : 'opacity-60'}">🛒</span><span class="text-[8px] font-bold uppercase tracking-wide">Loja</span></a>
+            <button onclick="if(window.verificarAcesso('loja_virtual')) window.location.href='loja.html'" class="${classMobile('loja.html')}">
+                ${indicadorMobile('loja.html')}<span class="text-xl mb-1 ${paginaAtual === 'loja.html' ? '' : 'opacity-60'}">🛒</span><span class="text-[8px] font-bold uppercase tracking-wide">Loja</span>
+            </button>
             
-            <a href="certificados.html" class="${classMobile('certificados.html')}">${indicadorMobile('certificados.html')}<span class="text-xl mb-1 ${paginaAtual === 'certificados.html' ? '' : 'opacity-60'}">📜</span><span class="text-[8px] font-bold uppercase tracking-wide">Certif.</span></a>
-            <a href="curriculo.html" class="${classMobile('curriculo.html')}">${indicadorMobile('curriculo.html')}<span class="text-xl mb-1 ${paginaAtual === 'curriculo.html' ? '' : 'opacity-60'}">📄</span><span class="text-[8px] font-bold uppercase tracking-wide">Currí.</span></a>
-            <a href="competicoes.html" class="${classMobile('competicoes.html')}">${indicadorMobile('competicoes.html')}<span class="text-xl mb-1 ${paginaAtual === 'competicoes.html' ? '' : 'opacity-60'}">🏆</span><span class="text-[8px] font-bold uppercase tracking-wide">Comp.</span></a>
-            <a href="federacoes.html" class="${classMobile('federacoes.html')}">${indicadorMobile('federacoes.html')}<span class="text-xl mb-1 ${paginaAtual === 'federacoes.html' ? '' : 'opacity-60'}">🪪</span><span class="text-[8px] font-bold uppercase tracking-wide">Fed.</span></a>
-            <a href="historico.html" class="${classMobile('historico.html')}">${indicadorMobile('historico.html')}<span class="text-xl mb-1 ${paginaAtual === 'historico.html' ? '' : 'opacity-60'}">🎓</span><span class="text-[8px] font-bold uppercase tracking-wide">Grad.</span></a>
+            <button onclick="if(window.verificarAcesso('certificados')) window.location.href='certificados.html'" class="${classMobile('certificados.html')}">
+                ${indicadorMobile('certificados.html')}<span class="text-xl mb-1 ${paginaAtual === 'certificados.html' ? '' : 'opacity-60'}">📜</span><span class="text-[8px] font-bold uppercase tracking-wide">Certif.</span>
+            </button>
+            
+            <button onclick="window.location.href='curriculo.html'" class="${classMobile('curriculo.html')}">${indicadorMobile('curriculo.html')}<span class="text-xl mb-1 ${paginaAtual === 'curriculo.html' ? '' : 'opacity-60'}">📄</span><span class="text-[8px] font-bold uppercase tracking-wide">Currí.</span></button>
+            <button onclick="window.location.href='competicoes.html'" class="${classMobile('competicoes.html')}">${indicadorMobile('competicoes.html')}<span class="text-xl mb-1 ${paginaAtual === 'competicoes.html' ? '' : 'opacity-60'}">🏆</span><span class="text-[8px] font-bold uppercase tracking-wide">Comp.</span></button>
+            <button onclick="window.location.href='federacoes.html'" class="${classMobile('federacoes.html')}">${indicadorMobile('federacoes.html')}<span class="text-xl mb-1 ${paginaAtual === 'federacoes.html' ? '' : 'opacity-60'}">🪪</span><span class="text-[8px] font-bold uppercase tracking-wide">Fed.</span></button>
+            <button onclick="window.location.href='historico.html'" class="${classMobile('historico.html')}">${indicadorMobile('historico.html')}<span class="text-xl mb-1 ${paginaAtual === 'historico.html' ? '' : 'opacity-60'}">🎓</span><span class="text-[8px] font-bold uppercase tracking-wide">Grad.</span></button>
             
             <button onclick="sairDoSistema()" class="shrink-0 w-16 flex flex-col items-center justify-center h-full text-rose-500 hover:text-rose-400 transition-colors snap-center">
                 <span class="text-xl mb-1">🚪</span>
@@ -93,15 +100,12 @@ function carregarMenu() {
         </nav>
     `;
 
-    // Injeta o menu Desktop no início do layout
     const containerPrincipal = document.getElementById('interface-sistema');
     if (containerPrincipal) {
         containerPrincipal.insertAdjacentHTML('afterbegin', menuDesktop);
     }
 
-    // Injeta o menu Mobile no final do body
     document.body.insertAdjacentHTML('beforeend', menuMobile);
 }
 
-// Executa a função quando o ficheiro carrega
 carregarMenu();

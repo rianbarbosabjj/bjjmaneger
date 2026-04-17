@@ -30,21 +30,9 @@
 
     <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
-    <div id="modal-aviso-global" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden items-center justify-center z-[100] p-4 transition-opacity">
-        <div id="modal-aviso-content" class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col transform transition-all duration-300 scale-95 opacity-0">
-            <div id="aviso-global-header" class="p-6 text-white text-center relative bg-indigo-600">
-                <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-3xl mx-auto mb-3 shadow-inner">
-                    📢
-                </div>
-                <h3 class="font-black text-xl tracking-tight uppercase">Comunicado Importante</h3>
-            </div>
-            <div class="p-8 text-center bg-white">
-                <p id="texto-aviso-global" class="text-slate-600 font-medium leading-relaxed text-sm mb-8"></p>
-                <button onclick="fecharModalAvisoGlobal()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black py-4 rounded-xl text-xs uppercase tracking-widest transition-all shadow-lg hover:-translate-y-0.5">
-                    Entendi, fechar
-                </button>
-            </div>
-        </div>
+    <div id="banner-aviso-global" class="hidden w-full text-center px-4 py-3 text-xs md:text-sm font-bold text-white shadow-md z-40 fixed top-0 left-0 transition-transform transform translate-y-[-100%]">
+        <span id="texto-aviso-global">Carregando aviso...</span>
+        <button onclick="fecharBannerAviso()" class="absolute right-4 top-1/2 -translate-y-1/2 hover:opacity-70 text-lg">&times;</button>
     </div>
 
     <div id="tela-bloqueio" class="fixed inset-0 bg-slate-900 z-[90] hidden flex-col items-center justify-center p-6 text-center">
@@ -75,30 +63,20 @@
                         <img id="img-topo-equipe" src="topo_curriculo.png" alt="Logo da Equipe" class="h-20 md:h-24 object-contain drop-shadow-sm" onerror="this.style.display='none'">
                     </div>
 
-                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
-                        <div class="flex items-center gap-4">
-                            <div id="status-icon" class="w-14 h-14 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-2xl shadow-inner shrink-0">⏳</div>
-                            <div>
-                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Licença BJJ Manager</p>
-                                <h2 id="nome-equipe" class="text-lg md:text-xl font-black text-slate-800 tracking-tight uppercase">Carregando...</h2>
-                            </div>
-                        </div>
-                        <div class="shrink-0 text-center md:text-right flex flex-col items-center md:items-end gap-2">
-                            <span id="status-badge" class="px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest bg-slate-200 text-slate-500">A CARREGAR</span>
-                            <a href="planos.html" class="text-[10px] font-bold text-slate-400 hover:text-slate-600 underline decoration-slate-300 underline-offset-2 transition-colors">
-                                Alterar Plano
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 md:mb-8">
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 mb-6 md:mb-8">
                         <div>
-                            <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Visão Geral</h2>
-                            <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Sua equipe na palma da mão</p>
+                            <div class="flex items-center gap-3 mb-1">
+                                <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Visão Geral</h2>
+                                <span id="status-badge" class="px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-slate-200 text-slate-500 border border-slate-300 shadow-sm mt-1">A CARREGAR</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <p class="text-xs md:text-sm text-slate-500 font-medium">Sua equipe na palma da mão</p>
+                                <span class="text-slate-300">•</span>
+                                <a href="planos.html" class="text-[10px] md:text-xs font-bold text-cyan-600 hover:text-cyan-700 underline decoration-cyan-200 underline-offset-2 transition-colors">Fazer Upgrade de Plano</a>
+                            </div>
                         </div>
                         
                         <div class="flex flex-wrap gap-2 md:gap-3 justify-center sm:justify-start">
-                            
                             <button onclick="abrirModalMensagem()" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2.5 px-3 md:px-4 rounded-xl shadow-md transition-all flex items-center text-xs md:text-sm">
                                 <span class="mr-1 md:mr-2">📢</span> <span class="hidden sm:inline">Avisos</span>
                             </button>
@@ -411,6 +389,7 @@
         let valAtraso = 100.0;
         let pagRapidoDados = null; 
         
+        // VARIÁVEIS GLOBAIS PARA MENSAGENS
         let mensagensCache = [];
         let mensagemEditandoId = null;
 
@@ -430,7 +409,7 @@
         }
 
         // ==========================================
-        // 📢 VERIFICAÇÃO DO MURAL DE AVISOS GLOBAL (MODAL INTELIGENTE)
+        // 📢 VERIFICAÇÃO DO MURAL DE AVISOS GLOBAL
         // ==========================================
         async function verificarAvisoGlobal() {
             try {
@@ -438,54 +417,29 @@
                 if(snap.exists()) {
                     const aviso = snap.data();
                     if(aviso.ativo === true && aviso.texto) {
-                        
-                        // Sistema de Cache: Evita mostrar o mesmo aviso repetidamente
-                        const cacheKey = "aviso_lido_" + (aviso.data_atualizacao || "v1");
-                        if (localStorage.getItem(cacheKey) === "true") {
-                            return; // O usuário já clicou em "Entendi" para este aviso
-                        }
-
-                        const modal = document.getElementById('modal-aviso-global');
-                        const content = document.getElementById('modal-aviso-content');
+                        const banner = document.getElementById('banner-aviso-global');
                         const textoEl = document.getElementById('texto-aviso-global');
-                        const header = document.getElementById('aviso-global-header');
+                        const interfaceSistema = document.getElementById('interface-sistema');
                         
                         textoEl.innerText = aviso.texto;
-                        header.className = `p-6 text-white text-center relative ${aviso.cor || 'bg-indigo-600'}`;
                         
-                        // Guardar a key no modal para podermos salvar no localStorage quando fechar
-                        modal.dataset.cacheKey = cacheKey;
-
-                        modal.classList.remove('hidden');
-                        modal.classList.add('flex');
+                        banner.className = `w-full text-center px-4 py-3 text-xs md:text-sm font-bold text-white shadow-md z-40 fixed top-0 left-0 transition-transform transform translate-y-[-100%] flex items-center justify-center ${aviso.cor || 'bg-indigo-600'}`;
                         
-                        // Animação suave de entrada
                         setTimeout(() => {
-                            content.classList.remove('scale-95', 'opacity-0');
-                            content.classList.add('scale-100', 'opacity-100');
-                        }, 50);
+                            banner.classList.remove('hidden', 'translate-y-[-100%]');
+                            interfaceSistema.style.marginTop = banner.offsetHeight + 'px';
+                        }, 500);
                     }
                 }
             } catch(e) { console.error("Erro ao buscar aviso global", e); }
         }
 
-        window.fecharModalAvisoGlobal = function() {
-            const modal = document.getElementById('modal-aviso-global');
-            const content = document.getElementById('modal-aviso-content');
-            
-            // Salva que o usuário já leu
-            if (modal.dataset.cacheKey) {
-                localStorage.setItem(modal.dataset.cacheKey, "true");
-            }
-
-            // Animação de saída
-            content.classList.remove('scale-100', 'opacity-100');
-            content.classList.add('scale-95', 'opacity-0');
-            
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }, 300);
+        window.fecharBannerAviso = function() {
+            const banner = document.getElementById('banner-aviso-global');
+            const interfaceSistema = document.getElementById('interface-sistema');
+            banner.classList.add('translate-y-[-100%]');
+            interfaceSistema.style.marginTop = '0px';
+            setTimeout(() => banner.classList.add('hidden'), 300);
         }
 
         // --- CONTROLE MODAL DE MENSAGENS COM ABAS ---
@@ -898,26 +852,18 @@
                             return; 
                         }
 
-                        // --- TRATA O STATUS DO PLANO E O AVISO NO TOPO ---
+                        // --- TRATA O STATUS DO PLANO NO CABEÇALHO LIMPO ---
                         const badgeStatus = document.getElementById('status-badge');
-                        const iconeStatus = document.getElementById('status-icon');
                         const txtNomePlano = document.getElementById('nome-equipe');
-                        const isento = (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true");
-
+                        
                         txtNomePlano.innerText = (dadosEquipe.nome_equipe || "SUA EQUIPE").toUpperCase();
-
-                        if (isento) {
-                            // document.getElementById('msg-isento').classList.remove('hidden');
-                        }
 
                         if (dadosEquipe.status_plano === 'TESTE' || !dadosEquipe.status_plano) {
                             badgeStatus.innerText = "PERÍODO DE TESTE";
                             badgeStatus.className = "px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-amber-100 text-amber-700 border border-amber-200 mt-1";
-                            iconeStatus.innerText = "⏳";
                         } else if (['BLACK_BELT', 'MASTER', 'ELITE', 'ATIVO'].includes(dadosEquipe.status_plano)) {
                             badgeStatus.innerText = "ASSINATURA ATIVA";
                             badgeStatus.className = "px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-700 border border-emerald-200 mt-1";
-                            iconeStatus.innerText = "✅";
                         }
 
                         // GUARDA AS VARIÁVEIS PARA O RESTO DA TELA

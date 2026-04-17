@@ -997,35 +997,48 @@ window.carregarConfigPlanos = async function() {
 
 window.salvarConfigPlanos = async function() {
     const btn = document.querySelector('button[onclick="salvarConfigPlanos()"]');
+    if (!btn) return;
+    
     const txtOrig = btn.innerHTML;
-    btn.innerHTML = "⏳ Salvando..."; btn.disabled = true;
-
-    const dados = {};
-    ['p1','p2','p3','p4'].forEach(p => {
-        let feats = [];
-        TODAS_FUNCIONALIDADES.forEach((f, i) => {
-            const chk = document.getElementById(`chk-${p}-${i}`);
-            feats.push(`${chk.checked ? '✓' : '❌'} ${f}`);
-        });
-        dados[p] = {
-            nome: document.getElementById(p+'-nome').value,
-            preco_original: parseFloat(document.getElementById(p+'-preco-original').value) || 0,
-            preco: parseFloat(document.getElementById(p+'-preco').value) || 0,
-            desc: document.getElementById(p+'-desc').value,
-            // 🚀 SALVA O TRIAL INDIVIDUAL:
-            trial_dias: tInput ? parseInt(tInput.value) : 7,
-            features: feats.join('\n')
-        };
-    });
+    btn.innerHTML = "⏳ Salvando..."; 
+    btn.disabled = true;
 
     try {
+        const dados = {};
+        ['p1','p2','p3','p4'].forEach(p => {
+            let feats = [];
+            TODAS_FUNCIONALIDADES.forEach((f, i) => {
+                const chk = document.getElementById(`chk-${p}-${i}`);
+                feats.push(`${(chk && chk.checked) ? '✓' : '❌'} ${f}`);
+            });
+            
+            // Busca os campos de forma 100% segura
+            const elNome = document.getElementById(p+'-nome');
+            const elPrecoOrig = document.getElementById(p+'-preco-original');
+            const elPreco = document.getElementById(p+'-preco');
+            const elDesc = document.getElementById(p+'-desc');
+            const elTrial = document.getElementById(p+'-trial');
+
+            dados[p] = {
+                nome: elNome ? elNome.value : "",
+                preco_original: elPrecoOrig ? (parseFloat(elPrecoOrig.value) || 0) : 0,
+                preco: elPreco ? (parseFloat(elPreco.value) || 0) : 0,
+                desc: elDesc ? elDesc.value : "",
+                // Aqui está a correção mágica:
+                trial_dias: elTrial ? (parseInt(elTrial.value) || 0) : 0,
+                features: feats.join('\n')
+            };
+        });
+
         await setDoc(PLANOS_DOC_REF, dados);
         showToast("Planos e Trials salvos com sucesso!", "success");
+        
     } catch(e) { 
         showToast("Erro ao salvar planos.", "error"); 
-        console.error(e);
+        console.error("ERRO:", e);
     } finally { 
-        btn.innerHTML = txtOrig; btn.disabled = false; 
+        btn.innerHTML = txtOrig; 
+        btn.disabled = false; 
     }
 }
 

@@ -1026,15 +1026,30 @@
             const btn = document.getElementById('btn-salvar-edicao');
             const txt = btn.innerHTML; btn.innerHTML = "⏳..."; btn.disabled = true;
             try {
+                // 1. Pega os valores brutos
+                let valPlano = document.getElementById('edit-valor-plano').value;
+                let descPlano = document.getElementById('edit-desconto').value;
+                
+                // 2. Força a conversão de vírgula para ponto para o Firebase não dar erro
+                valPlano = parseFloat(String(valPlano).replace(',', '.')) || 0;
+                descPlano = parseFloat(String(descPlano).replace(',', '.')) || 0;
+
                 await updateDoc(doc(db, "equipes", equipeEditandoId), {
                     status_plano: document.getElementById('edit-status-plano').value,
-                    valor_plano: parseFloat(document.getElementById('edit-valor-plano').value) || 0,
-                    desconto_plano: parseFloat(document.getElementById('edit-desconto').value) || 0,
+                    valor_plano: valPlano,
+                    desconto_plano: descPlano,
                     isento: document.getElementById('edit-isento').checked
-                });
+             });
+                
                 showToast("Licença atualizada!", "success");
-                fecharModalEditar(); carregarImperio(); 
-            } catch(e) { showToast("Erro ao atualizar.", "error"); } 
+                fecharModalEditar(); 
+                carregarImperio(); 
+            } catch(e) { 
+                console.error(e);
+                // 3. ATENÇÃO: Esta linha vai exibir o erro exato na sua tela!
+                alert("O Firebase bloqueou a gravação. Motivo: " + e.message); 
+                showToast("Erro ao atualizar.", "error"); 
+            } 
             finally { btn.innerHTML = txt; btn.disabled = false; }
         }
 

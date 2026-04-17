@@ -67,8 +67,12 @@
                 </div>
                 
                 <div class="flex items-center gap-3 sm:gap-4">
-                    <a href="login.html" class="text-[11px] sm:text-sm font-bold text-slate-300 hover:text-white transition-colors">Entrar</a>
-                    <a href="#precos" class="bg-cyan-500 hover:bg-cyan-600 text-white px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl text-[9px] sm:text-xs font-black uppercase tracking-widest shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all transform hover:-translate-y-0.5 whitespace-nowrap">Criar Conta</a>
+                    <a href="portal_aluno.html" class="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-cyan-400 bg-cyan-500/10 border border-cyan-500/30 px-3 py-2 rounded-lg hover:bg-cyan-500/20 transition-colors flex items-center gap-1.5"><span class="text-sm">🥋</span> Área do Aluno</a>
+                    
+                    <a href="login.html" class="text-[11px] sm:text-sm font-bold text-slate-300 hover:text-white transition-colors border-l border-slate-700 pl-3 sm:pl-4 hidden sm:block">Professores</a>
+                    <a href="login.html" class="text-[11px] font-bold text-slate-300 hover:text-white transition-colors sm:hidden">Login</a>
+                    
+                    <a href="#precos" class="hidden sm:block bg-cyan-500 hover:bg-cyan-600 text-white px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl text-[9px] sm:text-xs font-black uppercase tracking-widest shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all transform hover:-translate-y-0.5 whitespace-nowrap">Criar Conta</a>
                 </div>
             </div>
         </div>
@@ -332,7 +336,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-8">
                 
-                <div class="bg-slate-900 rounded-3xl p-8 border border-slate-800 flex flex-col h-full">
+                <div class="bg-slate-900 rounded-3xl p-8 border border-slate-800 flex flex-col h-full hover:border-slate-600 transition-colors">
                     <h3 id="p1-nome" class="text-xl font-black text-white mb-2">Carregando...</h3>
                     <p id="p1-desc" class="text-xs text-slate-400 mb-6 min-h-[40px]">...</p>
                     
@@ -345,6 +349,7 @@
                             <span id="p1-preco" class="text-4xl font-black text-white leading-none">⏳</span>
                             <span id="p1-periodo" class="text-slate-500 text-sm font-bold mb-1 hidden"> / mês</span>
                         </div>
+                        <span id="p1-trial-text" class="text-[10px] text-emerald-400 mt-3 uppercase tracking-widest font-bold block hidden bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded w-max"></span>
                     </div>
                     
                     <ul id="p1-features" class="space-y-4 mb-8 flex-1 text-[13px] text-slate-300"></ul>
@@ -353,7 +358,7 @@
                     </a>
                 </div>
 
-                <div class="bg-slate-900 rounded-3xl p-8 border border-slate-800 flex flex-col h-full">
+                <div class="bg-slate-900 rounded-3xl p-8 border border-slate-800 flex flex-col h-full hover:border-cyan-500/50 transition-colors">
                     <h3 id="p2-nome" class="text-xl font-black text-cyan-400 mb-2">Carregando...</h3>
                     <p id="p2-desc" class="text-xs text-slate-400 mb-6 min-h-[40px]">...</p>
                     
@@ -366,7 +371,7 @@
                             <span id="p2-preco" class="text-4xl font-black text-white leading-none">⏳</span>
                             <span class="text-slate-500 text-sm font-bold mb-1">/ mês</span>
                         </div>
-                        <span class="text-[10px] text-cyan-500/80 mt-2 uppercase tracking-widest font-bold block">Preço Fixo Promocional</span>
+                        <span id="p2-trial-text" class="text-[10px] text-cyan-400 mt-3 uppercase tracking-widest font-bold block hidden bg-cyan-500/10 border border-cyan-500/20 px-2 py-1 rounded w-max"></span>
                     </div>
                     
                     <ul id="p2-features" class="space-y-4 mb-8 flex-1 text-[13px] text-slate-300"></ul>
@@ -391,7 +396,7 @@
                             <span id="p3-preco" class="text-4xl font-black text-white leading-none">⏳</span>
                             <span class="text-slate-400 text-sm font-bold mb-1">/ mês</span>
                         </div>
-                        <span class="text-[10px] text-purple-400/80 mt-2 uppercase tracking-widest font-bold block">Preço Fixo Promocional</span>
+                        <span id="p3-trial-text" class="text-[10px] text-purple-400 mt-3 uppercase tracking-widest font-bold block hidden bg-purple-500/10 border border-purple-500/20 px-2 py-1 rounded w-max"></span>
                     </div>
                     
                     <ul id="p3-features" class="space-y-4 mb-8 flex-1 text-[13px] text-slate-200"></ul>
@@ -400,7 +405,7 @@
                     </a>
                 </div>
 
-                <div class="bg-slate-900 rounded-3xl p-8 border border-slate-800 flex flex-col relative overflow-hidden h-full">
+                <div class="bg-slate-900 rounded-3xl p-8 border border-slate-800 flex flex-col relative overflow-hidden h-full hover:border-amber-500/50 transition-colors">
                     <h3 id="p4-nome" class="text-xl font-black text-amber-500 mb-2">Carregando...</h3>
                     <p id="p4-desc" class="text-xs text-slate-400 mb-6 min-h-[40px]">...</p>
                     
@@ -413,11 +418,12 @@
                             <span id="p4-preco" class="text-4xl font-black text-white leading-none">⏳</span>
                             <span class="text-slate-500 text-sm font-bold mb-1">/ mês</span>
                         </div>
+                        <span id="p4-trial-text" class="text-[10px] text-amber-500 mt-3 uppercase tracking-widest font-bold block hidden bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded w-max"></span>
                     </div>
                     
                     <ul id="p4-features" class="space-y-4 mb-8 flex-1 text-[13px] text-slate-300"></ul>
                     <a href="https://wa.me/5521981716074?text=Tenho interesse no Plano Elite do BJJ Manager." target="_blank" class="w-full mt-auto bg-transparent hover:bg-slate-800 text-amber-500 font-bold py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-colors border border-amber-500/50 hover:border-amber-500">
-                        Lista de Espera
+                        Falar com Consultor
                     </a>
                 </div>
 
@@ -465,14 +471,15 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // FORMATAÇÃO DO PREÇO PRINCIPAL E MOEDA
         function formatarPrecoPublico(valor, idMoeda, idPreco, idPeriodo) {
             const v = parseFloat(valor);
             if (v === 0) {
                 if(document.getElementById(idMoeda)) document.getElementById(idMoeda).classList.add('hidden');
                 document.getElementById(idPreco).innerText = "Grátis";
                 if(document.getElementById(idPeriodo)) {
-                    document.getElementById(idPeriodo).innerText = " / 7 dias";
-                    document.getElementById(idPeriodo).classList.remove('hidden');
+                    document.getElementById(idPeriodo).innerText = ""; 
+                    document.getElementById(idPeriodo).classList.add('hidden');
                 }
             } else {
                 if(document.getElementById(idMoeda)) document.getElementById(idMoeda).classList.remove('hidden');
@@ -484,6 +491,16 @@
             }
         }
 
+        // MOSTRA A ETIQUETA COM OS DIAS DE TESTE
+        function mostrarBadgeTrial(idElemento, dias) {
+            const el = document.getElementById(idElemento);
+            if(el && dias > 0) {
+                el.innerText = `🎁 ${dias} dias de Teste Grátis`;
+                el.classList.remove('hidden');
+            }
+        }
+
+        // RENDERIZA OS CHECKBOXES DO PLANO
         function renderizarLista(containerId, featuresStr, corCheck, isBoldCheck = false) {
             const container = document.getElementById(containerId);
             if(!container) return;
@@ -525,6 +542,8 @@
                         document.getElementById('p1-nome').innerText = planos.p1.nome;
                         document.getElementById('p1-desc').innerText = planos.p1.desc;
                         formatarPrecoPublico(planos.p1.preco, 'p1-moeda', 'p1-preco', 'p1-periodo');
+                        mostrarBadgeTrial('p1-trial-text', planos.p1.trial_dias);
+
                         if(planos.p1.preco_original > planos.p1.preco) {
                             document.getElementById('p1-preco-antigo-container').classList.remove('hidden');
                             document.getElementById('p1-preco-antigo').innerText = `De R$ ${parseFloat(planos.p1.preco_original).toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
@@ -539,6 +558,8 @@
                         document.getElementById('p2-nome').innerText = planos.p2.nome;
                         document.getElementById('p2-desc').innerText = planos.p2.desc;
                         formatarPrecoPublico(planos.p2.preco, null, 'p2-preco', null);
+                        mostrarBadgeTrial('p2-trial-text', planos.p2.trial_dias);
+
                         if(planos.p2.preco_original > planos.p2.preco) {
                             document.getElementById('p2-preco-antigo-container').classList.remove('hidden');
                             document.getElementById('p2-preco-antigo').innerText = `De R$ ${parseFloat(planos.p2.preco_original).toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
@@ -553,6 +574,8 @@
                         document.getElementById('p3-nome').innerText = planos.p3.nome;
                         document.getElementById('p3-desc').innerText = planos.p3.desc;
                         formatarPrecoPublico(planos.p3.preco, null, 'p3-preco', null);
+                        mostrarBadgeTrial('p3-trial-text', planos.p3.trial_dias);
+
                         if(planos.p3.preco_original > planos.p3.preco) {
                             document.getElementById('p3-preco-antigo-container').classList.remove('hidden');
                             document.getElementById('p3-preco-antigo').innerText = `De R$ ${parseFloat(planos.p3.preco_original).toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
@@ -567,6 +590,8 @@
                         document.getElementById('p4-nome').innerHTML = `${planos.p4.nome} <span class="text-[9px] bg-amber-500/20 text-amber-500 px-2 py-1 rounded ml-2 uppercase align-middle">Automação</span>`;
                         document.getElementById('p4-desc').innerText = planos.p4.desc;
                         formatarPrecoPublico(planos.p4.preco, null, 'p4-preco', null);
+                        mostrarBadgeTrial('p4-trial-text', planos.p4.trial_dias);
+
                         if(planos.p4.preco_original > planos.p4.preco) {
                             document.getElementById('p4-preco-antigo-container').classList.remove('hidden');
                             document.getElementById('p4-preco-antigo').innerText = `De R$ ${parseFloat(planos.p4.preco_original).toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;

@@ -112,24 +112,6 @@
 
                 <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
                     <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
-                        <span class="text-xl">👪</span>
-                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Responsável Legal <span class="text-[10px] text-slate-400 normal-case">(Apenas para menores)</span></h3>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div class="md:col-span-2">
-                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Nome do Responsável</label>
-                            <input type="text" id="cad-resp-nome" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700 uppercase" placeholder="Nome da mãe, pai ou tutor...">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">CPF do Responsável</label>
-                            <input type="text" id="cad-resp-cpf" maxlength="14" oninput="mascaraCPF(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="000.000.000-00">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
-                    <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
                         <span class="text-xl">📍</span>
                         <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Contato e Acesso</h3>
                     </div>
@@ -214,6 +196,24 @@
                             </div>
                         </div>
 
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
+                    <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
+                        <span class="text-xl">👪</span>
+                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Responsável Legal <span class="text-[10px] text-slate-400 normal-case">(Apenas para menores)</span></h3>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="md:col-span-2">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Nome do Responsável</label>
+                            <input type="text" id="cad-resp-nome" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700 uppercase" placeholder="Nome da mãe, pai ou tutor...">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">CPF do Responsável</label>
+                            <input type="text" id="cad-resp-cpf" maxlength="14" oninput="mascaraCPF(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="000.000.000-00">
+                        </div>
                     </div>
                 </div>
 
@@ -521,48 +521,15 @@
                         fallEl.innerText = dadosEquipe.nome_equipe ? dadosEquipe.nome_equipe.charAt(0).toUpperCase() : 'E';
                         fallEl.classList.remove('hidden');
                     }
-
-                    if(tipoAcesso === 'prof') {
-                        document.getElementById('form-prof').classList.remove('hidden');
-                    } else {
-                        // 🛑 LÓGICA DO LIMITE DE ALUNOS BLINDADA E ATIVA (10 Alunos)
-                        const isIsento = dadosEquipe.isento === true || String(dadosEquipe.isento) === "true";
-                        
-                        let statusAtual = dadosEquipe.status_plano;
-                        if (!statusAtual || statusAtual.trim() === "") statusAtual = "TESTE";
-                        
-                        const planosBasicos = ['TESTE', 'BASICO', 'BÁSICO', 'BLACK_BELT'];
-
-                        if (!isIsento && planosBasicos.includes(statusAtual.toUpperCase().trim())) {
-                            
-                            const qAlunos = query(collection(db, "alunos"), where("equipe_id", "==", equipeId));
-                            const snapAlunos = await getDocs(qAlunos);
-                            
-                            let alunosAtivos = 0;
-                            snapAlunos.forEach(d => {
-                                const al = d.data();
-                                if (String(al.status || "").toUpperCase().trim() === "ATIVO") {
-                                    alunosAtivos++;
-                                }
-                            });
-
-                            if (alunosAtivos >= 10) { 
-                                document.getElementById('cabecalho-form').innerHTML = `
-                                    <span class="text-6xl mb-4 block mt-4">🛑</span>
-                                    <h2 class="text-2xl md:text-3xl font-black text-rose-600 tracking-tight uppercase">Matrículas Indisponíveis</h2>
-                                    <p class="text-xs md:text-sm text-slate-500 font-medium mt-2">Esta academia atingiu o limite de vagas para cadastros online neste momento.</p>
-                                    <p class="text-xs text-slate-400 mt-1">Por favor, entre em contato diretamente com o professor.</p>
-                                `;
-                                return; // Impede a continuação
-                            }
-                        }
-
-                        document.getElementById('form-aluno').classList.remove('hidden');
-                    }
-
                 } else {
                     document.getElementById('cabecalho-form').innerHTML = `<h2 class="text-rose-500 font-black text-2xl">Equipe Não Encontrada</h2>`;
                     return;
+                }
+
+                if(tipoAcesso === 'prof') {
+                    document.getElementById('form-prof').classList.remove('hidden');
+                } else {
+                    document.getElementById('form-aluno').classList.remove('hidden');
                 }
 
             } catch (e) {
@@ -570,6 +537,8 @@
                 document.getElementById('cabecalho-form').innerHTML = `<h2 class="text-rose-500 font-black text-xl">Erro de conexão</h2>`;
             }
         }
+
+        inicializarCadastro();
 
         window.mostrarPreviewFoto = function(event) {
             const file = event.target.files[0];
@@ -634,7 +603,6 @@
 
                 if (ficheiroFotoSelecionado) {
                     try {
-                        btn.innerHTML = "<span class='mr-2 text-xl'>📷</span> A ENVIAR FOTO...";
                         const fotoPath = `fotos_carteirinha/${equipeId}/${novoAlunoId}.jpg`;
                         const storageRef = ref(storage, fotoPath);
                         

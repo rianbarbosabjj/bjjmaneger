@@ -525,7 +525,7 @@
                     if(tipoAcesso === 'prof') {
                         document.getElementById('form-prof').classList.remove('hidden');
                     } else {
-                        // 🛑 LÓGICA DO LIMITE DE ALUNOS BLINDADA
+                        // 🛑 LÓGICA DO LIMITE DE ALUNOS BLINDADA E ATIVA (10 Alunos)
                         const isIsento = dadosEquipe.isento === true || String(dadosEquipe.isento) === "true";
                         
                         let statusAtual = dadosEquipe.status_plano;
@@ -539,8 +539,8 @@
                             const snapAlunos = await getDocs(qAlunos);
                             
                             let alunosAtivos = 0;
-                            snapAlunos.forEach(doc => {
-                                const al = doc.data();
+                            snapAlunos.forEach(d => {
+                                const al = d.data();
                                 if (String(al.status || "").toUpperCase().trim() === "ATIVO") {
                                     alunosAtivos++;
                                 }

@@ -1402,12 +1402,7 @@
                     snapAvisos.forEach(doc => {
                         const av = doc.data();
                         if (av.status === 'inativo') return;
-                        
-                        // LÓGICA DE EXPIRAÇÃO: Vai até às 23:59:59 do dia escolhido
-                        if (av.data_expiracao) {
-                            const dataFimAviso = av.data_expiracao.split('T')[0] + "T23:59:59Z";
-                            if (dataFimAviso < hojeIso) return; // Se já passou, ignora
-                        }
+                        if (av.data_expiracao && av.data_expiracao < hojeIso) return; 
                         
                         avisos.push(av);
                     });
@@ -1635,6 +1630,47 @@
                     divHorarios.innerHTML = "<div class='text-[10px] text-rose-500 text-center bg-rose-500/10 p-2 rounded-lg'>Erro ao carregar a grade de treinos.</div>"; 
                 }
             }
+        }
+
+        window.filtrarCheckins = function() {
+            const valFiltro = document.getElementById('filtro-mes-checkin').value; // Formato YYYY-MM
+            if (!valFiltro) return;
+
+            const partes = valFiltro.split('-');
+            const anoSelecionado = parseInt(partes[0]);
+            const mesSelecionado = parseInt(partes[1]);
+
+            let checkinsFiltrados = checkinsGlobalCache.filter(ck => {
+                const d = new Date(ck.timestamp);
+                return d.getFullYear() === anoSelecionado && (d.getMonth() + 1) === mesSelecionado;
+            });
+
+            document.getElementById('contador-checkins-mes').innerText = checkinsFiltrados.length;
+
+            let html = '';
+            if (checkinsFiltrados.length > 0) {
+                checkinsFiltrados.forEach(ck => {
+                    const dataObj = new Date(ck.timestamp);
+                    const hora = dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+                    const dataBonita = dataObj.toLocaleDateString('pt-BR', {day: '2-digit', month: 'short'});
+
+                    html += `
+                        <div class="flex items-center justify-between p-3 bg-slate-900/40 rounded-xl border border-slate-700/50 mb-2">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex items-center justify-center font-black text-xs shrink-0">📍</div>
+                                <div>
+                                    <p class="text-[10px] font-black text-emerald-400 uppercase tracking-widest">${dataBonita} <span class="text-slate-500">• ${hora}</span></p>
+                                    <p class="text-[11px] font-bold text-white truncate">${ck.turma_nome || 'Treino'}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                html = "<p class='text-[10px] text-slate-500 italic text-center py-6'>Nenhum treino registrado neste mês.</p>";
+            }
+
+            document.getElementById('lista-historico-checkins').innerHTML = html;
         }
 
         async function buscarCurriculoAluno() {

@@ -5,12 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Portal do Atleta | BJJ Manager</title>
     
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0F172A">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="logo_bjj_maneger.png">
-    
     <link rel="icon" type="image/png" href="logo_bjj_maneger.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -56,39 +50,6 @@
 
     <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
-    <div id="pwa-install-banner" class="fixed bottom-0 left-0 w-full bg-slate-800 border-t border-slate-700 text-white p-4 z-[9999] transform translate-y-full transition-transform duration-500 flex items-center justify-between shadow-[0_-10px_30px_rgba(0,0,0,0.5)] pb-safe rounded-t-3xl">
-        <div class="flex items-center gap-3">
-            <div class="w-12 h-12 bg-white rounded-xl p-1 shrink-0 flex items-center justify-center shadow-sm">
-                <img src="logo_bjj_maneger.png" class="w-full h-full object-contain" crossorigin="anonymous">
-            </div>
-            <div>
-                <h4 class="font-black text-sm uppercase tracking-widest text-white">Instalar App</h4>
-                <p class="text-[10px] text-cyan-400 font-bold">Acesse rápido, sem navegador</p>
-            </div>
-        </div>
-        <div class="flex items-center gap-2 shrink-0">
-            <button onclick="fecharPwaBanner()" class="p-2 text-slate-400 hover:text-white font-bold">&times;</button>
-            <button onclick="instalarPwa()" class="bg-cyan-500 hover:bg-cyan-400 text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-md transition-colors">Baixar</button>
-        </div>
-    </div>
-
-    <div id="modal-esqueci-senha" class="fixed inset-0 bg-slate-950/90 backdrop-blur-sm hidden items-center justify-center z-[200] p-4 transition-opacity">
-        <div class="bg-slate-900 border border-slate-700 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col">
-            <div class="p-8 text-center relative">
-                <button onclick="fecharModalEsqueciSenha()" class="absolute top-4 right-4 text-slate-500 hover:text-white text-xl">&times;</button>
-                <div class="w-16 h-16 bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-inner">
-                    🔐
-                </div>
-                <h3 class="font-black text-white text-xl uppercase tracking-tight mb-2">Recuperar Senha</h3>
-                <p class="text-xs text-slate-400 mb-6 font-medium leading-relaxed">Digite o e-mail do seu cadastro. Se existir na base, enviaremos um alerta ao professor para redefinir o acesso.</p>
-                <input type="email" id="recuperar-email" class="w-full p-4 bg-slate-950 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm mb-4" placeholder="seu@email.com">
-                <button onclick="recuperarSenha()" id="btn-recuperar" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-4 rounded-xl uppercase tracking-widest text-xs transition-colors shadow-md">
-                    Pedir Recuperação
-                </button>
-            </div>
-        </div>
-    </div>
-
     <div id="tela-login" class="relative z-10 flex-1 flex items-center justify-center p-4 w-full h-full min-h-screen">
         <div class="w-full max-w-md card-premium p-8 relative">
             <div class="text-center mb-8">
@@ -106,7 +67,6 @@
                 <div class="space-y-1.5">
                     <div class="flex justify-between items-center ml-2 mr-2">
                         <label class="text-[10px] font-black text-slate-400 uppercase">Senha</label>
-                        <button type="button" onclick="abrirModalEsqueciSenha()" class="text-[10px] font-bold text-cyan-500 hover:text-cyan-400 transition-colors cursor-pointer outline-none">Esqueci a senha?</button>
                     </div>
                     <div class="relative">
                         <input type="password" id="login-senha" required class="w-full px-5 py-4 bg-slate-900 border border-slate-700 rounded-2xl text-white outline-none focus:border-cyan-500 transition-all font-bold pr-12 placeholder:text-slate-600" placeholder="••••••••">
@@ -514,9 +474,137 @@
     </div>
 
     <div id="modal-pix" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center z-[200] p-4 transition-opacity">
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col">
+            <div class="bg-gradient-to-r from-cyan-600 to-blue-600 p-5 text-white flex justify-between items-center shadow-inner">
+                <h3 class="font-black uppercase tracking-widest text-sm flex items-center gap-2">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                    Pagamento
+                </h3>
+                <button onclick="fecharModalPix()" class="text-cyan-100 hover:text-white text-2xl leading-none">&times;</button>
+            </div>
+            
+            <div class="p-6 md:p-8 flex flex-col items-center text-center space-y-5">
+                <div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Referência</p>
+                    <p class="text-sm font-bold text-white" id="pix-ref">Mensalidade</p>
+                    <h2 class="text-3xl font-black text-cyan-400 mt-2" id="pix-valor">R$ 0,00</h2>
+                </div>
+
+                <div class="w-full mt-2">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Chave PIX da Equipe</p>
+                    <div class="flex items-center gap-2 bg-slate-800 p-2 rounded-xl border border-slate-700">
+                        <input type="text" id="pix-codigo" readonly class="bg-transparent text-xs text-slate-300 font-mono w-full outline-none truncate px-2" value="Carregando chave...">
+                        <button onclick="copiarPix()" class="bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500 hover:text-white p-2 rounded-lg transition-colors shrink-0" title="Copiar Chave PIX">📋</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-4 bg-slate-800 border-t border-slate-700 text-center">
+                <p id="aviso-pagamento" class="text-[10px] text-slate-400 font-medium">Após o pagamento, envie o comprovante ao professor para ele dar a baixa no sistema.</p>
+            </div>
         </div>
+    </div>
+
     <div id="modal-anamnese" class="fixed inset-0 bg-slate-950/90 backdrop-blur-sm hidden items-center justify-center z-[250] p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[95vh]">
+            <div class="bg-rose-600 p-5 text-white text-center shadow-inner shrink-0 relative">
+                <h3 class="font-black uppercase tracking-widest text-sm">⚕️ Ficha de Saúde e Inclusão</h3>
+                <p class="text-[10px] mt-1 opacity-90">Preenchimento obrigatório para a segurança do atleta.</p>
+                <button onclick="fecharModalAnamnese()" class="absolute top-4 right-5 text-white/70 hover:text-white text-2xl leading-none">&times;</button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto hide-scrollbar space-y-8 flex-1">
+                <div class="space-y-4">
+                    <h4 class="text-xs font-black text-cyan-400 uppercase tracking-widest border-b border-slate-700/50 pb-2">1. Saúde Clínica e Ortopédica</h4>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase mb-2">Possui alguma das condições abaixo?</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-med-asma" class="custom-checkbox"> Asma / Bronquite</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-med-hipertensao" class="custom-checkbox"> Pressão Alta</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-med-cardiopatia" class="custom-checkbox"> Problema Cardíaco</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-med-diabetes" class="custom-checkbox"> Diabetes</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-med-epilepsia" class="custom-checkbox"> Epilepsia / Convulsões</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-med-desmaios" class="custom-checkbox"> Histórico de Desmaios</label>
+                    </div>
+                    
+                    <h5 class="text-[10px] text-slate-500 font-bold uppercase mt-4 mb-2">Histórico Ortopédico e Físico</h5>
+                    <div class="grid grid-cols-1 gap-4">
+                        <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Sente dores nas articulações (joelho, ombro, quadril)?</label><input type="text" id="ana-med-dores" placeholder="Ex: Não, ou Dor no joelho direito ao dobrar..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm"></div>
+                        <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Problemas de Coluna (Hérnia de disco, escoliose, lombalgia)?</label><input type="text" id="ana-med-coluna" placeholder="Ex: Não, ou Hérnia na lombar (L4-L5)..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm"></div>
+                        <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Cirurgias recentes ou Lesões prévias graves?</label><input type="text" id="ana-med-cirurgias" placeholder="Ex: Não, ou Cirurgia no ligamento do ombro em 2022..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm"></div>
+                        <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Faz uso contínuo de algum medicamento?</label><input type="text" id="ana-med-medicamentos" placeholder="Ex: Não, ou Losartana 50mg..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm"></div>
+                    </div>
+                </div>
+
+                <div class="space-y-4 pt-4 border-t border-slate-800/50">
+                    <h4 class="text-xs font-black text-rose-400 uppercase tracking-widest border-b border-slate-700/50 pb-2">2. Inclusão e Neurodivergência</h4>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Possui algum diagnóstico de neurodivergência ou necessidade de inclusão?</label>
+                        <select id="ana-tem-neuro" onchange="toggleNeuro()" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-rose-500 font-bold text-sm cursor-pointer"><option value="Não" selected>Não</option><option value="Sim">Sim, possui</option></select>
+                    </div>
+
+                    <div id="div-neuro-detalhes" class="hidden space-y-6 mt-4">
+                        <div>
+                            <p class="text-[10px] text-slate-500 font-bold mb-3 uppercase">Selecione as condições aplicáveis:</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-tea" class="custom-checkbox"> TEA (Autismo)</label>
+                                <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-tdah" class="custom-checkbox"> TDAH</label>
+                                <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-intelectual" class="custom-checkbox"> Deficiência Intelectual</label>
+                                <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-fisica" class="custom-checkbox"> Deficiência Física/Motora</label>
+                                <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-visual" class="custom-checkbox"> Deficiência Visual</label>
+                                <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-auditiva" class="custom-checkbox"> Deficiência Auditiva</label>
+                                <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-aprendizagem" class="custom-checkbox"> Trans. Aprendizagem</label>
+                                <label class="flex items-center gap-2 text-sm font-bold text-slate-300 cursor-pointer hover:text-white"><input type="checkbox" id="ana-diag-ansiedade" class="custom-checkbox"> Ansiedade/Emocional</label>
+                            </div>
+                            <div class="pt-2"><input type="text" id="ana-diag-outro" placeholder="Outro diagnóstico? Qual?" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-rose-500 transition-all font-bold text-sm"></div>
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                                <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Confirmado por Médico?</label><select id="ana-diag-confirmado" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-rose-500 font-bold text-sm"><option value="Não">Não</option><option value="Sim">Sim</option></select></div>
+                                <div class="sm:col-span-2"><label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Qual Especialidade?</label><input type="text" id="ana-diag-profissional" placeholder="Ex: Neuropediatra, Psicólogo..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-rose-500 transition-all font-bold text-sm"></div>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-slate-800/50">
+                            <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Desenvolvimento e Comunicação</h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Dificuldade Motora / Equilíbrio?</label><select id="ana-mot-equilibrio" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold text-sm outline-none focus:border-cyan-500"><option value="Não">Não</option><option value="Sim">Sim</option></select></div>
+                                <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Entende comandos simples verbais?</label><select id="ana-com-comandos" class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold text-sm outline-none focus:border-cyan-500"><option value="Sim">Sim</option><option value="Não">Não</option></select></div>
+                            </div>
+                            <div class="mt-4"><label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Usa comunicação alternativa (App, Pastas)?</label><input type="text" id="ana-com-alternativa" placeholder="Ex: Não, ou PECS, Tablet..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm"></div>
+                        </div>
+
+                        <div class="pt-4 border-t border-slate-800/50">
+                            <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Comportamento e Sensorial</h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <label class="flex items-center gap-2 text-sm font-bold text-slate-300"><input type="checkbox" id="ana-sens-sons" class="custom-checkbox"> Sensibilidade a Barulho alto?</label>
+                                <label class="flex items-center gap-2 text-sm font-bold text-slate-300"><input type="checkbox" id="ana-sens-toques" class="custom-checkbox"> Sensibilidade a Toques/Abraços?</label>
+                                <label class="flex items-center gap-2 text-sm font-bold text-slate-300"><input type="checkbox" id="ana-comp-fuga" class="custom-checkbox"> Tendência a fugir/correr?</label>
+                                <label class="flex items-center gap-2 text-sm font-bold text-slate-300"><input type="checkbox" id="ana-soc-apoio" class="custom-checkbox"> Precisa de apoio p/ interagir?</label>
+                            </div>
+                            <div class="mt-4"><label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Crises, agressividade ou autolesão? (Descreva gatilhos se houver)</label><input type="text" id="ana-comp-crises" placeholder="Ex: Chora com muito barulho..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4 pt-4 border-t border-slate-800/50">
+                    <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-700/50 pb-2">3. Avaliação Geral</h4>
+                    <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Alergias graves (Alimentar, Inseto, Remédio)?</label><input type="text" id="ana-sau-alergias" placeholder="Ex: Não, ou Amendoim..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm"></div>
+                    <div><label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">O que a família/aluno espera atingir com os treinos?</label><textarea id="ana-exp-geral" rows="2" placeholder="Disciplina, emagrecimento, foco, condicionamento físico..." class="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl text-white outline-none focus:border-cyan-500 transition-all font-bold text-sm resize-none"></textarea></div>
+                </div>
+
+                <div class="bg-rose-500/10 border border-rose-500/30 p-4 rounded-xl mt-4">
+                    <label class="flex items-start gap-3 cursor-pointer">
+                        <input type="checkbox" id="ana-termo-aceite" class="custom-checkbox mt-1 shrink-0" onchange="validarTermoAnamnese()">
+                        <span class="text-xs text-rose-200 font-medium leading-relaxed">Declaro para os devidos fins que as respostas prestadas aqui são verdadeiras. Assumo a responsabilidade por manter o professor informado sobre qualquer mudança no quadro de saúde.</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="p-4 bg-slate-800 border-t border-slate-700 flex justify-between gap-3 shrink-0">
+                <button onclick="fecharModalAnamnese()" class="px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-bold text-xs uppercase tracking-widest transition">Depois</button>
+                <button onclick="salvarAnamnese()" id="btn-salvar-anamnese" disabled class="flex-1 bg-slate-600 text-slate-400 cursor-not-allowed rounded-xl font-black text-xs uppercase tracking-widest transition shadow-lg">Aceite o Termo</button>
+            </div>
         </div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -538,12 +626,11 @@
         const functions = getFunctions(app);
         const storage = getStorage(app); 
 
-        // O SEU JAVASCRIPT ORIGINAL DE ALUNO LOGADO FICA AQUI INTACTO...
         let alunoLogado = null;
         let equipeDados = null;
         let faturasCache = []; 
         let produtosCache = [];
-        let checkinsGlobalCache = [];
+        let checkinsGlobalCache = []; 
 
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
@@ -557,152 +644,1088 @@
             setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4500);
         }
 
-        // ==========================================
-        // NOVAS FUNÇÕES PARA ESQUECI A SENHA
-        // ==========================================
-        window.abrirModalEsqueciSenha = function() {
-            document.getElementById('modal-esqueci-senha').classList.remove('hidden');
-            document.getElementById('modal-esqueci-senha').classList.add('flex');
+        window.toggleSenha = function(inputId, btnElement) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                btnElement.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>`;
+            } else {
+                input.type = "password";
+                btnElement.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>`;
+            }
         }
 
-        window.fecharModalEsqueciSenha = function() {
-            document.getElementById('modal-esqueci-senha').classList.add('hidden');
-            document.getElementById('modal-esqueci-senha').classList.remove('flex');
-            document.getElementById('recuperar-email').value = '';
-        }
+        window.mascaraTelefone = (i) => { let v = i.value.replace(/\D/g, ""); v = v.replace(/^(\d{2})(\d)/g, "($1) $2"); v = v.replace(/(\d)(\d{4})$/, "$1-$2"); i.value = v; };
+        window.mascaraCEP = (i) => { let v = i.value.replace(/\D/g, ""); v = v.replace(/^(\d{5})(\d)/, "$1-$2"); i.value = v; };
+        window.buscarCEPAluno = async (cep) => {
+            const cleanCep = cep.replace(/\D/g, ""); if (cleanCep.length !== 8) return;
+            const r = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`).then(res => res.json());
+            if (!r.erro) {
+                document.getElementById('edit-end').value = r.logradouro || ""; document.getElementById('edit-bairro').value = r.bairro || "";
+                document.getElementById('edit-cidade').value = r.localidade || ""; document.getElementById('edit-uf').value = r.uf || ""; document.getElementById('edit-num').focus();
+            }
+        };
 
-        window.recuperarSenha = async function() {
-            const email = document.getElementById('recuperar-email').value.trim();
-            if(!email || !email.includes('@')) return showToast("Digite um e-mail válido.", "error");
-            
-            const btn = document.getElementById('btn-recuperar');
-            btn.innerHTML = "⏳ Procurando...";
-            btn.disabled = true;
+        window.fazerLoginAluno = async function() {
+            const email = document.getElementById('login-email').value.trim().toLowerCase();
+            const senha = document.getElementById('login-senha').value;
+            const btn = document.getElementById('btn-login');
+
+            if(!email || !senha) return showToast("Preencha todos os campos.");
+            btn.disabled = true; btn.innerText = "Buscando dados...";
 
             try {
-                const q = query(collection(db, "alunos"), where("email", "==", email));
+                const q = query(collection(db, "alunos"), where("email", "==", email), where("senha_portal", "==", senha));
+                const snap = await getDocs(q);
+                if (snap.empty) { 
+                    showToast("E-mail ou senha incorretos."); 
+                    btn.disabled = false; btn.innerText = "Entrar no Tatame"; 
+                } 
+                else {
+                    alunoLogado = { id: snap.docs[0].id, ...snap.docs[0].data() };
+                    localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoLogado));
+                    iniciarPortal();
+                }
+            } catch (error) { 
+                console.error("ERRO LOGIN:", error);
+                if (error.code === 'permission-denied') {
+                    showToast("Erro de Permissão no Firebase! Verifique as regras (Passo 1).");
+                } else {
+                    showToast("Erro ao conectar com o servidor."); 
+                }
+                btn.disabled = false; btn.innerText = "Entrar no Tatame"; 
+            }
+        }
+
+        window.sairDoPortal = function() { localStorage.removeItem('bjj_aluno_auth'); window.location.reload(); }
+
+        window.mudarAbaAluno = function(idAba) {
+            document.querySelectorAll('.aluno-secao').forEach(el => { el.classList.add('hidden'); el.classList.remove('block'); });
+            const alvo = document.getElementById(idAba);
+            if (alvo) {
+                alvo.classList.remove('hidden'); 
+                alvo.classList.add('block');
+            }
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-cyan-400'); btn.classList.add('text-slate-500');
+                const icone = btn.querySelector('span:first-child');
+                icone.classList.remove('drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]', 'scale-110'); icone.classList.add('grayscale');
+                const texto = btn.querySelector('span:last-child'); texto.classList.replace('font-black', 'font-bold');
+            });
+
+            const btnAtivo = document.getElementById('nav-' + idAba);
+            if (btnAtivo) {
+                btnAtivo.classList.replace('text-slate-500', 'text-cyan-400');
+                const iconeAtivo = btnAtivo.querySelector('span:first-child');
+                iconeAtivo.classList.remove('grayscale'); iconeAtivo.classList.add('drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]', 'scale-110');
+                const textoAtivo = btnAtivo.querySelector('span:last-child'); textoAtivo.classList.replace('font-bold', 'font-black');
+            }
+
+            const subtitulo = document.getElementById('subtitulo-secao');
+            if(idAba === 'aba-inicio') { subtitulo.innerText = "Seja bem-vindo(a) ao seu portal."; buscarMuralEHorarios(); }
+            if(idAba === 'aba-loja') { subtitulo.innerText = "Adquira produtos da equipe."; carregarLoja(); }
+            if(idAba === 'aba-carteirinha') { 
+                subtitulo.innerText = "Sua identificação oficial da equipe."; 
+                setTimeout(window.ajustarZoomCarteirinha, 50); 
+            }
+            if(idAba === 'aba-financeiro') { subtitulo.innerText = "Controle de suas mensalidades."; }
+            if(idAba === 'aba-curriculo') { subtitulo.innerText = "Sua trajetória: graduações e medalhas."; buscarCurriculoAluno(); }
+            if(idAba === 'aba-dados') { subtitulo.innerText = "Mantenha o seu cadastro atualizado."; preencherFormularioDados(); }
+        }
+
+        window.switchCurriculoTab = function(tab) {
+            const tabFreq = document.getElementById('tab-curriculo-freq');
+            const tabConq = document.getElementById('tab-curriculo-conq');
+            const btnFreq = document.getElementById('btn-tab-freq');
+            const btnConq = document.getElementById('btn-tab-conq');
+
+            if (tab === 'freq') {
+                tabFreq.classList.remove('hidden');
+                tabFreq.classList.add('block');
+                tabConq.classList.add('hidden');
+                tabConq.classList.remove('block');
+
+                btnFreq.className = "flex-1 py-2.5 text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-xl bg-cyan-600 text-white shadow-md transition-all";
+                btnConq.className = "flex-1 py-2.5 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-white rounded-xl transition-all";
+            } else {
+                tabConq.classList.remove('hidden');
+                tabConq.classList.add('block');
+                tabFreq.classList.add('hidden');
+                tabFreq.classList.remove('block');
+
+                btnConq.className = "flex-1 py-2.5 text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-xl bg-cyan-600 text-white shadow-md transition-all";
+                btnFreq.className = "flex-1 py-2.5 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-white rounded-xl transition-all";
+            }
+        }
+
+        window.filtrarCheckins = function() {
+            const valFiltro = document.getElementById('filtro-mes-checkin').value;
+            if (!valFiltro) return;
+
+            const partes = valFiltro.split('-');
+            const anoSelecionado = parseInt(partes[0]);
+            const mesSelecionado = parseInt(partes[1]);
+
+            let checkinsFiltrados = checkinsGlobalCache.filter(ck => {
+                const d = new Date(ck.timestamp);
+                return d.getFullYear() === anoSelecionado && (d.getMonth() + 1) === mesSelecionado;
+            });
+
+            document.getElementById('contador-checkins-mes').innerText = checkinsFiltrados.length;
+
+            let html = '';
+            if (checkinsFiltrados.length > 0) {
+                checkinsFiltrados.forEach(ck => {
+                    const dataObj = new Date(ck.timestamp);
+                    const hora = dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+                    const dataBonita = dataObj.toLocaleDateString('pt-BR', {day: '2-digit', month: 'short'});
+
+                    html += `
+                        <div class="flex items-center justify-between p-3 bg-slate-900/40 rounded-xl border border-slate-700/50 mb-2">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex items-center justify-center font-black text-xs shrink-0">📍</div>
+                                <div>
+                                    <p class="text-[10px] font-black text-emerald-400 uppercase tracking-widest">${dataBonita} <span class="text-slate-500">• ${hora}</span></p>
+                                    <p class="text-[11px] font-bold text-white truncate">${ck.turma_nome || 'Treino'}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                html = "<p class='text-[10px] text-slate-500 italic text-center py-6'>Nenhum treino registrado neste mês.</p>";
+            }
+
+            document.getElementById('lista-historico-checkins').innerHTML = html;
+        }
+
+        window.previewImagem = function(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('edit-preview-foto'); img.src = e.target.result;
+                    img.classList.remove('hidden'); document.getElementById('edit-fallback-foto').classList.add('hidden');
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function preencherFormularioDados() {
+            if(!alunoLogado) return;
+            if(alunoLogado.foto_url) {
+                const img = document.getElementById('edit-preview-foto'); img.src = alunoLogado.foto_url;
+                img.classList.remove('hidden'); document.getElementById('edit-fallback-foto').classList.add('hidden');
+            }
+            document.getElementById('edit-nome').value = alunoLogado.nome || ''; document.getElementById('edit-cpf').value = alunoLogado.cpf || '';
+            document.getElementById('edit-tel').value = alunoLogado.telefone || ''; document.getElementById('edit-peso').value = alunoLogado.peso || '';
+            document.getElementById('edit-email').value = alunoLogado.email || ''; document.getElementById('edit-senha').value = "";
+            document.getElementById('edit-cep').value = alunoLogado.cep || ''; document.getElementById('edit-end').value = alunoLogado.endereco || '';
+            document.getElementById('edit-num').value = alunoLogado.numero || ''; document.getElementById('edit-comp').value = alunoLogado.complemento || '';
+            document.getElementById('edit-bairro').value = alunoLogado.bairro || ''; document.getElementById('edit-cidade').value = alunoLogado.cidade || '';
+            document.getElementById('edit-uf').value = alunoLogado.uf || '';
+        }
+
+        window.salvarMeusDados = async function() {
+            const tel = document.getElementById('edit-tel').value.trim(); const email = document.getElementById('edit-email').value.trim().toLowerCase();
+            const novaSenha = document.getElementById('edit-senha').value; const btn = document.getElementById('btn-salvar-dados');
+            const inputFoto = document.getElementById('input-foto');
+
+            if(!tel || !email) return showToast("Telefone e E-mail são obrigatórios.");
+            btn.disabled = true; btn.innerHTML = "⏳ Salvando...";
+
+            const dadosAtualizados = {
+                telefone: tel, peso: document.getElementById('edit-peso').value.trim(), email: email,
+                cep: document.getElementById('edit-cep').value.trim(), endereco: document.getElementById('edit-end').value.trim(),
+                numero: document.getElementById('edit-num').value.trim(), complemento: document.getElementById('edit-comp').value.trim(),
+                bairro: document.getElementById('edit-bairro').value.trim(), cidade: document.getElementById('edit-cidade').value.trim(), uf: document.getElementById('edit-uf').value
+            };
+
+            if(novaSenha.length > 0) {
+                if(novaSenha.length < 6) { btn.disabled = false; btn.innerHTML = "💾 Salvar Alterações"; return showToast("Senha mínima: 6 caracteres."); }
+                dadosAtualizados.senha_portal = novaSenha;
+            }
+
+            try {
+                if (inputFoto.files && inputFoto.files[0]) {
+                    btn.innerHTML = "⏳ Enviando Foto...";
+                    const fotoRef = ref(storage, `alunos_fotos/${alunoLogado.id}_${Date.now()}`);
+                    await uploadBytes(fotoRef, inputFoto.files[0]);
+                    dadosAtualizados.foto_url = await getDownloadURL(fotoRef);
+                }
+                await updateDoc(doc(db, "alunos", alunoLogado.id), dadosAtualizados);
+                alunoLogado = { ...alunoLogado, ...dadosAtualizados }; localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoLogado));
+                showToast("Dados atualizados com sucesso!", "success"); document.getElementById('edit-senha').value = ""; 
+                preencherCarteirinha();
+            } catch (error) { showToast("Falha ao salvar. Tente novamente."); } 
+            finally { btn.disabled = false; btn.innerHTML = "💾 Salvar Alterações"; }
+        }
+
+        window.toggleNeuro = function() {
+            const select = document.getElementById('ana-tem-neuro').value;
+            const div = document.getElementById('div-neuro-detalhes');
+            if (select === 'Sim') { div.classList.remove('hidden'); } else { div.classList.add('hidden'); }
+        }
+
+        function verificarAnamnese() {
+            if (!alunoLogado.anamnese_preenchida) {
+                document.getElementById('banner-anamnese').classList.remove('hidden'); document.getElementById('banner-anamnese').classList.add('flex');
+            } else {
+                document.getElementById('banner-anamnese').classList.add('hidden'); document.getElementById('banner-anamnese').classList.remove('flex');
+            }
+        }
+
+        window.abrirModalAnamnese = function() { document.getElementById('modal-anamnese').classList.remove('hidden'); document.getElementById('modal-anamnese').classList.add('flex'); }
+        window.fecharModalAnamnese = function() { document.getElementById('modal-anamnese').classList.add('hidden'); document.getElementById('modal-anamnese').classList.remove('flex'); }
+
+        window.validarTermoAnamnese = function() {
+            const check = document.getElementById('ana-termo-aceite').checked; const btn = document.getElementById('btn-salvar-anamnese');
+            if(check) {
+                btn.disabled = false; btn.classList.remove('bg-slate-600', 'text-slate-400', 'cursor-not-allowed'); btn.classList.add('bg-rose-600', 'hover:bg-rose-500', 'text-white'); btn.innerText = "Salvar Ficha";
+            } else {
+                btn.disabled = true; btn.classList.add('bg-slate-600', 'text-slate-400', 'cursor-not-allowed'); btn.classList.remove('bg-rose-600', 'hover:bg-rose-500', 'text-white'); btn.innerText = "Aceite o Termo";
+            }
+        }
+
+        window.salvarAnamnese = async function() {
+            const btn = document.getElementById('btn-salvar-anamnese');
+            btn.disabled = true; btn.innerHTML = "Salvando...";
+
+            const temNeuro = document.getElementById('ana-tem-neuro').value === 'Sim';
+
+            const dadosAnamnese = {
+                medico: {
+                    asma: document.getElementById('ana-med-asma').checked,
+                    hipertensao: document.getElementById('ana-med-hipertensao').checked,
+                    cardiopatia: document.getElementById('ana-med-cardiopatia').checked,
+                    diabetes: document.getElementById('ana-med-diabetes').checked,
+                    epilepsia: document.getElementById('ana-med-epilepsia').checked,
+                    desmaios: document.getElementById('ana-med-desmaios').checked,
+                    dores_articulacoes: document.getElementById('ana-med-dores').value.trim(),
+                    problema_coluna: document.getElementById('ana-med-coluna').value.trim(),
+                    cirurgias: document.getElementById('ana-med-cirurgias').value.trim(),
+                    medicamentos: document.getElementById('ana-med-medicamentos').value.trim()
+                },
+                diagnostico: {
+                    possui_neurodivergencia: temNeuro,
+                    tea: temNeuro ? document.getElementById('ana-diag-tea').checked : false,
+                    tdah: temNeuro ? document.getElementById('ana-diag-tdah').checked : false,
+                    def_intelectual: temNeuro ? document.getElementById('ana-diag-intelectual').checked : false,
+                    def_fisica: temNeuro ? document.getElementById('ana-diag-fisica').checked : false,
+                    def_visual: temNeuro ? document.getElementById('ana-diag-visual').checked : false,
+                    def_auditiva: temNeuro ? document.getElementById('ana-diag-auditiva').checked : false,
+                    transtorno_aprendizagem: temNeuro ? document.getElementById('ana-diag-aprendizagem').checked : false,
+                    ansiedade_emocional: temNeuro ? document.getElementById('ana-diag-ansiedade').checked : false,
+                    outro: temNeuro ? document.getElementById('ana-diag-outro').value.trim() : '',
+                    confirmado: temNeuro ? document.getElementById('ana-diag-confirmado').value : 'Não',
+                    profissional: temNeuro ? document.getElementById('ana-diag-profissional').value.trim() : ''
+                },
+                motor: {
+                    dificuldade_equilibrio: temNeuro ? document.getElementById('ana-mot-equilibrio').value : 'Não'
+                },
+                comunicacao: {
+                    entende_comandos: temNeuro ? document.getElementById('ana-com-comandos').value : 'Sim',
+                    comunicacao_alternativa: temNeuro ? document.getElementById('ana-com-alternativa').value.trim() : ''
+                },
+                comportamento: {
+                    fuga_isolamento: temNeuro ? document.getElementById('ana-comp-fuga').checked : false,
+                    crises_agressividade: temNeuro ? document.getElementById('ana-comp-crises').value.trim() : ''
+                },
+                social: {
+                    precisa_apoio: temNeuro ? document.getElementById('ana-soc-apoio').checked : false
+                },
+                sensorial: {
+                    sons: temNeuro ? document.getElementById('ana-sens-sons').checked : false,
+                    toques: temNeuro ? document.getElementById('ana-sens-toques').checked : false
+                },
+                saude: {
+                    alergias_restricoes: document.getElementById('ana-sau-alergias').value.trim()
+                },
+                expectativas: {
+                    geral: document.getElementById('ana-exp-geral').value.trim()
+                },
+                data_preenchimento: new Date().toISOString()
+            };
+
+            try {
+                await updateDoc(doc(db, "alunos", alunoLogado.id), { anamnese: dadosAnamnese, anamnese_preenchida: true });
+                alunoLogado.anamnese = dadosAnamnese; alunoLogado.anamnese_preenchida = true; localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoLogado));
+                fecharModalAnamnese(); verificarAnamnese(); showToast("Ficha de Saúde salva com sucesso!", "success");
+            } catch (error) { showToast("Erro ao salvar anamnese. Tente novamente."); btn.disabled = false; btn.innerHTML = "Salvar Ficha"; }
+        }
+
+        window.ajustarZoomCarteirinha = function() {
+            const wrapper = document.getElementById('cart-wrapper'); 
+            const cart = document.getElementById('carteirinha');
+            
+            if(!wrapper || !cart) return;
+
+            let screenWidth = window.innerWidth;
+            let padding = screenWidth < 640 ? 32 : 0;
+            let maxWidth = screenWidth - padding; 
+            
+            if(maxWidth > 50 && maxWidth < 600) { 
+                const scale = maxWidth / 600; 
+                cart.style.transform = `scale(${scale})`; 
+                cart.style.transformOrigin = 'top center'; 
+                wrapper.style.height = `${380 * scale + 20}px`; 
+            } else { 
+                cart.style.transform = `scale(1)`; 
+                cart.style.transformOrigin = 'top center';
+                wrapper.style.height = '390px'; 
+            }
+        }
+        
+        window.addEventListener('resize', window.ajustarZoomCarteirinha);
+
+        async function iniciarPortal() {
+            document.getElementById('tela-login').classList.add('hidden'); document.getElementById('tela-portal').classList.remove('hidden'); document.getElementById('tela-portal').classList.add('flex');
+            document.getElementById('nome-saudacao').innerText = alunoLogado.nome.split(' ')[0];
+            try {
+                const alunoSnap = await getDoc(doc(db, "alunos", alunoLogado.id));
+                if (alunoSnap.exists()) { alunoLogado = { id: alunoSnap.id, ...alunoSnap.data() }; localStorage.setItem('bjj_aluno_auth', JSON.stringify(alunoLogado)); }
+                const eqSnap = await getDoc(doc(db, "equipes", alunoLogado.equipe_id));
+                if (eqSnap.exists()) { equipeDados = eqSnap.data(); }
+            } catch(e) { console.log("Erro ao buscar dados."); }
+            preencherCarteirinha(); buscarFaturasResiliente(); verificarAnamnese(); 
+            
+            const hojeData = new Date();
+            const mesFormatado = String(hojeData.getMonth() + 1).padStart(2, '0');
+            document.getElementById('filtro-mes-checkin').value = `${hojeData.getFullYear()}-${mesFormatado}`;
+
+            buscarMuralEHorarios();
+            buscarCurriculoAluno(); 
+            atualizarWidgetMensalidade();
+            
+            mudarAbaAluno('aba-inicio'); 
+        }
+
+        function getCorFaixaDupla(faixaTexto) {
+            const f = faixaTexto ? faixaTexto.toLowerCase() : '';
+            if (f.includes('cinza e branca')) return 'linear-gradient(to bottom, #94A3B8 50%, #f8fafc 50%)';
+            if (f.includes('cinza e preta')) return 'linear-gradient(to bottom, #94A3B8 50%, #0F172A 50%)';
+            if (f.includes('amarela e branca')) return 'linear-gradient(to bottom, #FACC15 50%, #f8fafc 50%)';
+            if (f.includes('amarela e preta')) return 'linear-gradient(to bottom, #FACC15 50%, #0F172A 50%)';
+            if (f.includes('laranja e branca')) return 'linear-gradient(to bottom, #F97316 50%, #f8fafc 50%)';
+            if (f.includes('laranja e preta')) return 'linear-gradient(to bottom, #F97316 50%, #0F172A 50%)';
+            if (f.includes('verde e branca')) return 'linear-gradient(to bottom, #16A34A 50%, #f8fafc 50%)';
+            if (f.includes('verde e preta')) return 'linear-gradient(to bottom, #16A34A 50%, #0F172A 50%)';
+            if (f.includes('branca')) return '#f8fafc'; if (f.includes('cinza')) return '#94A3B8';
+            if (f.includes('amarela')) return '#FACC15'; if (f.includes('laranja')) return '#F97316';
+            if (f.includes('verde')) return '#16A34A'; if (f.includes('azul')) return '#3b82f6';
+            if (f.includes('roxa')) return '#a855f7'; if (f.includes('marrom')) return '#78350f';
+            if (f.includes('preta')) return '#0F172A'; return '#cbd5e1'; 
+        }
+
+        function preencherCarteirinha() {
+            const a = alunoLogado;
+            if(equipeDados) {
+                document.getElementById('cart-equipe-nome').innerText = (equipeDados.nome_equipe || "Sua Equipe").toUpperCase();
+                const imgL = document.getElementById('cart-equipe-logo'); const fallL = document.getElementById('cart-equipe-fallback');
+                const waterL = document.getElementById('cart-equipe-watermark'); const waterFall = document.getElementById('cart-equipe-watermark-fallback');
+                if(equipeDados.url_logo) {
+                    imgL.src = equipeDados.url_logo; imgL.classList.remove('hidden'); fallL.classList.add('hidden');
+                    if(waterL) { waterL.src = equipeDados.url_logo; waterL.classList.remove('hidden'); }
+                    if(waterFall) waterFall.classList.add('hidden');
+                } else {
+                    const letra = (equipeDados.nome_equipe || "E").charAt(0).toUpperCase(); fallL.innerText = letra; fallL.classList.remove('hidden'); imgL.classList.add('hidden');
+                    if(waterFall) { waterFall.innerText = letra; waterFall.classList.remove('hidden'); }
+                    if(waterL) waterL.classList.add('hidden');
+                }
+            }
+            document.getElementById('cart-aluno-nome-txt').innerText = a.nome;
+            const grau = a.grau && a.grau !== "Sem grau" ? ` - ${a.grau}` : "";
+            document.getElementById('cart-aluno-faixa-texto').innerText = ((a.faixa || 'BRANCA') + grau).toUpperCase();
+            document.getElementById('cart-aluno-matricula-txt').innerText = a.matricula || '0000';
+            document.getElementById('cart-aluno-nascimento-txt').innerText = a.data_nascimento ? a.data_nascimento.split('-').reverse().join('/') : '--/--/----';
+            const anoAtual = new Date().getFullYear(); document.getElementById('cart-aluno-validade-txt').innerText = `DEZ / ${anoAtual}`;
+            document.getElementById('cart-faixa-border').style.background = getCorFaixaDupla(a.faixa);
+            if(a.foto_url) {
+                document.getElementById('cart-aluno-foto-modal').src = a.foto_url; document.getElementById('cart-aluno-foto-modal').classList.remove('hidden'); document.getElementById('cart-aluno-foto-fallback-modal').classList.add('hidden');
+            } else {
+                document.getElementById('cart-aluno-foto-fallback-modal').innerText = a.nome.charAt(0).toUpperCase(); document.getElementById('cart-aluno-foto-fallback-modal').classList.remove('hidden'); document.getElementById('cart-aluno-foto-modal').classList.add('hidden');
+            }
+            const qrContainer = document.getElementById('cart-qr-code'); qrContainer.innerHTML = ''; 
+            new QRCode(qrContainer, { text: window.location.origin + '/validar.html?mat=' + a.matricula, width: 64, height: 64, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.M });
+        }
+
+        async function convertImgToBase64(url) {
+            try {
+                const response = await fetch(url, { mode: 'cors' }); const blob = await response.blob();
+                return new Promise((resolve) => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result); reader.readAsDataURL(blob); });
+            } catch (e) { return url; }
+        }
+
+        async function gerarCanvasCarteirinha() {
+            const elementoBase = document.getElementById('carteirinha'); const divClone = document.createElement('div');
+            divClone.style.position = 'absolute'; divClone.style.top = '-9999px'; divClone.style.left = '-9999px'; divClone.style.width = '600px'; divClone.style.height = '380px'; divClone.style.margin = '0'; divClone.style.padding = '0'; divClone.style.backgroundColor = '#ffffff';
+            const clone = elementoBase.cloneNode(true);
+            clone.classList.remove('mx-auto', 'shadow-2xl', 'w-full', 'max-w-[600px]', 'aspect-[1.58/1]', 'shrink-0', 'mt-4'); clone.style.margin = '0'; clone.style.transform = 'none'; clone.style.position = 'relative'; clone.style.top = '0'; clone.style.left = '0'; clone.style.width = '600px'; clone.style.height = '380px';
+            const glassElements = clone.querySelectorAll('.backdrop-blur-sm, .bg-white\\/90, .bg-slate-100\\/50, .bg-white\\/50');
+            glassElements.forEach(el => { el.classList.remove('backdrop-blur-sm', 'bg-white/90', 'bg-slate-100/50', 'bg-white/50'); if(el.classList.contains('border-l')) { el.style.backgroundColor = '#f1f5f9'; } else { el.style.backgroundColor = '#ffffff'; } });
+            const imgs = clone.querySelectorAll('img'); for (let img of imgs) { if (img.src && img.src.startsWith('http')) { img.src = await convertImgToBase64(img.src); } }
+            const qrCodeContainer = clone.querySelector('#cart-qr-code'); if(qrCodeContainer) { qrCodeContainer.style.opacity = '1'; qrCodeContainer.style.filter = 'none'; qrCodeContainer.style.backgroundColor = '#ffffff'; }
+            clone.style.isolation = 'isolate'; clone.style.webkitMaskImage = '-webkit-radial-gradient(white, black)';
+            divClone.appendChild(clone); document.body.appendChild(divClone);
+            await new Promise(r => setTimeout(r, 500));
+            const canvas = await html2canvas(clone, { scale: 4, useCORS: true, allowTaint: false, backgroundColor: '#ffffff', width: 600, height: 380, windowWidth: 1200 });
+            document.body.removeChild(divClone); return canvas;
+        }
+
+        window.baixarCarteirinhaPNG = async function () {
+            const btn = document.getElementById('btn-exportar-png'); const txtOriginal = btn.innerHTML; btn.innerHTML = "⏳ GERANDO..."; btn.disabled = true; showToast("Gerando imagem em Alta Resolução...", "success");
+            try { const canvas = await gerarCanvasCarteirinha(); const link = document.createElement('a'); link.download = `Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.png`; link.href = canvas.toDataURL('image/png', 1.0); link.click(); } catch(e) { showToast("Erro ao exportar PNG", "error"); } finally { btn.innerHTML = txtOriginal; btn.disabled = false; }
+        }
+
+        window.baixarCarteirinhaPDF = async function () {
+            const btn = document.getElementById('btn-exportar-pdf'); const txtOriginal = btn.innerHTML; btn.innerHTML = "⏳ GERANDO..."; btn.disabled = true; showToast("Gerando PDF em Alta Resolução...", "success");
+            try { const canvas = await gerarCanvasCarteirinha(); const imgData = canvas.toDataURL('image/png'); const { jsPDF } = window.jspdf; const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [85.6, 54] }); pdf.addImage(imgData, 'PNG', 0, 0, 85.6, 54); pdf.save(`Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.pdf`); showToast("PDF baixado com sucesso!", "success"); } catch(e) { showToast("Erro ao exportar PDF", "error"); } finally { btn.innerHTML = txtOriginal; btn.disabled = false; }
+        }
+
+        window.compartilharCarteirinha = async function () {
+            const btn = document.getElementById('btn-compartilhar'); const txtOriginal = btn.innerHTML; btn.innerHTML = "⏳ GERANDO..."; btn.disabled = true; showToast("Preparando arquivo para partilha...", "success");
+            try { const canvas = await gerarCanvasCarteirinha(); canvas.toBlob(async (blob) => { const file = new File([blob], `Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.png`, { type: "image/png" }); if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ title: 'Carteirinha BJJ', text: 'Minha carteirinha oficial', files: [file] }); } catch { } } else { window.open(`https://wa.me/?text=Minha carteirinha oficial`, '_blank'); } }); } catch(e) { showToast("Erro ao partilhar", "error"); } finally { btn.innerHTML = txtOriginal; btn.disabled = false; }
+        }
+
+        async function buscarFaturasResiliente() {
+            const lista = document.getElementById('lista-faturas'); if(!lista) return; lista.innerHTML = '<div class="text-center p-6 text-slate-500 text-xs italic">A carregar mensalidades...</div>';
+            let faturasMensalidade = [];
+            try { const qEquipe = query(collection(db, "financeiro"), where("equipe_id", "==", alunoLogado.equipe_id)); const snapEquipe = await getDocs(qEquipe); snapEquipe.forEach(doc => { const data = doc.data(); if (data.aluno_id === alunoLogado.id && (data.tipo === 'MENSALIDADE' || !data.tipo)) { faturasMensalidade.push({ id: doc.id, ...data }); } }); } 
+            catch(erroFinanceiro) { try { const qFaturas = query(collection(db, "faturas"), where("aluno_id", "==", alunoLogado.id)); const snapFaturas = await getDocs(qFaturas); snapFaturas.forEach(doc => { faturasMensalidade.push({ id: doc.id, ...doc.data() }); }); } catch(erroFaturas) { lista.innerHTML = `<div class="bg-rose-50/10 border border-rose-500/30 p-5 rounded-2xl m-4 text-center"><span class="text-3xl mb-2 block">🔒</span><h4 class="text-rose-400 font-black text-sm mb-1">Acesso Bloqueado</h4></div>`; return; } }
+            if (faturasMensalidade.length === 0) { lista.innerHTML = `<div class="text-center p-8 text-slate-500 text-xs">A sua academia ainda não lançou nenhuma mensalidade para você.</div>`; return; }
+            faturasMensalidade.sort((a, b) => { const dateA = a.mes_ano || ""; const dateB = b.mes_ano || ""; return dateB.localeCompare(dateA); });
+            faturasCache = faturasMensalidade; let faturasHTML = '';
+            faturasMensalidade.forEach(fat => {
+                let mesStr = "", anoStr = ""; if(fat.mes_ano && String(fat.mes_ano).includes('-')) { const partes = String(fat.mes_ano).split('-'); anoStr = partes[0]; mesStr = partes[1]; }
+                const diaVenc = alunoLogado.dia_vencimento || 10; let dataVencimento = null; let dataVencFormatada = '--/--/----';
+                if(anoStr && mesStr) { dataVencimento = new Date(parseInt(anoStr), parseInt(mesStr) - 1, parseInt(diaVenc)); dataVencFormatada = `${String(diaVenc).padStart(2, '0')}/${mesStr}/${anoStr}`; }
+                let statusAtual = fat.status || 'PENDENTE'; if (statusAtual === 'PENDENTE') { const hoje = new Date(); hoje.setHours(0,0,0,0); if (dataVencimento && hoje > dataVencimento) statusAtual = 'ATRASADO'; }
+                const isPago = statusAtual === 'PAGO'; const isAtrasado = statusAtual === 'ATRASADO'; const isIsento = statusAtual === 'ISENTO';
+                let icone = '⏳'; let corTexto = 'text-cyan-400'; let statusLabel = 'Pendente'; let textoStatusBtn = 'Pagar';
+                if(isPago) { icone = '✅'; corTexto = 'text-emerald-400'; statusLabel = 'Pago'; } else if(isAtrasado) { icone = '🚨'; corTexto = 'text-rose-400'; statusLabel = 'Atrasado'; } else if(isIsento) { icone = '⭐'; corTexto = 'text-blue-400'; statusLabel = 'Isento'; }
+                if(fat.link_pagamento && !isPago && !isIsento) textoStatusBtn = 'Pagar (Cartão/Pix)';
+                let btnHtml = '';
+                if(isPago) {
+                    const dataFormat = fat.data_pagamento || fat.data || fat.updated_at || fat.criado_em; let dataPag = '';
+                    if (dataFormat) { try { const d = new Date(dataFormat + (String(dataFormat).includes('T') ? '' : 'T12:00:00')); dataPag = !isNaN(d.getTime()) ? d.toLocaleDateString('pt-BR') : ''; } catch(e) {} }
+                    btnHtml = `<span class="text-[10px] font-bold text-emerald-500 uppercase mt-1 bg-emerald-500/10 px-2 py-1 rounded-md">✅ Pago ${dataPag}</span>`;
+                } else if(isIsento) { btnHtml = `<span class="text-[10px] font-bold text-blue-500 uppercase mt-1 bg-blue-500/10 px-2 py-1 rounded-md">⭐ Isento</span>`; } else { btnHtml = `<button id="btn-pagar-${fat.id}" onclick="abrirPagamento('${fat.id}')" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm transition-colors mt-1">${textoStatusBtn}</button>`; }
+                const tituloMes = (mesStr && anoStr) ? `${mesStr}/${anoStr}` : (fat.descricao || 'Sem referência');
+                faturasHTML += `<div class="p-4 flex items-center justify-between hover:bg-slate-800/50 transition-colors border-b border-slate-700/30"><div class="flex items-center gap-4"><div class="text-xl opacity-80" title="${statusLabel}">${icone}</div><div><p class="text-sm font-bold text-white">Mensalidade ${tituloMes}</p><p class="text-[10px] text-slate-400 uppercase mt-0.5">Venc: ${dataVencFormatada}</p></div></div><div class="flex flex-col items-end"><p class="text-sm font-black ${corTexto}">R$ ${parseFloat(fat.valor || 0).toFixed(2).replace('.', ',')}</p>${btnHtml}</div></div>`;
+            });
+            lista.innerHTML = faturasHTML;
+            atualizarWidgetMensalidade();
+        }
+
+        window.abrirPagamento = async function(faturaId) {
+            const fat = faturasCache.find(f => f.id === faturaId); if (!fat) return showToast("Fatura não encontrada.", "error");
+            const temPlanoAsaas = equipeDados && equipeDados.plano_asaas === true;
+            if (temPlanoAsaas) {
+                if (fat.link_pagamento) { window.open(fat.link_pagamento, '_blank'); return; }
+                showToast("⏳ Gerando link de pagamento seguro...", "success"); const btnPagamento = document.getElementById(`btn-pagar-${faturaId}`); let textoOriginal = "";
+                if(btnPagamento) { textoOriginal = btnPagamento.innerHTML; btnPagamento.innerHTML = "⏳ Aguarde..."; btnPagamento.disabled = true; }
+                try {
+                    const gerarCobranca = httpsCallable(functions, 'gerarCobrancaAsaas');
+                    const resultado = await gerarCobranca({ alunoId: alunoLogado.id, valor: fat.valor, mesAno: fat.mes_ano, descricao: `Mensalidade Jiu-Jitsu - Ref: ${fat.mes_ano}` });
+                    if (resultado.data.success) { showToast("✅ Fatura gerada com sucesso!", "success"); window.open(resultado.data.url, '_blank'); buscarFaturasResiliente(); } else { showToast("❌ Erro ao gerar cobrança: " + resultado.data.error, "error"); }
+                } catch (error) { showToast("🚨 Falha na conexão com o servidor financeiro.", "error"); } finally { if(btnPagamento) { btnPagamento.innerHTML = textoOriginal; btnPagamento.disabled = false; } }
+            } else {
+                let mesStr = "", anoStr = ""; if(fat.mes_ano && String(fat.mes_ano).includes('-')) { const partes = fat.mes_ano.split('-'); anoStr = partes[0]; mesStr = partes[1]; }
+                const tituloMes = (mesStr && anoStr) ? `${mesStr}/${anoStr}` : 'Atual';
+                document.getElementById('pix-ref').innerText = `Mensalidade - ${tituloMes}`; document.getElementById('pix-valor').innerText = `R$ ${parseFloat(fat.valor || 0).toFixed(2).replace('.', ',')}`;
+                const inputPix = document.getElementById('pix-codigo');
+                if(equipeDados && equipeDados.chave_pix) { inputPix.value = equipeDados.chave_pix; document.getElementById('aviso-pagamento').innerText = "Após o pagamento, envie o comprovante ao professor para ele dar a baixa no sistema."; } else { inputPix.value = "Chave PIX não configurada pelo professor."; document.getElementById('aviso-pagamento').innerText = "Peça a chave PIX diretamente ao seu professor."; }
+                document.getElementById('modal-pix').classList.remove('hidden'); document.getElementById('modal-pix').classList.add('flex');
+            }
+        }
+        window.fecharModalPix = function() { document.getElementById('modal-pix').classList.add('hidden'); document.getElementById('modal-pix').classList.remove('flex'); }
+        window.copiarPix = function() { const input = document.getElementById('pix-codigo'); if(input.value === "Chave PIX não configurada pelo professor.") return showToast("Não há chave para copiar.", "error"); input.select(); input.setSelectionRange(0, 99999); navigator.clipboard.writeText(input.value); showToast("Chave PIX copiada para a área de transferência!", "success"); }
+
+        function atualizarWidgetMensalidade() {
+            const elValor = document.getElementById('home-proxima-fatura-valor');
+            const elVenc = document.getElementById('home-proxima-fatura-venc');
+            const btnPagar = document.getElementById('btn-home-pagar');
+            const cardBg = document.getElementById('card-mensalidade-home');
+            const iconFin = document.getElementById('home-fin-icon');
+
+            if (!elValor) return;
+
+            let pendentes = faturasCache.filter(f => f.status === 'PENDENTE' || f.status === 'ATRASADO');
+            
+            if(pendentes.length > 0) {
+                pendentes.sort((a,b) => (a.mes_ano || "").localeCompare(b.mes_ano || ""));
+                const fat = pendentes[0];
+
+                let mesStr = "", anoStr = ""; 
+                if(fat.mes_ano && String(fat.mes_ano).includes('-')) { 
+                    const partes = String(fat.mes_ano).split('-'); anoStr = partes[0]; mesStr = partes[1]; 
+                }
+                
+                const diaVenc = alunoLogado.dia_vencimento || 10;
+                let dataVencFormatada = `${String(diaVenc).padStart(2, '0')}/${mesStr}/${anoStr}`;
+
+                elValor.innerText = `R$ ${parseFloat(fat.valor || 0).toFixed(2).replace('.', ',')}`;
+                
+                if(fat.status === 'ATRASADO') {
+                    cardBg.className = "card-premium p-6 relative overflow-hidden transition-all duration-500 flex flex-col justify-center h-72 border-b-4 border-b-rose-500 bg-rose-900/20";
+                    elVenc.innerText = `Atrasada: ${dataVencFormatada}`;
+                    elVenc.className = "text-[10px] font-bold text-rose-300 uppercase tracking-widest mb-5 bg-rose-900/60 border border-rose-500/30 px-3 py-1 rounded-md";
+                    iconFin.innerHTML = "🚨";
+                    iconFin.className = "w-12 h-12 rounded-full bg-rose-500/20 flex items-center justify-center text-2xl mb-3 border border-rose-500/50 shadow-[0_0_15px_rgba(244,63,94,0.3)]";
+                    btnPagar.className = "w-full bg-rose-600 hover:bg-rose-500 text-white transition py-3.5 rounded-xl text-[11px] font-black uppercase tracking-widest shadow-[0_0_15px_rgba(244,63,94,0.4)]";
+                } else {
+                    cardBg.className = "card-premium p-6 relative overflow-hidden transition-all duration-500 flex flex-col justify-center h-72 border-b-4 border-b-amber-500 bg-amber-900/10";
+                    elVenc.innerText = `Vence em: ${dataVencFormatada}`;
+                    elVenc.className = "text-[10px] font-bold text-amber-300 uppercase tracking-widest mb-5 bg-amber-900/60 border border-amber-500/30 px-3 py-1 rounded-md";
+                    iconFin.innerHTML = "⏳";
+                    iconFin.className = "w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center text-2xl mb-3 border border-amber-500/50";
+                    btnPagar.className = "w-full bg-amber-50 hover:bg-amber-400 text-slate-900 transition py-3.5 rounded-xl text-[11px] font-black uppercase tracking-widest shadow-md";
+                }
+
+                btnPagar.classList.remove('hidden');
+                btnPagar.onclick = () => abrirPagamento(fat.id);
+                
+            } else {
+                elValor.innerText = "Tudo em dia!";
+                elVenc.innerText = "Nenhuma pendência :)";
+                btnPagar.classList.add('hidden');
+                
+                cardBg.className = "card-premium p-6 relative overflow-hidden transition-all duration-500 flex flex-col justify-center h-72 border-b-4 border-b-emerald-500 bg-emerald-900/10";
+                elVenc.className = "text-[10px] font-bold text-emerald-300 uppercase tracking-widest mb-5 bg-emerald-900/60 border border-emerald-500/30 px-3 py-1 rounded-md";
+                iconFin.innerHTML = "✅";
+                iconFin.className = "w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center text-2xl mb-3 border border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.2)]";
+            }
+        }
+
+        window.scrollCarrossel = function(idCarrossel, direcao) {
+            const el = document.getElementById(idCarrossel);
+            if(el) {
+                const scrollAmount = el.clientWidth;
+                el.scrollBy({ left: direcao * scrollAmount, behavior: 'smooth' });
+            }
+        }
+
+        async function carregarLoja() {
+            const container = document.getElementById('lista-produtos');
+            if (!container) return;
+            try {
+                const q = query(collection(db, "produtos"), where("equipe_id", "==", alunoLogado.equipe_id), where("status", "==", "ATIVO"));
+                const snap = await getDocs(q);
+                if (snap.empty) {
+                    container.innerHTML = "<div class='col-span-full text-center p-6 text-slate-500 text-xs italic'>Nenhum produto disponível no momento.</div>";
+                    return;
+                }
+                
+                let msgs = [];
+                snap.forEach(doc => msgs.push({ id: doc.id, ...doc.data() }));
+                produtosCache = msgs; 
+
+                let html = '';
+                msgs.forEach(p => {
+                    const preco = p.valor ? parseFloat(p.valor).toFixed(2).replace('.', ',') : "0,00";
+                    
+                    let arrayDeImagens = [];
+                    if (p.imagens_urls && p.imagens_urls.length > 0) arrayDeImagens = p.imagens_urls;
+                    else if (p.imagem_url) arrayDeImagens = [p.imagem_url];
+                    else arrayDeImagens = ['https://via.placeholder.com/400x400?text=Sem+Foto'];
+
+                    let idUnicoCarrossel = `carousel-${p.id}`;
+                    
+                    let slidesHtml = '';
+                    arrayDeImagens.forEach(img => {
+                        slidesHtml += `<div class="w-full h-full shrink-0 flex items-center justify-center snap-center relative overflow-hidden"><img src="${img}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"></div>`;
+                    });
+
+                    let setasHtml = '';
+                    if (arrayDeImagens.length > 1) {
+                        setasHtml = `
+                            <button onclick="scrollCarrossel('${idUnicoCarrossel}', -1)" class="absolute left-1 top-1/2 -translate-y-1/2 w-6 h-6 bg-slate-800/80 hover:bg-slate-900 text-white rounded-full flex items-center justify-center text-[8px] shadow-md z-10 opacity-0 group-hover:opacity-100 transition-opacity">◀</button>
+                            <button onclick="scrollCarrossel('${idUnicoCarrossel}', 1)" class="absolute right-1 top-1/2 -translate-y-1/2 w-6 h-6 bg-slate-800/80 hover:bg-slate-900 text-white rounded-full flex items-center justify-center text-[8px] shadow-md z-10 opacity-0 group-hover:opacity-100 transition-opacity">▶</button>
+                            <div class="absolute bottom-2 left-0 w-full flex justify-center gap-1 z-10">
+                                ${arrayDeImagens.map((_, i) => `<div class="w-1 h-1 rounded-full bg-slate-400/50 ${i===0?'!bg-cyan-500 w-2':''}"></div>`).join('')}
+                            </div>
+                        `;
+                    }
+
+                    html += `
+                        <div class="bg-slate-800/40 border border-slate-700/50 rounded-2xl overflow-hidden flex flex-col group">
+                            <div class="aspect-square bg-white relative overflow-hidden p-2 flex items-center justify-center">
+                                ${setasHtml}
+                                <div id="${idUnicoCarrossel}" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory hide-scrollbar scroll-smooth">
+                                    ${slidesHtml}
+                                </div>
+                            </div>
+                            <div class="p-3 flex flex-col flex-1">
+                                <h4 class="text-[10px] font-black text-white uppercase tracking-widest mb-1 truncate">${p.nome}</h4>
+                                <p class="text-xs font-black text-emerald-400 mb-3">R$ ${preco}</p>
+                                
+                                <button id="btn-comprar-${p.id}" onclick="comprarProdutoViaAsaas('${p.id}')" class="mt-auto w-full bg-cyan-600 hover:bg-cyan-500 text-white text-center py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-colors shadow-md flex items-center justify-center gap-1.5">
+                                    <span>🛒</span> Comprar
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            } catch(e) {
+                container.innerHTML = "<div class='col-span-full text-center text-rose-500 text-xs bg-rose-500/10 p-2 rounded-lg'>Erro ao carregar produtos.</div>";
+            }
+        }
+
+        window.comprarProdutoViaAsaas = async function(produtoId) {
+            const p = produtosCache.find(x => x.id === produtoId);
+            if(!p) return showToast("Produto não encontrado.", "error");
+
+            const temPlanoAsaas = equipeDados && equipeDados.plano_asaas === true;
+            
+            if (temPlanoAsaas) {
+                const btn = document.getElementById(`btn-comprar-${produtoId}`);
+                const textoOriginal = btn.innerHTML;
+                btn.innerHTML = "⏳ A Gerar...";
+                btn.disabled = true;
+
+                try {
+                    const gerarCobranca = httpsCallable(functions, 'gerarCobrancaAsaas');
+                    const resultado = await gerarCobranca({ 
+                        alunoId: alunoLogado.id, 
+                        valor: p.valor, 
+                        mesAno: 'LOJA',
+                        descricao: `Loja Virtual: ${p.nome}` 
+                    });
+
+                    if (resultado.data.success) { 
+                        await addDoc(collection(db, "financeiro"), {
+                            equipe_id: alunoLogado.equipe_id,
+                            aluno_id: alunoLogado.id,
+                            aluno_nome: alunoLogado.nome,
+                            tipo: 'LOJA', 
+                            produto_nome: p.nome,
+                            produto_id: p.id,
+                            status: 'PENDENTE', 
+                            valor: p.valor,
+                            data_criacao: new Date().toISOString(),
+                            forma_pagamento: 'Asaas',
+                            link_pagamento: resultado.data.url
+                        });
+
+                        showToast("✅ Redirecionando para pagamento seguro!", "success"); 
+                        window.open(resultado.data.url, '_blank'); 
+                    } else { 
+                        showToast("❌ Erro ao gerar cobrança: " + resultado.data.error, "error"); 
+                    }
+                } catch (error) { 
+                    showToast("🚨 Falha na ligação ao servidor financeiro.", "error"); 
+                } finally { 
+                    btn.innerHTML = textoOriginal; 
+                    btn.disabled = false; 
+                }
+            } else {
+                const zap = equipeDados.telefone_whatsapp || '';
+                if(!zap) return showToast("O professor não configurou o WhatsApp da academia.", "error");
+                
+                const precoFormatado = parseFloat(p.valor).toFixed(2).replace('.',',');
+                const msg = encodeURIComponent(`Olá, Oss! Gostaria de comprar o produto: *${p.nome}* no valor de R$ ${precoFormatado}. Como podemos efetuar o pagamento?`);
+                
+                window.open(`https://wa.me/55${zap.replace(/\D/g,'')}?text=${msg}`, '_blank');
+            }
+        };
+
+        window.registrarCheckin = async function(turmaId, nomeTurma) {
+            const btn = document.getElementById(`btn-checkin-${turmaId}`);
+            if(btn) { btn.innerHTML = '⏳ Localizando...'; btn.disabled = true; }
+
+            try {
+                const hoje = new Date().toISOString().split('T')[0];
+                const q = query(collection(db, "checkins"), where("aluno_id", "==", alunoLogado.id), where("data", "==", hoje), where("turma_id", "==", turmaId));
                 const snap = await getDocs(q);
                 
-                if(!snap.empty) {
-                    showToast("Instruções de recuperação enviadas para o seu e-mail e para o seu Professor!", "success");
-                    setTimeout(() => fecharModalEsqueciSenha(), 2000);
-                } else {
-                    showToast("E-mail não encontrado no sistema.", "error");
+                if (!snap.empty) {
+                    showToast("Você já fez check-in nesta turma hoje!", "error");
+                    if(btn) { btn.innerHTML = '📍 Fazer Check-in'; btn.disabled = false; }
+                    return;
                 }
+
+                const getPosicao = () => new Promise((resolve, reject) => {
+                    if (!navigator.geolocation) reject("Geolocalização não suportada.");
+                    navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 10000 });
+                });
+
+                let lat = null, lng = null;
+                try {
+                    const pos = await getPosicao();
+                    lat = pos.coords.latitude;
+                    lng = pos.coords.longitude;
+                } catch(e) {
+                    showToast("Para fazer check-in, precisa permitir o acesso à sua localização.", "error");
+                    if(btn) { btn.innerHTML = '📍 Fazer Check-in'; btn.disabled = false; }
+                    return; 
+                }
+
+                if(btn) btn.innerHTML = '⏳ Registando...';
+
+                await addDoc(collection(db, "checkins"), {
+                    aluno_id: alunoLogado.id,
+                    aluno_nome: alunoLogado.nome,
+                    equipe_id: alunoLogado.equipe_id,
+                    turma_id: turmaId,
+                    turma_nome: nomeTurma,
+                    data: hoje,
+                    timestamp: new Date().toISOString(),
+                    localizacao: {
+                        lat: lat,
+                        lng: lng
+                    }
+                });
+                
+                showToast("Check-in realizado com sucesso! Oss!", "success");
+                
+                buscarMuralEHorarios();
+                buscarCurriculoAluno();
             } catch(e) {
-                showToast("Erro de comunicação.", "error");
-            } finally {
-                btn.innerHTML = "Pedir Recuperação";
-                btn.disabled = false;
+                showToast("Erro ao registrar check-in.", "error");
+                if(btn) { btn.innerHTML = '📍 Fazer Check-in'; btn.disabled = false; }
             }
         }
 
-        // FUNÇÕES ORIGINAIS
-        window.toggleSenha = function(inputId, btnElement) { /*...*/ }
-        window.mascaraTelefone = (i) => { /*...*/ }
-        window.mascaraCEP = (i) => { /*...*/ }
-        window.buscarCEPAluno = async (cep) => { /*...*/ }
-        window.fazerLoginAluno = async function() { /*...*/ }
-        window.sairDoPortal = function() { /*...*/ }
-        window.mudarAbaAluno = function(idAba) { /*...*/ }
-        window.switchCurriculoTab = function(tab) { /*...*/ }
-        window.filtrarCheckins = function() { /*...*/ }
-        window.previewImagem = function(input) { /*...*/ }
-        function preencherFormularioDados() { /*...*/ }
-        window.salvarMeusDados = async function() { /*...*/ }
-        window.toggleNeuro = function() { /*...*/ }
-        function verificarAnamnese() { /*...*/ }
-        window.abrirModalAnamnese = function() { /*...*/ }
-        window.fecharModalAnamnese = function() { /*...*/ }
-        window.validarTermoAnamnese = function() { /*...*/ }
-        window.salvarAnamnese = async function() { /*...*/ }
-        window.ajustarZoomCarteirinha = function() { /*...*/ }
-        window.addEventListener('resize', window.ajustarZoomCarteirinha);
-        async function iniciarPortal() { /*...*/ }
-        function getCorFaixaDupla(faixaTexto) { /*...*/ }
-        function preencherCarteirinha() { /*...*/ }
-        async function convertImgToBase64(url) { /*...*/ }
-        async function gerarCanvasCarteirinha() { /*...*/ }
-        window.baixarCarteirinhaPNG = async function () { /*...*/ }
-        window.baixarCarteirinhaPDF = async function () { /*...*/ }
-        window.compartilharCarteirinha = async function () { /*...*/ }
-        async function buscarFaturasResiliente() { /*...*/ }
-        window.abrirPagamento = async function(faturaId) { /*...*/ }
-        window.fecharModalPix = function() { /*...*/ }
-        window.copiarPix = function() { /*...*/ }
-        function atualizarWidgetMensalidade() { /*...*/ }
-        window.scrollCarrossel = function(idCarrossel, direcao) { /*...*/ }
-        async function carregarLoja() { /*...*/ }
-        window.comprarProdutoViaAsaas = async function(produtoId) { /*...*/ }
-        window.registrarCheckin = async function(turmaId, nomeTurma) { /*...*/ }
-        async function buscarMuralEHorarios() { /*...*/ }
-        async function buscarCurriculoAluno() { /*...*/ }
-        function calcularTempo(tempoMilissegundos) { /*...*/ }
+        async function buscarMuralEHorarios() {
+            const divAvisos = document.getElementById('lista-avisos');
+            const divHorarios = document.getElementById('lista-horarios');
+
+            if(divAvisos) {
+                try {
+                    const qAvisos = query(collection(db, "mensagens"), where("equipe_id", "==", alunoLogado.equipe_id));
+                    const snapAvisos = await getDocs(qAvisos);
+                    let avisos = []; 
+                    
+                    const hojeIso = new Date().toISOString();
+
+                    snapAvisos.forEach(doc => {
+                        const av = doc.data();
+                        if (av.status === 'inativo') return;
+                        
+                        // LÓGICA DE EXPIRAÇÃO: Vai até às 23:59:59 do dia escolhido
+                        if (av.data_expiracao) {
+                            const dataFimAviso = av.data_expiracao.split('T')[0] + "T23:59:59Z";
+                            if (dataFimAviso < hojeIso) return; // Se já passou, ignora
+                        }
+                        
+                        avisos.push(av);
+                    });
+                    
+                    avisos.sort((a,b) => {
+                        let dateA = a.data_envio ? new Date(a.data_envio).getTime() : 0; 
+                        let dateB = b.data_envio ? new Date(b.data_envio).getTime() : 0; 
+                        return dateB - dateA;
+                    });
+
+                    if(avisos.length > 0) {
+                        divAvisos.innerHTML = avisos.map(av => {
+                            let corBorda = 'border-slate-600/50';
+                            let corIcone = 'text-cyan-400';
+                            let icone = '📌';
+
+                            if (av.urgencia === 'urgente') {
+                                corBorda = 'border-rose-500/50';
+                                corIcone = 'text-rose-400';
+                                icone = '🚨';
+                            } else if (av.urgencia === 'importante') {
+                                corBorda = 'border-amber-500/50';
+                                corIcone = 'text-amber-400';
+                                icone = '⚠️';
+                            }
+
+                            return `<div class="bg-slate-900/50 p-4 rounded-2xl border ${corBorda} shadow-sm shrink-0"><div class="flex items-center gap-2 mb-2"><span class="text-sm ${corIcone}">${icone}</span><h4 class="text-xs font-black text-white uppercase">${av.titulo || 'Aviso'}</h4></div><p class="text-[11px] text-slate-300 leading-relaxed">${av.conteudo || ''}</p></div>`;
+                        }).join('');
+                    } else { 
+                        divAvisos.innerHTML = "<div class='text-xs text-slate-500 italic flex h-full items-center justify-center'>Nenhum recado no momento.</div>"; 
+                    }
+                } catch (error) { 
+                    console.error("Erro Avisos:", error);
+                    divAvisos.innerHTML = "<div class='text-[10px] text-rose-500 text-center bg-rose-500/10 p-2 rounded-lg'>Erro ao carregar avisos.</div>"; 
+                }
+            }
+
+            if(divHorarios) {
+                try {
+                    const qTurmas = query(collection(db, "turmas"), where("equipe_id", "==", alunoLogado.equipe_id));
+                    const snapTurmas = await getDocs(qTurmas); 
+                    let turmas = []; 
+
+                    function extrairDiasLegado(str) {
+                        if (!str) return [];
+                        const s = str.toLowerCase();
+                        let arr = [];
+                        if (s.includes('seg')) arr.push(1);
+                        if (s.includes('ter')) arr.push(2);
+                        if (s.includes('qua')) arr.push(3);
+                        if (s.includes('qui')) arr.push(4);
+                        if (s.includes('sex')) arr.push(5);
+                        if (s.includes('sab') || s.includes('sáb')) arr.push(6);
+                        if (s.includes('dom')) arr.push(0);
+                        return arr;
+                    }
+                    
+                    snapTurmas.forEach(doc => {
+                        const t = doc.data();
+                        
+                        let nomeOriginal = t.nome || t.nome_turma || t.titulo;
+                        if (!nomeOriginal || nomeOriginal.trim() === '') nomeOriginal = 'Treino';
+
+                        let diasArray = [];
+                        if (Array.isArray(t.dias_semana) && t.dias_semana.length > 0) {
+                            diasArray = t.dias_semana;
+                        } else if (typeof t.dias_semana === 'string') {
+                            diasArray = extrairDiasLegado(t.dias_semana);
+                        } else if (typeof t.dias === 'string') {
+                            diasArray = extrairDiasLegado(t.dias);
+                        }
+
+                        let horaStr = t.hora_inicio || t.horario || '--:--';
+                        if (horaStr.includes('-')) {
+                            horaStr = horaStr.split('-')[0].trim();
+                        }
+                        
+                        turmas.push({
+                            id: doc.id,
+                            nome: nomeOriginal,
+                            dias_array: diasArray,
+                            hora: horaStr,
+                            hora_fim: t.hora_fim || '--:--',
+                            isMinhaTurma: (t.alunos_ids && t.alunos_ids.includes(alunoLogado.id))
+                        });
+                    });
+
+                    function getProximoTreinoDate(diasArray, horaInicioStr, horaFimStr) {
+                        if(!diasArray || diasArray.length === 0 || !horaInicioStr || horaInicioStr === '--:--') return null;
+                        const agora = new Date();
+                        const partesHora = horaInicioStr.split(':');
+                        if(partesHora.length !== 2) return null;
+                        
+                        const hora = parseInt(partesHora[0]);
+                        const min = parseInt(partesHora[1]);
+
+                        let horaFim = hora + 2; 
+                        let minFim = min;
+                        if(horaFimStr && horaFimStr !== '--:--') {
+                            const pFim = horaFimStr.split(':');
+                            horaFim = parseInt(pFim[0]);
+                            minFim = parseInt(pFim[1]);
+                        }
+
+                        let datasPossiveis = [];
+
+                        diasArray.forEach(d => {
+                            let dif = d - agora.getDay();
+                            let proxDate = new Date(agora);
+                            proxDate.setHours(hora, min, 0, 0);
+
+                            let dataFim = new Date(agora);
+                            dataFim.setHours(horaFim, minFim, 0, 0);
+
+                            if(dif < 0) { 
+                                dif += 7;
+                            } else if (dif === 0) {
+                                if(agora > dataFim) dif = 7;
+                            }
+                            
+                            proxDate.setDate(agora.getDate() + dif);
+                            datasPossiveis.push(proxDate);
+                        });
+
+                        if(datasPossiveis.length === 0) return null;
+                        datasPossiveis.sort((a,b) => a.getTime() - b.getTime());
+                        return datasPossiveis[0];
+                    }
+
+                    turmas.forEach(t => {
+                        t.proximaSessaoObj = getProximoTreinoDate(t.dias_array, t.hora, t.hora_fim);
+                    });
+
+                    let temTurmaAtleta = turmas.some(t => t.isMinhaTurma);
+                    let turmasExibidas = temTurmaAtleta ? turmas.filter(t => t.isMinhaTurma) : turmas;
+
+                    turmasExibidas.sort((a,b) => {
+                        const timeA = a.proximaSessaoObj ? a.proximaSessaoObj.getTime() : Infinity;
+                        const timeB = b.proximaSessaoObj ? b.proximaSessaoObj.getTime() : Infinity;
+                        return timeA - timeB;
+                    });
+
+                    const nomesDias = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+
+                    const dataHojeStr = new Date().toISOString().split('T')[0];
+                    const qCheck = query(collection(db, "checkins"), where("aluno_id", "==", alunoLogado.id), where("data", "==", dataHojeStr));
+                    const snapCheck = await getDocs(qCheck);
+                    const turmasComCheckinHoje = snapCheck.docs.map(doc => doc.data().turma_id);
+
+                    if(turmasExibidas.length > 0) {
+                        divHorarios.innerHTML = turmasExibidas.map(t => {
+                            let labelDia = '--';
+                            let iconeDia = '📅';
+                            let corDia = 'text-slate-400';
+                            let textoHoraLimpa = t.hora.split('-')[0].trim();
+                            let isHoje = false;
+                            let isCheckinLiberado = false;
+                            let textoCheckinBloqueado = '';
+                            
+                            if(t.proximaSessaoObj) {
+                                const hoje = new Date();
+                                const prox = t.proximaSessaoObj;
+                                
+                                isHoje = hoje.getDate() === prox.getDate() && hoje.getMonth() === prox.getMonth() && hoje.getFullYear() === prox.getFullYear();
+                                
+                                const amanha = new Date();
+                                amanha.setDate(hoje.getDate() + 1);
+                                const isAmanha = amanha.getDate() === prox.getDate() && amanha.getMonth() === prox.getMonth() && amanha.getFullYear() === prox.getFullYear();
+                                
+                                if(isHoje) {
+                                    labelDia = 'HOJE';
+                                    iconeDia = '🟢';
+                                    corDia = 'text-emerald-400 font-black tracking-widest';
+
+                                    const limiteInicio = new Date(prox.getTime() - 10 * 60000); 
+                                    if(hoje >= limiteInicio) {
+                                        isCheckinLiberado = true;
+                                    } else {
+                                        textoCheckinBloqueado = `Libera às ${limiteInicio.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}`;
+                                    }
+
+                                } else if(isAmanha) {
+                                    labelDia = 'AMANHÃ';
+                                    iconeDia = '🟡';
+                                    corDia = 'text-amber-400 font-black tracking-widest';
+                                } else {
+                                    labelDia = nomesDias[prox.getDay()];
+                                    corDia = 'text-indigo-300 font-bold uppercase';
+                                }
+                            }
+
+                            const jaFezCheckin = turmasComCheckinHoje.includes(t.id);
+                            let checkinBtn = '';
+                            
+                            if (isHoje) {
+                                if (jaFezCheckin) {
+                                    checkinBtn = `<button disabled class="w-full mt-2 bg-emerald-500 text-white py-2 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-1 shadow-sm opacity-70 cursor-not-allowed">✅ Check-in Feito</button>`;
+                                } else if (isCheckinLiberado) {
+                                    checkinBtn = `<button id="btn-checkin-${t.id}" onclick="registrarCheckin('${t.id}', '${t.nome.replace(/'/g, "\\'")}')" class="w-full mt-2 bg-emerald-500/20 hover:bg-emerald-500 text-emerald-400 hover:text-white border border-emerald-500/30 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-1 shadow-sm">📍 Fazer Check-in</button>`;
+                                } else {
+                                    checkinBtn = `<button disabled class="w-full mt-2 bg-slate-800 text-slate-500 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-1 shadow-sm cursor-not-allowed border border-slate-700/50">⏳ ${textoCheckinBloqueado}</button>`;
+                                }
+                            }
+                            
+                            return `
+                                <div class="flex flex-col bg-slate-900/50 p-3.5 rounded-xl border border-slate-700/50 shrink-0 mb-2 transition-colors">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-[11px] font-black text-indigo-200 uppercase truncate pr-2">${t.nome}</p>
+                                            <p class="text-[9px] uppercase ${corDia} mt-0.5">${iconeDia} ${labelDia}</p>
+                                        </div>
+                                        <div class="text-right shrink-0 flex flex-col items-end">
+                                            <span class="text-xs font-black text-white bg-slate-800 px-2 py-1 rounded-lg border border-slate-600 shadow-inner">${textoHoraLimpa}</span>
+                                        </div>
+                                    </div>
+                                    ${checkinBtn}
+                                </div>
+                            `;
+                        }).join('');
+                    } else { 
+                        divHorarios.innerHTML = "<div class='text-xs text-slate-500 italic flex h-full items-center justify-center'>Nenhuma turma para exibir.</div>"; 
+                    }
+                } catch (error) {
+                    console.error("Erro Horários/Turmas:", error);
+                    divHorarios.innerHTML = "<div class='text-[10px] text-rose-500 text-center bg-rose-500/10 p-2 rounded-lg'>Erro ao carregar a grade de treinos.</div>"; 
+                }
+            }
+        }
+
+        async function buscarCurriculoAluno() {
+            const divG = document.getElementById('timeline-graduacoes'); 
+            const divC = document.getElementById('lista-competicoes'); 
+            const divStatusFaixa = document.getElementById('status-faixa-atual');
+            const divCheckins = document.getElementById('lista-historico-checkins');
+            const numCheckinsMes = document.getElementById('contador-checkins-mes');
+
+            if (divG) divG.innerHTML = "<p class='text-xs text-slate-500 italic text-center'>Buscando linha do tempo...</p>"; 
+            if (divC) divC.innerHTML = "<p class='text-xs text-slate-500 italic text-center'>Buscando medalhas...</p>";
+            if (divCheckins) divCheckins.innerHTML = "<p class='text-xs text-slate-500 italic text-center'>Buscando assiduidade...</p>";
+
+            try {
+                const qGrad = query(collection(db, "graduacoes"), where("equipe_id", "==", alunoLogado.equipe_id), where("aluno_id", "==", alunoLogado.id));
+                const qComp = query(collection(db, "competicoes"), where("equipe_id", "==", alunoLogado.equipe_id), where("aluno_id", "==", alunoLogado.id));
+                const qCheck = query(collection(db, "checkins"), where("aluno_id", "==", alunoLogado.id));
+                
+                const [snapGrad, snapComp, snapCheck] = await Promise.all([getDocs(qGrad), getDocs(qComp), getDocs(qCheck)]);
+                
+                let gradCache = []; snapGrad.forEach(doc => gradCache.push(doc.data()));
+                let compCache = []; snapComp.forEach(doc => compCache.push(doc.data()));
+                let checkCache = []; snapCheck.forEach(doc => checkCache.push(doc.data()));
+
+                const getTempoOrdenacao = (val) => { if (!val) return 0; if (typeof val.toDate === 'function') return val.toDate().getTime(); if (val.seconds) return val.seconds * 1000; const d = new Date(val); return isNaN(d.getTime()) ? 0 : d.getTime(); };
+                gradCache.sort((a, b) => getTempoOrdenacao(b.data) - getTempoOrdenacao(a.data));
+                compCache.sort((a, b) => getTempoOrdenacao(b.data) - getTempoOrdenacao(a.data));
+                checkCache.sort((a, b) => getTempoOrdenacao(b.timestamp) - getTempoOrdenacao(a.timestamp));
+
+                checkinsGlobalCache = checkCache;
+
+                const formatarDataBR = (dataStr) => {
+                    if(!dataStr) return "--";
+                    if(typeof dataStr === 'string' && dataStr.includes('-')) { const p = dataStr.split('-'); if(p.length >= 3) return `${p[2]}/${p[1]}/${p[0]}`; }
+                    if(dataStr && typeof dataStr.toDate === 'function') { return dataStr.toDate().toLocaleDateString('pt-BR'); }
+                    return String(dataStr);
+                };
+
+                if (divCheckins && numCheckinsMes) {
+                    filtrarCheckins();
+                }
+
+                if(gradCache.length > 0) {
+                    const atual = gradCache[0];
+                    if(divStatusFaixa) divStatusFaixa.classList.remove('hidden');
+                    if(document.getElementById('nome-faixa-atual')) document.getElementById('nome-faixa-atual').innerText = `${atual.faixa} - ${atual.grau || 'Sem grau'}`;
+                    if(document.getElementById('cor-faixa-atual-badge')) document.getElementById('cor-faixa-atual-badge').style.background = getCorFaixaDupla(atual.faixa);
+                    if(document.getElementById('tempo-faixa-atual')) document.getElementById('tempo-faixa-atual').innerText = calcularTempo(getTempoOrdenacao(atual.data));
+                    
+                    if (divG) {
+                        divG.innerHTML = gradCache.map((g, index) => `
+                            <div class="relative pl-6 sm:pl-8 group">
+                                <div class="absolute -left-[9px] top-3 w-4 h-4 rounded-full border-[3px] border-slate-900 shadow-[0_0_10px_rgba(0,0,0,0.8)] group-hover:scale-125 transition-transform duration-300 z-10" style="background: ${getCorFaixaDupla(g.faixa)}"></div>
+                                <div class="bg-slate-800/40 hover:bg-slate-800/80 p-3.5 sm:p-4 rounded-2xl border border-slate-700/40 transition-all duration-300 shadow-sm hover:shadow-md group-hover:-translate-y-1">
+                                    <div class="flex justify-between items-start mb-1.5"><span class="text-[9px] font-black text-cyan-400 uppercase tracking-widest bg-cyan-500/10 px-2 py-0.5 rounded-md border border-cyan-500/20">${formatarDataBR(g.data)}</span>${index === 0 ? '<span class="text-[8px] font-black text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md uppercase tracking-widest border border-emerald-500/20 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.3)]">Atual</span>' : ''}</div>
+                                    <p class="text-xs sm:text-sm font-black text-white uppercase tracking-wide">${g.faixa} <span class="text-slate-400 text-[10px] sm:text-xs font-medium normal-case tracking-normal ml-1">• ${g.grau || 'Sem grau'}</span></p>
+                                </div>
+                            </div>`).join('');
+                    }
+                } else { if(divStatusFaixa) divStatusFaixa.classList.add('hidden'); if(divG) divG.innerHTML = "<p class='text-xs text-slate-500 italic text-center'>Nenhum registro encontrado.</p>"; }
+
+                if(compCache.length > 0 && divC) {
+                    divC.innerHTML = compCache.map(c => {
+                        const col = (c.colocacao || "").toLowerCase(); let med = "🥋"; let textCol = "text-slate-400"; let borderGlow = "border-slate-700/50"; let bgGlow = "bg-slate-900";
+                        if(col.includes("1º") || col.includes("ouro")) { med="🥇"; textCol="text-yellow-400"; borderGlow="border-yellow-500/30"; bgGlow="bg-yellow-500/10"; } 
+                        else if(col.includes("2º") || col.includes("prata")) { med="🥈"; textCol="text-slate-200"; borderGlow="border-slate-300/30"; bgGlow="bg-slate-300/10"; } 
+                        else if(col.includes("3º") || col.includes("bronze")) { med="🥉"; textCol="text-orange-400"; borderGlow="border-orange-500/30"; bgGlow="bg-orange-500/10"; }
+                        
+                        return `<div class="flex items-center gap-3 sm:gap-4 bg-slate-800/40 hover:bg-slate-800/80 p-4 rounded-2xl border border-slate-700/40 transition-all duration-300 group hover:-translate-y-1 shadow-sm hover:shadow-md"><div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center ${bgGlow} ${borderGlow} border shadow-inner shrink-0 group-hover:scale-110 transition-transform duration-300 text-xl sm:text-2xl ${textCol}">${med}</div><div class="flex-1 overflow-hidden"><p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-0.5">${formatarDataBR(c.data)}</p><p class="text-xs sm:text-sm font-black text-white truncate leading-tight">${c.nome_evento}</p><p class="text-[9px] sm:text-[10px] font-medium text-slate-400 mt-0.5 truncate">${c.categoria || 'Geral'} • ${c.peso || '--'}kg</p></div><div class="shrink-0"><span class="text-[9px] sm:text-[10px] font-black ${bgGlow} px-2 py-1.5 sm:px-3 sm:py-2 rounded-lg ${textCol} border ${borderGlow} uppercase tracking-widest flex items-center justify-center text-center shadow-sm">${c.colocacao || 'Part.'}</span></div></div>`;
+                    }).join('');
+                } else if(divC) { divC.innerHTML = "<p class='text-xs text-slate-500 italic text-center'>Nenhum campeonato registrado.</p>"; }
+                
+            } catch (err) {
+                if(divG) divG.innerHTML = `<p class='text-rose-500 text-[10px] text-center p-2 bg-rose-500/10 rounded-lg'>Erro Técnico</p>`;
+                if(divC) divC.innerHTML = `<p class='text-rose-500 text-[10px] text-center p-2 bg-rose-500/10 rounded-lg'>Erro Técnico</p>`;
+            }
+        }
+
+        function calcularTempo(tempoMilissegundos) {
+            if (!tempoMilissegundos) return "--";
+            const d1 = new Date(tempoMilissegundos); const d2 = new Date();
+            let meses = (d2.getFullYear() - d1.getFullYear()) * 12 + (d2.getMonth() - d1.getMonth());
+            if (d2.getDate() < d1.getDate()) meses--;
+            if (meses <= 0) { let dias = Math.floor((d2 - d1) / (1000 * 60 * 60 * 24)); if (dias <= 0) return "Hoje"; return `${dias} dia${dias > 1 ? 's' : ''}`; }
+            const anos = Math.floor(meses / 12); const mRest = meses % 12; let partes = [];
+            if(anos > 0) partes.push(`${anos} ano${anos>1?'s':''}`); if(mRest > 0) partes.push(`${mRest} mês${mRest>1?'es':''}`);
+            return partes.join(' e ');
+        }
 
         const sessaoSalva = localStorage.getItem('bjj_aluno_auth'); if(sessaoSalva) { alunoLogado = JSON.parse(sessaoSalva); iniciarPortal(); }
-    </script>
 
-<script>
-        let deferredPrompt;
-        
-        // 1. Deteta se é um iPhone/iPad
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-        // Deteta se a App já está instalada no iOS (para não chatear o utilizador)
-        const isIosInstalled = window.navigator.standalone === true;
-
-        // Regista o Service Worker
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').then(() => {
-                    console.log('ServiceWorker registado com sucesso!');
-                }).catch((err) => console.log('Erro no ServiceWorker: ', err));
-            });
-        }
-
-        // Gatilho Automático para ANDROID
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault(); 
-            deferredPrompt = e; 
-            mostrarBannerPwa();
-        });
-
-        // Gatilho Forçado para IPHONE (Já que a Apple bloqueia o aviso acima)
-        if (isIOS && !isIosInstalled) {
-            mostrarBannerPwa();
-        }
-
-        function mostrarBannerPwa() {
-            // Só mostra se estiver na tela de login ou portal
-            if(document.getElementById('tela-login').classList.contains('flex') || document.getElementById('tela-portal').classList.contains('flex')) {
-                setTimeout(() => {
-                    document.getElementById('pwa-install-banner').classList.remove('translate-y-full');
-                }, 3000); // Aparece após 3 segundos
-            }
-        }
-
-        window.fecharPwaBanner = function() {
-            document.getElementById('pwa-install-banner').classList.add('translate-y-full');
-        };
-
-        window.instalarPwa = async function() {
-            fecharPwaBanner(); 
-            
-            if (deferredPrompt) {
-                // Fluxo ANDROID: Mostra a janela de instalação nativa do Google
-                deferredPrompt.prompt(); 
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') console.log('Aluno instalou a App (Android).');
-                deferredPrompt = null;
-                
-            } else if (isIOS) {
-                // Fluxo IPHONE: Mostra as instruções de como instalar
-                alert("📲 Para instalar no iPhone (iOS):\n\n1. Toque no ícone de Partilhar (o quadrado com uma seta para cima, na barra inferior do Safari).\n\n2. Role um pouco para baixo e selecione 'Adicionar ao Ecrã Principal'.\n\n3. Confirme e pronto!");
-            }
-        };
-
-        window.addEventListener('appinstalled', () => {
-            console.log('App instalada com sucesso.');
-        });
     </script>
 </body>
 </html>

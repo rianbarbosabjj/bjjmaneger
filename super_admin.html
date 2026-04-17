@@ -17,7 +17,6 @@
         .custom-scroll::-webkit-scrollbar { width: 4px; }
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #475569; }
         
         .status-blink { animation: blink 2s infinite; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
@@ -32,7 +31,6 @@
             <div class="p-6 border-b border-slate-800 flex flex-col items-center justify-center">
                 <img src="logo_bjj_maneger.png" alt="Logo" class="h-16 w-auto mb-3 filter drop-shadow-[0_0_8px_rgba(244,63,94,0.5)]">
                 <h1 class="text-xs font-black tracking-widest uppercase text-white">SaaS Master</h1>
-                <p class="text-[9px] text-rose-500 font-bold uppercase tracking-widest mt-1">Sala de Comando</p>
             </div>
             <nav class="p-4 space-y-2">
                 <button onclick="mudarAbaMaster('academias')" id="menu-academias" class="w-full flex items-center gap-3 px-4 py-3 bg-rose-500/10 text-rose-500 rounded-xl font-bold text-xs uppercase tracking-widest border border-rose-500/20 transition-all">
@@ -54,9 +52,8 @@
         </div>
         <div class="p-4 border-t border-slate-800">
             <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center">
-                <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Logado como CEO</p>
                 <p id="master-email" class="text-[10px] font-black text-white truncate mb-3 uppercase tracking-tighter">carregando...</p>
-                <button onclick="sairDoMaster()" class="w-full py-2 bg-rose-600 hover:bg-rose-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition-colors">Encerrar Sessão</button>
+                <button onclick="sairDoMaster()" class="w-full py-2 bg-rose-600 hover:bg-rose-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition-colors">Sair</button>
             </div>
         </div>
     </aside>
@@ -246,7 +243,7 @@
                     <p class="text-sm text-slate-400 mt-1 font-medium">Defina preços e use as caixas de seleção para montar o que cada plano oferece.</p>
                 </div>
                 <button onclick="salvarConfigPlanos()" class="bg-emerald-500 hover:bg-emerald-400 text-white font-black py-3 px-8 rounded-xl shadow-lg shadow-emerald-500/20 text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2">
-                    <span>💾</span> Publicar Planos
+                    <span>💾</span> Publicar Planos no Site
                 </button>
             </div>
 
@@ -569,7 +566,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, collection, getDocs, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, getDocs, updateDoc, deleteDoc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
 
         const firebaseConfig = {
@@ -600,7 +597,6 @@
             const toast = document.createElement('div');
             const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'info' ? 'bg-blue-500' : 'bg-rose-500');
             const icon = type === 'success' ? '✅' : (type === 'info' ? 'ℹ️' : '🚨');
-            
             toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transform transition-all duration-300 translate-x-full opacity-0 flex items-center gap-3 font-bold text-sm z-[9999]`;
             toast.innerHTML = `<span class="text-xl">${icon}</span> <span class="flex-1">${message}</span>`;
             container.appendChild(toast);
@@ -608,120 +604,18 @@
             setTimeout(() => { toast.classList.add('translate-x-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4000);
         }
 
-        // ==========================================
-        // GESTÃO DA CARTEIRA MASTER ASAAS
-        // ==========================================
-        window.carregarSaldoMaster = async function() {
-            try {
-                document.getElementById('wallet-saldo').innerText = "⏳...";
-                document.getElementById('wallet-saldo-pendente').innerText = "Aguarde...";
-                const res = await consultarSaldoMaster({ uid: masterUid });
-                if(res.data.success) {
-                    const saldoReal = Number(res.data.balance) || 0;
-                    const saldoEst = Number(res.data.estimatedBalance) || 0;
-                    document.getElementById('wallet-saldo').innerText = `R$ ${saldoReal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-                    document.getElementById('wallet-saldo-pendente').innerText = `A liberar: R$ ${saldoEst.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-                } else {
-                    document.getElementById('wallet-saldo').innerText = "Erro!";
-                    document.getElementById('wallet-saldo-pendente').innerText = res.data.error; 
-                }
-            } catch(e) {
-                document.getElementById('wallet-saldo').innerText = "Falha";
-                document.getElementById('wallet-saldo-pendente').innerText = e.message;
-            }
-        }
-
-        window.abrirModalPixMaster = function() {
-            document.getElementById('pix-master-valor').value = '';
-            document.getElementById('pix-master-chave').value = '';
-            document.getElementById('modal-pix-master').classList.replace('hidden', 'flex');
-        }
-        
-        window.fecharModalPixMaster = function() {
-            document.getElementById('modal-pix-master').classList.replace('flex', 'hidden');
-        }
-        
-        window.solicitarPixMaster = async function() {
-            const valor = parseFloat(document.getElementById('pix-master-valor').value);
-            const tipo = document.getElementById('pix-master-tipo').value;
-            const chave = document.getElementById('pix-master-chave').value.trim();
-
-            if(!valor || valor <= 0) return showToast("Valor inválido.", "error");
-            if(!chave) return showToast("Insira a chave PIX de destino.", "error");
-
-            const btn = document.getElementById('btn-sacar-master');
-            const txtOriginal = btn.innerHTML;
-            btn.innerHTML = "⏳ Solicitando...";
-            btn.disabled = true;
-
-            try {
-                const res = await solicitarSaqueMaster({ uid: masterUid, valor: valor, chavePix: chave, tipoChave: tipo });
-                if(res.data.success) {
-                    showToast("PIX solicitado com sucesso!", "success");
-                    fecharModalPixMaster();
-                    carregarSaldoMaster(); 
-                } else {
-                    showToast("Erro: " + res.data.error, "error");
-                }
-            } catch(e) {
-                showToast("Erro ao processar transferência.", "error");
-            } finally {
-                btn.innerHTML = txtOriginal;
-                btn.disabled = false;
-            }
-        }
-
-        // ==========================================
-        // SISTEMA DE NAVEGAÇÃO ENTRE ABAS
-        // ==========================================
-        window.mudarAbaMaster = function(abaID) {
-            document.getElementById('aba-academias').classList.add('hidden');
-            document.getElementById('aba-comunicacao').classList.add('hidden');
-            document.getElementById('aba-faturamento').classList.add('hidden');
-            document.getElementById('aba-planos').classList.add('hidden');
-            document.getElementById('aba-cupons').classList.add('hidden'); 
-            
-            document.getElementById('aba-' + abaID).classList.remove('hidden');
-            document.getElementById('aba-' + abaID).classList.add('block');
-
-            const menus = ['academias', 'comunicacao', 'faturamento', 'planos', 'cupons'];
-            menus.forEach(m => {
-                const btn = document.getElementById('menu-' + m);
-                btn.className = "w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-xl font-bold text-xs uppercase tracking-widest transition-all border border-transparent";
-            });
-
-            const btnAtivo = document.getElementById('menu-' + abaID);
-            btnAtivo.className = "w-full flex items-center gap-3 px-4 py-3 bg-rose-500/10 text-rose-500 rounded-xl font-bold text-xs uppercase tracking-widest border border-rose-500/20 transition-all";
-
-            if(abaID === 'faturamento') {
-                renderizarFaturamento();
-                carregarSaldoMaster();
-            }
-            if(abaID === 'planos') carregarConfigPlanos(); 
-            if(abaID === 'cupons') carregarCupons(); 
-            if(abaID === 'comunicacao') carregarAvisoGlobal();
-        }
-
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                try {
-                    const superSnap = await getDoc(doc(db, "super_admins", user.uid));
-                    if (!superSnap.exists()) {
-                        alert("Acesso Negado.");
-                        signOut(auth).then(() => window.location.href = "index.html");
-                        return;
-                    }
+                const superSnap = await getDoc(doc(db, "super_admins", user.uid));
+                if (superSnap.exists()) {
                     masterUid = user.uid;
                     document.getElementById('master-email').innerText = user.email;
-                    sessionStorage.removeItem('admin_impersonate');
                     carregarImperio();
                     carregarAvisoGlobal();
-                } catch (error) {
-                    showToast("Erro ao verificar credenciais.", "error");
+                } else {
+                    signOut(auth).then(() => window.location.href = "index.html");
                 }
-            } else {
-                window.location.href = "index.html";
-            }
+            } else window.location.href = "index.html";
         });
 
         // ==========================================
@@ -753,21 +647,22 @@
         }
 
         // ==========================================
-        // 🏥 DADOS GERAIS DE EQUIPES E SAÚDE
+        // 🏥 MONITOR DE SAÚDE E ACADEMIAS
         // ==========================================
         window.carregarImperio = async function() {
-            document.getElementById('tabela-equipes').innerHTML = '<tr><td colspan="5" class="text-center p-8 text-slate-500 italic text-xs">Atualizando dados...</td></tr>';
+            document.getElementById('tabela-equipes').innerHTML = '<tr><td colspan="5" class="text-center p-8 text-slate-500 italic text-xs">Carregando império...</td></tr>';
             try {
                 const snapEquipes = await getDocs(collection(db, "equipes"));
                 equipesCache = snapEquipes.docs.map(d => ({ id: d.id, ...d.data() }));
 
                 const snapAlunos = await getDocs(collection(db, "alunos"));
-                const alunosData = snapAlunos.docs.map(d => d.data());
-                totalAlunosGeral = alunosData.filter(a => a.status === 'ATIVO').length;
+                const todosAlunos = snapAlunos.docs.map(d => d.data());
+                
+                totalAlunosGeral = todosAlunos.filter(a => a.status === 'ATIVO').length;
 
                 let inativas = 0; let leads = 0;
                 equipesCache.forEach(eq => {
-                    eq.total_alunos = alunosData.filter(a => a.equipe_id === eq.id && a.status === 'ATIVO').length;
+                    eq.total_alunos = todosAlunos.filter(a => a.equipe_id === eq.id && a.status === 'ATIVO').length;
                     if(eq.total_alunos === 0 && eq.status_plano !== 'TESTE') inativas++;
                     if(eq.status_plano === 'TESTE') leads++;
                 });
@@ -777,31 +672,16 @@
                 document.getElementById('dash-inativas').innerText = inativas;
                 document.getElementById('dash-leads').innerText = leads;
 
-                atualizarStatsFaturamento();
                 renderizarEquipes();
                 
-                if(!document.getElementById('aba-faturamento').classList.contains('hidden')) renderizarFaturamento();
+                if(!document.getElementById('aba-faturamento').classList.contains('hidden')) {
+                    renderizarFaturamento();
+                }
 
-            } catch (error) {
+            } catch (e) { 
+                console.log(e); 
                 showToast("Erro ao carregar banco de dados.", "error");
             }
-        }
-
-        function atualizarStatsFaturamento() {
-            let mrrCalculado = 0;
-            equipesCache.forEach(eq => {
-                const isIsento = (eq.isento === true || eq.isento === "true" || String(eq.isento) === "true");
-                if(eq.status_plano !== 'TESTE' && eq.status_plano !== 'BLOQUEADO' && !isIsento) {
-                    let valorBase = parseFloat(eq.valor_plano);
-                    if (isNaN(valorBase)) valorBase = 49.90; 
-                    
-                    let desconto = parseFloat(eq.desconto_plano);
-                    if (isNaN(desconto)) desconto = 0;
-                    
-                    mrrCalculado += valorBase * (1 - (desconto / 100));
-                }
-            });
-            document.getElementById('dash-mrr').innerText = `R$ ${mrrCalculado.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
         }
 
         window.renderizarEquipes = function() {
@@ -809,26 +689,14 @@
             const tabela = document.getElementById('tabela-equipes');
             tabela.innerHTML = '';
 
-            let filtradas = equipesCache;
-            if (termo) {
-                filtradas = equipesCache.filter(eq => 
-                    (eq.nome_equipe && eq.nome_equipe.toLowerCase().includes(termo)) ||
-                    (eq.responsavel && eq.responsavel.toLowerCase().includes(termo)) ||
-                    (eq.email_responsavel && eq.email_responsavel.toLowerCase().includes(termo))
-                );
-            }
-            filtradas.sort((a,b) => (a.nome_equipe || "").localeCompare(b.nome_equipe || ""));
-
-            if (filtradas.length === 0) {
-                tabela.innerHTML = `<tr><td colspan="5" class="text-center p-8 text-slate-500 italic text-xs">Nenhuma equipe encontrada.</td></tr>`;
-                return;
-            }
+            const filtradas = equipesCache.filter(eq => 
+                (eq.nome_equipe || "").toLowerCase().includes(termo) || 
+                (eq.responsavel_nome || "").toLowerCase().includes(termo) ||
+                (eq.email_responsavel || "").toLowerCase().includes(termo)
+            );
 
             filtradas.forEach(eq => {
-                const nomeEquipe = (eq.nome_equipe || "Equipe Sem Nome").toUpperCase();
-                
-                const dataCad = eq.data_cadastro ? new Date(eq.data_cadastro) : new Date();
-                const diasDeVida = Math.floor((new Date() - dataCad) / (1000 * 60 * 60 * 24));
+                const diasDeVida = Math.floor((new Date() - new Date(eq.data_cadastro)) / (1000 * 60 * 60 * 24));
                 
                 let saudeHTML = "";
                 if(eq.total_alunos > 10) saudeHTML = `<span class="text-emerald-400 font-bold text-xs">💪 Saudável (${eq.total_alunos})</span>`;
@@ -853,36 +721,36 @@
                 else if(eq.status_asaas === 'PENDENTE') asaasBadge = `<span class="text-amber-400 font-bold text-[10px] flex items-center justify-center gap-1">🟡 Pendente</span>`;
 
                 const tr = document.createElement('tr');
-                tr.className = "border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors";
-                
+                tr.className = "border-b border-slate-800/50 hover:bg-slate-800/40 transition-colors";
                 tr.innerHTML = `
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-3">
                             <div class="h-10 w-10 bg-slate-800 rounded-full flex items-center justify-center text-slate-400 font-black text-lg overflow-hidden border border-slate-700 shrink-0">
-                                ${eq.url_logo ? `<img src="${eq.url_logo}" class="h-full w-full object-cover">` : nomeEquipe.charAt(0)}
+                                ${eq.url_logo ? `<img src="${eq.url_logo}" class="h-full w-full object-cover">` : (eq.nome_equipe ? eq.nome_equipe.charAt(0) : 'S')}
                             </div>
                             <div>
-                                <p class="font-black text-white text-xs tracking-wide">${nomeEquipe}</p>
-                                <p class="text-[9px] text-slate-500 uppercase mt-0.5 tracking-widest truncate w-40">Criada há ${diasDeVida} dias</p>
+                                <p class="font-black text-white uppercase text-xs">${eq.nome_equipe || 'SEM NOME'}</p>
+                                <p class="text-[9px] text-slate-500 uppercase">Criada há ${diasDeVida} dias</p>
                             </div>
                         </div>
                     </td>
-                    <td class="px-6 py-4 text-center">
-                        ${saudeHTML}
-                    </td>
+                    <td class="px-6 py-4 text-center">${saudeHTML}</td>
                     <td class="px-6 py-4 text-center">${planoBadge}</td>
                     <td class="px-6 py-4 text-center">${asaasBadge}</td>
-                    <td class="px-6 py-4 flex items-center justify-center gap-2">
-                        <button onclick="abrirModalEditarEquipe('${eq.id}')" class="bg-slate-700 hover:bg-slate-600 text-white font-black py-2 px-3 rounded-lg text-[10px] uppercase tracking-widest transition-all shadow-md flex items-center gap-1" title="Gerir Licença"><span>⚙️</span></button>
-                        <button onclick="acessarComoEquipe('${eq.id}')" class="bg-cyan-600 hover:bg-cyan-500 text-white font-black py-2 px-3 rounded-lg text-[10px] uppercase tracking-widest transition-all shadow-md flex items-center gap-1" title="Entrar no Painel do Cliente"><span>👁️</span></button>
-                        <a href="https://wa.me/55${eq.telefone ? eq.telefone.replace(/\D/g,'') : ''}" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2 px-3 rounded-lg text-[10px] uppercase tracking-widest transition-all shadow-md flex items-center gap-1" title="Chamar no WhatsApp"><span>💬</span></a>
-                        <button onclick="excluirEquipe('${eq.id}')" class="bg-rose-600 hover:bg-rose-500 text-white font-black py-2 px-3 rounded-lg text-[10px] uppercase tracking-widest transition-all shadow-md flex items-center gap-1" title="Apagar Academia"><span>🗑️</span></button>
+                    <td class="px-6 py-4 flex gap-2 justify-center">
+                        <button onclick="abrirModalEditarEquipe('${eq.id}')" class="bg-slate-800 p-2 rounded hover:bg-slate-700">⚙️</button>
+                        <button onclick="acessarComoEquipe('${eq.id}')" class="bg-cyan-600 p-2 rounded hover:bg-cyan-500">👁️</button>
+                        <a href="https://wa.me/55${eq.telefone ? eq.telefone.replace(/\D/g,'') : ''}" target="_blank" class="bg-emerald-600 p-2 rounded hover:bg-emerald-500">💬</a>
+                        <button onclick="excluirEquipe('${eq.id}')" class="bg-rose-600 p-2 rounded hover:bg-rose-500">🗑️</button>
                     </td>
                 `;
                 tabela.appendChild(tr);
             });
         }
 
+        // ==========================================
+        // 💳 LÓGICA DE FATURAMENTO E FINANCEIRO
+        // ==========================================
         window.renderizarFaturamento = function() {
             const tabela = document.getElementById('tabela-faturamento');
             tabela.innerHTML = '';
@@ -947,15 +815,39 @@
 
             document.getElementById('fat-mrr-ativo').innerText = `R$ ${mrrAtivo.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
             document.getElementById('fat-mrr-perdido').innerText = `R$ ${mrrPerdido.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-            document.getElementById('fat-qtd-ativos').innerText = `${qtdAtivos} assinaturas ativas pagantes`;
-            document.getElementById('fat-qtd-bloqueados').innerText = `${qtdBloqueados} academias bloqueadas`;
-
+            
             let ticketMedio = qtdAtivos > 0 ? (mrrAtivo / qtdAtivos) : 0;
             document.getElementById('fat-ticket-medio').innerText = `R$ ${ticketMedio.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
         }
 
+        window.abrirModalPixMaster = () => document.getElementById('modal-pix-master').classList.replace('hidden', 'flex');
+        window.fecharModalPixMaster = () => document.getElementById('modal-pix-master').classList.replace('flex', 'hidden');
+
+        window.mudarAbaMaster = function(abaID) {
+            document.querySelectorAll('[id^="aba-"]').forEach(a => a.classList.add('hidden'));
+            document.getElementById('aba-' + abaID).classList.remove('hidden');
+            
+            document.querySelectorAll('[id^="menu-"]').forEach(m => m.classList.remove('bg-rose-500/10', 'text-rose-500'));
+            document.getElementById('menu-' + abaID).classList.add('bg-rose-500/10', 'text-rose-500');
+            
+            if(abaID === 'faturamento') {
+                renderizarFaturamento();
+                carregarSaldoMaster();
+            }
+            if(abaID === 'planos') carregarConfigPlanos();
+            if(abaID === 'cupons') carregarCupons();
+            if(abaID === 'comunicacao') carregarAvisoGlobal();
+        }
+
+        window.acessarComoEquipe = function(id) {
+            sessionStorage.setItem('admin_impersonate', id);
+            window.location.href = "dashboard.html";
+        }
+
+        window.sairDoMaster = () => signOut(auth).then(() => window.location.href = "index.html");
+
         // ==========================================
-        // GESTÃO DOS PLANOS DO SITE
+        // ⚙️ GESTÃO DE PLANOS (4 COLUNAS) E CUPONS
         // ==========================================
         const PLANOS_DOC_REF = doc(db, "sistema", "config_planos");
         const TODAS_FUNCIONALIDADES = [
@@ -965,6 +857,27 @@
             "Emissão de Certificados Profissionais", "Automação Asaas (PIX/Cartão)",
             "Vitrine Virtual (Loja Online)", "Check-in com GPS Ativo", "Baixa Automática de Faturas"
         ];
+
+        window.carregarConfigPlanos = async function() {
+            try {
+                const snap = await getDoc(PLANOS_DOC_REF);
+                if(snap.exists()) {
+                    const d = snap.data();
+                    ['p1','p2','p3','p4'].forEach(p => {
+                        if(d[p]) {
+                            document.getElementById(p+'-nome').value = d[p].nome || "";
+                            document.getElementById(p+'-preco-original').value = d[p].preco_original || "";
+                            document.getElementById(p+'-preco').value = d[p].preco || "";
+                            document.getElementById(p+'-desc').value = d[p].desc || "";
+                            
+                            let color = 'rose';
+                            if(p==='p2') color='cyan'; if(p==='p3') color='purple'; if(p==='p4') color='amber';
+                            renderizarCheckboxes(p, d[p].features, color);
+                        }
+                    });
+                }
+            } catch(e) { console.log(e); }
+        }
 
         function renderizarCheckboxes(planId, savedText, accentColor) {
             const container = document.getElementById(`listbox-${planId}`);
@@ -987,121 +900,32 @@
             });
         }
 
-        function getFeaturesSelecionadas(planId) {
-            let result = [];
-            TODAS_FUNCIONALIDADES.forEach((feat, index) => {
-                const chk = document.getElementById(`chk-${planId}-${index}`);
-                if(chk && chk.checked) result.push(`✓ ${feat}`);
-                else result.push(`❌ ${feat}`);
-            });
-            return result.join('\n');
-        }
-
-        function preencherCamposPlanos(dados) {
-            if(document.getElementById('p1-nome') && dados.p1) {
-                document.getElementById('p1-nome').value = dados.p1.nome || "";
-                document.getElementById('p1-preco-original').value = dados.p1.preco_original || '';
-                document.getElementById('p1-preco').value = dados.p1.preco || "";
-                document.getElementById('p1-desc').value = dados.p1.desc || "";
-                renderizarCheckboxes('p1', dados.p1.features, 'rose');
-            }
-
-            if(document.getElementById('p2-nome') && dados.p2) {
-                document.getElementById('p2-nome').value = dados.p2.nome || "";
-                document.getElementById('p2-preco-original').value = dados.p2.preco_original || '';
-                document.getElementById('p2-preco').value = dados.p2.preco || "";
-                document.getElementById('p2-desc').value = dados.p2.desc || "";
-                renderizarCheckboxes('p2', dados.p2.features, 'cyan');
-            }
-
-            if(document.getElementById('p3-nome') && dados.p3) {
-                document.getElementById('p3-nome').value = dados.p3.nome || "";
-                document.getElementById('p3-preco-original').value = dados.p3.preco_original || '';
-                document.getElementById('p3-preco').value = dados.p3.preco || "";
-                document.getElementById('p3-desc').value = dados.p3.desc || "";
-                renderizarCheckboxes('p3', dados.p3.features, 'purple');
-            }
-
-            if(document.getElementById('p4-nome') && dados.p4) {
-                document.getElementById('p4-nome').value = dados.p4.nome || "";
-                document.getElementById('p4-preco-original').value = dados.p4.preco_original || '';
-                document.getElementById('p4-preco').value = dados.p4.preco || "";
-                document.getElementById('p4-desc').value = dados.p4.desc || "";
-                renderizarCheckboxes('p4', dados.p4.features, 'amber');
-            }
-        }
-
-        window.carregarConfigPlanos = async function() {
-            let dadosPadrão = {
-                p1: { nome: "Plano Tatame", preco_original: 0, preco: 0, desc: "Para validar o sistema e organizar o básico.", features: "✓ Cadastro até 10 alunos\n✓ Gestão de Turmas e Frequência\n✓ Link de Auto-Cadastro\n❌ Portal do Aluno Completo (App)\n❌ Carteirinhas Digitais (QR Code)" },
-                p2: { nome: "Plano Black Belt", preco_original: 79.90, preco: 39.90, desc: "Acesso aos recursos premium de gestão.", features: "✓ Gestão de Turmas e Frequência\n✓ Link de Auto-Cadastro\n✓ Portal do Aluno Completo (App)\n✓ Relatórios e Frequência em PDF\n❌ Carteirinhas Digitais (QR Code)\n❌ Anamnese e Termos LGPD Eletrônicos\n❌ Emissão de Certificados Profissionais\n❌ Automação Asaas (PIX/Cartão)" },
-                p3: { nome: "Plano Master", preco_original: 99.90, preco: 59.90, desc: "Experiência digital premium completa.", features: "✓ Gestão de Turmas e Frequência\n✓ Link de Auto-Cadastro\n✓ Portal do Aluno Completo (App)\n✓ Relatórios e Frequência em PDF\n✓ Carteirinhas Digitais (QR Code)\n✓ Anamnese e Termos LGPD Eletrônicos\n✓ Emissão de Certificados Profissionais\n❌ Automação Asaas (PIX/Cartão)" },
-                p4: { nome: "Plano Elite", preco_original: 149.90, preco: 89.90, desc: "Automação total para grandes academias.", features: "✓ Gestão de Turmas e Frequência\n✓ Link de Auto-Cadastro\n✓ Portal do Aluno Completo (App)\n✓ Relatórios e Frequência em PDF\n✓ Carteirinhas Digitais (QR Code)\n✓ Anamnese e Termos LGPD Eletrônicos\n✓ Emissão de Certificados Profissionais\n✓ Automação Asaas (PIX/Cartão)\n✓ Vitrine Virtual (Loja Online)\n✓ Check-in com GPS Ativo\n✓ Baixa Automática de Faturas" }
-            };
-
-            preencherCamposPlanos(dadosPadrão);
-
-            try {
-                const docSnap = await getDoc(PLANOS_DOC_REF);
-                if (docSnap.exists()) {
-                    let dadosBando = docSnap.data();
-                    preencherCamposPlanos(dadosBando);
-                }
-            } catch (error) {
-                console.error("Aviso de leitura de Planos:", error);
-            }
-        }
-
         window.salvarConfigPlanos = async function() {
-            try {
-                const btn = document.querySelector('button[onclick="salvarConfigPlanos()"]');
-                const btnTxt = btn.innerHTML;
-                btn.innerHTML = "⏳ Salvando...";
-                btn.disabled = true;
+            const btn = document.querySelector('button[onclick="salvarConfigPlanos()"]');
+            const txtOrig = btn.innerHTML;
+            btn.innerHTML = "⏳ Salvando..."; btn.disabled = true;
 
-                const dadosParaSalvar = {
-                    p1: {
-                        nome: document.getElementById('p1-nome').value,
-                        preco_original: parseFloat(document.getElementById('p1-preco-original').value) || 0,
-                        preco: parseFloat(document.getElementById('p1-preco').value) || 0,
-                        desc: document.getElementById('p1-desc').value,
-                        features: getFeaturesSelecionadas('p1')
-                    },
-                    p2: {
-                        nome: document.getElementById('p2-nome').value,
-                        preco_original: parseFloat(document.getElementById('p2-preco-original').value) || 0,
-                        preco: parseFloat(document.getElementById('p2-preco').value) || 0,
-                        desc: document.getElementById('p2-desc').value,
-                        features: getFeaturesSelecionadas('p2')
-                    },
-                    p3: {
-                        nome: document.getElementById('p3-nome').value,
-                        preco_original: parseFloat(document.getElementById('p3-preco-original').value) || 0,
-                        preco: parseFloat(document.getElementById('p3-preco').value) || 0,
-                        desc: document.getElementById('p3-desc').value,
-                        features: getFeaturesSelecionadas('p3')
-                    },
-                    p4: {
-                        nome: document.getElementById('p4-nome').value,
-                        preco_original: parseFloat(document.getElementById('p4-preco-original').value) || 0,
-                        preco: parseFloat(document.getElementById('p4-preco').value) || 0,
-                        desc: document.getElementById('p4-desc').value,
-                        features: getFeaturesSelecionadas('p4')
-                    }
+            const dados = {};
+            ['p1','p2','p3','p4'].forEach(p => {
+                let feats = [];
+                TODAS_FUNCIONALIDADES.forEach((f, i) => {
+                    const chk = document.getElementById(`chk-${p}-${i}`);
+                    feats.push(`${chk.checked ? '✓' : '❌'} ${f}`);
+                });
+                dados[p] = {
+                    nome: document.getElementById(p+'-nome').value,
+                    preco_original: parseFloat(document.getElementById(p+'-preco-original').value) || 0,
+                    preco: parseFloat(document.getElementById(p+'-preco').value) || 0,
+                    desc: document.getElementById(p+'-desc').value,
+                    features: feats.join('\n')
                 };
+            });
 
-                await setDoc(PLANOS_DOC_REF, dadosParaSalvar);
-                showToast("Planos publicados com sucesso!", "success");
-
-                btn.innerHTML = btnTxt;
-                btn.disabled = false;
-
-            } catch (error) {
-                showToast("Erro ao publicar os planos: " + error.message, "error");
-                const btn = document.querySelector('button[onclick="salvarConfigPlanos()"]');
-                btn.innerHTML = "<span>💾</span> Publicar Planos no Site";
-                btn.disabled = false;
-            }
+            try {
+                await setDoc(PLANOS_DOC_REF, dados);
+                showToast("Planos salvos!", "success");
+            } catch(e) { showToast("Erro ao salvar planos.", "error"); }
+            finally { btn.innerHTML = txtOrig; btn.disabled = false; }
         }
 
         window.abrirModalEditarEquipe = function(id) {
@@ -1115,55 +939,30 @@
             document.getElementById('edit-isento').checked = (eq.isento === true || String(eq.isento) === "true");
             document.getElementById('modal-editar-equipe').classList.replace('hidden', 'flex');
         }
-
-        window.fecharModalEditar = function() {
-            equipeEditandoId = null;
-            document.getElementById('modal-editar-equipe').classList.replace('flex', 'hidden');
-        }
+        window.fecharModalEditar = () => document.getElementById('modal-editar-equipe').classList.replace('flex', 'hidden');
 
         window.salvarEdicaoEquipe = async function() {
             if(!equipeEditandoId) return;
             const btn = document.getElementById('btn-salvar-edicao');
-            const txt = btn.innerHTML;
-            btn.innerHTML = "⏳ Salvando...";
-            btn.disabled = true;
-
+            const txt = btn.innerHTML; btn.innerHTML = "⏳..."; btn.disabled = true;
             try {
-                const dadosUpdate = {
+                await updateDoc(doc(db, "equipes", equipeEditandoId), {
                     status_plano: document.getElementById('edit-status-plano').value,
                     valor_plano: parseFloat(document.getElementById('edit-valor-plano').value) || 0,
                     desconto_plano: parseFloat(document.getElementById('edit-desconto').value) || 0,
                     isento: document.getElementById('edit-isento').checked
-                };
-
-                await updateDoc(doc(db, "equipes", equipeEditandoId), dadosUpdate);
-                showToast("Licença atualizada com sucesso!", "success");
-                fecharModalEditar();
-                carregarImperio(); 
-
-            } catch(e) {
-                showToast("Erro ao atualizar a equipe.", "error");
-            } finally {
-                btn.innerHTML = txt;
-                btn.disabled = false;
-            }
+                });
+                showToast("Licença atualizada!", "success");
+                fecharModalEditar(); carregarImperio(); 
+            } catch(e) { showToast("Erro ao atualizar.", "error"); } 
+            finally { btn.innerHTML = txt; btn.disabled = false; }
         }
 
         window.excluirEquipe = async function(id) {
-            const confirmacao = confirm("⚠️ ATENÇÃO: Tem a certeza absoluta que deseja excluir esta Equipe do sistema?");
-            if(!confirmacao) return;
-            try {
-                await deleteDoc(doc(db, "equipes", id));
-                showToast("Equipe excluída permanentemente.", "success");
-                carregarImperio(); 
-            } catch(e) {
-                showToast("Erro ao excluir equipe.", "error");
-            }
+            if(!confirm("⚠️ Excluir esta Equipe permanentemente?")) return;
+            try { await deleteDoc(doc(db, "equipes", id)); showToast("Equipe excluída.", "success"); carregarImperio(); } 
+            catch(e) { showToast("Erro ao excluir.", "error"); }
         }
-
-        // ==========================================
-        // GESTÃO DE CUPONS E PARCEIROS
-        // ==========================================
 
         window.carregarCupons = async function() {
             document.getElementById('tabela-cupons').innerHTML = '<tr><td colspan="6" class="text-center p-8 text-slate-500 italic text-xs">Carregando cupons...</td></tr>';
@@ -1171,160 +970,68 @@
                 const snap = await getDocs(collection(db, "cupons"));
                 cuponsCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 renderizarCupons();
-            } catch(e) {
-                showToast("Erro ao carregar os cupons.", "error");
-                document.getElementById('tabela-cupons').innerHTML = '<tr><td colspan="6" class="text-center p-8 text-rose-500 font-bold text-xs">Erro na leitura do banco.</td></tr>';
-            }
+            } catch(e) { showToast("Erro ao carregar cupons.", "error"); }
         }
 
         window.renderizarCupons = function() {
             const tabela = document.getElementById('tabela-cupons');
             tabela.innerHTML = '';
-
             document.getElementById('kpi-cupons-ativos').innerText = cuponsCache.length;
-            
             if (cuponsCache.length === 0) {
-                tabela.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-slate-500 italic text-xs">Nenhum cupom gerado ainda.</td></tr>`;
-                document.getElementById('kpi-comissoes').innerText = "R$ 0,00";
+                tabela.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-slate-500 italic text-xs">Nenhum cupom gerado.</td></tr>`;
                 return;
             }
-
-            cuponsCache.sort((a, b) => b.data_criacao.localeCompare(a.data_criacao));
-
-            cuponsCache.forEach(cupom => {
-                const desconto = cupom.desconto_perc ? cupom.desconto_perc + '%' : '0%';
-                
-                let tipoBadge = "";
-                if(cupom.limite_uso === 1 && cupom.desconto_perc === 100) {
-                    tipoBadge = `<span class="px-2 py-1 rounded bg-amber-500/20 text-amber-500 text-[9px] font-black uppercase border border-amber-500/30">🎫 GRATUIDADE</span>`;
-                } else if(cupom.limite_uso > 0) {
-                    tipoBadge = `<span class="px-2 py-1 rounded bg-blue-500/20 text-blue-400 text-[9px] font-black uppercase border border-blue-500/30">LIMITADO (${cupom.limite_uso}x)</span>`;
-                } else {
-                    tipoBadge = `<span class="px-2 py-1 rounded bg-emerald-500/20 text-emerald-400 text-[9px] font-black uppercase border border-emerald-500/30">♾️ INFINITO</span>`;
-                }
-                
-                let duracaoBadge = "";
-                if(cupom.duracao === 'PRIMEIRA_MENSALIDADE') {
-                    duracaoBadge = `<span class="px-2 py-1 rounded bg-rose-500/10 text-rose-400 text-[9px] font-black uppercase border border-rose-500/20">🥇 Apenas 1ª Mensalidade</span>`;
-                } else {
-                    duracaoBadge = `<span class="px-2 py-1 rounded bg-slate-800 text-slate-400 text-[9px] font-black uppercase border border-slate-700">♾️ Recorrente (Para Sempre)</span>`;
-                }
-
-                const usos = cupom.vezes_usado || 0;
-                const limite = cupom.limite_uso > 0 ? cupom.limite_uso : '∞';
-                
-                const parceiroStr = cupom.nome_parceiro ? cupom.nome_parceiro : `<span class="text-slate-600">Sem Afiliado</span>`;
-                const comissaoStr = cupom.comissao_perc ? `(${cupom.comissao_perc}% comissão)` : '';
-
+            cuponsCache.sort((a, b) => b.data_criacao.localeCompare(a.data_criacao)).forEach(cupom => {
                 const tr = document.createElement('tr');
-                tr.className = "border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors";
-                
+                tr.className = "border-b border-slate-800/50 hover:bg-slate-800/30";
                 tr.innerHTML = `
-                    <td class="px-6 py-4">
-                        <span class="font-mono text-white text-sm font-black tracking-widest bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-700">${cupom.id}</span>
-                    </td>
-                    <td class="px-6 py-4 text-center">
-                        <span class="text-rose-500 font-black text-lg">-${desconto}</span>
-                    </td>
-                    <td class="px-6 py-4 text-center">
-                        ${duracaoBadge}
-                    </td>
-                    <td class="px-6 py-4 text-center">
-                        <div class="flex flex-col items-center gap-1">
-                            ${tipoBadge}
-                            <span class="text-[9px] text-slate-500 font-bold mt-1">Usos: ${usos} / ${limite}</span>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 text-center">
-                        <p class="text-xs text-indigo-300 font-bold uppercase">${parceiroStr}</p>
-                        <p class="text-[9px] text-slate-500 mt-0.5">${comissaoStr}</p>
-                    </td>
-                    <td class="px-6 py-4 text-center">
-                        <button onclick="excluirCupom('${cupom.id}')" class="text-slate-500 hover:text-rose-500 transition-colors p-2" title="Excluir Cupom">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                        </button>
-                    </td>
+                    <td class="px-6 py-4"><span class="font-mono text-white text-sm font-black bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-700">${cupom.id}</span></td>
+                    <td class="px-6 py-4 text-center"><span class="text-rose-500 font-black text-lg">-${cupom.desconto_perc}%</span></td>
+                    <td class="px-6 py-4 text-center"><span class="text-[9px] text-slate-400 uppercase tracking-widest">${cupom.duracao}</span></td>
+                    <td class="px-6 py-4 text-center"><span class="text-[9px] text-slate-400 uppercase tracking-widest">Usos: ${cupom.vezes_usado || 0} / ${cupom.limite_uso > 0 ? cupom.limite_uso : '∞'}</span></td>
+                    <td class="px-6 py-4 text-center"><p class="text-xs text-indigo-300 font-bold uppercase">${cupom.nome_parceiro || 'Sem Afiliado'}</p></td>
+                    <td class="px-6 py-4 text-center"><button onclick="excluirCupom('${cupom.id}')" class="text-slate-500 hover:text-rose-500">🗑️</button></td>
                 `;
                 tabela.appendChild(tr);
             });
         }
 
         window.abrirModalNovoCupom = function() {
-            document.getElementById('cupom-codigo').value = '';
-            document.getElementById('cupom-desconto').value = '';
-            document.getElementById('cupom-limite').value = '';
-            document.getElementById('cupom-parceiro').value = '';
-            document.getElementById('cupom-comissao').value = '';
-            document.getElementById('cupom-duracao').value = 'RECORRENTE'; 
+            document.getElementById('cupom-codigo').value = ''; document.getElementById('cupom-desconto').value = '';
             document.getElementById('modal-cupom').classList.replace('hidden', 'flex');
         }
-
-        window.fecharModalCupom = function() {
-            document.getElementById('modal-cupom').classList.replace('flex', 'hidden');
-        }
+        window.fecharModalCupom = () => document.getElementById('modal-cupom').classList.replace('flex', 'hidden');
 
         window.salvarCupom = async function() {
             let codigo = document.getElementById('cupom-codigo').value.trim().toUpperCase();
             let desconto = parseFloat(document.getElementById('cupom-desconto').value);
-            let limite = parseInt(document.getElementById('cupom-limite').value);
+            let limite = parseInt(document.getElementById('cupom-limite').value) || 0;
             let parceiro = document.getElementById('cupom-parceiro').value.trim();
-            let comissao = parseFloat(document.getElementById('cupom-comissao').value);
+            let comissao = parseFloat(document.getElementById('cupom-comissao').value) || 0;
             let duracao = document.getElementById('cupom-duracao').value;
 
-            if(!codigo) return showToast("Digite o código do cupom.", "error");
-            if(codigo.includes(' ')) return showToast("O código não pode ter espaços.", "error");
-            if(isNaN(desconto) || desconto < 0 || desconto > 100) return showToast("O desconto deve ser entre 0% e 100%.", "error");
-            if(isNaN(limite) || limite < 0) limite = 0; 
-            if(isNaN(comissao) || comissao < 0) comissao = 0;
+            if(!codigo || isNaN(desconto)) return showToast("Preencha código e desconto.", "error");
 
-            const btn = document.getElementById('btn-salvar-cupom');
-            const txtOrig = btn.innerHTML;
-            btn.innerHTML = "⏳ Salvando...";
-            btn.disabled = true;
+            const btn = document.getElementById('btn-salvar-cupom'); const txtOrig = btn.innerHTML;
+            btn.innerHTML = "⏳..."; btn.disabled = true;
 
             try {
                 const docVerifica = await getDoc(doc(db, "cupons", codigo));
-                if(docVerifica.exists()) {
-                    showToast("Este código já existe. Escolha outro.", "error");
-                    btn.innerHTML = txtOrig;
-                    btn.disabled = false;
-                    return;
-                }
+                if(docVerifica.exists()) { showToast("Código já existe.", "error"); return; }
 
-                const dadosCupom = {
-                    desconto_perc: desconto,
-                    duracao: duracao,
-                    limite_uso: limite,
-                    vezes_usado: 0,
-                    nome_parceiro: parceiro || null,
-                    comissao_perc: comissao || 0,
-                    data_criacao: new Date().toISOString(),
-                    criado_por: masterUid
-                };
-
-                await setDoc(doc(db, "cupons", codigo), dadosCupom);
-                showToast("Cupom criado com sucesso!", "success");
-                fecharModalCupom();
-                carregarCupons();
-
-            } catch (error) {
-                console.error(error);
-                showToast("Erro ao criar cupom.", "error");
-            } finally {
-                btn.innerHTML = txtOrig;
-                btn.disabled = false;
-            }
+                await setDoc(doc(db, "cupons", codigo), {
+                    desconto_perc: desconto, duracao, limite_uso: limite, vezes_usado: 0,
+                    nome_parceiro: parceiro || null, comissao_perc: comissao, data_criacao: new Date().toISOString()
+                });
+                showToast("Cupom criado!", "success"); fecharModalCupom(); carregarCupons();
+            } catch (error) { showToast("Erro ao criar cupom.", "error"); } 
+            finally { btn.innerHTML = txtOrig; btn.disabled = false; }
         }
 
         window.excluirCupom = async function(codigo) {
-            if(!confirm(`Tem a certeza que deseja excluir o cupom ${codigo}?`)) return;
-            try {
-                await deleteDoc(doc(db, "cupons", codigo));
-                showToast("Cupom excluído.", "success");
-                carregarCupons();
-            } catch(e) {
-                showToast("Erro ao excluir.", "error");
-            }
+            if(!confirm(`Excluir cupom ${codigo}?`)) return;
+            try { await deleteDoc(doc(db, "cupons", codigo)); showToast("Excluído.", "success"); carregarCupons(); } 
+            catch(e) { showToast("Erro.", "error"); }
         }
     </script>
 </body>

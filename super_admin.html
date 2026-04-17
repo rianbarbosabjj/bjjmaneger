@@ -253,18 +253,6 @@
                     <span>💾</span> Publicar Planos
                 </button>
             </div>
-
-            <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
-                <div>
-                    <h3 class="text-sm font-black text-emerald-400 uppercase tracking-widest flex items-center gap-2"><span class="text-xl">⏳</span> Período de Teste Grátis (Trial)</h3>
-                    <p class="text-[10px] text-slate-500 font-medium mt-1">Defina quantos dias as novas academias terão de acesso gratuito antes de precisarem assinar.</p>
-                </div>
-                <div class="flex items-center gap-3 bg-slate-950 p-2 rounded-xl border border-slate-800">
-                    <input type="number" id="config-trial-dias" class="w-24 bg-transparent text-white text-center text-xl font-black outline-none selection:bg-emerald-500" value="7">
-                    <span class="text-xs font-bold text-slate-500 uppercase tracking-widest pr-3">Dias</span>
-                </div>
-            </div>
-
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl flex flex-col gap-4 max-h-[800px]">
                     <h3 class="font-black text-slate-300 uppercase tracking-widest text-xs border-b border-slate-800 pb-3">Plano Básico (Nível 1)</h3>
@@ -281,6 +269,10 @@
                             <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Preço Promo</label>
                             <input type="number" id="p1-preco" class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-3 text-sm font-mono font-bold outline-none focus:border-slate-400">
                         </div>
+                    </div>
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 mt-2">
+                        <label class="text-[10px] text-emerald-500 font-black uppercase mb-1 block">Dias de Teste (Trial)</label>
+                        <input type="number" id="p1-trial" class="w-full bg-transparent text-white font-black text-lg outline-none" value="7">
                     </div>
                     <div>
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Subtítulo</label>
@@ -307,6 +299,10 @@
                             <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Preço Promo</label>
                             <input type="number" id="p2-preco" class="w-full bg-slate-950 border border-slate-700 text-cyan-400 rounded-xl p-3 text-sm font-mono font-black outline-none focus:border-cyan-500">
                         </div>
+                    </div>
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 mt-2">
+                        <label class="text-[10px] text-emerald-500 font-black uppercase mb-1 block">Dias de Teste (Trial)</label>
+                        <input type="number" id="p1-trial" class="w-full bg-transparent text-white font-black text-lg outline-none" value="7">
                     </div>
                     <div>
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Subtítulo</label>
@@ -335,6 +331,10 @@
                             <input type="number" id="p3-preco" class="w-full bg-slate-950 border border-slate-700 text-purple-400 rounded-xl p-3 text-sm font-mono font-black outline-none focus:border-purple-500">
                         </div>
                     </div>
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 mt-2">
+                        <label class="text-[10px] text-emerald-500 font-black uppercase mb-1 block">Dias de Teste (Trial)</label>
+                        <input type="number" id="p1-trial" class="w-full bg-transparent text-white font-black text-lg outline-none" value="7">
+                    </div>
                     <div>
                         <label class="text-[10px] text-purple-500/70 font-bold uppercase mb-1 block">Subtítulo</label>
                         <input type="text" id="p3-desc" class="w-full bg-slate-950 border border-slate-700 text-slate-300 rounded-xl p-3 text-xs outline-none focus:border-purple-500">
@@ -360,6 +360,10 @@
                             <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Preço Promo</label>
                             <input type="number" id="p4-preco" class="w-full bg-slate-950 border border-slate-800 text-amber-500 rounded-xl p-3 text-sm font-mono font-black outline-none focus:border-amber-500">
                         </div>
+                        <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 mt-2">
+                            <label class="text-[10px] text-emerald-500 font-black uppercase mb-1 block">Dias de Teste (Trial)</label>
+                            <input type="number" id="p1-trial" class="w-full bg-transparent text-white font-black text-lg outline-none" value="7">
+                    </div>
                     </div>
                     <div>
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Subtítulo</label>
@@ -941,32 +945,32 @@
             "Vitrine Virtual (Loja Online)", "Check-in com GPS Ativo", "Baixa Automática de Faturas"
         ];
 
-        window.carregarConfigPlanos = async function() {
-            try {
-                const snap = await getDoc(PLANOS_DOC_REF);
-                if(snap.exists()) {
-                    const d = snap.data();
+window.carregarConfigPlanos = async function() {
+    try {
+        const snap = await getDoc(PLANOS_DOC_REF);
+        if(snap.exists()) {
+            const d = snap.data();
+            ['p1','p2','p3','p4'].forEach(p => {
+                if(d[p]) {
+                    document.getElementById(p+'-nome').value = d[p].nome || "";
+                    document.getElementById(p+'-preco-original').value = d[p].preco_original || "";
+                    document.getElementById(p+'-preco').value = d[p].preco || "";
+                    document.getElementById(p+'-desc').value = d[p].desc || "";
                     
-                    // CARREGA DIAS DE TRIAL NOVO!
-                    if(document.getElementById('config-trial-dias')) {
-                        document.getElementById('config-trial-dias').value = d.trial_dias || 7;
+                    // 🚀 CARREGA O TRIAL INDIVIDUAL:
+                    if(document.getElementById(p+'-trial')) {
+                        document.getElementById(p+'-trial').value = d[p].trial_dias || 7;
                     }
-
-                    ['p1','p2','p3','p4'].forEach(p => {
-                        if(d[p]) {
-                            document.getElementById(p+'-nome').value = d[p].nome || "";
-                            document.getElementById(p+'-preco-original').value = d[p].preco_original || "";
-                            document.getElementById(p+'-preco').value = d[p].preco || "";
-                            document.getElementById(p+'-desc').value = d[p].desc || "";
-                            
-                            let color = 'rose';
-                            if(p==='p2') color='cyan'; if(p==='p3') color='purple'; if(p==='p4') color='amber';
-                            renderizarCheckboxes(p, d[p].features, color);
-                        }
-                    });
+                    
+                    let color = p==='p1'?'rose':p==='p2'?'cyan':p==='p3'?'purple':'amber';
+                    renderizarCheckboxes(p, d[p].features, color);
                 }
-            } catch(e) { console.log(e); }
+            });
         }
+    } catch(e) { 
+        console.error("Erro ao carregar planos:", e); 
+    }
+}
 
         function renderizarCheckboxes(planId, savedText, accentColor) {
             const container = document.getElementById(`listbox-${planId}`);
@@ -989,37 +993,39 @@
             });
         }
 
-        window.salvarConfigPlanos = async function() {
-            const btn = document.querySelector('button[onclick="salvarConfigPlanos()"]');
-            const txtOrig = btn.innerHTML;
-            btn.innerHTML = "⏳ Salvando..."; btn.disabled = true;
+window.salvarConfigPlanos = async function() {
+    const btn = document.querySelector('button[onclick="salvarConfigPlanos()"]');
+    const txtOrig = btn.innerHTML;
+    btn.innerHTML = "⏳ Salvando..."; btn.disabled = true;
 
-            const dados = {
-                // SALVA DIAS DE TRIAL
-                trial_dias: parseInt(document.getElementById('config-trial-dias').value) || 7
-            };
+    const dados = {};
+    ['p1','p2','p3','p4'].forEach(p => {
+        let feats = [];
+        TODAS_FUNCIONALIDADES.forEach((f, i) => {
+            const chk = document.getElementById(`chk-${p}-${i}`);
+            feats.push(`${chk.checked ? '✓' : '❌'} ${f}`);
+        });
+        dados[p] = {
+            nome: document.getElementById(p+'-nome').value,
+            preco_original: parseFloat(document.getElementById(p+'-preco-original').value) || 0,
+            preco: parseFloat(document.getElementById(p+'-preco').value) || 0,
+            desc: document.getElementById(p+'-desc').value,
+            // 🚀 SALVA O TRIAL INDIVIDUAL:
+            trial_dias: parseInt(document.getElementById(p+'-trial').value) || 7,
+            features: feats.join('\n')
+        };
+    });
 
-            ['p1','p2','p3','p4'].forEach(p => {
-                let feats = [];
-                TODAS_FUNCIONALIDADES.forEach((f, i) => {
-                    const chk = document.getElementById(`chk-${p}-${i}`);
-                    feats.push(`${chk.checked ? '✓' : '❌'} ${f}`);
-                });
-                dados[p] = {
-                    nome: document.getElementById(p+'-nome').value,
-                    preco_original: parseFloat(document.getElementById(p+'-preco-original').value) || 0,
-                    preco: parseFloat(document.getElementById(p+'-preco').value) || 0,
-                    desc: document.getElementById(p+'-desc').value,
-                    features: feats.join('\n')
-                };
-            });
-
-            try {
-                await setDoc(PLANOS_DOC_REF, dados);
-                showToast("Planos salvos!", "success");
-            } catch(e) { showToast("Erro ao salvar planos.", "error"); }
-            finally { btn.innerHTML = txtOrig; btn.disabled = false; }
-        }
+    try {
+        await setDoc(PLANOS_DOC_REF, dados);
+        showToast("Planos e Trials salvos com sucesso!", "success");
+    } catch(e) { 
+        showToast("Erro ao salvar planos.", "error"); 
+        console.error(e);
+    } finally { 
+        btn.innerHTML = txtOrig; btn.disabled = false; 
+    }
+}
 
         window.abrirModalEditarEquipe = function(id) {
             const eq = equipesCache.find(e => e.id === id);

@@ -3,109 +3,246 @@
 function carregarMenu() {
     const paginaAtual = window.location.pathname.split("/").pop() || "dashboard.html";
 
-    const classDesktop = (pagina) => {
+    // === ESTILOS ATUALIZADOS E MAIS MODERNOS ===
+    const classDesktop = (pagina, isBloqueado = false) => {
+        if (isBloqueado) {
+            return "w-full text-left flex items-center justify-between px-4 py-3 text-sm font-semibold text-slate-600 border-l-4 border-transparent cursor-not-allowed opacity-60";
+        }
         return paginaAtual === pagina 
-            ? "w-full text-left flex items-center px-4 py-3 text-sm font-black text-white bg-gradient-to-r from-cyan-500/10 to-transparent border-l-4 border-cyan-500 transition-all group cursor-pointer" 
-            : "w-full text-left flex items-center px-4 py-3 text-sm font-semibold text-slate-400 border-l-4 border-transparent hover:border-slate-700 hover:text-white hover:bg-slate-800/50 transition-all group cursor-pointer";
+            ? "w-full text-left flex items-center justify-between px-4 py-3 text-sm font-black text-white bg-gradient-to-r from-cyan-500/10 to-transparent border-l-4 border-cyan-500 transition-all group cursor-pointer" 
+            : "w-full text-left flex items-center justify-between px-4 py-3 text-sm font-semibold text-slate-400 border-l-4 border-transparent hover:border-slate-700 hover:text-white hover:bg-slate-800/50 transition-all group cursor-pointer";
     };
 
-    const classMobile = (pagina) => {
+    const classMobile = (pagina, isBloqueado = false) => {
+        if (isBloqueado) {
+            return "shrink-0 w-[4.5rem] flex flex-col items-center justify-center h-full text-slate-600 relative snap-center cursor-not-allowed opacity-50";
+        }
         return paginaAtual === pagina 
-            ? "shrink-0 w-16 flex flex-col items-center justify-center h-full text-cyan-400 relative snap-center cursor-pointer" 
-            : "shrink-0 w-16 flex flex-col items-center justify-center h-full text-slate-500 hover:text-slate-300 transition-colors snap-center cursor-pointer";
+            ? "shrink-0 w-[4.5rem] flex flex-col items-center justify-center h-full text-cyan-400 relative snap-center cursor-pointer transition-all scale-110" 
+            : "shrink-0 w-[4.5rem] flex flex-col items-center justify-center h-full text-slate-500 hover:text-slate-300 transition-colors snap-center cursor-pointer";
     };
 
     const indicadorMobile = (pagina) => {
         return paginaAtual === pagina ? `<div class="absolute top-0 w-8 h-1 bg-cyan-500 rounded-b-full shadow-[0_0_10px_rgba(6,182,212,0.8)]"></div>` : "";
     };
 
+    // === FUNÇÃO DE VERIFICAÇÃO VISUAL ===
+    // Lê uma variável que deixaremos global (via script no dashboard)
+    const hasAccess = (funcionalidade) => {
+        if (!window.funcionalidadesEquipe) return true; // Libera se a verificação ainda não carregou
+        
+        // Mapeia o ID do botão para o texto exato salvo no Super Admin
+        const mapaFuncionalidades = {
+            'financeiro': "Controle Financeiro Blindado", // Ajuste para o texto exato do Super Admin se for diferente
+            'loja_virtual': "Vitrine Virtual (Loja Online)",
+            'certificados': "Emissão de Certificados Profissionais",
+            'turmas': "Gestão de Turmas e Frequência"
+        };
+        
+        const textoBusca = mapaFuncionalidades[funcionalidade];
+        if (!textoBusca) return true;
+
+        // Procura se o array de funcionalidades tem essa feature com um "✓"
+        return window.funcionalidadesEquipe.some(f => f.includes('✓') && f.includes(textoBusca));
+    };
+
+    const blockIcon = `<span class="text-xs">🔒</span>`;
+    
+    // Verificações instantâneas
+    const canFin = hasAccess('financeiro');
+    const canLoja = hasAccess('loja_virtual');
+    const canCert = hasAccess('certificados');
+    const canTurmas = hasAccess('turmas');
+
+    const clickAcao = (url, hasAcc) => {
+        return hasAcc ? `window.location.href='${url}'` : `mostrarAvisoUpgrade()`;
+    };
+
     // === HTML DO MENU DESKTOP ===
     const menuDesktop = `
-        <aside class="hidden md:flex w-64 bg-slate-900 text-white flex-col h-full shadow-2xl shrink-0 z-20 border-r border-slate-800">
-            <div class="p-6 text-center border-b border-slate-800 flex flex-col items-center justify-center">
-                <div id="container-logo" class="w-16 h-16 mb-3 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg text-white font-black text-2xl overflow-hidden ring-2 ring-slate-800">
-                </div>
-                <h1 class="text-sm font-black tracking-widest text-white uppercase" id="nome-equipe">Carregando...</h1>
-                <p class="text-[9px] text-cyan-500 font-black uppercase tracking-[0.2em] mt-1">BJJ Manager</p>
+        <aside class="hidden md:flex w-64 bg-slate-900 text-white flex-col h-full shadow-[5px_0_15px_rgba(0,0,0,0.3)] shrink-0 z-20 border-r border-slate-800">
+            <div class="p-6 text-center border-b border-slate-800 flex flex-col items-center justify-center bg-slate-950/30">
+                <div id="container-logo" class="w-16 h-16 mb-4 rounded-2xl bg-gradient-to-tr from-slate-800 to-slate-700 flex items-center justify-center shadow-lg text-slate-300 font-black text-2xl overflow-hidden ring-1 ring-slate-700">
+                    </div>
+                <h1 class="text-[13px] font-black tracking-wider text-white uppercase truncate w-full px-2" id="nome-equipe">Carregando...</h1>
+                <p class="text-[9px] text-cyan-500 font-black uppercase tracking-[0.2em] mt-1.5 bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/20">BJJ Manager</p>
             </div>
             
-            <nav class="flex-1 py-6 space-y-1.5 overflow-y-auto hide-scrollbar flex flex-col">
-                <button onclick="window.location.href='dashboard.html'" class="${classDesktop('dashboard.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'dashboard.html' ? 'drop-shadow-md' : 'opacity-70'}">📊</span> Visão Geral</button>
-                <button onclick="window.location.href='financeiro.html'" class="${classDesktop('financeiro.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'financeiro.html' ? 'drop-shadow-md' : 'opacity-70'}">💰</span> Financeiro</button>
-                <button onclick="window.location.href='alunos.html'" class="${classDesktop('alunos.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'alunos.html' ? 'drop-shadow-md' : 'opacity-70'}">🥋</span> Alunos</button>
-                <button onclick="window.location.href='turmas.html'" class="${classDesktop('turmas.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'turmas.html' ? 'drop-shadow-md' : 'opacity-70'}">🗓️</span> Turmas</button>
-                
-                <button onclick="if(window.verificarAcesso('loja_virtual')) window.location.href='loja.html'" class="${classDesktop('loja.html')}">
-                    <span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'loja.html' ? 'drop-shadow-md' : 'opacity-70'}">🛒</span> Vitrine Virtual
+            <nav class="flex-1 py-4 space-y-1 overflow-y-auto custom-scroll flex flex-col">
+                <button onclick="${clickAcao('dashboard.html', true)}" class="${classDesktop('dashboard.html', false)}">
+                    <div class="flex items-center"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'dashboard.html' ? 'drop-shadow-md' : 'opacity-70'}">📊</span> Visão Geral</div>
                 </button>
                 
-                <div class="px-5 pt-4 pb-2">
-                    <p class="text-[10px] font-black text-slate-600 uppercase tracking-widest">Acadêmico</p>
-                </div>
-                
-                <button onclick="if(window.verificarAcesso('certificados')) window.location.href='certificados.html'" class="${classDesktop('certificados.html')}">
-                    <span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'certificados.html' ? 'drop-shadow-md' : 'opacity-70'}">📜</span> Certificados
+                <button onclick="${clickAcao('financeiro.html', canFin)}" class="${classDesktop('financeiro.html', !canFin)}">
+                    <div class="flex items-center"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'financeiro.html' ? 'drop-shadow-md' : 'opacity-70'}">💰</span> Financeiro</div>
+                    ${!canFin ? blockIcon : ''}
                 </button>
                 
-                <button onclick="window.location.href='curriculo.html'" class="${classDesktop('curriculo.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'curriculo.html' ? 'drop-shadow-md' : 'opacity-70'}">📄</span> Currículo</button>
+                <button onclick="${clickAcao('alunos.html', true)}" class="${classDesktop('alunos.html', false)}">
+                    <div class="flex items-center"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'alunos.html' ? 'drop-shadow-md' : 'opacity-70'}">🥋</span> Alunos</div>
+                </button>
                 
-                <div class="px-5 pt-4 pb-2">
-                    <p class="text-[10px] font-black text-slate-600 uppercase tracking-widest">Gestão Extra</p>
+                <button onclick="${clickAcao('turmas.html', canTurmas)}" class="${classDesktop('turmas.html', !canTurmas)}">
+                    <div class="flex items-center"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'turmas.html' ? 'drop-shadow-md' : 'opacity-70'}">🗓️</span> Turmas</div>
+                    ${!canTurmas ? blockIcon : ''}
+                </button>
+                
+                <button onclick="${clickAcao('loja.html', canLoja)}" class="${classDesktop('loja.html', !canLoja)}">
+                    <div class="flex items-center"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'loja.html' ? 'drop-shadow-md' : 'opacity-70'}">🛒</span> Vitrine Virtual</div>
+                    ${!canLoja ? blockIcon : ''}
+                </button>
+                
+                <div class="px-5 pt-5 pb-2">
+                    <p class="text-[9px] font-black text-slate-500/80 uppercase tracking-widest">Acadêmico</p>
                 </div>
-                <button onclick="window.location.href='competicoes.html'" class="${classDesktop('competicoes.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'competicoes.html' ? 'drop-shadow-md' : 'opacity-70'}">🏆</span> Competições</button>
-                <button onclick="window.location.href='federacoes.html'" class="${classDesktop('federacoes.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'federacoes.html' ? 'drop-shadow-md' : 'opacity-70'}">🪪</span> Federações</button>
-                <button onclick="window.location.href='historico.html'" class="${classDesktop('historico.html')}"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'historico.html' ? 'drop-shadow-md' : 'opacity-70'}">🎓</span> Graduações</button>
+                
+                <button onclick="${clickAcao('certificados.html', canCert)}" class="${classDesktop('certificados.html', !canCert)}">
+                    <div class="flex items-center"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'certificados.html' ? 'drop-shadow-md' : 'opacity-70'}">📜</span> Certificados</div>
+                    ${!canCert ? blockIcon : ''}
+                </button>
+                
+                <button onclick="${clickAcao('curriculo.html', true)}" class="${classDesktop('curriculo.html', false)}">
+                    <div class="flex items-center"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'curriculo.html' ? 'drop-shadow-md' : 'opacity-70'}">📄</span> Currículo</div>
+                </button>
+                
+                <div class="px-5 pt-5 pb-2">
+                    <p class="text-[9px] font-black text-slate-500/80 uppercase tracking-widest">Gestão Extra</p>
+                </div>
+                
+                <button onclick="${clickAcao('competicoes.html', true)}" class="${classDesktop('competicoes.html', false)}">
+                    <div class="flex items-center"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'competicoes.html' ? 'drop-shadow-md' : 'opacity-70'}">🏆</span> Competições</div>
+                </button>
+                
+                <button onclick="${clickAcao('federacoes.html', true)}" class="${classDesktop('federacoes.html', false)}">
+                    <div class="flex items-center"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'federacoes.html' ? 'drop-shadow-md' : 'opacity-70'}">🪪</span> Federações</div>
+                </button>
+                
+                <button onclick="${clickAcao('historico.html', true)}" class="${classDesktop('historico.html', false)}">
+                    <div class="flex items-center"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'historico.html' ? 'drop-shadow-md' : 'opacity-70'}">🎓</span> Graduações</div>
+                </button>
             </nav>
             
-            <div class="p-4 border-t border-slate-800 bg-slate-900/50">
-                <div class="bg-slate-800 p-3 rounded-xl flex items-center mb-3 border border-slate-700/50 shadow-inner">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center font-black text-[10px] text-white shadow-md">ADM</div>
-                    <div class="ml-3 overflow-hidden">
-                        <p class="text-[11px] font-bold text-white truncate" id="email-logado">carregando...</p>
-                        <p class="text-[9px] text-slate-400 uppercase tracking-widest mt-0.5" id="lbl-cargo">Acessando...</p>
+            <div class="p-4 border-t border-slate-800 bg-slate-900/80 backdrop-blur-sm z-30">
+                <div class="bg-slate-800/80 p-3 rounded-xl flex items-center mb-3 border border-slate-700 shadow-inner hover:border-slate-600 transition-colors cursor-pointer">
+                    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center font-black text-[10px] text-white shadow-md border border-slate-600 shrink-0">ADM</div>
+                    <div class="ml-3 overflow-hidden flex-1">
+                        <p class="text-[11px] font-bold text-white truncate" id="email-logado">Aguarde...</p>
+                        <p class="text-[9px] text-cyan-400 uppercase tracking-widest mt-0.5 font-bold" id="lbl-cargo">Conectando</p>
                     </div>
                 </div>
-                <button onclick="sairDoSistema()" class="w-full px-4 py-2.5 bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white border border-rose-500/20 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center">
-                    <span class="mr-2 text-base">🚪</span> Sair
+                <button onclick="sairDoSistema()" class="w-full px-4 py-3 bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white border border-rose-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center shadow-sm">
+                    <span class="mr-2 text-sm leading-none">🚪</span> Sair
                 </button>
             </div>
         </aside>
     `;
 
-    // === HTML DO MENU MOBILE (Com Efeito de Vidro Fosco e Botão Sair) ===
+    // === HTML DO MENU MOBILE ===
     const menuMobile = `
-        <nav class="md:hidden fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-md border-t border-slate-800 flex overflow-x-auto hide-scrollbar flex-nowrap items-center h-[72px] z-40 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.5)] snap-x scroll-smooth">
-            <button onclick="window.location.href='dashboard.html'" class="${classMobile('dashboard.html')}">${indicadorMobile('dashboard.html')}<span class="text-xl mb-1 ${paginaAtual === 'dashboard.html' ? '' : 'opacity-60'}">📊</span><span class="text-[8px] font-bold uppercase tracking-wide">Visão</span></button>
-            <button onclick="window.location.href='financeiro.html'" class="${classMobile('financeiro.html')}">${indicadorMobile('financeiro.html')}<span class="text-xl mb-1 ${paginaAtual === 'financeiro.html' ? '' : 'opacity-60'}">💰</span><span class="text-[8px] font-bold uppercase tracking-wide">Caixa</span></button>
-            <button onclick="window.location.href='alunos.html'" class="${classMobile('alunos.html')}">${indicadorMobile('alunos.html')}<span class="text-xl mb-1 ${paginaAtual === 'alunos.html' ? '' : 'opacity-60'}">🥋</span><span class="text-[8px] font-bold uppercase tracking-wide">Alunos</span></button>
-            <button onclick="window.location.href='turmas.html'" class="${classMobile('turmas.html')}">${indicadorMobile('turmas.html')}<span class="text-xl mb-1 ${paginaAtual === 'turmas.html' ? '' : 'opacity-60'}">🗓️</span><span class="text-[8px] font-bold uppercase tracking-wide">Turmas</span></button>
-            
-            <button onclick="if(window.verificarAcesso('loja_virtual')) window.location.href='loja.html'" class="${classMobile('loja.html')}">
-                ${indicadorMobile('loja.html')}<span class="text-xl mb-1 ${paginaAtual === 'loja.html' ? '' : 'opacity-60'}">🛒</span><span class="text-[8px] font-bold uppercase tracking-wide">Loja</span>
+        <nav class="md:hidden fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-xl border-t border-slate-800 flex overflow-x-auto hide-scrollbar flex-nowrap items-center h-[76px] z-40 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.5)] snap-x scroll-smooth">
+            <button onclick="${clickAcao('dashboard.html', true)}" class="${classMobile('dashboard.html', false)}">
+                ${indicadorMobile('dashboard.html')}
+                <span class="text-2xl mb-1 ${paginaAtual === 'dashboard.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">📊</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Visão</span>
             </button>
             
-            <button onclick="if(window.verificarAcesso('certificados')) window.location.href='certificados.html'" class="${classMobile('certificados.html')}">
-                ${indicadorMobile('certificados.html')}<span class="text-xl mb-1 ${paginaAtual === 'certificados.html' ? '' : 'opacity-60'}">📜</span><span class="text-[8px] font-bold uppercase tracking-wide">Certif.</span>
+            <button onclick="${clickAcao('financeiro.html', canFin)}" class="${classMobile('financeiro.html', !canFin)} relative">
+                ${indicadorMobile('financeiro.html')}
+                ${!canFin ? `<div class="absolute top-1 right-2 text-[10px]">🔒</div>` : ''}
+                <span class="text-2xl mb-1 ${paginaAtual === 'financeiro.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">💰</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Caixa</span>
             </button>
             
-            <button onclick="window.location.href='curriculo.html'" class="${classMobile('curriculo.html')}">${indicadorMobile('curriculo.html')}<span class="text-xl mb-1 ${paginaAtual === 'curriculo.html' ? '' : 'opacity-60'}">📄</span><span class="text-[8px] font-bold uppercase tracking-wide">Currí.</span></button>
-            <button onclick="window.location.href='competicoes.html'" class="${classMobile('competicoes.html')}">${indicadorMobile('competicoes.html')}<span class="text-xl mb-1 ${paginaAtual === 'competicoes.html' ? '' : 'opacity-60'}">🏆</span><span class="text-[8px] font-bold uppercase tracking-wide">Comp.</span></button>
-            <button onclick="window.location.href='federacoes.html'" class="${classMobile('federacoes.html')}">${indicadorMobile('federacoes.html')}<span class="text-xl mb-1 ${paginaAtual === 'federacoes.html' ? '' : 'opacity-60'}">🪪</span><span class="text-[8px] font-bold uppercase tracking-wide">Fed.</span></button>
-            <button onclick="window.location.href='historico.html'" class="${classMobile('historico.html')}">${indicadorMobile('historico.html')}<span class="text-xl mb-1 ${paginaAtual === 'historico.html' ? '' : 'opacity-60'}">🎓</span><span class="text-[8px] font-bold uppercase tracking-wide">Grad.</span></button>
+            <button onclick="${clickAcao('alunos.html', true)}" class="${classMobile('alunos.html', false)}">
+                ${indicadorMobile('alunos.html')}
+                <span class="text-2xl mb-1 ${paginaAtual === 'alunos.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">🥋</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Alunos</span>
+            </button>
             
-            <button onclick="sairDoSistema()" class="shrink-0 w-16 flex flex-col items-center justify-center h-full text-rose-500 hover:text-rose-400 transition-colors snap-center">
-                <span class="text-xl mb-1">🚪</span>
+            <button onclick="${clickAcao('turmas.html', canTurmas)}" class="${classMobile('turmas.html', !canTurmas)} relative">
+                ${indicadorMobile('turmas.html')}
+                ${!canTurmas ? `<div class="absolute top-1 right-2 text-[10px]">🔒</div>` : ''}
+                <span class="text-2xl mb-1 ${paginaAtual === 'turmas.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">🗓️</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Turmas</span>
+            </button>
+            
+            <button onclick="${clickAcao('loja.html', canLoja)}" class="${classMobile('loja.html', !canLoja)} relative">
+                ${indicadorMobile('loja.html')}
+                ${!canLoja ? `<div class="absolute top-1 right-2 text-[10px]">🔒</div>` : ''}
+                <span class="text-2xl mb-1 ${paginaAtual === 'loja.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">🛒</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Loja</span>
+            </button>
+            
+            <button onclick="${clickAcao('certificados.html', canCert)}" class="${classMobile('certificados.html', !canCert)} relative">
+                ${indicadorMobile('certificados.html')}
+                ${!canCert ? `<div class="absolute top-1 right-2 text-[10px]">🔒</div>` : ''}
+                <span class="text-2xl mb-1 ${paginaAtual === 'certificados.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">📜</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Certif.</span>
+            </button>
+            
+            <button onclick="${clickAcao('curriculo.html', true)}" class="${classMobile('curriculo.html', false)}">
+                ${indicadorMobile('curriculo.html')}
+                <span class="text-2xl mb-1 ${paginaAtual === 'curriculo.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">📄</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Currí.</span>
+            </button>
+            
+            <button onclick="${clickAcao('competicoes.html', true)}" class="${classMobile('competicoes.html', false)}">
+                ${indicadorMobile('competicoes.html')}
+                <span class="text-2xl mb-1 ${paginaAtual === 'competicoes.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">🏆</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Comp.</span>
+            </button>
+            
+            <button onclick="${clickAcao('federacoes.html', true)}" class="${classMobile('federacoes.html', false)}">
+                ${indicadorMobile('federacoes.html')}
+                <span class="text-2xl mb-1 ${paginaAtual === 'federacoes.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">🪪</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Fed.</span>
+            </button>
+            
+            <button onclick="${clickAcao('historico.html', true)}" class="${classMobile('historico.html', false)}">
+                ${indicadorMobile('historico.html')}
+                <span class="text-2xl mb-1 ${paginaAtual === 'historico.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">🎓</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Grad.</span>
+            </button>
+            
+            <button onclick="sairDoSistema()" class="shrink-0 w-[4.5rem] flex flex-col items-center justify-center h-full text-rose-500 hover:text-rose-400 transition-colors snap-center">
+                <span class="text-2xl mb-1 opacity-80">🚪</span>
                 <span class="text-[8px] font-bold uppercase tracking-wide">Sair</span>
             </button>
         </nav>
     `;
 
+    // Renderização
     const containerPrincipal = document.getElementById('interface-sistema');
     if (containerPrincipal) {
+        // Evita duplicar se já existir
+        const oldMenu = document.querySelector('aside');
+        if(oldMenu) oldMenu.remove();
         containerPrincipal.insertAdjacentHTML('afterbegin', menuDesktop);
     }
 
+    const oldMobile = document.querySelector('nav.md\\:hidden');
+    if(oldMobile) oldMobile.remove();
     document.body.insertAdjacentHTML('beforeend', menuMobile);
 }
 
+// === LÓGICA DE UPGRADE ===
+window.mostrarAvisoUpgrade = function() {
+    if(typeof showToast === 'function') {
+        showToast("Seu plano atual não possui este recurso. Acesse Meu Plano para fazer Upgrade.", "info");
+    } else {
+        alert("🔒 Recurso Bloqueado! Faça o Upgrade do seu plano para liberar esta funcionalidade.");
+    }
+    // Pode redirecionar para uma página de upgrade se quiser:
+    // window.location.href = "meu_plano.html";
+};
+
+// Como o menu é injetado, ele só vai exibir os cadeados corretamente APÓS as funcionalidades 
+// serem carregadas do banco de dados na tela de dashboard. 
+// A função exportada que o dashboard vai chamar:
+window.atualizarMenuSeguro = function(funcionalidadesDoPlano) {
+    window.funcionalidadesEquipe = funcionalidadesDoPlano;
+    carregarMenu(); // Re-renderiza o menu já com as travas certas
+};
+
+// Render Inicial
 carregarMenu();

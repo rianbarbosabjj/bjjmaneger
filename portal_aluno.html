@@ -642,29 +642,43 @@
         const sessaoSalva = localStorage.getItem('bjj_aluno_auth'); if(sessaoSalva) { alunoLogado = JSON.parse(sessaoSalva); iniciarPortal(); }
     </script>
 
-    <script>
+<script>
         let deferredPrompt;
+        
+        // 1. Deteta se é um iPhone/iPad
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        // Deteta se a App já está instalada no iOS (para não chatear o utilizador)
+        const isIosInstalled = window.navigator.standalone === true;
 
+        // Regista o Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').then((registration) => {
+                navigator.serviceWorker.register('/sw.js').then(() => {
                     console.log('ServiceWorker registado com sucesso!');
-                }).catch((err) => {
-                    console.log('Erro no registo do ServiceWorker: ', err);
-                });
+                }).catch((err) => console.log('Erro no ServiceWorker: ', err));
             });
         }
 
+        // Gatilho Automático para ANDROID
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault(); 
             deferredPrompt = e; 
-            
+            mostrarBannerPwa();
+        });
+
+        // Gatilho Forçado para IPHONE (Já que a Apple bloqueia o aviso acima)
+        if (isIOS && !isIosInstalled) {
+            mostrarBannerPwa();
+        }
+
+        function mostrarBannerPwa() {
+            // Só mostra se estiver na tela de login ou portal
             if(document.getElementById('tela-login').classList.contains('flex') || document.getElementById('tela-portal').classList.contains('flex')) {
                 setTimeout(() => {
                     document.getElementById('pwa-install-banner').classList.remove('translate-y-full');
-                }, 3000); 
+                }, 3000); // Aparece após 3 segundos
             }
-        });
+        }
 
         window.fecharPwaBanner = function() {
             document.getElementById('pwa-install-banner').classList.add('translate-y-full');
@@ -672,15 +686,17 @@
 
         window.instalarPwa = async function() {
             fecharPwaBanner(); 
+            
             if (deferredPrompt) {
+                // Fluxo ANDROID: Mostra a janela de instalação nativa do Google
                 deferredPrompt.prompt(); 
                 const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    console.log('Aluno aceitou a instalação da App.');
-                }
+                if (outcome === 'accepted') console.log('Aluno instalou a App (Android).');
                 deferredPrompt = null;
-            } else {
-                alert("Para instalar no iPhone (iOS): Toque no botão de Partilhar (quadrado com seta para cima) na barra inferior e selecione 'Adicionar à Ecrã Principal'.");
+                
+            } else if (isIOS) {
+                // Fluxo IPHONE: Mostra as instruções de como instalar
+                alert("📲 Para instalar no iPhone (iOS):\n\n1. Toque no ícone de Partilhar (o quadrado com uma seta para cima, na barra inferior do Safari).\n\n2. Role um pouco para baixo e selecione 'Adicionar ao Ecrã Principal'.\n\n3. Confirme e pronto!");
             }
         };
 

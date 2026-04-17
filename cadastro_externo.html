@@ -568,7 +568,8 @@ async function inicializarCadastro() {
                         // Se passou na segurança, mostra o formulário
                         document.getElementById('form-aluno').classList.remove('hidden');
                     }
-
+                 inicializarCadastro();
+                    
                 } else {
                     document.getElementById('cabecalho-form').innerHTML = `<h2 class="text-rose-500 font-black text-2xl">Equipe Não Encontrada</h2>`;
                     return;

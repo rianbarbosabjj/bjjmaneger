@@ -408,15 +408,27 @@
             }, 4500);
         }
 
-        // ==========================================
-        // 📢 VERIFICAÇÃO DO MURAL DE AVISOS GLOBAL
-        // ==========================================
-        async function verificarAvisoGlobal() {
+async function verificarAvisoGlobal() {
             try {
                 const snap = await getDoc(doc(db, "sistema", "aviso_global"));
                 if(snap.exists()) {
                     const aviso = snap.data();
-                    if(aviso.ativo === true && aviso.texto) {
+                    
+                    // 1. Verifica se tem texto e está marcado como ATIVO
+                    let avisoValido = aviso.ativo === true && aviso.texto;
+
+                    // 2. LÓGICA DE EXPIRAÇÃO (A Mágica acontece aqui)
+                    if (avisoValido && aviso.data_expiracao) {
+                        const dataHoje = new Date();
+                        // Adicionamos "T23:59:59" para garantir que o aviso fique visível ATÉ ao final do dia escolhido
+                        const dataExpiracao = new Date(aviso.data_expiracao + "T23:59:59"); 
+
+                        if (dataHoje > dataExpiracao) {
+                            avisoValido = false; // Já expirou! Esconde o banner.
+                        }
+                    }
+
+                    if(avisoValido) {
                         const banner = document.getElementById('banner-aviso-global');
                         const textoEl = document.getElementById('texto-aviso-global');
                         const interfaceSistema = document.getElementById('interface-sistema');

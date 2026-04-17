@@ -1191,7 +1191,7 @@
             try { const canvas = await gerarCanvasCarteirinha(); canvas.toBlob(async (blob) => { const file = new File([blob], `Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.png`, { type: "image/png" }); if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ title: 'Carteirinha BJJ', text: 'Minha carteirinha oficial', files: [file] }); } catch { } } else { window.open(`https://wa.me/?text=Minha carteirinha oficial`, '_blank'); } }); } catch(e) { showToast("Erro ao partilhar", "error"); } finally { btn.innerHTML = txtOriginal; btn.disabled = false; }
         }
 
-    async function buscarFaturasResiliente() {
+ async function buscarFaturasResiliente() {
             const lista = document.getElementById('lista-faturas'); if(!lista) return; lista.innerHTML = '<div class="text-center p-6 text-slate-500 text-xs italic">A carregar mensalidades...</div>';
             let faturasMensalidade = [];
             try { const qEquipe = query(collection(db, "financeiro"), where("equipe_id", "==", alunoLogado.equipe_id)); const snapEquipe = await getDocs(qEquipe); snapEquipe.forEach(doc => { const data = doc.data(); if (data.aluno_id === alunoLogado.id && (data.tipo === 'MENSALIDADE' || !data.tipo)) { faturasMensalidade.push({ id: doc.id, ...data }); } }); } 
@@ -1199,6 +1199,15 @@
             if (faturasMensalidade.length === 0) { lista.innerHTML = `<div class="text-center p-8 text-slate-500 text-xs">A sua academia ainda não lançou nenhuma mensalidade para você.</div>`; return; }
             faturasMensalidade.sort((a, b) => { const dateA = a.mes_ano || ""; const dateB = b.mes_ano || ""; return dateB.localeCompare(dateA); });
             faturasCache = faturasMensalidade; let faturasHTML = '';
+
+            // 🛑 LÓGICA DE PLANO: O Portal agora sabe distinguir quem tem direito ao Asaas
+            let temAsaas = false;
+            if (equipeDados && (equipeDados.status_asaas === 'ATIVO' || equipeDados.plano_asaas === true)) {
+                const plano = (equipeDados.status_plano || 'TESTE').toUpperCase().trim();
+                const isIsento = equipeDados.isento === true || String(equipeDados.isento) === "true";
+                const planosPremium = ['PREMIUM', 'ELITE', 'ULTIMATE'];
+                if (isIsento || planosPremium.includes(plano)) temAsaas = true;
+            }
             
             faturasMensalidade.forEach(fat => {
                 let mesStr = "", anoStr = ""; if(fat.mes_ano && String(fat.mes_ano).includes('-')) { const partes = String(fat.mes_ano).split('-'); anoStr = partes[0]; mesStr = partes[1]; }
@@ -1209,7 +1218,7 @@
                 let icone = '⏳'; let corTexto = 'text-cyan-400'; let statusLabel = 'Pendente'; let textoStatusBtn = 'Pagar';
                 if(isPago) { icone = '✅'; corTexto = 'text-emerald-400'; statusLabel = 'Pago'; } else if(isAtrasado) { icone = '🚨'; corTexto = 'text-rose-400'; statusLabel = 'Atrasado'; } else if(isIsento) { icone = '⭐'; corTexto = 'text-blue-400'; statusLabel = 'Isento'; }
                 
-                // 🛑 A INTELIGÊNCIA DOS BOTÕES DE PAGAMENTO AQUI
+                // 🛑 A INTELIGÊNCIA DOS BOTÕES
                 let btnHtml = '';
                 if(isPago) {
                     const dataFormat = fat.data_pagamento || fat.data || fat.updated_at || fat.criado_em; let dataPag = '';
@@ -1218,15 +1227,13 @@
                 } else if(isIsento) { 
                     btnHtml = `<span class="text-[10px] font-bold text-blue-500 uppercase mt-1 bg-blue-500/10 px-2 py-1 rounded-md border border-blue-500/20">⭐ Isento</span>`; 
                 } else { 
-                    if (fat.link_pagamento) {
-                        // BOTÃO ASAAS
-                        btnHtml = `<a href="${fat.link_pagamento}" target="_blank" class="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-[0_0_10px_rgba(6,182,212,0.4)] transition-colors mt-2 block text-center border border-cyan-400/50 flex items-center gap-1.5"><span class="text-sm">💳</span> Pagar Fatura</a>`;
-                    } else if (fat.chave_pix_manual) {
-                        // BOTÃO COPIAR PIX
-                        btnHtml = `<button onclick="copiarPixAluno('${fat.chave_pix_manual}')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm transition-colors mt-2 border border-emerald-400/50 flex items-center gap-1.5"><span class="text-sm">📄</span> Copiar Chave PIX</button>
-                                   <p class="text-[8px] text-slate-500 text-right mt-1 w-full max-w-[130px] leading-tight">Mande o comprovante para o professor.</p>`;
+                    if (temAsaas && fat.link_pagamento) {
+                        btnHtml = `<a href="${fat.link_pagamento}" target="_blank" class="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-[0_0_10px_rgba(6,182,212,0.4)] transition-colors mt-2 block text-center border border-cyan-400/50 flex items-center justify-center gap-1.5"><span class="text-sm">💳</span> Pagar Fatura</a>`;
+                    } else if (fat.chave_pix_manual || (equipeDados && equipeDados.chave_pix)) {
+                        const chavePixExibir = fat.chave_pix_manual || equipeDados.chave_pix;
+                        btnHtml = `<button onclick="copiarPixAluno('${chavePixExibir}')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm transition-colors mt-2 border border-emerald-400/50 flex items-center justify-center gap-1.5"><span class="text-sm">📄</span> Copiar Chave PIX</button>
+                                   <p class="text-[8px] text-slate-500 text-center mt-1 w-full max-w-[130px] leading-tight">Envie o comprovante para o professor.</p>`;
                     } else {
-                        // BOTÃO FALLBACK (Abre a tela manual)
                         btnHtml = `<button onclick="abrirPagamento('${fat.id}')" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm transition-colors mt-2">Detalhes</button>`;
                     }
                 }
@@ -1246,18 +1253,31 @@
             });
         }
         
-        window.abrirPagamento = async function(faturaId) {
+window.abrirPagamento = async function(faturaId) {
             const fat = faturasCache.find(f => f.id === faturaId); if (!fat) return showToast("Fatura não encontrada.", "error");
-            const temPlanoAsaas = equipeDados && equipeDados.status_asaas === 'ATIVO';
             
-            if (temPlanoAsaas && fat.link_pagamento) {
-                window.open(fat.link_pagamento, '_blank'); 
-                return; 
+            // 🛑 LÓGICA DE PLANO (Mesma verificação de cima)
+            let temAsaas = false;
+            if (equipeDados && (equipeDados.status_asaas === 'ATIVO' || equipeDados.plano_asaas === true)) {
+                const plano = (equipeDados.status_plano || 'TESTE').toUpperCase().trim();
+                const isIsento = equipeDados.isento === true || String(equipeDados.isento) === "true";
+                const planosPremium = ['PREMIUM', 'ELITE', 'ULTIMATE'];
+                if (isIsento || planosPremium.includes(plano)) temAsaas = true;
+            }
+            
+            if (temAsaas) {
+                if (fat.link_pagamento) { window.open(fat.link_pagamento, '_blank'); return; }
+                showToast("⏳ Gerando link de pagamento seguro...", "success"); const btnPagamento = document.getElementById(`btn-pagar-${faturaId}`); let textoOriginal = "";
+                if(btnPagamento) { textoOriginal = btnPagamento.innerHTML; btnPagamento.innerHTML = "⏳ Aguarde..."; btnPagamento.disabled = true; }
+                try {
+                    const gerarCobranca = httpsCallable(functions, 'gerarCobrancaAsaas');
+                    const resultado = await gerarCobranca({ alunoId: alunoLogado.id, valor: fat.valor, mesAno: fat.mes_ano, descricao: `Mensalidade Jiu-Jitsu - Ref: ${fat.mes_ano}` });
+                    if (resultado.data.success) { showToast("✅ Fatura gerada com sucesso!", "success"); window.open(resultado.data.url, '_blank'); buscarFaturasResiliente(); } else { showToast("❌ Erro ao gerar cobrança: " + resultado.data.error, "error"); }
+                } catch (error) { showToast("🚨 Falha na conexão com o servidor financeiro.", "error"); } finally { if(btnPagamento) { btnPagamento.innerHTML = textoOriginal; btnPagamento.disabled = false; } }
             } else {
                 let mesStr = "", anoStr = ""; if(fat.mes_ano && String(fat.mes_ano).includes('-')) { const partes = fat.mes_ano.split('-'); anoStr = partes[0]; mesStr = partes[1]; }
                 const tituloMes = (mesStr && anoStr) ? `${mesStr}/${anoStr}` : 'Atual';
-                document.getElementById('pix-ref').innerText = `Mensalidade - ${tituloMes}`; 
-                document.getElementById('pix-valor').innerText = `R$ ${parseFloat(fat.valor || 0).toFixed(2).replace('.', ',')}`;
+                document.getElementById('pix-ref').innerText = `Mensalidade - ${tituloMes}`; document.getElementById('pix-valor').innerText = `R$ ${parseFloat(fat.valor || 0).toFixed(2).replace('.', ',')}`;
                 
                 const inputPix = document.getElementById('pix-codigo');
                 const chavePix = fat.chave_pix_manual || (equipeDados ? equipeDados.chave_pix : null);

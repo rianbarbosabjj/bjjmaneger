@@ -19,7 +19,7 @@ self.addEventListener('fetch', event => {
     caches.match(event.request)
       .then(response => {
         if (response) {
-          return response; // Volta a versão salva no telemóvel para ser super rápido
+          return response; 
         }
         return fetch(event.request);
       })

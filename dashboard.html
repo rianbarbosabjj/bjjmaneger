@@ -30,6 +30,11 @@
 
     <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
+    <div id="banner-aviso-global" class="hidden w-full text-center px-4 py-3 text-xs md:text-sm font-bold text-white shadow-md z-40 fixed top-0 left-0 transition-transform transform translate-y-[-100%]">
+        <span id="texto-aviso-global">Carregando aviso...</span>
+        <button onclick="fecharBannerAviso()" class="absolute right-4 top-1/2 -translate-y-1/2 hover:opacity-70 text-lg">&times;</button>
+    </div>
+
     <div id="tela-bloqueio" class="fixed inset-0 bg-slate-900 z-[90] hidden flex-col items-center justify-center p-6 text-center">
         <div class="bg-slate-800 p-8 rounded-3xl shadow-2xl max-w-md w-full border border-rose-500/30">
             <div class="w-20 h-20 bg-rose-500/20 text-rose-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 shadow-[0_0_20px_rgba(244,63,94,0.3)]">
@@ -48,7 +53,7 @@
         </div>
     </div>
 
-    <div id="interface-sistema" class="flex w-full h-full relative">
+    <div id="interface-sistema" class="flex w-full h-full relative mt-0 transition-all duration-300">
         
         <main class="flex-1 flex flex-col h-full overflow-hidden relative">
             <div class="flex-1 overflow-y-auto p-5 md:p-8 pb-24 md:pb-10">
@@ -56,6 +61,22 @@
                     
                     <div class="flex justify-center mb-6 md:mb-8">
                         <img id="img-topo-equipe" src="topo_curriculo.png" alt="Logo da Equipe" class="h-20 md:h-24 object-contain drop-shadow-sm" onerror="this.style.display='none'">
+                    </div>
+
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
+                        <div class="flex items-center gap-4">
+                            <div id="status-icon" class="w-14 h-14 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-2xl shadow-inner shrink-0">⏳</div>
+                            <div>
+                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Licença BJJ Manager</p>
+                                <h2 id="nome-equipe" class="text-lg md:text-xl font-black text-slate-800 tracking-tight uppercase">Carregando...</h2>
+                            </div>
+                        </div>
+                        <div class="shrink-0 text-center md:text-right flex flex-col md:flex-row items-center gap-3">
+                            <span id="status-badge" class="px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest bg-slate-200 text-slate-500">A CARREGAR</span>
+                            <a href="planos.html" class="bg-amber-100 hover:bg-amber-200 text-amber-700 font-black py-2 px-4 rounded-full text-[10px] uppercase tracking-widest transition-colors flex items-center gap-1 border border-amber-200 shadow-sm">
+                                <span class="text-sm">⚡</span> Upgrade de Plano
+                            </a>
+                        </div>
                     </div>
 
                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 md:mb-8">
@@ -191,7 +212,7 @@
     <div id="modal-mensagem" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
             <div class="bg-indigo-600 p-4 text-white font-black uppercase tracking-widest text-sm flex justify-between items-center shrink-0">
-                <span>📢 Mural de Avisos</span>
+                <span>📢 Mural de Avisos (Alunos)</span>
                 <button onclick="fecharModalMensagem()" class="text-indigo-200 hover:text-white text-xl leading-none">&times;</button>
             </div>
             
@@ -395,6 +416,40 @@
                 toast.classList.add('translate-x-full', 'opacity-0');
                 setTimeout(() => toast.remove(), 300);
             }, 4500);
+        }
+
+        // ==========================================
+        // 📢 VERIFICAÇÃO DO MURAL DE AVISOS GLOBAL
+        // ==========================================
+        async function verificarAvisoGlobal() {
+            try {
+                const snap = await getDoc(doc(db, "sistema", "aviso_global"));
+                if(snap.exists()) {
+                    const aviso = snap.data();
+                    if(aviso.ativo === true && aviso.texto) {
+                        const banner = document.getElementById('banner-aviso-global');
+                        const textoEl = document.getElementById('texto-aviso-global');
+                        const interfaceSistema = document.getElementById('interface-sistema');
+                        
+                        textoEl.innerText = aviso.texto;
+                        
+                        banner.className = `w-full text-center px-4 py-3 text-xs md:text-sm font-bold text-white shadow-md z-40 fixed top-0 left-0 transition-transform transform translate-y-[-100%] flex items-center justify-center ${aviso.cor || 'bg-indigo-600'}`;
+                        
+                        setTimeout(() => {
+                            banner.classList.remove('hidden', 'translate-y-[-100%]');
+                            interfaceSistema.style.marginTop = banner.offsetHeight + 'px';
+                        }, 500);
+                    }
+                }
+            } catch(e) { console.error("Erro ao buscar aviso global", e); }
+        }
+
+        window.fecharBannerAviso = function() {
+            const banner = document.getElementById('banner-aviso-global');
+            const interfaceSistema = document.getElementById('interface-sistema');
+            banner.classList.add('translate-y-[-100%]');
+            interfaceSistema.style.marginTop = '0px';
+            setTimeout(() => banner.classList.add('hidden'), 300);
         }
 
         // --- CONTROLE MODAL DE MENSAGENS COM ABAS ---
@@ -807,6 +862,29 @@
                             return; 
                         }
 
+                        // --- TRATA O STATUS DO PLANO E O AVISO NO TOPO ---
+                        const badgeStatus = document.getElementById('status-badge');
+                        const iconeStatus = document.getElementById('status-icon');
+                        const txtNomePlano = document.getElementById('nome-equipe');
+                        const isento = (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true");
+
+                        txtNomePlano.innerText = (dadosEquipe.nome_equipe || "SUA EQUIPE").toUpperCase();
+
+                        if (isento) {
+                            document.getElementById('msg-isento').classList.remove('hidden');
+                        }
+
+                        if (dadosEquipe.status_plano === 'TESTE' || !dadosEquipe.status_plano) {
+                            badgeStatus.innerText = "PERÍODO DE TESTE";
+                            badgeStatus.className = "px-4 py-1.5 rounded-full text-[10px] font-black uppercase bg-amber-500 text-white shadow-lg";
+                            iconeStatus.innerText = "⏳";
+                        } else if (['BLACK_BELT', 'MASTER', 'ELITE', 'ATIVO'].includes(dadosEquipe.status_plano)) {
+                            badgeStatus.innerText = "ASSINATURA ATIVA";
+                            badgeStatus.className = "px-4 py-1.5 rounded-full text-[10px] font-black uppercase bg-emerald-500 text-white shadow-lg";
+                            iconeStatus.innerText = "✅";
+                        }
+
+                        // GUARDA AS VARIÁVEIS PARA O RESTO DA TELA
                         nomeEquipeAtual = dadosEquipe.nome_equipe;
                         
                         if(dadosEquipe.url_logo) {
@@ -827,7 +905,10 @@
                                 elLogo.style.background = 'transparent';
                                 elLogo.innerHTML = `<img src="${dadosEquipe.url_logo}" class="w-full h-full object-cover" alt="Logo">`;
                             }
-                            if (imgTopo) imgTopo.src = dadosEquipe.url_logo;
+                            if (imgTopo) {
+                                imgTopo.src = dadosEquipe.url_logo;
+                                imgTopo.style.display = 'block';
+                            }
                         } else {
                             if (elLogo) {
                                 elLogo.style.background = ''; 
@@ -836,6 +917,8 @@
                         }
                     }
                     
+                    // Dispara as buscas de dados
+                    verificarAvisoGlobal();
                     carregarDashboard();
 
                 } catch (error) { console.log(error); }
@@ -1067,7 +1150,7 @@
                 });
 
                 // ========================================================================
-                // NOVO: A CARREGAR OS CHECK-INS DE HOJE
+                // CHECK-INS DE HOJE
                 // ========================================================================
                 const dataHojeStr = new Date().toISOString().split('T')[0];
                 let checkinsHTML = '';
@@ -1113,7 +1196,7 @@
                 if (elListaCheckins) elListaCheckins.innerHTML = checkinsHTML;
 
                 // ========================================================================
-                // 🚀 A MÁGICA DO ONBOARDING E DA GRELHA GERAL
+                // A MÁGICA DO ONBOARDING E DA GRELHA GERAL
                 // ========================================================================
                 const painelMetricas = document.getElementById('painel-metricas');
                 const painelOnboarding = document.getElementById('painel-onboarding');

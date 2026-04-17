@@ -434,25 +434,27 @@
         // ==========================================
         
         // 1. Definimos a hierarquia dos planos
-        const HIERARQUIA_PLANOS = {
-            'TESTE': 1,
-            'BLACK_BELT': 1,
-            'MASTER': 2,
-            'ELITE': 3
+const HIERARQUIA_PLANOS = {
+            'TESTE': 1, 'BASICO': 1, 'BÁSICO': 1, 'BLACK_BELT': 1,
+            'INTERMEDIARIO': 2, 'INTERMEDIÁRIO': 2, 'MASTER': 2,
+            'PREMIUM': 3, 'ELITE': 3,
+            'ULTIMATE': 4
         };
 
-        // 2. Dizemos qual nível mínimo cada recurso exige
+        // 2. Regras exatas baseadas na sua imagem
         const REGRAS_DE_ACESSO = {
-            'loja_virtual': { nivel: 3, nome: 'Vitrine Virtual' },
-            'certificados': { nivel: 3, nome: 'Emissão de Certificados' },
-            'mural_avisos': { nivel: 2, nome: 'Mural de Avisos' },
-            'relatorios':   { nivel: 2, nome: 'Relatórios Avançados' }
-            // Pode adicionar mais bloqueios aqui se quiser
+            'portal_aluno':  { nivel: 2, nome: 'Portal do Aluno (App)' },
+            'relatorios':    { nivel: 2, nome: 'Relatórios e Frequência em PDF' },
+            'carteirinhas':  { nivel: 2, nome: 'Carteirinhas Digitais (QR Code)' },
+            'loja_virtual':  { nivel: 2, nome: 'Vitrine Virtual (Loja Online)' },
+            'checkin_gps':   { nivel: 2, nome: 'Check-in com GPS Ativo' },
+            'asaas':         { nivel: 3, nome: 'Automação Asaas (PIX/Cartão)' },
+            'baixa_faturas': { nivel: 3, nome: 'Baixa Automática de Faturas' },
+            'certificados':  { nivel: 4, nome: 'Emissão de Certificados Profissionais' }
         };
 
-        // 3. A função que verifica se o mestre pode entrar na tela
+        // 3. A função que verifica se o mestre tem permissão
         window.verificarAcesso = function(idRecurso) {
-            // Se for o Ceo testando ou academia 100% gratuita, liberta
             const isImpersonating = sessionStorage.getItem('admin_impersonate') !== null;
             if (isImpersonating || (dadosEquipe && (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true"))) {
                 return true; 
@@ -467,10 +469,10 @@
 
             if (nivelDaEquipe < regra.nivel) {
                 abrirPaywall(regra.nome);
-                return false; // Bloqueia a ação original
+                return false; 
             }
 
-            return true; // Passou no teste!
+            return true; 
         };
 
         window.abrirPaywall = function(nomeRecurso) {

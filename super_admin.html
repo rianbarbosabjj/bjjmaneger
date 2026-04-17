@@ -243,7 +243,7 @@
             </div>
         </div>
 
-<div id="aba-planos" class="p-6 md:p-10 mx-auto w-full space-y-8 hidden">
+        <div id="aba-planos" class="p-6 md:p-10 mx-auto w-full space-y-8 hidden">
             <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
                     <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight">Construtor de Planos</h2>
@@ -264,12 +264,12 @@
                     </div>
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Preço Real</label>
-                            <input type="number" id="p1-preco-original" class="w-full bg-slate-950 border border-slate-800 text-slate-500 rounded-xl p-3 text-sm font-mono font-bold outline-none line-through">
+                            <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block" title="Ficará riscado no site">Preço Real</label>
+                            <input type="number" id="p1-preco-original" class="w-full bg-slate-950 border border-slate-800 text-slate-500 rounded-xl p-3 text-sm font-mono font-bold outline-none focus:border-slate-400 line-through placeholder:text-slate-700">
                         </div>
                         <div>
                             <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Preço Promo</label>
-                            <input type="number" id="p1-preco" class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-3 text-sm font-mono font-bold outline-none">
+                            <input type="number" id="p1-preco" class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-3 text-sm font-mono font-bold outline-none focus:border-slate-400">
                         </div>
                     </div>
                     <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 mt-2">
@@ -278,7 +278,7 @@
                     </div>
                     <div>
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Subtítulo</label>
-                        <input type="text" id="p1-desc" class="w-full bg-slate-950 border border-slate-800 text-slate-400 rounded-xl p-3 text-xs outline-none">
+                        <input type="text" id="p1-desc" class="w-full bg-slate-950 border border-slate-800 text-slate-400 rounded-xl p-3 text-xs outline-none focus:border-slate-400">
                     </div>
                     <div class="flex-1 mt-2 flex flex-col min-h-0">
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-2 block">Funcionalidades:</label>
@@ -290,16 +290,16 @@
                     <h3 class="font-black text-cyan-400 uppercase tracking-widest text-xs border-b border-slate-700 pb-3">Plano Intermediário (Nível 2)</h3>
                     <div>
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Nome do Plano</label>
-                        <input type="text" id="p2-nome" class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-3 text-sm font-bold outline-none focus:border-cyan-500">
+                        <input type="text" id="p2-nome" class="w-full bg-slate-950 border border-slate-700 text-white rounded-xl p-3 text-sm font-bold outline-none focus:border-cyan-500">
                     </div>
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Preço Real</label>
-                            <input type="number" id="p2-preco-original" class="w-full bg-slate-950 border border-slate-800 text-slate-500 rounded-xl p-3 text-sm font-mono font-bold outline-none line-through">
+                            <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block" title="Ficará riscado no site">Preço Real</label>
+                            <input type="number" id="p2-preco-original" class="w-full bg-slate-950 border border-slate-700 text-slate-500 rounded-xl p-3 text-sm font-mono font-bold outline-none focus:border-cyan-500 line-through placeholder:text-slate-700">
                         </div>
                         <div>
                             <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Preço Promo</label>
-                            <input type="number" id="p2-preco" class="w-full bg-slate-950 border border-slate-800 text-cyan-400 rounded-xl p-3 text-sm font-mono font-black outline-none">
+                            <input type="number" id="p2-preco" class="w-full bg-slate-950 border border-slate-700 text-cyan-400 rounded-xl p-3 text-sm font-mono font-black outline-none focus:border-cyan-500">
                         </div>
                     </div>
                     <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 mt-2">
@@ -308,7 +308,7 @@
                     </div>
                     <div>
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Subtítulo</label>
-                        <input type="text" id="p2-desc" class="w-full bg-slate-950 border border-slate-800 text-slate-300 rounded-xl p-3 text-xs outline-none">
+                        <input type="text" id="p2-desc" class="w-full bg-slate-950 border border-slate-700 text-slate-300 rounded-xl p-3 text-xs outline-none focus:border-cyan-500">
                     </div>
                     <div class="flex-1 mt-2 flex flex-col min-h-0">
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-2 block">Funcionalidades:</label>
@@ -321,16 +321,16 @@
                     <h3 class="font-black text-purple-400 uppercase tracking-widest text-xs border-b border-slate-700 pb-3 mt-2">Plano Premium (Nível 3)</h3>
                     <div>
                         <label class="text-[10px] text-purple-500/70 font-bold uppercase mb-1 block">Nome do Plano</label>
-                        <input type="text" id="p3-nome" class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-3 text-sm font-bold outline-none focus:border-purple-500">
+                        <input type="text" id="p3-nome" class="w-full bg-slate-950 border border-slate-700 text-white rounded-xl p-3 text-sm font-bold outline-none focus:border-purple-500">
                     </div>
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="text-[10px] text-purple-500/70 font-bold uppercase mb-1 block">Preço Real</label>
-                            <input type="number" id="p3-preco-original" class="w-full bg-slate-950 border border-slate-800 text-slate-500 rounded-xl p-3 text-sm font-mono font-bold outline-none line-through">
+                            <label class="text-[10px] text-purple-500/70 font-bold uppercase mb-1 block" title="Ficará riscado no site">Preço Real</label>
+                            <input type="number" id="p3-preco-original" class="w-full bg-slate-950 border border-slate-700 text-slate-500 rounded-xl p-3 text-sm font-mono font-bold outline-none focus:border-purple-500 line-through placeholder:text-slate-700">
                         </div>
                         <div>
                             <label class="text-[10px] text-purple-500/70 font-bold uppercase mb-1 block">Preço Promo</label>
-                            <input type="number" id="p3-preco" class="w-full bg-slate-950 border border-slate-800 text-purple-400 rounded-xl p-3 text-sm font-mono font-black outline-none">
+                            <input type="number" id="p3-preco" class="w-full bg-slate-950 border border-slate-700 text-purple-400 rounded-xl p-3 text-sm font-mono font-black outline-none focus:border-purple-500">
                         </div>
                     </div>
                     <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 mt-2">
@@ -339,7 +339,7 @@
                     </div>
                     <div>
                         <label class="text-[10px] text-purple-500/70 font-bold uppercase mb-1 block">Subtítulo</label>
-                        <input type="text" id="p3-desc" class="w-full bg-slate-950 border border-slate-800 text-slate-300 rounded-xl p-3 text-xs outline-none">
+                        <input type="text" id="p3-desc" class="w-full bg-slate-950 border border-slate-700 text-slate-300 rounded-xl p-3 text-xs outline-none focus:border-purple-500">
                     </div>
                     <div class="flex-1 mt-2 flex flex-col min-h-0">
                         <label class="text-[10px] text-purple-500/70 font-bold uppercase mb-2 block">Funcionalidades:</label>
@@ -347,7 +347,7 @@
                     </div>
                 </div>
 
-                <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl flex flex-col gap-4 max-h-[850px]">
+                <div class="bg-slate-900 border border-amber-500 p-6 rounded-3xl shadow-xl flex flex-col gap-4 max-h-[850px]">
                     <h3 class="font-black text-amber-500 uppercase tracking-widest text-xs border-b border-slate-800 pb-3">Plano Ultimate (Nível 4)</h3>
                     <div>
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Nome do Plano</label>
@@ -355,12 +355,12 @@
                     </div>
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Preço Real</label>
-                            <input type="number" id="p4-preco-original" class="w-full bg-slate-950 border border-slate-800 text-slate-500 rounded-xl p-3 text-sm font-mono font-bold outline-none line-through">
+                            <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block" title="Ficará riscado no site">Preço Real</label>
+                            <input type="number" id="p4-preco-original" class="w-full bg-slate-950 border border-slate-800 text-slate-500 rounded-xl p-3 text-sm font-mono font-bold outline-none focus:border-amber-500 line-through placeholder:text-slate-700">
                         </div>
                         <div>
                             <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Preço Promo</label>
-                            <input type="number" id="p4-preco" class="w-full bg-slate-950 border border-slate-800 text-amber-500 rounded-xl p-3 text-sm font-mono font-black outline-none">
+                            <input type="number" id="p4-preco" class="w-full bg-slate-950 border border-slate-800 text-amber-500 rounded-xl p-3 text-sm font-mono font-black outline-none focus:border-amber-500">
                         </div>
                     </div>
                     <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 mt-2">
@@ -369,7 +369,7 @@
                     </div>
                     <div>
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-1 block">Subtítulo</label>
-                        <input type="text" id="p4-desc" class="w-full bg-slate-950 border border-slate-800 text-slate-400 rounded-xl p-3 text-xs outline-none">
+                        <input type="text" id="p4-desc" class="w-full bg-slate-950 border border-slate-800 text-slate-400 rounded-xl p-3 text-xs outline-none focus:border-amber-500">
                     </div>
                     <div class="flex-1 mt-2 flex flex-col min-h-0">
                         <label class="text-[10px] text-slate-500 font-bold uppercase mb-2 block">Funcionalidades:</label>
@@ -947,32 +947,32 @@
             "Vitrine Virtual (Loja Online)", "Check-in com GPS Ativo", "Baixa Automática de Faturas"
         ];
 
-window.carregarConfigPlanos = async function() {
-    try {
-        const snap = await getDoc(PLANOS_DOC_REF);
-        if(snap.exists()) {
-            const d = snap.data();
-            ['p1','p2','p3','p4'].forEach(p => {
-                if(d[p]) {
-                    document.getElementById(p+'-nome').value = d[p].nome || "";
-                    document.getElementById(p+'-preco-original').value = d[p].preco_original || "";
-                    document.getElementById(p+'-preco').value = d[p].preco || "";
-                    document.getElementById(p+'-desc').value = d[p].desc || "";
-                    
-                    // 🚀 CARREGA O TRIAL INDIVIDUAL:
-                    if(document.getElementById(p+'-trial')) {
-                        document.getElementById(p+'-trial').value = d[p].trial_dias || 7;
-                    }
-                    
-                    let color = p==='p1'?'rose':p==='p2'?'cyan':p==='p3'?'purple':'amber';
-                    renderizarCheckboxes(p, d[p].features, color);
+        window.carregarConfigPlanos = async function() {
+            try {
+                const snap = await getDoc(PLANOS_DOC_REF);
+                if(snap.exists()) {
+                    const d = snap.data();
+                    ['p1','p2','p3','p4'].forEach(p => {
+                        if(d[p]) {
+                            const elNome = document.getElementById(p+'-nome');
+                            const elPrecoOriginal = document.getElementById(p+'-preco-original');
+                            const elPreco = document.getElementById(p+'-preco');
+                            const elDesc = document.getElementById(p+'-desc');
+                            const elTrial = document.getElementById(p+'-trial');
+
+                            if (elNome) elNome.value = d[p].nome || "";
+                            if (elPrecoOriginal) elPrecoOriginal.value = d[p].preco_original || "";
+                            if (elPreco) elPreco.value = d[p].preco || "";
+                            if (elDesc) elDesc.value = d[p].desc || "";
+                            if (elTrial) elTrial.value = d[p].trial_dias !== undefined ? d[p].trial_dias : 7;
+                            
+                            let color = p==='p1'?'rose':p==='p2'?'cyan':p==='p3'?'purple':'amber';
+                            renderizarCheckboxes(p, d[p].features, color);
+                        }
+                    });
                 }
-            });
+            } catch(e) { console.error("Erro ao carregar planos:", e); }
         }
-    } catch(e) { 
-        console.error("Erro ao carregar planos:", e); 
-    }
-}
 
         function renderizarCheckboxes(planId, savedText, accentColor) {
             const container = document.getElementById(`listbox-${planId}`);
@@ -995,39 +995,46 @@ window.carregarConfigPlanos = async function() {
             });
         }
 
-window.salvarConfigPlanos = async function() {
-    const btn = document.querySelector('button[onclick="salvarConfigPlanos()"]');
-    const txtOrig = btn.innerHTML;
-    btn.innerHTML = "⏳ Salvando..."; btn.disabled = true;
+        window.salvarConfigPlanos = async function() {
+            const btn = document.querySelector('button[onclick="salvarConfigPlanos()"]');
+            if (!btn) return;
+            const txtOrig = btn.innerHTML;
+            btn.innerHTML = "⏳ Salvando..."; btn.disabled = true;
 
-    const dados = {};
-    ['p1','p2','p3','p4'].forEach(p => {
-        let feats = [];
-        TODAS_FUNCIONALIDADES.forEach((f, i) => {
-            const chk = document.getElementById(`chk-${p}-${i}`);
-            feats.push(`${chk.checked ? '✓' : '❌'} ${f}`);
-        });
-        dados[p] = {
-            nome: document.getElementById(p+'-nome').value,
-            preco_original: parseFloat(document.getElementById(p+'-preco-original').value) || 0,
-            preco: parseFloat(document.getElementById(p+'-preco').value) || 0,
-            desc: document.getElementById(p+'-desc').value,
-            // 🚀 SALVA O TRIAL INDIVIDUAL:
-            trial_dias: tInput ? parseInt(tInput.value) : 7,
-            features: feats.join('\n')
-        };
-    });
+            try {
+                const dados = {};
+                ['p1','p2','p3','p4'].forEach(p => {
+                    let feats = [];
+                    TODAS_FUNCIONALIDADES.forEach((f, i) => {
+                        const chk = document.getElementById(`chk-${p}-${i}`);
+                        feats.push(`${(chk && chk.checked) ? '✓' : '❌'} ${f}`);
+                    });
+                    
+                    const elNome = document.getElementById(p+'-nome');
+                    const elPrecoOrig = document.getElementById(p+'-preco-original');
+                    const elPreco = document.getElementById(p+'-preco');
+                    const elDesc = document.getElementById(p+'-desc');
+                    const elTrial = document.getElementById(p+'-trial');
 
-    try {
-        await setDoc(PLANOS_DOC_REF, dados);
-        showToast("Planos e Trials salvos com sucesso!", "success");
-    } catch(e) { 
-        showToast("Erro ao salvar planos.", "error"); 
-        console.error(e);
-    } finally { 
-        btn.innerHTML = txtOrig; btn.disabled = false; 
-    }
-}
+                    dados[p] = {
+                        nome: elNome ? elNome.value : "Plano",
+                        preco_original: elPrecoOrig ? parseFloat(elPrecoOrig.value) || 0 : 0,
+                        preco: elPreco ? parseFloat(elPreco.value) || 0 : 0,
+                        desc: elDesc ? elDesc.value : "",
+                        trial_dias: elTrial ? parseInt(elTrial.value) || 0 : 7,
+                        features: feats.join('\n')
+                    };
+                });
+
+                await setDoc(PLANOS_DOC_REF, dados);
+                showToast("Planos e Trials salvos com sucesso!", "success");
+            } catch(e) { 
+                showToast("Erro ao salvar planos.", "error"); 
+                console.error(e);
+            } finally { 
+                btn.innerHTML = txtOrig; btn.disabled = false; 
+            }
+        }
 
         window.abrirModalEditarEquipe = function(id) {
             const eq = equipesCache.find(e => e.id === id);

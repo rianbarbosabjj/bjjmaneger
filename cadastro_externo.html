@@ -496,7 +496,7 @@
             }
         };
 
-async function inicializarCadastro() {
+        async function inicializarCadastro() {
             if(!equipeId) {
                 document.getElementById('cabecalho-form').innerHTML = `<h2 class="text-rose-500 font-black text-2xl">Link Inválido</h2><p class="text-slate-500 mt-2">Peça um novo link de convite ao administrador da equipe.</p>`;
                 return;
@@ -528,48 +528,38 @@ async function inicializarCadastro() {
                         // 🛑 LÓGICA DO LIMITE DE ALUNOS BLINDADA
                         const isIsento = dadosEquipe.isento === true || String(dadosEquipe.isento) === "true";
                         
-                        // Garante que se estiver em branco, assume que é TESTE
                         let statusAtual = dadosEquipe.status_plano;
                         if (!statusAtual || statusAtual.trim() === "") statusAtual = "TESTE";
                         
                         const planosBasicos = ['TESTE', 'BASICO', 'BÁSICO', 'BLACK_BELT'];
 
-                        // Verifica se o plano atual está na lista de planos com limite
                         if (!isIsento && planosBasicos.includes(statusAtual.toUpperCase().trim())) {
                             
-                            // Traz todos os alunos da equipe (sem filtrar status na query para evitar erros de maiúscula/minúscula)
                             const qAlunos = query(collection(db, "alunos"), where("equipe_id", "==", equipeId));
                             const snapAlunos = await getDocs(qAlunos);
                             
                             let alunosAtivos = 0;
                             snapAlunos.forEach(doc => {
                                 const al = doc.data();
-                                // Filtra no Javascript garantindo que tudo fica maiúsculo antes de comparar
                                 if (String(al.status || "").toUpperCase().trim() === "ATIVO") {
                                     alunosAtivos++;
                                 }
                             });
 
-                            console.log(`[Segurança] Plano: ${statusAtual} | Alunos Ativos: ${alunosAtivos}`);
-
-                            // ⚠️ ATENÇÃO: COLOQUEI 0 AQUI PARA VOCÊ TESTAR E VER O BLOQUEIO NA HORA!
-                            // Depois de testar e sorrir, mude o 0 para 10.
-                            if (alunosAtivos >= 0) { 
+                            if (alunosAtivos >= 10) { 
                                 document.getElementById('cabecalho-form').innerHTML = `
                                     <span class="text-6xl mb-4 block mt-4">🛑</span>
                                     <h2 class="text-2xl md:text-3xl font-black text-rose-600 tracking-tight uppercase">Matrículas Indisponíveis</h2>
                                     <p class="text-xs md:text-sm text-slate-500 font-medium mt-2">Esta academia atingiu o limite de vagas para cadastros online neste momento.</p>
                                     <p class="text-xs text-slate-400 mt-1">Por favor, entre em contato diretamente com o professor.</p>
                                 `;
-                                return; // Para a execução e não mostra o formulário de matrícula!
+                                return; // Impede a continuação
                             }
                         }
 
-                        // Se passou na segurança, mostra o formulário
                         document.getElementById('form-aluno').classList.remove('hidden');
                     }
-                 inicializarCadastro();
-                    
+
                 } else {
                     document.getElementById('cabecalho-form').innerHTML = `<h2 class="text-rose-500 font-black text-2xl">Equipe Não Encontrada</h2>`;
                     return;

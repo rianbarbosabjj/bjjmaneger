@@ -71,10 +71,10 @@
                                 <h2 id="nome-equipe" class="text-lg md:text-xl font-black text-slate-800 tracking-tight uppercase">Carregando...</h2>
                             </div>
                         </div>
-                        <div class="shrink-0 text-center md:text-right flex flex-col md:flex-row items-center gap-3">
+                        <div class="shrink-0 text-center md:text-right flex flex-col items-center md:items-end gap-2">
                             <span id="status-badge" class="px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest bg-slate-200 text-slate-500">A CARREGAR</span>
-                            <a href="planos.html" class="bg-amber-100 hover:bg-amber-200 text-amber-700 font-black py-2 px-4 rounded-full text-[10px] uppercase tracking-widest transition-colors flex items-center gap-1 border border-amber-200 shadow-sm">
-                                <span class="text-sm">⚡</span> Upgrade de Plano
+                            <a href="planos.html" class="text-[10px] font-bold text-slate-400 hover:text-slate-600 underline decoration-slate-300 underline-offset-2 transition-colors">
+                                Alterar Plano
                             </a>
                         </div>
                     </div>
@@ -871,7 +871,7 @@
                         txtNomePlano.innerText = (dadosEquipe.nome_equipe || "SUA EQUIPE").toUpperCase();
 
                         if (isento) {
-                            document.getElementById('msg-isento').classList.remove('hidden');
+                            // document.getElementById('msg-isento').classList.remove('hidden'); (Removido da div de status)
                         }
 
                         if (dadosEquipe.status_plano === 'TESTE' || !dadosEquipe.status_plano) {

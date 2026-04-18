@@ -1191,43 +1191,301 @@
         }
 
         async function convertImgToBase64(url) {
+    try {
+        const response = await fetch(url, { mode: 'cors' }); 
+        const blob = await response.blob();
+        return new Promise((resolve) => { 
+            const reader = new FileReader(); 
+            reader.onloadend = () => resolve(reader.result); 
+            reader.readAsDataURL(blob); 
+        });
+    } catch (e) { 
+        return url; 
+    }
+}
+
+async function gerarCanvasCarteirinha() {
+    const elementoBase = document.getElementById('carteirinha');
+    
+    // Criar um container isolado para o clone
+    const divClone = document.createElement('div');
+    divClone.style.position = 'fixed';
+    divClone.style.top = '0';
+    divClone.style.left = '0';
+    divClone.style.width = '600px';
+    divClone.style.height = '380px';
+    divClone.style.margin = '0';
+    divClone.style.padding = '0';
+    divClone.style.backgroundColor = '#ffffff';
+    divClone.style.zIndex = '-9999';
+    divClone.style.pointerEvents = 'none';
+    
+    const clone = elementoBase.cloneNode(true);
+    
+    // 🚨 REMOVER TODAS AS CLASSES QUE PODEM CAUSAR DISTORÇÃO
+    clone.classList.remove(
+        'mx-auto', 'shadow-2xl', 'w-full', 'max-w-[600px]', 
+        'aspect-[1.58/1]', 'shrink-0', 'mt-4', 'relative'
+    );
+    
+    // 🚨 FORÇAR DIMENSÕES FIXAS EXATAS
+    clone.style.position = 'relative';
+    clone.style.top = '0';
+    clone.style.left = '0';
+    clone.style.margin = '0';
+    clone.style.padding = '0';
+    clone.style.width = '600px';
+    clone.style.height = '380px';
+    clone.style.minWidth = '600px';
+    clone.style.maxWidth = '600px';
+    clone.style.minHeight = '380px';
+    clone.style.maxHeight = '380px';
+    clone.style.transform = 'none';
+    clone.style.boxSizing = 'border-box';
+    clone.style.overflow = 'hidden';
+    
+    // 🚨 GARANTIR QUE O FUNDO ESTÁ BRANCO
+    clone.style.backgroundColor = '#ffffff';
+    clone.style.background = 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)';
+    
+    // 🚨 REMOVER EFEITOS DE VIDRO (BACKDROP-BLUR) QUE PODEM CAUSAR BUGS NO CANVAS
+    const glassElements = clone.querySelectorAll('.backdrop-blur-sm, .bg-white\\/90, .bg-slate-100\\/50, .bg-white\\/50');
+    glassElements.forEach(el => {
+        el.classList.remove('backdrop-blur-sm', 'bg-white/90', 'bg-slate-100/50', 'bg-white/50');
+        el.style.backdropFilter = 'none';
+        el.style.webkitBackdropFilter = 'none';
+        
+        if (el.classList.contains('border-l')) {
+            el.style.backgroundColor = '#f1f5f9';
+        } else if (el.classList.contains('border-l-4')) {
+            el.style.backgroundColor = '#ffffff';
+        } else {
+            el.style.backgroundColor = '#ffffff';
+        }
+    });
+    
+    // 🚨 CONVERTER TODAS AS IMAGENS PARA BASE64 (EVITA CORS)
+    const imgs = clone.querySelectorAll('img');
+    for (let img of imgs) {
+        if (img.src && img.src.startsWith('http')) {
             try {
-                const response = await fetch(url, { mode: 'cors' }); const blob = await response.blob();
-                return new Promise((resolve) => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result); reader.readAsDataURL(blob); });
-            } catch (e) { return url; }
+                img.crossOrigin = 'anonymous';
+                img.src = await convertImgToBase64(img.src);
+            } catch (e) {
+                console.warn('Erro ao converter imagem:', e);
+            }
         }
-
-        async function gerarCanvasCarteirinha() {
-            const elementoBase = document.getElementById('carteirinha'); const divClone = document.createElement('div');
-            divClone.style.position = 'absolute'; divClone.style.top = '-9999px'; divClone.style.left = '-9999px'; divClone.style.width = '600px'; divClone.style.height = '380px'; divClone.style.margin = '0'; divClone.style.padding = '0'; divClone.style.backgroundColor = '#ffffff';
-            const clone = elementoBase.cloneNode(true);
-            clone.classList.remove('mx-auto', 'shadow-2xl', 'w-full', 'max-w-[600px]', 'aspect-[1.58/1]', 'shrink-0', 'mt-4'); clone.style.margin = '0'; clone.style.transform = 'none'; clone.style.position = 'relative'; clone.style.top = '0'; clone.style.left = '0'; clone.style.width = '600px'; clone.style.height = '380px';
-            const glassElements = clone.querySelectorAll('.backdrop-blur-sm, .bg-white\\/90, .bg-slate-100\\/50, .bg-white\\/50');
-            glassElements.forEach(el => { el.classList.remove('backdrop-blur-sm', 'bg-white/90', 'bg-slate-100/50', 'bg-white/50'); if(el.classList.contains('border-l')) { el.style.backgroundColor = '#f1f5f9'; } else { el.style.backgroundColor = '#ffffff'; } });
-            const imgs = clone.querySelectorAll('img'); for (let img of imgs) { if (img.src && img.src.startsWith('http')) { img.src = await convertImgToBase64(img.src); } }
-            const qrCodeContainer = clone.querySelector('#cart-qr-code'); if(qrCodeContainer) { qrCodeContainer.style.opacity = '1'; qrCodeContainer.style.filter = 'none'; qrCodeContainer.style.backgroundColor = '#ffffff'; }
-            clone.style.isolation = 'isolate'; clone.style.webkitMaskImage = '-webkit-radial-gradient(white, black)';
-            divClone.appendChild(clone); document.body.appendChild(divClone);
-            await new Promise(r => setTimeout(r, 500));
-            const canvas = await html2canvas(clone, { scale: 4, useCORS: true, allowTaint: false, backgroundColor: '#ffffff', width: 600, height: 380, windowWidth: 1200 });
-            document.body.removeChild(divClone); return canvas;
+    }
+    
+    // 🚨 GARANTIR QUE O QR CODE ESTÁ VISÍVEL
+    const qrCodeContainer = clone.querySelector('#cart-qr-code');
+    if (qrCodeContainer) {
+        qrCodeContainer.style.opacity = '1';
+        qrCodeContainer.style.filter = 'none';
+        qrCodeContainer.style.backgroundColor = '#ffffff';
+        
+        // Forçar o canvas do QR Code a ser visível
+        const qrCanvas = qrCodeContainer.querySelector('canvas');
+        if (qrCanvas) {
+            qrCanvas.style.width = '100%';
+            qrCanvas.style.height = '100%';
+            qrCanvas.style.display = 'block';
         }
-
-        window.baixarCarteirinhaPNG = async function () {
-            const btn = document.getElementById('btn-exportar-png'); const txtOriginal = btn.innerHTML; btn.innerHTML = "⏳ GERANDO..."; btn.disabled = true; showToast("Gerando imagem em Alta Resolução...", "success");
-            try { const canvas = await gerarCanvasCarteirinha(); const link = document.createElement('a'); link.download = `Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.png`; link.href = canvas.toDataURL('image/png', 1.0); link.click(); } catch(e) { showToast("Erro ao exportar PNG", "error"); } finally { btn.innerHTML = txtOriginal; btn.disabled = false; }
+    }
+    
+    // 🚨 GARANTIR QUE A FOTO DO ALUNO ESTÁ VISÍVEL
+    const fotoAluno = clone.querySelector('#cart-aluno-foto-modal');
+    if (fotoAluno) {
+        fotoAluno.style.objectFit = 'cover';
+        fotoAluno.style.width = '100%';
+        fotoAluno.style.height = '100%';
+    }
+    
+    // 🚨 FORÇAR TODOS OS TEXTOS A FICAREM DENTRO DAS CAIXAS
+    const textos = clone.querySelectorAll('p, span, h2, h3, h4');
+    textos.forEach(el => {
+        el.style.whiteSpace = 'nowrap';
+        el.style.overflow = 'hidden';
+        el.style.textOverflow = 'ellipsis';
+    });
+    
+    // 🚨 AJUSTAR O TAMANHO DA FONTE DO NOME PARA NÃO CORTAR
+    const nomeTxt = clone.querySelector('#cart-aluno-nome-txt');
+    if (nomeTxt) {
+        nomeTxt.style.fontSize = '13px';
+        nomeTxt.style.lineHeight = '1.2';
+        nomeTxt.style.paddingBottom = '2px';
+    }
+    
+    // 🚨 GARANTIR QUE OS ELEMENTOS DECORATIVOS NÃO ATRAPALHAM
+    const decorativos = clone.querySelectorAll('.skew-x-\\[-20deg\\], .skew-y-\\[-5deg\\]');
+    decorativos.forEach(el => {
+        el.style.opacity = '0.3';
+        el.style.pointerEvents = 'none';
+    });
+    
+    // 🚨 ISOLAR O CONTEÚDO
+    clone.style.isolation = 'isolate';
+    clone.style.webkitMaskImage = '-webkit-radial-gradient(white, black)';
+    
+    divClone.appendChild(clone);
+    document.body.appendChild(divClone);
+    
+    // Aguardar o DOM atualizar
+    await new Promise(r => setTimeout(r, 300));
+    
+    // 🚨 CONFIGURAÇÕES OTIMIZADAS PARA O HTML2CANVAS
+    const canvas = await html2canvas(clone, {
+        scale: 4,
+        useCORS: true,
+        allowTaint: false,
+        backgroundColor: '#ffffff',
+        width: 600,
+        height: 380,
+        windowWidth: 600,
+        windowHeight: 380,
+        logging: false,
+        onclone: function(clonedDoc) {
+            // Garantir que o clone no documento clonado também está correto
+            const clonedElement = clonedDoc.getElementById('carteirinha');
+            if (clonedElement) {
+                clonedElement.style.width = '600px';
+                clonedElement.style.height = '380px';
+                clonedElement.style.transform = 'none';
+            }
         }
+    });
+    
+    // Remover o clone do DOM
+    document.body.removeChild(divClone);
+    
+    return canvas;
+}
 
-        window.baixarCarteirinhaPDF = async function () {
-            const btn = document.getElementById('btn-exportar-pdf'); const txtOriginal = btn.innerHTML; btn.innerHTML = "⏳ GERANDO..."; btn.disabled = true; showToast("Gerando PDF em Alta Resolução...", "success");
-            try { const canvas = await gerarCanvasCarteirinha(); const imgData = canvas.toDataURL('image/png'); const { jsPDF } = window.jspdf; const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [85.6, 54] }); pdf.addImage(imgData, 'PNG', 0, 0, 85.6, 54); pdf.save(`Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.pdf`); showToast("PDF baixado com sucesso!", "success"); } catch(e) { showToast("Erro ao exportar PDF", "error"); } finally { btn.innerHTML = txtOriginal; btn.disabled = false; }
-        }
+window.baixarCarteirinhaPNG = async function () {
+    const btn = document.getElementById('btn-exportar-png'); 
+    const txtOriginal = btn.innerHTML; 
+    btn.innerHTML = "⏳ GERANDO..."; 
+    btn.disabled = true; 
+    
+    showToast("Gerando imagem em Alta Resolução...", "success");
+    
+    try { 
+        const canvas = await gerarCanvasCarteirinha(); 
+        
+        // Criar link de download
+        const link = document.createElement('a'); 
+        link.download = `Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.png`; 
+        link.href = canvas.toDataURL('image/png', 1.0); 
+        link.click(); 
+        
+        showToast("✅ PNG baixado com sucesso!", "success");
+    } catch(e) { 
+        console.error("Erro ao exportar PNG:", e);
+        showToast("Erro ao exportar PNG. Tente novamente.", "error"); 
+    } finally { 
+        btn.innerHTML = txtOriginal; 
+        btn.disabled = false; 
+    }
+}
 
-        window.compartilharCarteirinha = async function () {
-            const btn = document.getElementById('btn-compartilhar'); const txtOriginal = btn.innerHTML; btn.innerHTML = "⏳ GERANDO..."; btn.disabled = true; showToast("Preparando arquivo para partilha...", "success");
-            try { const canvas = await gerarCanvasCarteirinha(); canvas.toBlob(async (blob) => { const file = new File([blob], `Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.png`, { type: "image/png" }); if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ title: 'Carteirinha BJJ', text: 'Minha carteirinha oficial', files: [file] }); } catch { } } else { window.open(`https://wa.me/?text=Minha carteirinha oficial`, '_blank'); } }); } catch(e) { showToast("Erro ao partilhar", "error"); } finally { btn.innerHTML = txtOriginal; btn.disabled = false; }
-        }
+window.baixarCarteirinhaPDF = async function () {
+    const btn = document.getElementById('btn-exportar-pdf'); 
+    const txtOriginal = btn.innerHTML; 
+    btn.innerHTML = "⏳ GERANDO..."; 
+    btn.disabled = true; 
+    
+    showToast("Gerando PDF em Alta Resolução...", "success");
+    
+    try { 
+        const canvas = await gerarCanvasCarteirinha(); 
+        const imgData = canvas.toDataURL('image/png', 1.0); 
+        const { jsPDF } = window.jspdf; 
+        
+        // 🚨 DIMENSÕES EXATAS PARA NÃO CORTAR NADA
+        // 85.6mm x 54mm é o tamanho padrão de uma carteirinha (CR80)
+        const pdf = new jsPDF({ 
+            orientation: 'landscape', 
+            unit: 'mm', 
+            format: [85.6, 54] 
+        }); 
+        
+        // Adicionar a imagem ocupando 100% do PDF
+        pdf.addImage(imgData, 'PNG', 0, 0, 85.6, 54, undefined, 'FAST'); 
+        pdf.save(`Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.pdf`); 
+        
+        showToast("✅ PDF baixado com sucesso!", "success"); 
+    } catch(e) { 
+        console.error("Erro ao exportar PDF:", e);
+        showToast("Erro ao exportar PDF. Tente novamente.", "error"); 
+    } finally { 
+        btn.innerHTML = txtOriginal; 
+        btn.disabled = false; 
+    }
+}
 
+window.compartilharCarteirinha = async function () {
+    const btn = document.getElementById('btn-compartilhar'); 
+    const txtOriginal = btn.innerHTML; 
+    btn.innerHTML = "⏳ GERANDO..."; 
+    btn.disabled = true; 
+    
+    showToast("Preparando arquivo para compartilhar...", "success");
+    
+    try { 
+        const canvas = await gerarCanvasCarteirinha(); 
+        
+        canvas.toBlob(async (blob) => { 
+            const file = new File([blob], `Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.png`, { 
+                type: "image/png" 
+            }); 
+            
+            // Verificar se o navegador suporta compartilhamento de arquivos
+            if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) { 
+                try { 
+                    await navigator.share({ 
+                        title: 'Carteirinha BJJ', 
+                        text: `Minha carteirinha oficial de ${alunoLogado.faixa || 'Jiu-Jitsu'}`, 
+                        files: [file] 
+                    }); 
+                    showToast("✅ Compartilhado com sucesso!", "success");
+                } catch (shareError) { 
+                    if (shareError.name !== 'AbortError') {
+                        console.error("Erro ao compartilhar:", shareError);
+                        // Fallback para WhatsApp
+                        abrirCompartilharFallback();
+                    }
+                } 
+            } else { 
+                // Fallback para navegadores que não suportam compartilhamento de arquivos
+                abrirCompartilharFallback();
+            } 
+        }, 'image/png', 1.0); 
+        
+    } catch(e) { 
+        console.error("Erro ao compartilhar:", e);
+        showToast("Erro ao compartilhar. Tente novamente.", "error"); 
+    } finally { 
+        btn.innerHTML = txtOriginal; 
+        btn.disabled = false; 
+    }
+}
+
+// 🚨 FUNÇÃO DE FALLBACK PARA COMPARTILHAMENTO
+function abrirCompartilharFallback() {
+    const texto = encodeURIComponent(`🥋 Minha Carteirinha Digital BJJ\nAluno: ${alunoLogado.nome}\nFaixa: ${alunoLogado.faixa || 'Branca'}\nEquipe: ${equipeDados?.nome_equipe || 'BJJ'}`);
+    
+    // Tentar abrir WhatsApp primeiro (mais comum)
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+        window.open(`whatsapp://send?text=${texto}`, '_blank');
+    } else {
+        window.open(`https://wa.me/?text=${texto}`, '_blank');
+    }
+    
+    showToast("📱 Abra o WhatsApp para compartilhar!", "success");
+}
         async function buscarFaturasResiliente() {
             const lista = document.getElementById('lista-faturas'); if(!lista) return; lista.innerHTML = '<div class="text-center p-6 text-slate-500 text-xs italic">A carregar mensalidades...</div>';
             let faturasMensalidade = [];

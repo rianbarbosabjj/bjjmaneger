@@ -23,6 +23,7 @@
         
         body { font-family: 'Inter', sans-serif; background-color: #0F172A; }
         
+        /* 🎨 DESIGN MODERN CORPORATE PARA O PORTAL */
         .card-premium {
             background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(12px);
@@ -46,14 +47,6 @@
             clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
         }
         .custom-checkbox:checked::before { transform: scale(1); }
-        
-        /* Linha para truncar texto com ellipsis */
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
     </style>
 </head>
 <body class="text-slate-200 overflow-x-hidden selection:bg-cyan-500 selection:text-white min-h-screen flex flex-col relative">
@@ -238,85 +231,65 @@
                 </div>
 
                 <div id="cart-wrapper" class="w-full overflow-x-auto hide-scrollbar pb-2 pt-2 -mx-4 px-4 sm:px-0 flex justify-start sm:justify-center transition-all duration-300 origin-top">
-                    <!-- 🚨 CARTEIRINHA EXATAMENTE IGUAL AO ALUNOS.HTML (600x380) -->
                     <div id="carteirinha" class="relative bg-white rounded-2xl shadow-2xl border border-slate-200 flex text-slate-800 font-sans w-full max-w-[600px] shrink-0 box-border overflow-hidden" style="width: 600px; min-width: 600px; height: 380px; min-height: 380px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
-                        
-                        <!-- Watermark / Marca d'água -->
-                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden z-0">
-                            <img id="cart-equipe-watermark" src="" class="w-[140%] h-[140%] max-w-none object-contain opacity-[0.08] grayscale hidden">
-                            <div id="cart-equipe-watermark-fallback" class="text-[30rem] leading-none font-black text-slate-800 opacity-[0.03] hidden">E</div>
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden" style="z-index: 1;">
+                            <img id="cart-equipe-watermark" src="" style="width: 140%; height: 140%; max-width: none; object-fit: contain; opacity: 0.15; filter: grayscale(100%);" class="hidden" crossorigin="anonymous">
+                            <div id="cart-equipe-watermark-fallback" style="font-size: 400px; opacity: 0.08;" class="leading-none font-black text-slate-800 hidden">E</div>
                         </div>
 
-                        <!-- Elementos decorativos de fundo -->
-                        <div class="absolute top-0 right-0 w-64 h-full bg-slate-200/40 skew-x-[-20deg] translate-x-10 z-0 pointer-events-none"></div>
-                        <div class="absolute bottom-0 left-0 w-full h-1/3 bg-slate-300/30 skew-y-[-5deg] origin-bottom-right z-0 pointer-events-none"></div>
+                        <div class="absolute top-0 right-0 w-64 h-full bg-slate-200/40 skew-x-[-20deg] translate-x-10 z-0 pointer-events-none backdrop-blur-[1px]"></div>
+                        <div class="absolute bottom-0 left-0 w-full h-1/3 bg-slate-300/30 skew-y-[-5deg] origin-bottom-right z-0 pointer-events-none backdrop-blur-[1px]"></div>
 
-                        <!-- Lado Esquerdo: Dados -->
-                        <div class="flex-1 p-4 md:p-6 flex flex-col z-10 w-[65%] relative">
-                            <!-- Logo da Equipe e Nome -->
+                        <div class="flex-1 p-5 md:p-6 flex flex-col z-10 w-[65%] relative">
                             <div class="flex items-center gap-4 mb-4 md:mb-6">
-                                <div class="h-12 md:h-16 w-12 md:w-16 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-sm shrink-0 overflow-hidden">
+                                <div class="h-14 w-14 md:h-16 md:w-16 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-sm shrink-0 overflow-hidden">
                                     <img id="cart-equipe-logo" src="" class="h-full w-full object-contain p-1.5 hidden" crossorigin="anonymous">
-                                    <div id="cart-equipe-fallback" class="text-2xl md:text-3xl font-black text-slate-700 hidden">E</div>
+                                    <div id="cart-equipe-fallback" class="text-3xl font-black text-slate-700 hidden">E</div>
                                 </div>
                                 <div class="flex flex-col justify-center">
-                                    <h2 id="cart-equipe-nome" class="text-base md:text-xl font-black uppercase tracking-tight text-slate-800 leading-tight break-words max-w-[180px] md:max-w-[280px] line-clamp-2">NOME DA EQUIPE</h2>
-                                    <p class="text-[8px] md:text-[10px] text-slate-500 uppercase tracking-widest font-bold mt-1">Identificação Oficial</p>
+                                    <h2 id="cart-equipe-nome" class="text-lg md:text-xl font-black uppercase tracking-tight text-slate-800 leading-none break-words max-w-[240px]">NOME DA EQUIPE</h2>
+                                    <p class="text-[9px] text-slate-500 uppercase tracking-widest font-bold mt-1.5">Identificação Oficial</p>
                                 </div>
                             </div>
 
-                            <!-- Grid de Informações do Aluno -->
-                            <div class="grid grid-cols-2 gap-y-2.5 gap-x-4 w-full mt-auto mb-2 md:mb-4">
-                                <!-- Nome -->
-                                <div class="col-span-2 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md border-l-4 border-cyan-500 shadow-sm">
-                                    <p class="text-[8px] md:text-[9px] text-slate-400 uppercase font-bold mb-0.5">Nome do Atleta</p>
-                                    <p id="cart-aluno-nome-txt" class="text-xs md:text-sm font-black uppercase text-slate-800 truncate">ALUNO NOME</p>
+                            <div class="grid grid-cols-2 gap-y-3 gap-x-4 w-full mt-auto mb-2 md:mb-4">
+                                <div class="col-span-2 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-cyan-500 shadow-sm px-3 py-1.5 flex flex-col justify-center overflow-hidden">
+                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Nome do Atleta</p>
+                                    <p id="cart-aluno-nome-txt" class="text-xs md:text-[13px] font-black uppercase text-slate-800 leading-relaxed pb-1 whitespace-nowrap overflow-hidden text-ellipsis">ALUNO NOME</p>
                                 </div>
-                                
-                                <!-- Faixa (com borda colorida) -->
-                                <div class="relative overflow-hidden col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm pr-3 py-1.5 rounded-md shadow-sm pl-5 border border-slate-200">
-                                    <div id="cart-faixa-border" class="absolute top-0 left-0 w-2.5 h-full bg-slate-300 border-r border-slate-200/50"></div>
-                                    <p class="text-[8px] md:text-[9px] text-slate-400 uppercase font-bold mb-0.5 relative z-10">Faixa / Graduação</p>
-                                    <p id="cart-aluno-faixa-texto" class="text-[10px] md:text-xs font-black uppercase text-slate-800 truncate relative z-10">BRANCA</p>
+                                <div class="relative overflow-hidden col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm pr-3 py-1.5 rounded-md shadow-sm pl-5 border border-slate-200 flex flex-col justify-center">
+                                    <div id="cart-faixa-border" class="absolute top-0 left-0 w-2.5 h-full bg-slate-300 border-r border-slate-200/50 rounded-l-md"></div>
+                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5 relative z-10">Faixa / Graduação</p>
+                                    <p id="cart-aluno-faixa-texto" class="text-[10px] md:text-xs font-black uppercase text-slate-800 relative z-10 leading-relaxed pb-1 whitespace-nowrap overflow-hidden text-ellipsis">BRANCA</p>
                                 </div>
-
-                                <!-- Nascimento -->
-                                <div class="col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm">
-                                    <p class="text-[8px] md:text-[9px] text-slate-400 uppercase font-bold mb-0.5">Nascimento</p>
-                                    <p id="cart-aluno-nascimento-txt" class="text-[10px] md:text-xs font-bold text-slate-800">00/00/0000</p>
+                                <div class="col-span-2 md:col-span-1 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-1.5 flex flex-col justify-center overflow-hidden">
+                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Nascimento</p>
+                                    <p id="cart-aluno-nascimento-txt" class="text-[10px] md:text-xs font-bold text-slate-800 leading-relaxed pb-1 whitespace-nowrap overflow-hidden text-ellipsis">00/00/0000</p>
                                 </div>
-                                
-                                <!-- Matrícula -->
-                                <div class="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm">
-                                    <p class="text-[8px] md:text-[9px] text-slate-400 uppercase font-bold mb-0.5">Matrícula</p>
-                                    <p id="cart-aluno-matricula-txt" class="text-[10px] md:text-xs font-mono font-bold text-slate-800 tracking-wider">00000</p>
+                                <div class="col-span-1 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-1.5 flex flex-col justify-center overflow-hidden">
+                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Matrícula</p>
+                                    <p id="cart-aluno-matricula-txt" class="text-[10px] md:text-xs font-mono font-black text-slate-800 tracking-widest leading-relaxed pb-1 whitespace-nowrap overflow-hidden text-ellipsis">00000</p>
                                 </div>
-                                
-                                <!-- Validade -->
-                                <div class="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md border-l-4 border-slate-300 shadow-sm">
-                                    <p class="text-[8px] md:text-[9px] text-slate-400 uppercase font-bold mb-0.5">Validade</p>
-                                    <p id="cart-aluno-validade-txt" class="text-[10px] md:text-xs font-black text-slate-800 tracking-wider">2026</p>
+                                <div class="col-span-1 bg-white/90 backdrop-blur-sm rounded-md border-l-4 border-slate-300 shadow-sm px-3 py-1.5 flex flex-col justify-center overflow-hidden">
+                                    <p class="text-[8px] text-slate-400 uppercase font-bold mb-0.5">Validade</p>
+                                    <p id="cart-aluno-validade-txt" class="text-[10px] md:text-xs font-black text-slate-800 tracking-wider leading-relaxed pb-1 whitespace-nowrap overflow-hidden text-ellipsis">2026</p>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Lado Direito: Foto e QR Code -->
-                        <div class="w-[35%] max-w-[200px] p-4 md:p-6 flex flex-col items-center justify-between z-10 bg-slate-100/50 border-l border-slate-200 backdrop-blur-sm">
-                            <!-- Foto do Aluno -->
-                            <div class="w-full aspect-[3/4] bg-white rounded-lg border-2 border-white overflow-hidden shadow-md flex items-center justify-center relative">
+                        <div class="w-[35%] max-w-[200px] p-5 md:p-6 flex flex-col items-center justify-between z-10 bg-slate-100/50 border-l border-slate-200 backdrop-blur-sm relative">
+                            <div class="w-full aspect-[3/4] bg-white rounded-lg border-[3px] border-white overflow-hidden shadow-md flex items-center justify-center relative">
                                 <img id="cart-aluno-foto-modal" src="" class="w-full h-full object-cover hidden" crossorigin="anonymous">
-                                <span id="cart-aluno-foto-fallback-modal" class="text-5xl md:text-6xl font-black text-slate-300">?</span>
+                                <span id="cart-aluno-foto-fallback-modal" class="text-5xl font-black text-slate-300">?</span>
                             </div>
-                            <!-- QR Code -->
-                            <div class="w-14 h-14 md:w-20 md:h-20 bg-white p-1 rounded-lg mt-auto shadow-sm border border-slate-200">
-                                <div id="cart-qr-code" class="w-full h-full"></div>
+                            <div class="w-16 h-16 bg-white p-1.5 rounded-lg mt-auto shadow-sm border border-slate-200 flex items-center justify-center">
+                                <div id="cart-qr-code" class="w-full h-full bg-white flex items-center justify-center"></div>
                             </div>
                         </div>
 
-                        <!-- Rodapé: Marca do Sistema -->
-                        <div class="absolute bottom-2 left-6 z-10 flex items-center gap-2 opacity-70 bg-white/50 px-2 py-0.5 rounded backdrop-blur-sm">
-                            <img src="logo_bjj_maneger.png" class="h-4 w-auto grayscale">
-                            <span class="text-[7px] md:text-[8px] font-bold tracking-widest text-slate-600 uppercase">Emitido por BJJ Manager | maneger.bjjdigital.com.br</span>
+                        <div class="absolute bottom-3 left-5 md:left-6 z-20 flex items-center gap-2 bg-white px-2 py-1 rounded shadow-sm border border-slate-100 opacity-90">
+                            <img src="logo_bjj_maneger.png" class="h-3.5 w-auto grayscale" crossorigin="anonymous">
+                            <span class="text-[7px] font-bold tracking-widest text-slate-600 uppercase relative top-px">Emitido por BJJ Manager</span>
                         </div>
                     </div>
                 </div>
@@ -1168,17 +1141,7 @@
             const grau = a.grau && a.grau !== "Sem grau" ? ` - ${a.grau}` : "";
             document.getElementById('cart-aluno-faixa-texto').innerText = ((a.faixa || 'BRANCA') + grau).toUpperCase();
             document.getElementById('cart-aluno-matricula-txt').innerText = a.matricula || '0000';
-            // Formata a data de nascimento corretamente (YYYY-MM-DD -> DD/MM/YYYY)
-            if (a.data_nascimento) {
-                const partes = a.data_nascimento.split('-');
-                if (partes.length === 3) {
-                    document.getElementById('cart-aluno-nascimento-txt').innerText = `${partes[2]}/${partes[1]}/${partes[0]}`;
-                } else {
-                    document.getElementById('cart-aluno-nascimento-txt').innerText = a.data_nascimento;
-                }
-            } else {
-                document.getElementById('cart-aluno-nascimento-txt').innerText = '--/--/----';
-            }
+            document.getElementById('cart-aluno-nascimento-txt').innerText = a.data_nascimento ? a.data_nascimento.split('-').reverse().join('/') : '--/--/----';
             const anoAtual = new Date().getFullYear(); document.getElementById('cart-aluno-validade-txt').innerText = `DEZ / ${anoAtual}`;
             document.getElementById('cart-faixa-border').style.background = getCorFaixaDupla(a.faixa);
             if(a.foto_url) {
@@ -1190,288 +1153,45 @@
             new QRCode(qrContainer, { text: window.location.origin + '/validar.html?mat=' + a.matricula, width: 64, height: 64, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.M });
         }
 
-async function convertImgToBase64(url) {
-    try {
-        const response = await fetch(url, { mode: 'cors' }); 
-        const blob = await response.blob();
-        return new Promise((resolve) => { 
-            const reader = new FileReader(); 
-            reader.onloadend = () => resolve(reader.result); 
-            reader.readAsDataURL(blob); 
-        });
-    } catch (e) { 
-        return url; 
-    }
-}
-
-async function gerarCanvasCarteirinha() {
-    const elementoBase = document.getElementById('carteirinha');
-    
-    // Criar um container isolado para o clone
-    const divClone = document.createElement('div');
-    divClone.style.position = 'fixed';
-    divClone.style.top = '0';
-    divClone.style.left = '0';
-    divClone.style.width = '600px';
-    divClone.style.height = '380px';
-    divClone.style.margin = '0';
-    divClone.style.padding = '0';
-    divClone.style.backgroundColor = '#ffffff';
-    divClone.style.zIndex = '-9999';
-    divClone.style.pointerEvents = 'none';
-    divClone.style.overflow = 'hidden';
-    
-    const clone = elementoBase.cloneNode(true);
-    
-    // Remover classes que podem causar distorção
-    clone.classList.remove(
-        'mx-auto', 'shadow-2xl', 'w-full', 'max-w-[600px]', 
-        'aspect-[1.58/1]', 'shrink-0', 'mt-4', 'relative'
-    );
-    
-    // Forçar dimensões fixas exatas
-    clone.style.position = 'relative';
-    clone.style.top = '0';
-    clone.style.left = '0';
-    clone.style.margin = '0';
-    clone.style.padding = '0';
-    clone.style.width = '600px';
-    clone.style.height = '380px';
-    clone.style.minWidth = '600px';
-    clone.style.maxWidth = '600px';
-    clone.style.minHeight = '380px';
-    clone.style.maxHeight = '380px';
-    clone.style.transform = 'none';
-    clone.style.boxSizing = 'border-box';
-    clone.style.overflow = 'hidden';
-    clone.style.backgroundColor = '#ffffff';
-    clone.style.background = 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)';
-    
-    // Remover efeitos de vidro que causam bugs no canvas
-    const glassElements = clone.querySelectorAll('.backdrop-blur-sm, .bg-white\\/90, .bg-slate-100\\/50, .bg-white\\/50, .backdrop-blur-\\[1px\\]');
-    glassElements.forEach(el => {
-        el.classList.remove('backdrop-blur-sm', 'bg-white/90', 'bg-slate-100/50', 'bg-white/50', 'backdrop-blur-[1px]');
-        el.style.backdropFilter = 'none';
-        el.style.webkitBackdropFilter = 'none';
-        
-        if (el.classList.contains('border-l')) {
-            el.style.backgroundColor = '#f1f5f9';
-        } else if (el.classList.contains('border-l-4')) {
-            el.style.backgroundColor = '#ffffff';
-        } else if (el.classList.contains('bg-white/90')) {
-            el.style.backgroundColor = '#ffffff';
-        } else {
-            el.style.backgroundColor = '#ffffff';
-        }
-    });
-    
-    // Garantir que os elementos decorativos não atrapalham
-    const decorativos = clone.querySelectorAll('.skew-x-\\[-20deg\\], .skew-y-\\[-5deg\\]');
-    decorativos.forEach(el => {
-        el.style.opacity = '0.3';
-        el.style.pointerEvents = 'none';
-    });
-    
-    // Converter todas as imagens para Base64 (evita CORS)
-    const imgs = clone.querySelectorAll('img');
-    for (let img of imgs) {
-        if (img.src && img.src.startsWith('http')) {
+        async function convertImgToBase64(url) {
             try {
-                img.crossOrigin = 'anonymous';
-                img.src = await convertImgToBase64(img.src);
-            } catch (e) {
-                console.warn('Erro ao converter imagem:', e);
-            }
+                const response = await fetch(url, { mode: 'cors' }); const blob = await response.blob();
+                return new Promise((resolve) => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result); reader.readAsDataURL(blob); });
+            } catch (e) { return url; }
         }
-    }
-    
-    // Garantir que o QR Code está visível
-    const qrCodeContainer = clone.querySelector('#cart-qr-code');
-    if (qrCodeContainer) {
-        qrCodeContainer.style.opacity = '1';
-        qrCodeContainer.style.filter = 'none';
-        qrCodeContainer.style.backgroundColor = '#ffffff';
-        
-        const qrCanvas = qrCodeContainer.querySelector('canvas');
-        if (qrCanvas) {
-            qrCanvas.style.width = '100%';
-            qrCanvas.style.height = '100%';
-            qrCanvas.style.display = 'block';
+
+        async function gerarCanvasCarteirinha() {
+            const elementoBase = document.getElementById('carteirinha'); const divClone = document.createElement('div');
+            divClone.style.position = 'absolute'; divClone.style.top = '-9999px'; divClone.style.left = '-9999px'; divClone.style.width = '600px'; divClone.style.height = '380px'; divClone.style.margin = '0'; divClone.style.padding = '0'; divClone.style.backgroundColor = '#ffffff';
+            const clone = elementoBase.cloneNode(true);
+            clone.classList.remove('mx-auto', 'shadow-2xl', 'w-full', 'max-w-[600px]', 'aspect-[1.58/1]', 'shrink-0', 'mt-4'); clone.style.margin = '0'; clone.style.transform = 'none'; clone.style.position = 'relative'; clone.style.top = '0'; clone.style.left = '0'; clone.style.width = '600px'; clone.style.height = '380px';
+            const glassElements = clone.querySelectorAll('.backdrop-blur-sm, .bg-white\\/90, .bg-slate-100\\/50, .bg-white\\/50');
+            glassElements.forEach(el => { el.classList.remove('backdrop-blur-sm', 'bg-white/90', 'bg-slate-100/50', 'bg-white/50'); if(el.classList.contains('border-l')) { el.style.backgroundColor = '#f1f5f9'; } else { el.style.backgroundColor = '#ffffff'; } });
+            const imgs = clone.querySelectorAll('img'); for (let img of imgs) { if (img.src && img.src.startsWith('http')) { img.src = await convertImgToBase64(img.src); } }
+            const qrCodeContainer = clone.querySelector('#cart-qr-code'); if(qrCodeContainer) { qrCodeContainer.style.opacity = '1'; qrCodeContainer.style.filter = 'none'; qrCodeContainer.style.backgroundColor = '#ffffff'; }
+            clone.style.isolation = 'isolate'; clone.style.webkitMaskImage = '-webkit-radial-gradient(white, black)';
+            divClone.appendChild(clone); document.body.appendChild(divClone);
+            await new Promise(r => setTimeout(r, 500));
+            const canvas = await html2canvas(clone, { scale: 4, useCORS: true, allowTaint: false, backgroundColor: '#ffffff', width: 600, height: 380, windowWidth: 1200 });
+            document.body.removeChild(divClone); return canvas;
         }
-    }
-    
-    // Garantir que a foto do aluno está visível
-    const fotoAluno = clone.querySelector('#cart-aluno-foto-modal');
-    if (fotoAluno) {
-        fotoAluno.style.objectFit = 'cover';
-        fotoAluno.style.width = '100%';
-        fotoAluno.style.height = '100%';
-    }
-    
-    // Forçar todos os textos a ficarem dentro das caixas
-    const textos = clone.querySelectorAll('p, span, h2, h3, h4');
-    textos.forEach(el => {
-        el.style.whiteSpace = 'nowrap';
-        el.style.overflow = 'hidden';
-        el.style.textOverflow = 'ellipsis';
-    });
-    
-    // Ajustar o tamanho da fonte do nome para não cortar
-    const nomeTxt = clone.querySelector('#cart-aluno-nome-txt');
-    if (nomeTxt) {
-        nomeTxt.style.fontSize = '13px';
-        nomeTxt.style.lineHeight = '1.2';
-        nomeTxt.style.paddingBottom = '2px';
-    }
-    
-    // Isolar o conteúdo
-    clone.style.isolation = 'isolate';
-    clone.style.webkitMaskImage = '-webkit-radial-gradient(white, black)';
-    
-    divClone.appendChild(clone);
-    document.body.appendChild(divClone);
-    
-    // Aguardar o DOM atualizar
-    await new Promise(r => setTimeout(r, 300));
-    
-    // Configurações otimizadas para o html2canvas
-    const canvas = await html2canvas(clone, {
-        scale: 4,
-        useCORS: true,
-        allowTaint: false,
-        backgroundColor: '#ffffff',
-        width: 600,
-        height: 380,
-        windowWidth: 600,
-        windowHeight: 380,
-        logging: false
-    });
-    
-    // Remover o clone do DOM
-    document.body.removeChild(divClone);
-    
-    return canvas;
-}
 
-window.baixarCarteirinhaPNG = async function () {
-    const btn = document.getElementById('btn-exportar-png'); 
-    const txtOriginal = btn.innerHTML; 
-    btn.innerHTML = "⏳ GERANDO..."; 
-    btn.disabled = true; 
-    
-    showToast("Gerando imagem em Alta Resolução...", "success");
-    
-    try { 
-        const canvas = await gerarCanvasCarteirinha(); 
-        
-        const link = document.createElement('a'); 
-        link.download = `Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.png`; 
-        link.href = canvas.toDataURL('image/png', 1.0); 
-        link.click(); 
-        
-        showToast("✅ PNG baixado com sucesso!", "success");
-    } catch(e) { 
-        console.error("Erro ao exportar PNG:", e);
-        showToast("Erro ao exportar PNG. Tente novamente.", "error"); 
-    } finally { 
-        btn.innerHTML = txtOriginal; 
-        btn.disabled = false; 
-    }
-}
+        window.baixarCarteirinhaPNG = async function () {
+            const btn = document.getElementById('btn-exportar-png'); const txtOriginal = btn.innerHTML; btn.innerHTML = "⏳ GERANDO..."; btn.disabled = true; showToast("Gerando imagem em Alta Resolução...", "success");
+            try { const canvas = await gerarCanvasCarteirinha(); const link = document.createElement('a'); link.download = `Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.png`; link.href = canvas.toDataURL('image/png', 1.0); link.click(); } catch(e) { showToast("Erro ao exportar PNG", "error"); } finally { btn.innerHTML = txtOriginal; btn.disabled = false; }
+        }
 
-window.baixarCarteirinhaPDF = async function () {
-    const btn = document.getElementById('btn-exportar-pdf'); 
-    const txtOriginal = btn.innerHTML; 
-    btn.innerHTML = "⏳ GERANDO..."; 
-    btn.disabled = true; 
-    
-    showToast("Gerando PDF em Alta Resolução...", "success");
-    
-    try { 
-        const canvas = await gerarCanvasCarteirinha(); 
-        const imgData = canvas.toDataURL('image/png', 1.0); 
-        const { jsPDF } = window.jspdf; 
-        
-        // Dimensões exatas para não cortar nada (85.6mm x 54mm = tamanho padrão CR80)
-        const pdf = new jsPDF({ 
-            orientation: 'landscape', 
-            unit: 'mm', 
-            format: [85.6, 54] 
-        }); 
-        
-        pdf.addImage(imgData, 'PNG', 0, 0, 85.6, 54, undefined, 'FAST'); 
-        pdf.save(`Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.pdf`); 
-        
-        showToast("✅ PDF baixado com sucesso!", "success"); 
-    } catch(e) { 
-        console.error("Erro ao exportar PDF:", e);
-        showToast("Erro ao exportar PDF. Tente novamente.", "error"); 
-    } finally { 
-        btn.innerHTML = txtOriginal; 
-        btn.disabled = false; 
-    }
-}
+        window.baixarCarteirinhaPDF = async function () {
+            const btn = document.getElementById('btn-exportar-pdf'); const txtOriginal = btn.innerHTML; btn.innerHTML = "⏳ GERANDO..."; btn.disabled = true; showToast("Gerando PDF em Alta Resolução...", "success");
+            try { const canvas = await gerarCanvasCarteirinha(); const imgData = canvas.toDataURL('image/png'); const { jsPDF } = window.jspdf; const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [85.6, 54] }); pdf.addImage(imgData, 'PNG', 0, 0, 85.6, 54); pdf.save(`Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.pdf`); showToast("PDF baixado com sucesso!", "success"); } catch(e) { showToast("Erro ao exportar PDF", "error"); } finally { btn.innerHTML = txtOriginal; btn.disabled = false; }
+        }
 
-window.compartilharCarteirinha = async function () {
-    const btn = document.getElementById('btn-compartilhar'); 
-    const txtOriginal = btn.innerHTML; 
-    btn.innerHTML = "⏳ GERANDO..."; 
-    btn.disabled = true; 
-    
-    showToast("Preparando arquivo para compartilhar...", "success");
-    
-    try { 
-        const canvas = await gerarCanvasCarteirinha(); 
-        
-        canvas.toBlob(async (blob) => { 
-            const file = new File([blob], `Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.png`, { 
-                type: "image/png" 
-            }); 
-            
-            // Verificar se o navegador suporta compartilhamento de arquivos
-            if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) { 
-                try { 
-                    await navigator.share({ 
-                        title: '🥋 Carteirinha BJJ', 
-                        text: `${alunoLogado.nome} - ${alunoLogado.faixa || 'Branca'} - ${equipeDados?.nome_equipe || 'BJJ'}`, 
-                        files: [file] 
-                    }); 
-                    showToast("✅ Compartilhado com sucesso!", "success");
-                } catch (shareError) { 
-                    if (shareError.name !== 'AbortError') {
-                        console.error("Erro ao compartilhar:", shareError);
-                        abrirCompartilharFallback();
-                    }
-                } 
-            } else { 
-                abrirCompartilharFallback();
-            } 
-        }, 'image/png', 1.0); 
-        
-    } catch(e) { 
-        console.error("Erro ao compartilhar:", e);
-        showToast("Erro ao compartilhar. Tente novamente.", "error"); 
-    } finally { 
-        btn.innerHTML = txtOriginal; 
-        btn.disabled = false; 
-    }
-}
+        window.compartilharCarteirinha = async function () {
+            const btn = document.getElementById('btn-compartilhar'); const txtOriginal = btn.innerHTML; btn.innerHTML = "⏳ GERANDO..."; btn.disabled = true; showToast("Preparando arquivo para partilha...", "success");
+            try { const canvas = await gerarCanvasCarteirinha(); canvas.toBlob(async (blob) => { const file = new File([blob], `Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.png`, { type: "image/png" }); if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ title: 'Carteirinha BJJ', text: 'Minha carteirinha oficial', files: [file] }); } catch { } } else { window.open(`https://wa.me/?text=Minha carteirinha oficial`, '_blank'); } }); } catch(e) { showToast("Erro ao partilhar", "error"); } finally { btn.innerHTML = txtOriginal; btn.disabled = false; }
+        }
 
-// Função de fallback para compartilhamento
-function abrirCompartilharFallback() {
-    const texto = encodeURIComponent(`🥋 Minha Carteirinha Digital BJJ\nAluno: ${alunoLogado.nome}\nFaixa: ${alunoLogado.faixa || 'Branca'}\nEquipe: ${equipeDados?.nome_equipe || 'BJJ'}`);
-    
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    
-    if (isMobile) {
-        window.open(`whatsapp://send?text=${texto}`, '_blank');
-    } else {
-        window.open(`https://wa.me/?text=${texto}`, '_blank');
-    }
-    
-    showToast("📱 Compartilhe via WhatsApp!", "success");
-}
-        async function buscarFaturasResiliente() {
+ async function buscarFaturasResiliente() {
             const lista = document.getElementById('lista-faturas'); if(!lista) return; lista.innerHTML = '<div class="text-center p-6 text-slate-500 text-xs italic">A carregar mensalidades...</div>';
             let faturasMensalidade = [];
             try { const qEquipe = query(collection(db, "financeiro"), where("equipe_id", "==", alunoLogado.equipe_id)); const snapEquipe = await getDocs(qEquipe); snapEquipe.forEach(doc => { const data = doc.data(); if (data.aluno_id === alunoLogado.id && (data.tipo === 'MENSALIDADE' || !data.tipo)) { faturasMensalidade.push({ id: doc.id, ...data }); } }); } 
@@ -1533,7 +1253,7 @@ function abrirCompartilharFallback() {
             });
         }
         
-        window.abrirPagamento = async function(faturaId) {
+window.abrirPagamento = async function(faturaId) {
             const fat = faturasCache.find(f => f.id === faturaId); if (!fat) return showToast("Fatura não encontrada.", "error");
             
             // 🛑 LÓGICA DE PLANO (Mesma verificação de cima)
@@ -1575,10 +1295,12 @@ function abrirCompartilharFallback() {
         window.fecharModalPix = function() { 
             document.getElementById('modal-pix').classList.add('hidden'); document.getElementById('modal-pix').classList.remove('flex');
         }
-        window.copiarPix = function() {
-            const input = document.getElementById('pix-codigo');
-            input.select(); input.setSelectionRange(0, 99999);
-            navigator.clipboard.writeText(input.value).then(() => showToast("Chave PIX copiada!", "success")).catch(() => showToast("Erro ao copiar.", "error"));
+        window.copiarPixAluno = function(chave) {
+            navigator.clipboard.writeText(chave).then(() => {
+                showToast("Chave PIX copiada! Abra o app do seu banco para pagar.", "success");
+            }).catch(err => {
+                showToast("Erro ao copiar a chave.", "error");
+            });
         }
 
         function atualizarWidgetMensalidade() {
@@ -1843,6 +1565,7 @@ function abrirCompartilharFallback() {
                         const av = doc.data();
                         if (av.status === 'inativo') return;
                         
+                        // LÓGICA DE EXPIRAÇÃO: Vai até às 23:59:59 do dia escolhido
                         if (av.data_expiracao) {
                             const dataFimAviso = av.data_expiracao.split('T')[0] + "T23:59:59Z";
                             if (dataFimAviso < hojeIso) return; 
@@ -2172,6 +1895,7 @@ function abrirCompartilharFallback() {
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
         const isIosInstalled = window.navigator.standalone === true;
         
+        // NOVO: Verifica se o aluno já pediu para esconder o banner para sempre
         const pwaDispensado = localStorage.getItem('pwa_dispensado') === 'true';
 
         if ('serviceWorker' in navigator) {
@@ -2195,7 +1919,7 @@ function abrirCompartilharFallback() {
         });
 
         function mostrarBannerPwa() {
-            if (pwaDispensado) return;
+            if (pwaDispensado) return; // Se já dispensou para sempre, bloqueia a exibição.
 
             if(document.getElementById('tela-login').classList.contains('flex') || document.getElementById('tela-portal').classList.contains('flex')) {
                 setTimeout(() => {
@@ -2208,6 +1932,7 @@ function abrirCompartilharFallback() {
             document.getElementById('pwa-install-banner').classList.add('translate-y-full');
         };
 
+        // NOVO: Função que guarda a escolha do aluno na memória do telemóvel
         window.dispensarPwaParaSempre = function() {
             localStorage.setItem('pwa_dispensado', 'true');
             fecharPwaBanner();

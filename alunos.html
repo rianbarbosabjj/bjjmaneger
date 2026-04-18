@@ -1646,9 +1646,9 @@ window.abrirModal = () => {
                 }
             }
 
-            // Validade (ano atual + 1)
+            // Validade (DEZ / ANO ATUAL)
             const anoAtual = new Date().getFullYear();
-            document.getElementById('cart-aluno-validade-txt').innerText = (anoAtual + 1).toString();
+            document.getElementById('cart-aluno-validade-txt').innerText = `DEZ / ${anoAtual}`;
 
             // Foto do aluno
             const fotoModal = document.getElementById('cart-aluno-foto-modal');

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-PT">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -142,7 +142,7 @@
             <div class="flex border-b border-slate-200 bg-slate-50 px-2 overflow-x-auto hide-scrollbar shrink-0">
                 <button onclick="mudarAba('aba-pessoal')" id="btn-aba-pessoal" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest tab-active whitespace-nowrap transition-colors">👤 Pessoal</button>
                 <button onclick="mudarAba('aba-contato')" id="btn-aba-contato" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">📍 Contato</button>
-                <button onclick="mudarAba('aba-financeiro')" id="btn-aba-financeiro" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">💰 Financeiro</button>
+                <button onclick="mudarAba('aba-admin')" id="btn-aba-admin" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚙️ Admin</button>
                 <button onclick="mudarAba('aba-frequencia')" id="btn-aba-frequencia" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">📅 Frequência</button>
                 <button onclick="mudarAba('aba-anamnese')" id="btn-aba-anamnese" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚕️ Saúde</button>
                 <button onclick="mudarAba('aba-lgpd')" id="btn-aba-lgpd" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚖️ LGPD</button>
@@ -269,7 +269,7 @@
                     </div>
                 </div>
 
-                <div id="aba-financeiro" class="aba-content hidden space-y-5">
+                <div id="aba-admin" class="aba-content hidden space-y-5">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                         <div>
                             <label class="block text-[10px] font-black text-cyan-600 uppercase mb-1">Bolsa / Desconto (%)</label>
@@ -487,7 +487,7 @@
                         <span id="cart-aluno-foto-fallback-modal" class="text-5xl md:text-6xl font-black text-slate-300">?</span>
                     </div>
                     <div class="w-14 h-14 md:w-20 md:h-20 bg-white p-1 rounded-lg mt-auto shadow-sm border border-slate-200">
-                        <img id="cart-qr-code" src="" class="w-full h-full object-contain" alt="QR Code" onerror="this.style.display='none'">
+                        <img id="cart-qr-code" src="" class="w-full h-full object-contain">
                     </div>
                 </div>
 
@@ -524,14 +524,13 @@
         let teamId = null;
         let todosAlunosCache = [];
         let equipeDados = { nome: "Sua Equipe", logo: "" };
-        let dadosEquipeCompleto = null;
+        let dadosEquipeCompleto = null; // Guarda o status do plano
         let alunoEditandoId = null;
         let ficheiroFotoSelecionado = null;
         
         let checkinsDoAlunoAtualCache = []; 
 
-        // 🚀 LISTA CORRIGIDA PARA O BOTÃO PRÓXIMO FUNCIONAR PERFEITAMENTE
-        const ordemDasAbas = ['aba-pessoal', 'aba-contato', 'aba-financeiro', 'aba-frequencia', 'aba-anamnese', 'aba-lgpd'];
+        const ordemDasAbas = ['aba-pessoal', 'aba-contato', 'aba-admin', 'aba-frequencia', 'aba-lgpd', 'aba-anamnese'];
         let abaIndexAtual = 0;
 
         const selectVenc = document.getElementById('aluno-vencimento');
@@ -542,6 +541,7 @@
             selectVenc.value = "10";
         }
 
+        // --- SISTEMA DO OLHO DA SENHA ---
         window.toggleSenha = function(inputId, btnElement) {
             const input = document.getElementById(inputId);
             if (input.type === "password") {
@@ -553,6 +553,9 @@
             }
         }
 
+        // ==========================================
+        // 🔒 PAYWALL (Limite de Alunos)
+        // ==========================================
         window.abrirPaywallLimite = function() {
             const modal = document.getElementById('modal-paywall');
             const content = document.getElementById('modal-paywall-content');
@@ -574,10 +577,26 @@
                 modal.classList.remove('flex');
             }, 300);
         };
+        // ==========================================
 
-        // 🛡️ PROTEÇÃO DA TELA INTEIRA (CASO NÃO SEJA O DONO/COLAB)
         onAuthStateChanged(auth, async (user) => {
             if (user) {
+                const limparAcessando = () => {
+                    const aside = document.querySelector('aside');
+                    if (aside) {
+                        const elementos = aside.querySelectorAll('p, span, h4');
+                        elementos.forEach(el => {
+                            if (el.innerText.includes('carregando') || el.innerText.includes('rianbarbosa')) el.innerText = user.email;
+                            if (el.innerText.includes('ACESSANDO')) {
+                                el.innerText = 'ADMINISTRADOR';
+                                el.classList.remove('animate-pulse');
+                                el.style.opacity = "1";
+                            }
+                        });
+                    }
+                };
+                limparAcessando(); setTimeout(limparAcessando, 600);
+
                 const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
                 if (mestreDoc.exists()) { teamId = user.uid; } 
                 else {
@@ -596,14 +615,22 @@
             const eqSnap = await getDoc(doc(db, "equipes", teamId));
             if (eqSnap.exists()) {
                 const d = eqSnap.data();
-                dadosEquipeCompleto = d;
+                dadosEquipeCompleto = d; // Guarda os dados completos (Status do Plano, Isento, etc)
                 equipeDados.nome = d.nome_equipe || d.nome || "Sua Equipe";
                 equipeDados.logo = d.url_logo || "";
+                
+                const elNome = document.getElementById('nome-equipe') || document.getElementById('lbl-equipe');
+                if(elNome) elNome.innerText = equipeDados.nome.toUpperCase();
 
-                // Verifica restrições caso existam na configuração do sistema (como no Dashboard)
-                if(typeof window.atualizarMenuSeguro === "function") {
-                    // Tenta forçar a atualização caso já tenha vindo do SessionStorage
-                    window.atualizarMenuSeguro(window.funcionalidadesEquipe || []);
+                const elLogoMenu = document.getElementById('logo-equipe-menu') || document.getElementById('container-logo') || document.querySelector('aside div[class*="bg-cyan-"], aside div[class*="bg-blue-"]');
+                if (elLogoMenu) {
+                    if (equipeDados.logo) {
+                        elLogoMenu.style.background = 'transparent';
+                        elLogoMenu.innerHTML = `<img src="${equipeDados.logo}" class="w-full h-full object-cover rounded-xl shadow-md" alt="Logo">`;
+                    } else {
+                        elLogoMenu.style.background = '';
+                        elLogoMenu.innerHTML = `<span class="text-white font-black text-2xl">${equipeDados.nome.charAt(0).toUpperCase()}</span>`;
+                    }
                 }
             }
         }
@@ -724,7 +751,6 @@
             return 'bg-slate-100 text-slate-600 border border-slate-200';
         }
 
-        // Função mágica para a borda da carteirinha
         function getCorFaixaDupla(faixaTexto) {
             const f = faixaTexto ? faixaTexto.toLowerCase() : '';
             if (f.includes('cinza e branca')) return 'linear-gradient(to bottom, #94A3B8 50%, #f8fafc 50%)';
@@ -735,6 +761,7 @@
             if (f.includes('laranja e preta')) return 'linear-gradient(to bottom, #F97316 50%, #0F172A 50%)';
             if (f.includes('verde e branca')) return 'linear-gradient(to bottom, #16A34A 50%, #f8fafc 50%)';
             if (f.includes('verde e preta')) return 'linear-gradient(to bottom, #16A34A 50%, #0F172A 50%)';
+            
             if (f.includes('branca')) return '#f8fafc';
             if (f.includes('cinza')) return '#94A3B8';
             if (f.includes('amarela')) return '#FACC15';
@@ -744,6 +771,7 @@
             if (f.includes('roxa')) return '#a855f7';
             if (f.includes('marrom')) return '#78350f';
             if (f.includes('preta')) return '#0F172A';
+            
             return '#cbd5e1'; 
         }
 
@@ -802,6 +830,9 @@
             }
         }
 
+        // ========================================================
+        // 🚀 NOVO: FUNÇÃO PARA GERAR RELATÓRIO GERAL DE FREQUÊNCIA
+        // ========================================================
         window.gerarRelatorioGeralFrequencia = async function() {
             const btn = document.getElementById('btn-relatorio-freq');
             const originalTxt = btn.innerHTML;
@@ -900,13 +931,11 @@
             }
         }
 
-        window.abrirModalCarteirinha = function() {
-            document.getElementById('modal-aluno').classList.replace('flex', 'hidden');
-            document.getElementById('modal-carteirinha').classList.remove('hidden');
-            document.getElementById('modal-carteirinha').classList.add('flex');
-        }
 
-        window.carregarFrequenciaDoAluno = async function(idAluno) {
+        // ========================================================
+        // 🚀 FUNÇÕES DE FREQUÊNCIA NO PAINEL DO PROFESSOR (PERFIL INDIVIDUAL)
+        // ========================================================
+        async function carregarFrequenciaDoAluno(idAluno) {
             const listaEl = document.getElementById('admin-lista-checkins');
             listaEl.innerHTML = '<p class="text-center text-xs text-slate-400 py-6 italic">A carregar presenças...</p>';
             
@@ -950,7 +979,7 @@
         }
 
         window.filtrarFrequenciaAdmin = async function() {
-            const valFiltro = document.getElementById('filtro-mes-freq-admin').value; 
+            const valFiltro = document.getElementById('filtro-mes-freq-admin').value; // Formato YYYY-MM
             if (!valFiltro) return;
 
             const partes = valFiltro.split('-');
@@ -1066,63 +1095,6 @@
                 imgPreview.classList.add('hidden');
                 placeholder.classList.remove('hidden');
             }
-
-            // --- PREENCHE A CARTEIRINHA DIGITAL VIRTUAL ---
-            const elCartNome = document.getElementById('cart-aluno-nome-txt');
-            const elCartFaixa = document.getElementById('cart-aluno-faixa-texto');
-            const elCartNasc = document.getElementById('cart-aluno-nascimento-txt');
-            const elCartMatricula = document.getElementById('cart-aluno-matricula-txt');
-            const elCartValidade = document.getElementById('cart-aluno-validade-txt');
-            const cartFaixaBorder = document.getElementById('cart-faixa-border');
-            
-            if (elCartNome) elCartNome.innerText = a.nome || 'ALUNO NOME';
-            if (elCartFaixa) elCartFaixa.innerText = a.faixa || 'BRANCA';
-            if (cartFaixaBorder) cartFaixaBorder.style.background = getCorFaixaDupla(a.faixa);
-
-            if (elCartNasc) {
-                if (a.data_nascimento) {
-                    const parts = a.data_nascimento.split('-');
-                    elCartNasc.innerText = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : a.data_nascimento;
-                } else {
-                    elCartNasc.innerText = '00/00/0000';
-                }
-            }
-            if (elCartMatricula) elCartMatricula.innerText = a.matricula || '00000';
-            if (elCartValidade) elCartValidade.innerText = (new Date().getFullYear() + 1).toString(); // Validade para o ano seguinte
-
-            // Preenche o nome e logo da equipe na carteirinha
-            const elCartEqNome = document.getElementById('cart-equipe-nome');
-            const elCartEqLogo = document.getElementById('cart-equipe-logo');
-            const elCartEqFallback = document.getElementById('cart-equipe-fallback');
-            
-            if (elCartEqNome) elCartEqNome.innerText = equipeDados.nome.toUpperCase();
-            
-            if (equipeDados.logo) {
-                if (elCartEqLogo) { elCartEqLogo.src = equipeDados.logo; elCartEqLogo.classList.remove('hidden'); }
-                if (elCartEqFallback) elCartEqFallback.classList.add('hidden');
-            } else {
-                if (elCartEqLogo) elCartEqLogo.classList.add('hidden');
-                if (elCartEqFallback) { elCartEqFallback.innerText = equipeDados.nome.charAt(0).toUpperCase(); elCartEqFallback.classList.remove('hidden'); }
-            }
-
-            // Foto do aluno na carteirinha
-            const cartFotoModal = document.getElementById('cart-aluno-foto-modal');
-            const cartFotoFallback = document.getElementById('cart-aluno-foto-fallback-modal');
-            if (a.foto_url) {
-                if (cartFotoModal) { cartFotoModal.src = a.foto_url; cartFotoModal.classList.remove('hidden'); }
-                if (cartFotoFallback) cartFotoFallback.classList.add('hidden');
-            } else {
-                if (cartFotoModal) cartFotoModal.classList.add('hidden');
-                if (cartFotoFallback) cartFotoFallback.classList.remove('hidden');
-            }
-
-            // QR Code API Pública Gratuita
-            const cartQrCode = document.getElementById('cart-qr-code');
-            if (cartQrCode) {
-                cartQrCode.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${a.matricula || id}`;
-                cartQrCode.style.display = 'block';
-            }
-            // ----------------------------------------------
 
             carregarFrequenciaDoAluno(id);
 
@@ -1254,16 +1226,16 @@
                     const statusAtual = (dadosEquipeCompleto && dadosEquipeCompleto.status_plano) ? dadosEquipeCompleto.status_plano : 'TESTE';
                     const planosBasicos = ['TESTE', 'BASICO', 'BÁSICO', 'BLACK_BELT'];
                     
-                    if (planosBasicos.includes(statusAtual.toUpperCase())) {
+                    if (planosBasicos.includes(statusAtual)) {
                         const alunosAtivos = todosAlunosCache.filter(a => a.status === 'ATIVO').length;
-                        
                         if (alunosAtivos >= 10) {
-                            abrirPaywallLimite(); 
+                            abrirPaywallLimite(); // Tranca a porta e mostra o Modal!
                             return; 
                         }
                     }
                 }
             }
+            // =========================================================================
 
             const nome = document.getElementById('aluno-nome').value.toUpperCase();
             const cpf = document.getElementById('aluno-cpf').value;
@@ -1351,24 +1323,30 @@
             }
         }
 
-        window.abrirModal = () => { 
+window.abrirModal = () => { 
+            // 🛑 LÓGICA DO PAYWALL DE LIMITE DE 10 ALUNOS (Plano Básico)
             const isImpersonating = sessionStorage.getItem('admin_impersonate') !== null;
             const isIsento = dadosEquipeCompleto && (dadosEquipeCompleto.isento === true || String(dadosEquipeCompleto.isento) === "true");
             
             if (!isImpersonating && !isIsento) {
+                // Lê o plano atual (se não houver, assume TESTE)
                 const statusAtual = (dadosEquipeCompleto && dadosEquipeCompleto.status_plano) ? dadosEquipeCompleto.status_plano : 'TESTE';
+                
+                // Mapeia os planos que sofrem o bloqueio de 10 alunos
                 const planosBasicos = ['TESTE', 'BASICO', 'BÁSICO'];
                 
                 if (planosBasicos.includes(statusAtual.toUpperCase())) {
+                    // Conta quantos alunos ATIVOS esta academia tem
                     const alunosAtivos = todosAlunosCache.filter(a => a.status === 'ATIVO').length;
                     
                     if (alunosAtivos >= 10) {
-                        abrirPaywallLimite(); 
-                        return; 
+                        abrirPaywallLimite(); // Abre o cadeado dourado!
+                        return; // ⛔ Impede a execução e não deixa abrir a ficha de matrícula
                     }
                 }
             }
 
+            // Se passou na segurança, limpa os campos e abre a ficha nova
             alunoEditandoId = null; 
             ficheiroFotoSelecionado = null;
             
@@ -1474,6 +1452,7 @@
             html2pdf().set(opt).from(element).save();
         }
 
+        // NOVA FUNÇÃO: Gerar o PDF da Ficha de Saúde (Anamnese)
         window.gerarPDF_Anamnese = function() {
             const aluno = todosAlunosCache.find(a => a.id === alunoEditandoId);
             if (!aluno || !aluno.anamnese_preenchida || !aluno.anamnese) {
@@ -1483,6 +1462,7 @@
             const an = aluno.anamnese;
             const nome = aluno.nome || 'NÃO INFORMADO';
             
+            // Verifica se é menor de idade para garantir que pega o responsável
             let isMenor = false;
             if (aluno.data_nascimento) {
                 const hoje = new Date();
@@ -1494,6 +1474,7 @@
             }
 
             const resp = aluno.nome_responsavel || '';
+            // Se for menor E tiver responsável, usa o responsável. Senão, usa o próprio aluno.
             const assinante = (isMenor && resp) ? resp.toUpperCase() : nome.toUpperCase();
             const tipoAssinante = (isMenor && resp) ? "RESPONSÁVEL LEGAL" : "ATLETA";
 
@@ -1642,6 +1623,35 @@
             } 
         }
         
+        window.abrirModal = () => { 
+            alunoEditandoId = null; 
+            ficheiroFotoSelecionado = null;
+            
+            document.querySelectorAll('#modal-aluno input[type="text"], #modal-aluno input[type="email"], #modal-aluno input[type="date"]').forEach(i => i.value = ''); 
+            document.querySelectorAll('#modal-aluno input[type="checkbox"]').forEach(i => i.checked = false);
+            
+            document.getElementById('cad-foto').value = "";
+            document.getElementById('preview-foto').src = "";
+            document.getElementById('preview-foto').classList.add('hidden');
+            document.getElementById('placeholder-foto').classList.remove('hidden');
+
+            document.getElementById('modal-titulo').innerText = "Nova Matrícula"; 
+            document.getElementById('aluno-matricula').value = "Gerada Auto";
+            document.getElementById('aluno-faixa').value = "Branca";
+            document.getElementById('aluno-grau').value = "Sem grau";
+            document.getElementById('aluno-bolsa').value = "0";
+            document.getElementById('aluno-vencimento').value = "10";
+            document.getElementById('aluno-status').value = "ATIVO";
+            
+            document.getElementById('btn-abrir-carteirinha').classList.add('hidden'); 
+            document.getElementById('btn-gerar-pdf').classList.add('hidden');
+            
+            calcularIdade();
+
+            mudarAba('aba-pessoal'); 
+            document.getElementById('modal-aluno').classList.replace('hidden', 'flex'); 
+        }
+
         window.limparBusca = () => { document.getElementById('input-busca').value = ''; renderizarTabela(); }
     </script>
 </body>

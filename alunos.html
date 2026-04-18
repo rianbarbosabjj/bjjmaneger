@@ -142,7 +142,7 @@
             <div class="flex border-b border-slate-200 bg-slate-50 px-2 overflow-x-auto hide-scrollbar shrink-0">
                 <button onclick="mudarAba('aba-pessoal')" id="btn-aba-pessoal" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest tab-active whitespace-nowrap transition-colors">👤 Pessoal</button>
                 <button onclick="mudarAba('aba-contato')" id="btn-aba-contato" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">📍 Contato</button>
-                <button onclick="mudarAba('aba-admin')" id="btn-aba-admin" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚙️ Admin</button>
+                <button onclick="mudarAba('aba-financeiro')" id="btn-aba-financeiro" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">💰 Financeiro</button>
                 <button onclick="mudarAba('aba-frequencia')" id="btn-aba-frequencia" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">📅 Frequência</button>
                 <button onclick="mudarAba('aba-anamnese')" id="btn-aba-anamnese" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚕️ Saúde</button>
                 <button onclick="mudarAba('aba-lgpd')" id="btn-aba-lgpd" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚖️ LGPD</button>
@@ -530,7 +530,7 @@
         
         let checkinsDoAlunoAtualCache = []; 
 
-        const ordemDasAbas = ['aba-pessoal', 'aba-contato', 'aba-admin', 'aba-frequencia', 'aba-lgpd', 'aba-anamnese'];
+        const ordemDasAbas = ['aba-pessoal', 'aba-contato', 'aba-financeiro', 'aba-frequencia', 'aba-anamnese', 'aba-lgpd'];
         let abaIndexAtual = 0;
 
         const selectVenc = document.getElementById('aluno-vencimento');
@@ -1095,7 +1095,7 @@
                 imgPreview.classList.add('hidden');
                 placeholder.classList.remove('hidden');
             }
-
+            
             carregarFrequenciaDoAluno(id);
 
             const divVazia = document.getElementById('anamnese-vazia');

@@ -97,7 +97,7 @@
                         </div>
                         
                         <div class="flex flex-wrap gap-2 md:gap-3 justify-center sm:justify-start">
-                            <button onclick="if(verificarAcesso('mural_avisos')) abrirModalMensagem()" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2.5 px-3 md:px-4 rounded-xl shadow-md transition-all flex items-center text-xs md:text-sm">
+                            <button onclick="if(window.verificarAcesso('mural_avisos')) abrirModalMensagem()" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2.5 px-3 md:px-4 rounded-xl shadow-md transition-all flex items-center text-xs md:text-sm">
                                 <span class="mr-1 md:mr-2">📢</span> <span class="hidden sm:inline">Avisos</span>
                             </button>
 
@@ -431,6 +431,73 @@
         }
 
         // ==========================================
+        // 🔒 MOTOR DE PERMISSÕES E PAYWALL
+        // ==========================================
+        const HIERARQUIA_PLANOS = {
+            'TESTE': 1, 'BASICO': 1, 'BLACK_BELT': 1,
+            'INTERMEDIARIO': 2, 'MASTER': 2,
+            'PREMIUM': 3, 'ELITE': 3,
+            'ULTIMATE': 4
+        };
+
+        const REGRAS_DE_ACESSO = {
+            'mural_avisos': { nivel: 2, nome: 'Portal do Aluno (App)' }
+        };
+
+        window.verificarAcesso = function(idRecurso) {
+            const isImpersonating = sessionStorage.getItem('admin_impersonate') !== null;
+            if (isImpersonating || (dadosEquipe && (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true"))) {
+                return true; 
+            }
+
+            const statusAtual = (dadosEquipe && dadosEquipe.status_plano) ? dadosEquipe.status_plano : 'TESTE';
+            const nivelDaEquipe = HIERARQUIA_PLANOS[statusAtual.toUpperCase()] || 1;
+            
+            const regra = REGRAS_DE_ACESSO[idRecurso];
+            if (!regra) return true;
+
+            if (nivelDaEquipe < regra.nivel) {
+                window.abrirPaywall(regra.nome);
+                return false; 
+            }
+
+            return true; 
+        };
+
+        window.abrirPaywall = function(nomeRecurso) {
+            const elNome = document.getElementById('paywall-recurso-nome');
+            if(elNome) elNome.innerText = nomeRecurso;
+            
+            const modal = document.getElementById('modal-paywall');
+            const content = document.getElementById('modal-paywall-content');
+            
+            if(modal && content) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                
+                setTimeout(() => {
+                    content.classList.remove('scale-95', 'opacity-0');
+                    content.classList.add('scale-100', 'opacity-100');
+                }, 50);
+            }
+        };
+
+        window.fecharPaywall = function() {
+            const modal = document.getElementById('modal-paywall');
+            const content = document.getElementById('modal-paywall-content');
+            
+            if(modal && content) {
+                content.classList.remove('scale-100', 'opacity-100');
+                content.classList.add('scale-95', 'opacity-0');
+                
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }, 300);
+            }
+        };
+
+        // ==========================================
         // 🔒 PROTEÇÃO DE ROTAS (ANTI-BURLA)
         // ==========================================
         function protegerPaginaRestrita(recursoNomeEsperado) {
@@ -718,7 +785,6 @@
             }
         };
 
-        // --- CONTROLE DE ABAS NO MODAL CONFIG ---
         window.switchConfigTab = function(tab) {
             ['dados', 'colabs', 'convites'].forEach(t => {
                 document.getElementById('tab-' + t).classList.add('hidden');
@@ -779,7 +845,6 @@
             modal.classList.remove('flex');
         };
 
-        // --- LÓGICA DA EQUIPE TÉCNICA (COLABORADORES) ---
         window.carregarColaboradores = async function() {
             const listaEl = document.getElementById('lista-colaboradores');
             listaEl.innerHTML = '<div class="text-center text-slate-400 text-xs italic py-4">Carregando equipe...</div>';
@@ -915,17 +980,14 @@
                         }
 
                         // --- TRATA O NOME DO PLANO E O STATUS DO CABEÇALHO ---
-const badgeStatus = document.getElementById('status-badge');
+                        const badgeStatus = document.getElementById('status-badge');
                         const txtNomePlano = document.getElementById('nome-equipe');
                         
-                        txtNomePlano.innerText = (dadosEquipe.nome_equipe || "SUA EQUIPE").toUpperCase();
+                        if (txtNomePlano) txtNomePlano.innerText = (dadosEquipe.nome_equipe || "SUA EQUIPE").toUpperCase();
 
-                        // 🚀 LÓGICA DE DETECÇÃO DO PLANO CORRIGIDA
-                        // Lê o Status definido pelo Super Admin
                         const statusAt = (dadosEquipe.status_plano || 'TESTE').toUpperCase();
                         let idDoPlano = dadosEquipe.plano_escolhido || 'p1';
 
-                        // Traduz o Status do Super Admin para o ID das Funcionalidades
                         if (statusAt === 'BASICO' || statusAt === 'BLACK_BELT') idDoPlano = 'p1';
                         else if (statusAt === 'INTERMEDIARIO' || statusAt === 'MASTER') idDoPlano = 'p2';
                         else if (statusAt === 'PREMIUM') idDoPlano = 'p3';
@@ -933,7 +995,6 @@ const badgeStatus = document.getElementById('status-badge');
 
                         let nomeRealDoPlano = statusAt; 
 
-                        // Puxa as Features daquele plano específico
                         if (configPlanosCache && configPlanosCache[idDoPlano]) {
                             nomeRealDoPlano = configPlanosCache[idDoPlano].nome || statusAt;
                             window.funcionalidadesEquipe = configPlanosCache[idDoPlano].features ? configPlanosCache[idDoPlano].features.split('\n') : [];
@@ -941,7 +1002,7 @@ const badgeStatus = document.getElementById('status-badge');
                             window.funcionalidadesEquipe = [];
                         }
 
-                        // 🚀 PASSE LIVRE: Super Admins e Equipes Isentas têm acesso TOTAL
+                        // PASSE LIVRE
                         if (isImpersonating || String(dadosEquipe.isento) === "true") {
                             window.funcionalidadesEquipe = [
                                 "✓ Automação Asaas (PIX/Cartão)", "✓ Vitrine Virtual (Loja Online)", 
@@ -951,47 +1012,23 @@ const badgeStatus = document.getElementById('status-badge');
                             ];
                         }
 
-                        // Atualiza a Badge visualmente
-                        if (statusAt === 'TESTE') {
-                            badgeStatus.innerText = `TESTE: ${nomeRealDoPlano.toUpperCase()}`;
-                            badgeStatus.className = "px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-amber-100 text-amber-700 border border-amber-200 mt-1";
-                        } else {
-                            badgeStatus.innerText = `${nomeRealDoPlano.toUpperCase()}`;
-                            badgeStatus.className = "px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-700 border border-emerald-200 mt-1 shadow-sm shadow-emerald-500/20";
+                        if (badgeStatus) {
+                            if (statusAt === 'TESTE') {
+                                badgeStatus.innerText = `TESTE: ${nomeRealDoPlano.toUpperCase()}`;
+                                badgeStatus.className = "px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-amber-100 text-amber-700 border border-amber-200 mt-1";
+                            } else {
+                                badgeStatus.innerText = `${nomeRealDoPlano.toUpperCase()}`;
+                                badgeStatus.className = "px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-700 border border-emerald-200 mt-1 shadow-sm shadow-emerald-500/20";
+                            }
                         }
 
-                        // Manda o Menu se atualizar com as chaves corretas!
-                        if (typeof window.atualizarMenuSeguro === "function") {
-                            window.atualizarMenuSeguro(window.funcionalidadesEquipe);
-                        }
-                            
-                            // Guarda as features deste plano para o menu ler e bloquear
-                            window.funcionalidadesEquipe = configPlanosCache[planoIdSalvo].features ? configPlanosCache[planoIdSalvo].features.split('\n') : [];
-                        } else {
-                            window.funcionalidadesEquipe = []; // Fallback
-                        }
-
-                        // Se for equipe teste, avisa que é teste do Plano X
-                        if (dadosEquipe.status_plano === 'TESTE' || !dadosEquipe.status_plano) {
-                            badgeStatus.innerText = `TESTE: ${nomeRealDoPlano.toUpperCase()}`;
-                            badgeStatus.className = "px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-amber-100 text-amber-700 border border-amber-200 mt-1";
-                        } else {
-                            badgeStatus.innerText = `${nomeRealDoPlano.toUpperCase()}`;
-                            badgeStatus.className = "px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-700 border border-emerald-200 mt-1 shadow-sm shadow-emerald-500/20";
-                        }
-
-                        // Atualiza o menu agora que sabemos as funcionalidades!
                         if (typeof window.atualizarMenuSeguro === "function") {
                             window.atualizarMenuSeguro(window.funcionalidadesEquipe);
                         }
 
                         // GUARDA AS VARIÁVEIS PARA O RESTO DA TELA
-                        nomeEquipeAtual = dadosEquipe.nome_equipe;
-                        
-                        if(dadosEquipe.url_logo) {
-                            logoEquipeAnterior = dadosEquipe.url_logo;
-                        }
-
+                        nomeEquipeAtual = dadosEquipe.nome_equipe || "";
+                        if(dadosEquipe.url_logo) logoEquipeAnterior = dadosEquipe.url_logo;
                         if (dadosEquipe.valor_prazo) valPrazo = parseFloat(dadosEquipe.valor_prazo);
                         if (dadosEquipe.valor_atraso) valAtraso = parseFloat(dadosEquipe.valor_atraso);
 
@@ -1013,7 +1050,7 @@ const badgeStatus = document.getElementById('status-badge');
                         } else {
                             if (elLogo) {
                                 elLogo.style.background = ''; 
-                                elLogo.innerHTML = nomeEquipeAtual.charAt(0).toUpperCase();
+                                elLogo.innerHTML = nomeEquipeAtual ? nomeEquipeAtual.charAt(0).toUpperCase() : 'E';
                             }
                         }
                     }
@@ -1032,7 +1069,6 @@ const badgeStatus = document.getElementById('status-badge');
             window.location.href = "super_admin.html";
         };
 
-        // --- REGISTRO RÁPIDO DE PAGAMENTO ---
         window.pagamentoRapido = function(alunoId, nomeAluno, valor, faturaId) {
             pagRapidoDados = { alunoId, nomeAluno, valor, faturaId };
             document.getElementById('lbl-pag-rapido-nome').innerText = nomeAluno;
@@ -1114,7 +1150,6 @@ const badgeStatus = document.getElementById('status-badge');
             return faixasInfo[faixaNormalizada] || 'background-color: #cbd5e1'; 
         }
 
-        // --- CARREGAMENTO PRINCIPAL DO DASHBOARD ---
         async function carregarDashboard() {
             try {
                 const turmasQuery = query(collection(db, "turmas"), where("equipe_id", "==", uid));
@@ -1250,9 +1285,6 @@ const badgeStatus = document.getElementById('status-badge');
                     }
                 });
 
-                // ========================================================================
-                // CHECK-INS DE HOJE
-                // ========================================================================
                 const dataHojeStr = new Date().toISOString().split('T')[0];
                 let checkinsHTML = '';
                 
@@ -1262,7 +1294,6 @@ const badgeStatus = document.getElementById('status-badge');
                     let checkins = [];
                     checkinSnap.forEach(doc => checkins.push(doc.data()));
 
-                    // Ordenar por hora do check-in (timestamp) mais recente primeiro
                     checkins.sort((a,b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
                     if(checkins.length === 0) {
@@ -1296,9 +1327,6 @@ const badgeStatus = document.getElementById('status-badge');
                 const elListaCheckins = document.getElementById('lista-checkins');
                 if (elListaCheckins) elListaCheckins.innerHTML = checkinsHTML;
 
-                // ========================================================================
-                // A MÁGICA DO ONBOARDING E DA GRELHA GERAL
-                // ========================================================================
                 const painelMetricas = document.getElementById('painel-metricas');
                 const painelOnboarding = document.getElementById('painel-onboarding');
 
@@ -1389,7 +1417,6 @@ const badgeStatus = document.getElementById('status-badge');
             } catch (error) { console.error(error); }
         }
 
-        // --- SALVAR DADOS DA EQUIPE COM LIMPEZA DE LOGO ANTIGA ---
         window.salvarConfigEquipe = async function() {
             const btn = document.getElementById('btn-salvar-config');
             const novoNome = document.getElementById('config-nome-equipe').value.trim();
@@ -1401,10 +1428,7 @@ const badgeStatus = document.getElementById('status-badge');
             try {
                 let updates = { nome_equipe: novoNome };
                 
-                // Se escolheu uma nova foto
                 if (arquivoLogo) {
-                    
-                    // 1. Apaga a logo antiga se existir
                     if (logoEquipeAnterior) {
                         try {
                             const refLogoAntiga = ref(storage, logoEquipeAnterior);
@@ -1415,7 +1439,6 @@ const badgeStatus = document.getElementById('status-badge');
                         }
                     }
 
-                    // 2. Faz o Upload da Nova Logo
                     const timestamp = new Date().getTime();
                     const caminhoRef = ref(storage, `equipes_logos/${uid}_${timestamp}_${arquivoLogo.name}`);
                     await uploadBytes(caminhoRef, arquivoLogo);

@@ -3,17 +3,26 @@
 function carregarMenu() {
     const paginaAtual = window.location.pathname.split("/").pop() || "dashboard.html";
 
-    // --- 1. CAPTURA O ESTADO ATUAL (Para não perder o nome e a foto ao recarregar os cadeados) ---
-    const elEmail = document.getElementById('email-logado');
-    const elCargo = document.getElementById('lbl-cargo');
-    const elNome = document.getElementById('nome-equipe');
-    const elLogo = document.getElementById('container-logo');
+    // --- 1. RECUPERA O ESTADO GLOBAL DO NAVEGADOR (Para manter cadeados e dados nas outras telas) ---
+    if (!window.funcionalidadesEquipe) {
+        const cacheFeatures = sessionStorage.getItem('bjj_features');
+        if (cacheFeatures) {
+            window.funcionalidadesEquipe = JSON.parse(cacheFeatures);
+        }
+    }
+
+    // Tenta pegar os dados visuais salvos na sessão
+    const cacheEmail = sessionStorage.getItem('bjj_email') || 'Usuário Logado';
+    const cacheCargo = sessionStorage.getItem('bjj_cargo') || 'Administrador';
+    const cacheNome = sessionStorage.getItem('bjj_equipe_nome') || 'SUA EQUIPE';
+    const cacheLogoUrl = sessionStorage.getItem('bjj_equipe_logo');
     
-    const cacheEmail = elEmail && elEmail.innerText !== 'Aguarde...' ? elEmail.innerText : 'Aguarde...';
-    const cacheCargo = elCargo && elCargo.innerText !== 'CONECTANDO' ? elCargo.innerText : 'CONECTANDO';
-    const cacheNome = elNome && elNome.innerText !== 'Carregando...' ? elNome.innerText : 'Carregando...';
-    const cacheLogoHTML = elLogo ? elLogo.innerHTML : '';
-    const cacheLogoBg = elLogo ? elLogo.style.background : '';
+    let cacheLogoHTML = cacheNome.charAt(0).toUpperCase();
+    let cacheLogoBg = "";
+    if (cacheLogoUrl && cacheLogoUrl !== "null" && cacheLogoUrl !== "") {
+        cacheLogoHTML = `<img src="${cacheLogoUrl}" class="w-full h-full object-cover" alt="Logo">`;
+        cacheLogoBg = "background: transparent;";
+    }
 
     // --- 2. LÓGICA DE ESTILOS ---
     const classDesktop = (pagina, isBloqueado = false) => {
@@ -40,10 +49,7 @@ function carregarMenu() {
 
     // --- 3. MOTOR DE PERMISSÕES BLINDADO ---
     const hasAccess = (palavraChave) => {
-        // Se ainda não carregou do Firebase, libera o visual temporariamente para não piscar
-        if (!window.funcionalidadesEquipe) return true; 
-        
-        // Busca a palavra-chave (ex: "Asaas") dentro dos recursos que têm um "✓"
+        if (!window.funcionalidadesEquipe) return true; // Fallback se não carregou
         return window.funcionalidadesEquipe.some(f => 
             f.includes('✓') && f.toLowerCase().includes(palavraChave.toLowerCase())
         );
@@ -57,7 +63,7 @@ function carregarMenu() {
     const canCert = hasAccess('Certificados'); 
     const canTurmas = hasAccess('Turmas'); 
     
-    // GESTÃO EXTRA: Se não tiver "Alunos Ilimitados" nem "Portal", é o Plano Básico, então bloqueia!
+    // GESTÃO EXTRA E CURRÍCULO: Se não tiver "Alunos Ilimitados" ou "Portal", é o Plano Básico, então bloqueia!
     const canExtra = hasAccess('Ilimitados') || hasAccess('Portal'); 
 
     const clickAcao = (url, hasAcc) => {
@@ -108,8 +114,9 @@ function carregarMenu() {
                     ${!canCert ? blockIcon : ''}
                 </button>
                 
-                <button onclick="${clickAcao('curriculo.html', true)}" class="${classDesktop('curriculo.html', false)}">
+                <button onclick="${clickAcao('curriculo.html', canExtra)}" class="${classDesktop('curriculo.html', !canExtra)}">
                     <div class="flex items-center"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'curriculo.html' ? 'drop-shadow-md' : 'opacity-70'}">📄</span> Currículo</div>
+                    ${!canExtra ? blockIcon : ''}
                 </button>
                 
                 <div class="px-5 pt-5 pb-2">
@@ -190,8 +197,9 @@ function carregarMenu() {
                 <span class="text-[8px] font-bold uppercase tracking-wide">Certif.</span>
             </button>
             
-            <button onclick="${clickAcao('curriculo.html', true)}" class="${classMobile('curriculo.html', false)}">
+            <button onclick="${clickAcao('curriculo.html', canExtra)}" class="${classMobile('curriculo.html', !canExtra)} relative">
                 ${indicadorMobile('curriculo.html')}
+                ${!canExtra ? `<div class="absolute top-1 right-2 text-[10px]">🔒</div>` : ''}
                 <span class="text-2xl mb-1 ${paginaAtual === 'curriculo.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">📄</span>
                 <span class="text-[8px] font-bold uppercase tracking-wide">Currí.</span>
             </button>
@@ -224,7 +232,7 @@ function carregarMenu() {
         </nav>
     `;
 
-    // --- 6. RENDERIZAÇÃO NA TELA ---
+    // Renderização
     const containerPrincipal = document.getElementById('interface-sistema');
     if (containerPrincipal) {
         const oldMenu = document.querySelector('aside');
@@ -237,20 +245,22 @@ function carregarMenu() {
     document.body.insertAdjacentHTML('beforeend', menuMobile);
 }
 
-// === ALERTAS DE BLOQUEIO ===
+// Alerta Padrão de Bloqueio
 window.mostrarAvisoUpgrade = function() {
     if(typeof showToast === 'function') {
-        showToast("O seu plano não possui este recurso. Aceda a 'Visão Geral' para fazer Upgrade.", "info");
+        showToast("O seu plano atual não possui este recurso. Aceda a Visão Geral para Upgrade.", "info");
     } else {
         alert("🔒 Recurso Bloqueado! Faça o Upgrade do seu plano para liberar esta funcionalidade.");
     }
 };
 
-// Esta função é chamada pelo dashboard.html quando o Firebase termina de ler os dados
+// Quando o Dashboard termina de ler o banco, ele chama isto para injetar e salvar as regras:
 window.atualizarMenuSeguro = function(funcionalidadesDoPlano) {
     window.funcionalidadesEquipe = funcionalidadesDoPlano;
-    carregarMenu(); // Reescreve o menu já com os cadeados no lugar!
+    // Salva no navegador para o menu funcionar nas outras páginas sem Firebase
+    sessionStorage.setItem('bjj_features', JSON.stringify(funcionalidadesDoPlano));
+    carregarMenu(); 
 };
 
-// Arranca o menu provisório antes do Firebase responder
+// Render Inicial
 carregarMenu();

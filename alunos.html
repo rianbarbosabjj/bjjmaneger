@@ -286,8 +286,7 @@
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Dia de Vencimento Mensalidade</label>
                             <select id="aluno-vencimento" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none text-slate-700">
-                                <option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option>
-                            </select>
+                                </select>
                         </div>
                     </div>
                 </div>
@@ -320,7 +319,6 @@
                 </div>
 
                 <div id="aba-anamnese" class="aba-content hidden space-y-5">
-                    
                     <div id="anamnese-vazia" class="hidden bg-slate-100 p-8 rounded-2xl text-center border border-slate-200">
                         <span class="text-4xl block mb-3">⏳</span>
                         <h4 class="text-slate-500 font-black uppercase tracking-widest text-sm">Ficha Pendente</h4>
@@ -329,7 +327,6 @@
 
                     <div id="anamnese-preenchida" class="hidden space-y-4">
                         </div>
-
                 </div>
 
                 <div id="aba-lgpd" class="aba-content hidden space-y-5">
@@ -395,10 +392,10 @@
             </div>
 
             <div class="p-4 md:p-6 bg-slate-50 border-t border-slate-200 flex flex-wrap justify-end gap-3 rounded-b-3xl shrink-0">
-                <button onclick="abrirModalCarteirinha()" id="btn-abrir-carteirinha" class="flex-1 md:flex-none bg-indigo-500 hover:bg-indigo-600 text-white font-black py-3 px-6 rounded-xl text-sm hidden uppercase tracking-widest shadow-md transition-all">🪪 Carteirinha</button>
-                <button onclick="fecharModal()" class="flex-1 md:flex-none px-6 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-200 transition-colors text-sm">Cancelar</button>
-                <button onclick="proximaAba()" id="btn-proximo" class="flex-1 md:flex-none bg-slate-800 hover:bg-slate-900 text-white font-black py-3 px-8 rounded-xl shadow-md transition-all text-sm uppercase tracking-widest">Próximo ➔</button>
-                <button onclick="salvarAluno()" id="btn-salvar-aluno" class="flex-1 md:flex-none bg-cyan-500 hover:bg-cyan-600 text-white font-black py-3 px-8 rounded-xl shadow-md transition-all text-sm uppercase tracking-widest hidden">💾 Salvar</button>
+                <button onclick="abrirModalCarteirinha()" id="btn-abrir-carteirinha" class="hidden bg-indigo-500 hover:bg-indigo-600 text-white font-black py-3 px-6 rounded-xl text-sm uppercase tracking-widest shadow-md transition-all">🪪 Carteirinha</button>
+                <button onclick="fecharModal()" class="px-6 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-200 transition-colors text-sm">Cancelar</button>
+                <button onclick="proximaAba()" id="btn-proximo" class="bg-slate-800 hover:bg-slate-900 text-white font-black py-3 px-8 rounded-xl shadow-md transition-all text-sm uppercase tracking-widest">Próximo ➔</button>
+                <button onclick="salvarAluno()" id="btn-salvar-aluno" class="hidden bg-cyan-500 hover:bg-cyan-600 text-white font-black py-3 px-8 rounded-xl shadow-md transition-all text-sm uppercase tracking-widest">💾 Salvar</button>
             </div>
         </div>
     </div>
@@ -500,6 +497,7 @@
     </div>
 
     <script src="menu.js"></script>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -526,7 +524,6 @@
         let dadosEquipeCompleto = null; // Guarda o status do plano
         let alunoEditandoId = null;
         let ficheiroFotoSelecionado = null;
-        
         let checkinsDoAlunoAtualCache = []; 
 
         const ordemDasAbas = ['aba-pessoal', 'aba-contato', 'aba-financeiro', 'aba-frequencia', 'aba-anamnese', 'aba-lgpd'];
@@ -576,6 +573,26 @@
                 modal.classList.remove('flex');
             }, 300);
         };
+
+        // 🛡️ MOTOR DE VERIFICAÇÃO DE RECURSOS SEGURO (Substitui bloqueios baseados no sessionCache de forma mais resiliente)
+        function recursoLiberado(palavraChave) {
+            const isImpersonating = sessionStorage.getItem('admin_impersonate') !== null;
+            const isIsento = dadosEquipeCompleto && (dadosEquipeCompleto.isento === true || String(dadosEquipeCompleto.isento) === "true");
+            if (isImpersonating || isIsento) return true;
+
+            if (window.funcionalidadesEquipe && window.funcionalidadesEquipe.length > 0) {
+                return window.funcionalidadesEquipe.some(f => 
+                    f.includes('✓') && f.toLowerCase().includes(palavraChave.toLowerCase())
+                );
+            }
+
+            const status = (dadosEquipeCompleto && dadosEquipeCompleto.status_plano) ? dadosEquipeCompleto.status_plano.toUpperCase() : 'TESTE';
+            if (['BASICO', 'BÁSICO', 'TESTE', 'BLACK_BELT'].includes(status)) {
+                return false; // Planos básicos não têm frequência nem carteirinha
+            }
+            
+            return true; // Se for intermediário ou superior, libera
+        }
         // ==========================================
 
         onAuthStateChanged(auth, async (user) => {
@@ -617,6 +634,11 @@
                 dadosEquipeCompleto = d; // Guarda os dados completos (Status do Plano, Isento, etc)
                 equipeDados.nome = d.nome_equipe || d.nome || "Sua Equipe";
                 equipeDados.logo = d.url_logo || "";
+
+                if(typeof window.atualizarMenuSeguro === "function") {
+                    // Tenta forçar a atualização caso já tenha vindo do SessionStorage
+                    window.atualizarMenuSeguro(window.funcionalidadesEquipe || []);
+                }
             }
         }
 
@@ -1031,8 +1053,17 @@
             // 🔒 TRAVA DA ABA DE FREQUÊNCIA
             const btnAbaFreq = document.getElementById('btn-aba-frequencia');
             if(btnAbaFreq) {
-                const temFrequencia = window.funcionalidadesEquipe && window.funcionalidadesEquipe.some(f => f.includes('✓') && f.includes('Frequência'));
-                btnAbaFreq.style.display = temFrequencia ? 'inline-block' : 'none';
+                btnAbaFreq.style.display = recursoLiberado('frequência') || recursoLiberado('frequencia') ? 'inline-block' : 'none';
+            }
+
+            // 🔒 TRAVA DO BOTÃO CARTEIRINHA
+            const btnCarteirinha = document.getElementById('btn-abrir-carteirinha');
+            if (btnCarteirinha) {
+                if (recursoLiberado('carteirinha')) {
+                    btnCarteirinha.classList.remove('hidden');
+                } else {
+                    btnCarteirinha.classList.add('hidden');
+                }
             }
 
             document.getElementById('modal-titulo').innerText = "Editar Ficha";
@@ -1247,17 +1278,6 @@
                 divPreenchida.classList.add('hidden');
             }
             
-            // 🔒 TRAVA DA CARTEIRINHA
-            const btnCarteirinha = document.getElementById('btn-abrir-carteirinha');
-            if (btnCarteirinha) {
-                const temCarteirinha = window.funcionalidadesEquipe && window.funcionalidadesEquipe.some(f => f.includes('✓') && f.includes('Carteirinhas'));
-                if (temCarteirinha) {
-                    btnCarteirinha.classList.remove('hidden');
-                } else {
-                    btnCarteirinha.classList.add('hidden');
-                }
-            }
-
             document.getElementById('btn-gerar-pdf').classList.remove('hidden');
 
             calcularIdade(); 
@@ -1268,6 +1288,7 @@
         window.salvarAluno = async function() {
             const id = alunoEditandoId;
 
+            // 🛑 LÓGICA DO PAYWALL DE LIMITE DE ALUNOS (Apenas para novos cadastros)
             if (!id) {
                 const isImpersonating = sessionStorage.getItem('admin_impersonate') !== null;
                 const isIsento = dadosEquipeCompleto && (dadosEquipeCompleto.isento === true || String(dadosEquipeCompleto.isento) === "true");
@@ -1280,12 +1301,13 @@
                         const alunosAtivos = todosAlunosCache.filter(a => a.status === 'ATIVO').length;
                         
                         if (alunosAtivos >= 10) {
-                            abrirPaywallLimite(); 
+                            abrirPaywallLimite(); // Tranca a porta e mostra o Modal!
                             return; 
                         }
                     }
                 }
             }
+            // =========================================================================
 
             const nome = document.getElementById('aluno-nome').value.toUpperCase();
             const cpf = document.getElementById('aluno-cpf').value;
@@ -1397,8 +1419,7 @@
             // 🔒 TRAVA DA ABA DE FREQUÊNCIA NO NOVO ALUNO
             const btnAbaFreq = document.getElementById('btn-aba-frequencia');
             if(btnAbaFreq) {
-                const temFrequencia = window.funcionalidadesEquipe && window.funcionalidadesEquipe.some(f => f.includes('✓') && f.includes('Frequência'));
-                btnAbaFreq.style.display = temFrequencia ? 'inline-block' : 'none';
+                btnAbaFreq.style.display = recursoLiberado('frequência') || recursoLiberado('frequencia') ? 'inline-block' : 'none';
             }
 
             document.querySelectorAll('#modal-aluno input[type="text"], #modal-aluno input[type="email"], #modal-aluno input[type="date"]').forEach(i => i.value = ''); 
@@ -1503,6 +1524,7 @@
             html2pdf().set(opt).from(element).save();
         }
 
+        // NOVA FUNÇÃO: Gerar o PDF da Ficha de Saúde (Anamnese)
         window.gerarPDF_Anamnese = function() {
             const aluno = todosAlunosCache.find(a => a.id === alunoEditandoId);
             if (!aluno || !aluno.anamnese_preenchida || !aluno.anamnese) {
@@ -1512,6 +1534,7 @@
             const an = aluno.anamnese;
             const nome = aluno.nome || 'NÃO INFORMADO';
             
+            // Verifica se é menor de idade para garantir que pega o responsável
             let isMenor = false;
             if (aluno.data_nascimento) {
                 const hoje = new Date();
@@ -1523,6 +1546,7 @@
             }
 
             const resp = aluno.nome_responsavel || '';
+            // Se for menor E tiver responsável, usa o responsável. Senão, usa o próprio aluno.
             const assinante = (isMenor && resp) ? resp.toUpperCase() : nome.toUpperCase();
             const tipoAssinante = (isMenor && resp) ? "RESPONSÁVEL LEGAL" : "ATLETA";
 

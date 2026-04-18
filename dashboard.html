@@ -102,7 +102,7 @@
                             </button>
 
                             <button id="btn-config-equipe" onclick="abrirModalConfig()" class="hidden bg-slate-700 hover:bg-slate-800 text-white font-bold py-2.5 px-3 md:px-4 rounded-xl shadow-md transition-all flex items-center text-xs md:text-sm">
-                                <span class="mr-1 md:mr-2">⚙️</span> <span class="hidden sm:inline">Configurar Equipa</span>
+                                <span class="mr-1 md:mr-2">⚙️</span> <span class="hidden sm:inline">Configurar Equipe</span>
                             </button>
                             
                             <a href="cadastro.html" class="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2.5 px-3 md:px-4 rounded-xl shadow-md transition-all flex items-center text-xs md:text-sm">
@@ -117,13 +117,13 @@
                                 <div class="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9IiNmZmYiLz48L3N2Zz4=')]"></div>
                                 <span class="text-6xl mb-4 block relative z-10">🥋</span>
                                 <h2 class="text-2xl md:text-4xl font-black text-white mb-2 relative z-10 tracking-tight">Bem-vindo ao BJJ Manager!</h2>
-                                <p class="text-cyan-100 md:text-lg font-medium max-w-2xl mx-auto relative z-10">O seu tatame digital está pronto. Não encontrei nenhum atleta matriculado na sua equipa ainda. Siga os 3 passos abaixo para começar a utilizar o sistema em pleno.</p>
+                                <p class="text-cyan-100 md:text-lg font-medium max-w-2xl mx-auto relative z-10">O seu tatame digital está pronto. Não encontrei nenhum atleta matriculado na sua equipe ainda. Siga os 3 passos abaixo para começar a utilizar o sistema em pleno.</p>
                             </div>
                             
                             <div class="p-6 md:p-10 grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div class="bg-slate-50 border border-slate-100 rounded-2xl p-6 flex flex-col h-full hover:-translate-y-1 transition-transform">
                                     <div class="w-12 h-12 bg-slate-800 text-white rounded-xl flex items-center justify-center text-xl font-black mb-4 shadow-md">1</div>
-                                    <h3 class="font-black text-slate-800 uppercase tracking-widest text-xs mb-2">Configure a Equipa</h3>
+                                    <h3 class="font-black text-slate-800 uppercase tracking-widest text-xs mb-2">Configure sua Equipe</h3>
                                     <p class="text-xs text-slate-500 leading-relaxed mb-6 flex-1">Adicione a sua logo oficial, configure os valores padrão da mensalidade e convide os seus professores (co-administradores).</p>
                                     <button onclick="abrirModalConfig()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-widest transition-colors">⚙️ Configurações</button>
                                 </div>
@@ -138,7 +138,7 @@
                                 <div class="bg-cyan-50 border border-cyan-100 rounded-2xl p-6 flex flex-col h-full hover:-translate-y-1 transition-transform">
                                     <div class="w-12 h-12 bg-cyan-500 text-white rounded-xl flex items-center justify-center text-xl font-black mb-4 shadow-md">3</div>
                                     <h3 class="font-black text-cyan-900 uppercase tracking-widest text-xs mb-2">Matricule Atletas</h3>
-                                    <p class="text-xs text-cyan-700/80 leading-relaxed mb-6 flex-1">Adicione os seus alunos. O sistema irá gerar imediatamente as mensalidades, as carteirinhas digitais e o raio-X da sua equipa.</p>
+                                    <p class="text-xs text-cyan-700/80 leading-relaxed mb-6 flex-1">Adicione os seus alunos. O sistema irá gerar imediatamente as mensalidades, as carteirinhas digitais e o gerenciar sua equipe.</p>
                                     <a href="cadastro.html" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-widest transition-colors text-center block">➕ Novo Aluno</a>
                                 </div>
                             </div>
@@ -508,7 +508,7 @@
 
             if (!window.funcionalidadesEquipe) return;
 
-            // Se as features da equipa não incluírem a funcionalidade, recusa e volta ao dashboard
+            // Se as features da equipe não incluírem a funcionalidade, recusa e volta ao dashboard
             const temAcesso = window.funcionalidadesEquipe.some(f => f.includes('✓') && f.includes(recursoNomeEsperado));
             
             if (!temAcesso) {

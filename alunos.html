@@ -142,10 +142,10 @@
             <div class="flex border-b border-slate-200 bg-slate-50 px-2 overflow-x-auto hide-scrollbar shrink-0">
                 <button onclick="mudarAba('aba-pessoal')" id="btn-aba-pessoal" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest tab-active whitespace-nowrap transition-colors">👤 Pessoal</button>
                 <button onclick="mudarAba('aba-contato')" id="btn-aba-contato" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">📍 Contato</button>
-                <button onclick="mudarAba('aba-admin')" id="btn-aba-admin" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚙️ Admin</button>
+                <button onclick="mudarAba('aba-financeiro')" id="btn-aba-financeiro" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">💰 Financeiro</button>
                 <button onclick="mudarAba('aba-frequencia')" id="btn-aba-frequencia" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">📅 Frequência</button>
-                <button onclick="mudarAba('aba-anamnese')" id="btn-aba-anamnese" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚕️ Saúde</button>
                 <button onclick="mudarAba('aba-lgpd')" id="btn-aba-lgpd" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚖️ LGPD</button>
+                <button onclick="mudarAba('aba-anamnese')" id="btn-aba-anamnese" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚕️ Saúde</button>
             </div>
 
             <div class="p-5 md:p-8 overflow-y-auto space-y-6 flex-1 bg-white hide-scrollbar">
@@ -269,7 +269,7 @@
                     </div>
                 </div>
 
-                <div id="aba-admin" class="aba-content hidden space-y-5">
+                <div id="aba-financeiro" class="aba-content hidden space-y-5">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                         <div>
                             <label class="block text-[10px] font-black text-cyan-600 uppercase mb-1">Bolsa / Desconto (%)</label>
@@ -530,7 +530,8 @@
         
         let checkinsDoAlunoAtualCache = []; 
 
-        const ordemDasAbas = ['aba-pessoal', 'aba-contato', 'aba-admin', 'aba-frequencia', 'aba-lgpd', 'aba-anamnese'];
+        // 🔁 ORDEM CORRIGIDA: Agora segue exatamente a ordem visual das abas
+        const ordemDasAbas = ['aba-pessoal', 'aba-contato', 'aba-financeiro', 'aba-frequencia', 'aba-lgpd', 'aba-anamnese'];
         let abaIndexAtual = 0;
 
         const selectVenc = document.getElementById('aluno-vencimento');
@@ -1591,6 +1592,89 @@ window.abrirModal = () => {
             html2pdf().set(opt).from(element).save();
         }
 
+        window.abrirModalCarteirinha = function() {
+            const aluno = todosAlunosCache.find(a => a.id === alunoEditandoId);
+            if (!aluno) return;
+
+            // Preencher dados da equipe
+            document.getElementById('cart-equipe-nome').innerText = equipeDados.nome.toUpperCase();
+            
+            const logoEquipe = document.getElementById('cart-equipe-logo');
+            const fallbackEquipe = document.getElementById('cart-equipe-fallback');
+            if (equipeDados.logo) {
+                logoEquipe.src = equipeDados.logo;
+                logoEquipe.classList.remove('hidden');
+                fallbackEquipe.classList.add('hidden');
+            } else {
+                logoEquipe.classList.add('hidden');
+                fallbackEquipe.classList.remove('hidden');
+                fallbackEquipe.innerText = equipeDados.nome.charAt(0).toUpperCase();
+            }
+
+            // Watermark
+            const watermark = document.getElementById('cart-equipe-watermark');
+            const watermarkFallback = document.getElementById('cart-equipe-watermark-fallback');
+            if (equipeDados.logo) {
+                watermark.src = equipeDados.logo;
+                watermark.classList.remove('hidden');
+                watermarkFallback.classList.add('hidden');
+            } else {
+                watermark.classList.add('hidden');
+                watermarkFallback.classList.remove('hidden');
+                watermarkFallback.innerText = equipeDados.nome.charAt(0).toUpperCase();
+            }
+
+            // Dados do aluno
+            document.getElementById('cart-aluno-nome-txt').innerText = aluno.nome;
+            document.getElementById('cart-aluno-matricula-txt').innerText = aluno.matricula || 'S/N';
+            
+            const faixaTexto = `${aluno.faixa || 'Branca'} ${aluno.grau && aluno.grau !== 'Sem grau' ? aluno.grau : ''}`.trim();
+            document.getElementById('cart-aluno-faixa-texto').innerText = faixaTexto;
+            
+            // Cor da borda da faixa
+            const corFaixa = getCorFaixaDupla(aluno.faixa);
+            document.getElementById('cart-faixa-border').style.background = corFaixa;
+            if (aluno.faixa && (aluno.faixa.toLowerCase().includes('branca') || aluno.faixa.toLowerCase().includes('amarela'))) {
+                document.getElementById('cart-faixa-border').style.borderRight = '1px solid #cbd5e1';
+            }
+
+            // Data de nascimento
+            if (aluno.data_nascimento) {
+                const partes = aluno.data_nascimento.split('-');
+                if (partes.length === 3) {
+                    document.getElementById('cart-aluno-nascimento-txt').innerText = `${partes[2]}/${partes[1]}/${partes[0]}`;
+                }
+            }
+
+            // Validade (ano atual + 1)
+            const anoAtual = new Date().getFullYear();
+            document.getElementById('cart-aluno-validade-txt').innerText = (anoAtual + 1).toString();
+
+            // Foto do aluno
+            const fotoModal = document.getElementById('cart-aluno-foto-modal');
+            const fotoFallback = document.getElementById('cart-aluno-foto-fallback-modal');
+            if (aluno.foto_url) {
+                fotoModal.src = aluno.foto_url;
+                fotoModal.classList.remove('hidden');
+                fotoFallback.classList.add('hidden');
+            } else {
+                fotoModal.classList.add('hidden');
+                fotoFallback.classList.remove('hidden');
+                fotoFallback.innerText = aluno.nome.charAt(0).toUpperCase();
+            }
+
+            // QR Code
+            const qrCodeImg = document.getElementById('cart-qr-code');
+            const dadosQR = `${aluno.id}|${aluno.nome}|${aluno.matricula || ''}`;
+            qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(dadosQR)}&bgcolor=ffffff&color=000000`;
+
+            document.getElementById('modal-carteirinha').classList.replace('hidden', 'flex');
+        }
+
+        window.fecharModalCarteirinha = () => {
+            document.getElementById('modal-carteirinha').classList.replace('flex', 'hidden');
+        }
+
         window.showToast = (msg, type = 'error') => {
             const container = document.getElementById('toast-container');
             if(!container) return alert(msg);
@@ -1601,7 +1685,6 @@ window.abrirModal = () => {
         }
 
         window.fecharModal = () => document.getElementById('modal-aluno').classList.replace('flex', 'hidden');
-        window.fecharModalCarteirinha = () => { document.getElementById('modal-carteirinha').classList.replace('flex', 'hidden'); abrirFichaAluno(alunoEditandoId); }
         
         window.excluirAluno = async (id) => { 
             if(confirm("Deseja excluir este atleta da sua equipe? Esta ação apagará também a foto do sistema.")) { 
@@ -1621,35 +1704,6 @@ window.abrirModal = () => {
                     showToast("Erro ao excluir.", "error");
                 }
             } 
-        }
-        
-        window.abrirModal = () => { 
-            alunoEditandoId = null; 
-            ficheiroFotoSelecionado = null;
-            
-            document.querySelectorAll('#modal-aluno input[type="text"], #modal-aluno input[type="email"], #modal-aluno input[type="date"]').forEach(i => i.value = ''); 
-            document.querySelectorAll('#modal-aluno input[type="checkbox"]').forEach(i => i.checked = false);
-            
-            document.getElementById('cad-foto').value = "";
-            document.getElementById('preview-foto').src = "";
-            document.getElementById('preview-foto').classList.add('hidden');
-            document.getElementById('placeholder-foto').classList.remove('hidden');
-
-            document.getElementById('modal-titulo').innerText = "Nova Matrícula"; 
-            document.getElementById('aluno-matricula').value = "Gerada Auto";
-            document.getElementById('aluno-faixa').value = "Branca";
-            document.getElementById('aluno-grau').value = "Sem grau";
-            document.getElementById('aluno-bolsa').value = "0";
-            document.getElementById('aluno-vencimento').value = "10";
-            document.getElementById('aluno-status').value = "ATIVO";
-            
-            document.getElementById('btn-abrir-carteirinha').classList.add('hidden'); 
-            document.getElementById('btn-gerar-pdf').classList.add('hidden');
-            
-            calcularIdade();
-
-            mudarAba('aba-pessoal'); 
-            document.getElementById('modal-aluno').classList.replace('hidden', 'flex'); 
         }
 
         window.limparBusca = () => { document.getElementById('input-busca').value = ''; renderizarTabela(); }

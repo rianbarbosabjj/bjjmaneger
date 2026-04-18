@@ -142,7 +142,7 @@
             <div class="flex border-b border-slate-200 bg-slate-50 px-2 overflow-x-auto hide-scrollbar shrink-0">
                 <button onclick="mudarAba('aba-pessoal')" id="btn-aba-pessoal" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest tab-active whitespace-nowrap transition-colors">👤 Pessoal</button>
                 <button onclick="mudarAba('aba-contato')" id="btn-aba-contato" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">📍 Contato</button>
-                <button onclick="mudarAba('aba-admin')" id="btn-aba-admin" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚙️ Admin</button>
+                <button onclick="mudarAba('aba-admin')" id="btn-aba-admin" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">💰 Financeiro</button>
                 <button onclick="mudarAba('aba-frequencia')" id="btn-aba-frequencia" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">📅 Frequência</button>
                 <button onclick="mudarAba('aba-anamnese')" id="btn-aba-anamnese" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚕️ Saúde</button>
                 <button onclick="mudarAba('aba-lgpd')" id="btn-aba-lgpd" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚖️ LGPD</button>
@@ -524,13 +524,14 @@
         let teamId = null;
         let todosAlunosCache = [];
         let equipeDados = { nome: "Sua Equipe", logo: "" };
-        let dadosEquipeCompleto = null; // Guarda o status do plano
+        let dadosEquipeCompleto = null;
         let alunoEditandoId = null;
         let ficheiroFotoSelecionado = null;
         
         let checkinsDoAlunoAtualCache = []; 
 
-        const ordemDasAbas = ['aba-pessoal', 'aba-contato', 'aba-admin', 'aba-frequencia', 'aba-lgpd', 'aba-anamnese'];
+        // 🚀 LISTA CORRIGIDA PARA O BOTÃO PRÓXIMO FUNCIONAR PERFEITAMENTE
+        const ordemDasAbas = ['aba-pessoal', 'aba-contato', 'aba-admin', 'aba-frequencia', 'aba-anamnese', 'aba-lgpd'];
         let abaIndexAtual = 0;
 
         const selectVenc = document.getElementById('aluno-vencimento');
@@ -541,7 +542,6 @@
             selectVenc.value = "10";
         }
 
-        // --- SISTEMA DO OLHO DA SENHA ---
         window.toggleSenha = function(inputId, btnElement) {
             const input = document.getElementById(inputId);
             if (input.type === "password") {
@@ -553,9 +553,6 @@
             }
         }
 
-        // ==========================================
-        // 🔒 PAYWALL (Limite de Alunos)
-        // ==========================================
         window.abrirPaywallLimite = function() {
             const modal = document.getElementById('modal-paywall');
             const content = document.getElementById('modal-paywall-content');
@@ -577,26 +574,9 @@
                 modal.classList.remove('flex');
             }, 300);
         };
-        // ==========================================
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                const limparAcessando = () => {
-                    const aside = document.querySelector('aside');
-                    if (aside) {
-                        const elementos = aside.querySelectorAll('p, span, h4');
-                        elementos.forEach(el => {
-                            if (el.innerText.includes('carregando') || el.innerText.includes('rianbarbosa')) el.innerText = user.email;
-                            if (el.innerText.includes('ACESSANDO')) {
-                                el.innerText = 'ADMINISTRADOR';
-                                el.classList.remove('animate-pulse');
-                                el.style.opacity = "1";
-                            }
-                        });
-                    }
-                };
-                limparAcessando(); setTimeout(limparAcessando, 600);
-
                 const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
                 if (mestreDoc.exists()) { teamId = user.uid; } 
                 else {
@@ -615,22 +595,14 @@
             const eqSnap = await getDoc(doc(db, "equipes", teamId));
             if (eqSnap.exists()) {
                 const d = eqSnap.data();
-                dadosEquipeCompleto = d; // Guarda os dados completos (Status do Plano, Isento, etc)
+                dadosEquipeCompleto = d;
                 equipeDados.nome = d.nome_equipe || d.nome || "Sua Equipe";
                 equipeDados.logo = d.url_logo || "";
-                
-                const elNome = document.getElementById('nome-equipe') || document.getElementById('lbl-equipe');
-                if(elNome) elNome.innerText = equipeDados.nome.toUpperCase();
 
-                const elLogoMenu = document.getElementById('logo-equipe-menu') || document.getElementById('container-logo') || document.querySelector('aside div[class*="bg-cyan-"], aside div[class*="bg-blue-"]');
-                if (elLogoMenu) {
-                    if (equipeDados.logo) {
-                        elLogoMenu.style.background = 'transparent';
-                        elLogoMenu.innerHTML = `<img src="${equipeDados.logo}" class="w-full h-full object-cover rounded-xl shadow-md" alt="Logo">`;
-                    } else {
-                        elLogoMenu.style.background = '';
-                        elLogoMenu.innerHTML = `<span class="text-white font-black text-2xl">${equipeDados.nome.charAt(0).toUpperCase()}</span>`;
-                    }
+                // 🛡️ PROTEÇÃO ANTI-BURLA DE URL
+                // Esta página de Alunos é livre. Mas a função existe caso você copie este script para outras telas.
+                if(typeof protegerPaginaRestrita === "function") {
+                    // protegerPaginaRestrita('Cadastro de Alunos Ilimitados');
                 }
             }
         }
@@ -751,30 +723,6 @@
             return 'bg-slate-100 text-slate-600 border border-slate-200';
         }
 
-        function getCorFaixaDupla(faixaTexto) {
-            const f = faixaTexto ? faixaTexto.toLowerCase() : '';
-            if (f.includes('cinza e branca')) return 'linear-gradient(to bottom, #94A3B8 50%, #f8fafc 50%)';
-            if (f.includes('cinza e preta')) return 'linear-gradient(to bottom, #94A3B8 50%, #0F172A 50%)';
-            if (f.includes('amarela e branca')) return 'linear-gradient(to bottom, #FACC15 50%, #f8fafc 50%)';
-            if (f.includes('amarela e preta')) return 'linear-gradient(to bottom, #FACC15 50%, #0F172A 50%)';
-            if (f.includes('laranja e branca')) return 'linear-gradient(to bottom, #F97316 50%, #f8fafc 50%)';
-            if (f.includes('laranja e preta')) return 'linear-gradient(to bottom, #F97316 50%, #0F172A 50%)';
-            if (f.includes('verde e branca')) return 'linear-gradient(to bottom, #16A34A 50%, #f8fafc 50%)';
-            if (f.includes('verde e preta')) return 'linear-gradient(to bottom, #16A34A 50%, #0F172A 50%)';
-            
-            if (f.includes('branca')) return '#f8fafc';
-            if (f.includes('cinza')) return '#94A3B8';
-            if (f.includes('amarela')) return '#FACC15';
-            if (f.includes('laranja')) return '#F97316';
-            if (f.includes('verde')) return '#16A34A';
-            if (f.includes('azul')) return '#3b82f6';
-            if (f.includes('roxa')) return '#a855f7';
-            if (f.includes('marrom')) return '#78350f';
-            if (f.includes('preta')) return '#0F172A';
-            
-            return '#cbd5e1'; 
-        }
-
         window.renderizarTabela = function() {
             const tab = document.getElementById('tabela-alunos');
             const busca = document.getElementById('input-busca').value.toLowerCase();
@@ -830,9 +778,6 @@
             }
         }
 
-        // ========================================================
-        // 🚀 NOVO: FUNÇÃO PARA GERAR RELATÓRIO GERAL DE FREQUÊNCIA
-        // ========================================================
         window.gerarRelatorioGeralFrequencia = async function() {
             const btn = document.getElementById('btn-relatorio-freq');
             const originalTxt = btn.innerHTML;
@@ -932,10 +877,7 @@
         }
 
 
-        // ========================================================
-        // 🚀 FUNÇÕES DE FREQUÊNCIA NO PAINEL DO PROFESSOR (PERFIL INDIVIDUAL)
-        // ========================================================
-        async function carregarFrequenciaDoAluno(idAluno) {
+        window.carregarFrequenciaDoAluno = async function(idAluno) {
             const listaEl = document.getElementById('admin-lista-checkins');
             listaEl.innerHTML = '<p class="text-center text-xs text-slate-400 py-6 italic">A carregar presenças...</p>';
             
@@ -979,7 +921,7 @@
         }
 
         window.filtrarFrequenciaAdmin = async function() {
-            const valFiltro = document.getElementById('filtro-mes-freq-admin').value; // Formato YYYY-MM
+            const valFiltro = document.getElementById('filtro-mes-freq-admin').value; 
             if (!valFiltro) return;
 
             const partes = valFiltro.split('-');
@@ -1064,7 +1006,6 @@
             
             if(document.getElementById('aluno-senha-portal')) {
                 document.getElementById('aluno-senha-portal').value = a.senha_portal || '';
-                // Garante que o input volte a ser tipo senha se foi alternado antes
                 document.getElementById('aluno-senha-portal').type = "password";
             }
 
@@ -1226,8 +1167,9 @@
                     const statusAtual = (dadosEquipeCompleto && dadosEquipeCompleto.status_plano) ? dadosEquipeCompleto.status_plano : 'TESTE';
                     const planosBasicos = ['TESTE', 'BASICO', 'BÁSICO', 'BLACK_BELT'];
                     
-                    if (planosBasicos.includes(statusAtual)) {
+                    if (planosBasicos.includes(statusAtual.toUpperCase())) {
                         const alunosAtivos = todosAlunosCache.filter(a => a.status === 'ATIVO').length;
+                        
                         if (alunosAtivos >= 10) {
                             abrirPaywallLimite(); // Tranca a porta e mostra o Modal!
                             return; 
@@ -1623,35 +1565,6 @@ window.abrirModal = () => {
             } 
         }
         
-        window.abrirModal = () => { 
-            alunoEditandoId = null; 
-            ficheiroFotoSelecionado = null;
-            
-            document.querySelectorAll('#modal-aluno input[type="text"], #modal-aluno input[type="email"], #modal-aluno input[type="date"]').forEach(i => i.value = ''); 
-            document.querySelectorAll('#modal-aluno input[type="checkbox"]').forEach(i => i.checked = false);
-            
-            document.getElementById('cad-foto').value = "";
-            document.getElementById('preview-foto').src = "";
-            document.getElementById('preview-foto').classList.add('hidden');
-            document.getElementById('placeholder-foto').classList.remove('hidden');
-
-            document.getElementById('modal-titulo').innerText = "Nova Matrícula"; 
-            document.getElementById('aluno-matricula').value = "Gerada Auto";
-            document.getElementById('aluno-faixa').value = "Branca";
-            document.getElementById('aluno-grau').value = "Sem grau";
-            document.getElementById('aluno-bolsa').value = "0";
-            document.getElementById('aluno-vencimento').value = "10";
-            document.getElementById('aluno-status').value = "ATIVO";
-            
-            document.getElementById('btn-abrir-carteirinha').classList.add('hidden'); 
-            document.getElementById('btn-gerar-pdf').classList.add('hidden');
-            
-            calcularIdade();
-
-            mudarAba('aba-pessoal'); 
-            document.getElementById('modal-aluno').classList.replace('hidden', 'flex'); 
-        }
-
         window.limparBusca = () => { document.getElementById('input-busca').value = ''; renderizarTabela(); }
     </script>
 </body>

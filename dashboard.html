@@ -402,7 +402,8 @@
         const storage = getStorage(app);
         
         let uid = null;        
-        let dadosEquipe = null; // A variável essencial para o motor de permissões ler o plano
+        let dadosEquipe = null; 
+        let configPlanosCache = null; // Guardará o nome de cada plano
         let nomeEquipeAtual = "";
         let logoEquipeAnterior = ""; 
         
@@ -430,77 +431,24 @@
         }
 
         // ==========================================
-        // 🔒 MOTOR DE PERMISSÕES E PAYWALL
+        // 🔒 PROTEÇÃO DE ROTAS (ANTI-BURLA)
         // ==========================================
-        
-        // 1. Definimos a hierarquia dos planos
-const HIERARQUIA_PLANOS = {
-            'TESTE': 1, 'BASICO': 1, 'BÁSICO': 1, 'BLACK_BELT': 1,
-            'INTERMEDIARIO': 2, 'INTERMEDIÁRIO': 2, 'MASTER': 2,
-            'PREMIUM': 3, 'ELITE': 3,
-            'ULTIMATE': 4
-        };
-
-        // 2. Regras exatas baseadas na sua imagem
-        const REGRAS_DE_ACESSO = {
-            'portal_aluno':  { nivel: 2, nome: 'Portal do Aluno (App)' },
-            'relatorios':    { nivel: 2, nome: 'Relatórios e Frequência em PDF' },
-            'carteirinhas':  { nivel: 2, nome: 'Carteirinhas Digitais (QR Code)' },
-            'loja_virtual':  { nivel: 2, nome: 'Vitrine Virtual (Loja Online)' },
-            'checkin_gps':   { nivel: 2, nome: 'Check-in com GPS Ativo' },
-            'asaas':         { nivel: 3, nome: 'Automação Asaas (PIX/Cartão)' },
-            'baixa_faturas': { nivel: 3, nome: 'Baixa Automática de Faturas' },
-            'certificados':  { nivel: 4, nome: 'Emissão de Certificados Profissionais' }
-        };
-
-        // 3. A função que verifica se o mestre tem permissão
-        window.verificarAcesso = function(idRecurso) {
+        function protegerPaginaRestrita(recursoNomeEsperado) {
             const isImpersonating = sessionStorage.getItem('admin_impersonate') !== null;
             if (isImpersonating || (dadosEquipe && (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true"))) {
-                return true; 
+                return; // Tem passe livre
             }
 
-            const statusAtual = (dadosEquipe && dadosEquipe.status_plano) ? dadosEquipe.status_plano : 'TESTE';
-            const nivelDaEquipe = HIERARQUIA_PLANOS[statusAtual] || 1;
-            
-            const regra = REGRAS_DE_ACESSO[idRecurso];
-            
-            if (!regra) return true;
+            if (!window.funcionalidadesEquipe) return;
 
-            if (nivelDaEquipe < regra.nivel) {
-                abrirPaywall(regra.nome);
-                return false; 
+            // Se as features da equipa não incluírem a funcionalidade, recusa e volta ao dashboard
+            const temAcesso = window.funcionalidadesEquipe.some(f => f.includes('✓') && f.includes(recursoNomeEsperado));
+            
+            if (!temAcesso) {
+                alert(`🔒 Acesso Restrito. O seu plano atual não inclui a funcionalidade: ${recursoNomeEsperado}`);
+                window.location.href = "dashboard.html";
             }
-
-            return true; 
-        };
-
-        window.abrirPaywall = function(nomeRecurso) {
-            document.getElementById('paywall-recurso-nome').innerText = nomeRecurso;
-            const modal = document.getElementById('modal-paywall');
-            const content = document.getElementById('modal-paywall-content');
-            
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            
-            setTimeout(() => {
-                content.classList.remove('scale-95', 'opacity-0');
-                content.classList.add('scale-100', 'opacity-100');
-            }, 50);
-        };
-
-        window.fecharPaywall = function() {
-            const modal = document.getElementById('modal-paywall');
-            const content = document.getElementById('modal-paywall-content');
-            
-            content.classList.remove('scale-100', 'opacity-100');
-            content.classList.add('scale-95', 'opacity-0');
-            
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }, 300);
-        };
+        }
 
         // ==========================================
 
@@ -876,7 +824,7 @@ const HIERARQUIA_PLANOS = {
             } catch (e) { showToast("Erro ao remover.", "error"); }
         };
 
-        // --- AUTENTICAÇÃO E VERIFICAÇÃO DE BLOQUEIO ---
+        // --- AUTENTICAÇÃO E CARREGAMENTO DE PLANO (O CÉREBRO) ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 let isSuper = false;
@@ -931,8 +879,15 @@ const HIERARQUIA_PLANOS = {
                     const emailLogado = document.getElementById('email-logado');
                     if (emailLogado) emailLogado.innerText = user.email;
 
+                    // 1. CARREGA OS NOMES DOS PLANOS DO SUPER ADMIN
+                    try {
+                        const planosSnap = await getDoc(doc(db, "sistema", "config_planos"));
+                        if(planosSnap.exists()) {
+                            configPlanosCache = planosSnap.data();
+                        }
+                    } catch(e) { console.error("Erro ao ler config de planos", e); }
+
                     const docSnap = await getDoc(doc(db, "equipes", uid));
-                    // REPARE QUE AQUI NÃO TEM O 'LET'
                     
                     if (docSnap.exists()) {
                         const lblCargo = document.getElementById('lbl-cargo');
@@ -950,6 +905,8 @@ const HIERARQUIA_PLANOS = {
                     }
 
                     if (dadosEquipe) {
+                        
+                        // BLOQUEIO GERAL (CHURN)
                         if (dadosEquipe.status_plano === 'BLOQUEADO' && !isImpersonating) {
                             document.getElementById('interface-sistema').classList.add('hidden');
                             document.getElementById('tela-bloqueio').classList.remove('hidden');
@@ -957,18 +914,38 @@ const HIERARQUIA_PLANOS = {
                             return; 
                         }
 
-                        // --- TRATA O STATUS DO PLANO NO CABEÇALHO LIMPO ---
+                        // --- TRATA O NOME DO PLANO E O STATUS DO CABEÇALHO ---
                         const badgeStatus = document.getElementById('status-badge');
                         const txtNomePlano = document.getElementById('nome-equipe');
                         
                         txtNomePlano.innerText = (dadosEquipe.nome_equipe || "SUA EQUIPE").toUpperCase();
 
+                        // O ID do plano salvo no banco (p1, p2, p3, p4...)
+                        const planoIdSalvo = dadosEquipe.plano_escolhido || 'p1'; 
+                        let nomeRealDoPlano = "Básico"; 
+
+                        // Se encontrou a config geral, lê o nome que o Super Admin digitou lá e a lista de features
+                        if (configPlanosCache && configPlanosCache[planoIdSalvo]) {
+                            nomeRealDoPlano = configPlanosCache[planoIdSalvo].nome || "Plano Ativo";
+                            
+                            // Guarda as features deste plano para o menu ler e bloquear
+                            window.funcionalidadesEquipe = configPlanosCache[planoIdSalvo].features ? configPlanosCache[planoIdSalvo].features.split('\n') : [];
+                        } else {
+                            window.funcionalidadesEquipe = []; // Fallback
+                        }
+
+                        // Se for equipe teste, avisa que é teste do Plano X
                         if (dadosEquipe.status_plano === 'TESTE' || !dadosEquipe.status_plano) {
-                            badgeStatus.innerText = "PERÍODO DE TESTE";
+                            badgeStatus.innerText = `TESTE: ${nomeRealDoPlano.toUpperCase()}`;
                             badgeStatus.className = "px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-amber-100 text-amber-700 border border-amber-200 mt-1";
-                        } else if (['BLACK_BELT', 'MASTER', 'ELITE', 'ATIVO'].includes(dadosEquipe.status_plano)) {
-                            badgeStatus.innerText = "ASSINATURA ATIVA";
-                            badgeStatus.className = "px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-700 border border-emerald-200 mt-1";
+                        } else {
+                            badgeStatus.innerText = `${nomeRealDoPlano.toUpperCase()}`;
+                            badgeStatus.className = "px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-700 border border-emerald-200 mt-1 shadow-sm shadow-emerald-500/20";
+                        }
+
+                        // Atualiza o menu agora que sabemos as funcionalidades!
+                        if (typeof window.atualizarMenuSeguro === "function") {
+                            window.atualizarMenuSeguro(window.funcionalidadesEquipe);
                         }
 
                         // GUARDA AS VARIÁVEIS PARA O RESTO DA TELA

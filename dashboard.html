@@ -915,18 +915,55 @@
                         }
 
                         // --- TRATA O NOME DO PLANO E O STATUS DO CABEÇALHO ---
-                        const badgeStatus = document.getElementById('status-badge');
+const badgeStatus = document.getElementById('status-badge');
                         const txtNomePlano = document.getElementById('nome-equipe');
                         
                         txtNomePlano.innerText = (dadosEquipe.nome_equipe || "SUA EQUIPE").toUpperCase();
 
-                        // O ID do plano salvo no banco (p1, p2, p3, p4...)
-                        const planoIdSalvo = dadosEquipe.plano_escolhido || 'p1'; 
-                        let nomeRealDoPlano = "Básico"; 
+                        // 🚀 LÓGICA DE DETECÇÃO DO PLANO CORRIGIDA
+                        // Lê o Status definido pelo Super Admin
+                        const statusAt = (dadosEquipe.status_plano || 'TESTE').toUpperCase();
+                        let idDoPlano = dadosEquipe.plano_escolhido || 'p1';
 
-                        // Se encontrou a config geral, lê o nome que o Super Admin digitou lá e a lista de features
-                        if (configPlanosCache && configPlanosCache[planoIdSalvo]) {
-                            nomeRealDoPlano = configPlanosCache[planoIdSalvo].nome || "Plano Ativo";
+                        // Traduz o Status do Super Admin para o ID das Funcionalidades
+                        if (statusAt === 'BASICO' || statusAt === 'BLACK_BELT') idDoPlano = 'p1';
+                        else if (statusAt === 'INTERMEDIARIO' || statusAt === 'MASTER') idDoPlano = 'p2';
+                        else if (statusAt === 'PREMIUM') idDoPlano = 'p3';
+                        else if (statusAt === 'ULTIMATE' || statusAt === 'ELITE') idDoPlano = 'p4';
+
+                        let nomeRealDoPlano = statusAt; 
+
+                        // Puxa as Features daquele plano específico
+                        if (configPlanosCache && configPlanosCache[idDoPlano]) {
+                            nomeRealDoPlano = configPlanosCache[idDoPlano].nome || statusAt;
+                            window.funcionalidadesEquipe = configPlanosCache[idDoPlano].features ? configPlanosCache[idDoPlano].features.split('\n') : [];
+                        } else {
+                            window.funcionalidadesEquipe = [];
+                        }
+
+                        // 🚀 PASSE LIVRE: Super Admins e Equipes Isentas têm acesso TOTAL
+                        if (isImpersonating || String(dadosEquipe.isento) === "true") {
+                            window.funcionalidadesEquipe = [
+                                "✓ Automação Asaas (PIX/Cartão)", "✓ Vitrine Virtual (Loja Online)", 
+                                "✓ Emissão de Certificados Profissionais", "✓ Gestão de Turmas e Frequência",
+                                "✓ Cadastro de Alunos Ilimitados", "✓ Portal do Aluno Completo (App)",
+                                "✓ Baixa Automática de Faturas"
+                            ];
+                        }
+
+                        // Atualiza a Badge visualmente
+                        if (statusAt === 'TESTE') {
+                            badgeStatus.innerText = `TESTE: ${nomeRealDoPlano.toUpperCase()}`;
+                            badgeStatus.className = "px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-amber-100 text-amber-700 border border-amber-200 mt-1";
+                        } else {
+                            badgeStatus.innerText = `${nomeRealDoPlano.toUpperCase()}`;
+                            badgeStatus.className = "px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-700 border border-emerald-200 mt-1 shadow-sm shadow-emerald-500/20";
+                        }
+
+                        // Manda o Menu se atualizar com as chaves corretas!
+                        if (typeof window.atualizarMenuSeguro === "function") {
+                            window.atualizarMenuSeguro(window.funcionalidadesEquipe);
+                        }
                             
                             // Guarda as features deste plano para o menu ler e bloquear
                             window.funcionalidadesEquipe = configPlanosCache[planoIdSalvo].features ? configPlanosCache[planoIdSalvo].features.split('\n') : [];

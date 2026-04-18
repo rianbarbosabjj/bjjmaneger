@@ -1050,6 +1050,11 @@
             alunoEditandoId = id;
             ficheiroFotoSelecionado = null;
             document.getElementById('cad-foto').value = "";
+            const btnAbaFreq = document.getElementById('btn-aba-frequencia');
+            if(btnAbaFreq) {
+                const temFrequencia = window.funcionalidadesEquipe && window.funcionalidadesEquipe.some(f => f.includes('✓') && f.includes('Frequência'));
+                btnAbaFreq.style.display = temFrequencia ? 'inline-block' : 'none';
+            }
 
             document.getElementById('modal-titulo').innerText = "Editar Ficha";
             document.getElementById('aluno-id-oculto').value = id;

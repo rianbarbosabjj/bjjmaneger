@@ -144,8 +144,8 @@
                 <button onclick="mudarAba('aba-contato')" id="btn-aba-contato" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">📍 Contato</button>
                 <button onclick="mudarAba('aba-financeiro')" id="btn-aba-financeiro" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">💰 Financeiro</button>
                 <button onclick="mudarAba('aba-frequencia')" id="btn-aba-frequencia" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">📅 Frequência</button>
-                <button onclick="mudarAba('aba-anamnese')" id="btn-aba-anamnese" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚕️ Saúde</button>
                 <button onclick="mudarAba('aba-lgpd')" id="btn-aba-lgpd" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚖️ LGPD</button>
+                <button onclick="mudarAba('aba-anamnese')" id="btn-aba-anamnese" class="aba-item py-4 px-6 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 whitespace-nowrap transition-colors">⚕️ Saúde</button>
             </div>
 
             <div class="p-5 md:p-8 overflow-y-auto space-y-6 flex-1 bg-white hide-scrollbar">
@@ -286,7 +286,8 @@
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Dia de Vencimento Mensalidade</label>
                             <select id="aluno-vencimento" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold outline-none text-slate-700">
-                                </select>
+                                <option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -319,6 +320,7 @@
                 </div>
 
                 <div id="aba-anamnese" class="aba-content hidden space-y-5">
+                    
                     <div id="anamnese-vazia" class="hidden bg-slate-100 p-8 rounded-2xl text-center border border-slate-200">
                         <span class="text-4xl block mb-3">⏳</span>
                         <h4 class="text-slate-500 font-black uppercase tracking-widest text-sm">Ficha Pendente</h4>
@@ -327,6 +329,7 @@
 
                     <div id="anamnese-preenchida" class="hidden space-y-4">
                         </div>
+
                 </div>
 
                 <div id="aba-lgpd" class="aba-content hidden space-y-5">
@@ -392,10 +395,10 @@
             </div>
 
             <div class="p-4 md:p-6 bg-slate-50 border-t border-slate-200 flex flex-wrap justify-end gap-3 rounded-b-3xl shrink-0">
-                <button onclick="abrirModalCarteirinha()" id="btn-abrir-carteirinha" class="hidden bg-indigo-500 hover:bg-indigo-600 text-white font-black py-3 px-6 rounded-xl text-sm uppercase tracking-widest shadow-md transition-all">🪪 Carteirinha</button>
-                <button onclick="fecharModal()" class="px-6 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-200 transition-colors text-sm">Cancelar</button>
-                <button onclick="proximaAba()" id="btn-proximo" class="bg-slate-800 hover:bg-slate-900 text-white font-black py-3 px-8 rounded-xl shadow-md transition-all text-sm uppercase tracking-widest">Próximo ➔</button>
-                <button onclick="salvarAluno()" id="btn-salvar-aluno" class="hidden bg-cyan-500 hover:bg-cyan-600 text-white font-black py-3 px-8 rounded-xl shadow-md transition-all text-sm uppercase tracking-widest">💾 Salvar</button>
+                <button onclick="abrirModalCarteirinha()" id="btn-abrir-carteirinha" class="flex-1 md:flex-none bg-indigo-500 hover:bg-indigo-600 text-white font-black py-3 px-6 rounded-xl text-sm hidden uppercase tracking-widest shadow-md transition-all">🪪 Carteirinha</button>
+                <button onclick="fecharModal()" class="flex-1 md:flex-none px-6 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-200 transition-colors text-sm">Cancelar</button>
+                <button onclick="proximaAba()" id="btn-proximo" class="flex-1 md:flex-none bg-slate-800 hover:bg-slate-900 text-white font-black py-3 px-8 rounded-xl shadow-md transition-all text-sm uppercase tracking-widest">Próximo ➔</button>
+                <button onclick="salvarAluno()" id="btn-salvar-aluno" class="flex-1 md:flex-none bg-cyan-500 hover:bg-cyan-600 text-white font-black py-3 px-8 rounded-xl shadow-md transition-all text-sm uppercase tracking-widest hidden">💾 Salvar</button>
             </div>
         </div>
     </div>
@@ -524,9 +527,11 @@
         let dadosEquipeCompleto = null; // Guarda o status do plano
         let alunoEditandoId = null;
         let ficheiroFotoSelecionado = null;
+        
         let checkinsDoAlunoAtualCache = []; 
 
-        const ordemDasAbas = ['aba-pessoal', 'aba-contato', 'aba-financeiro', 'aba-frequencia', 'aba-anamnese', 'aba-lgpd'];
+        // 🔁 ORDEM CORRIGIDA: Agora segue exatamente a ordem visual das abas
+        const ordemDasAbas = ['aba-pessoal', 'aba-contato', 'aba-financeiro', 'aba-frequencia', 'aba-lgpd', 'aba-anamnese'];
         let abaIndexAtual = 0;
 
         const selectVenc = document.getElementById('aluno-vencimento');
@@ -573,26 +578,6 @@
                 modal.classList.remove('flex');
             }, 300);
         };
-
-        // 🛡️ MOTOR DE VERIFICAÇÃO DE RECURSOS SEGURO (Substitui bloqueios baseados no sessionCache de forma mais resiliente)
-        function recursoLiberado(palavraChave) {
-            const isImpersonating = sessionStorage.getItem('admin_impersonate') !== null;
-            const isIsento = dadosEquipeCompleto && (dadosEquipeCompleto.isento === true || String(dadosEquipeCompleto.isento) === "true");
-            if (isImpersonating || isIsento) return true;
-
-            if (window.funcionalidadesEquipe && window.funcionalidadesEquipe.length > 0) {
-                return window.funcionalidadesEquipe.some(f => 
-                    f.includes('✓') && f.toLowerCase().includes(palavraChave.toLowerCase())
-                );
-            }
-
-            const status = (dadosEquipeCompleto && dadosEquipeCompleto.status_plano) ? dadosEquipeCompleto.status_plano.toUpperCase() : 'TESTE';
-            if (['BASICO', 'BÁSICO', 'TESTE', 'BLACK_BELT'].includes(status)) {
-                return false; // Planos básicos não têm frequência nem carteirinha
-            }
-            
-            return true; // Se for intermediário ou superior, libera
-        }
         // ==========================================
 
         onAuthStateChanged(auth, async (user) => {
@@ -634,10 +619,19 @@
                 dadosEquipeCompleto = d; // Guarda os dados completos (Status do Plano, Isento, etc)
                 equipeDados.nome = d.nome_equipe || d.nome || "Sua Equipe";
                 equipeDados.logo = d.url_logo || "";
+                
+                const elNome = document.getElementById('nome-equipe') || document.getElementById('lbl-equipe');
+                if(elNome) elNome.innerText = equipeDados.nome.toUpperCase();
 
-                if(typeof window.atualizarMenuSeguro === "function") {
-                    // Tenta forçar a atualização caso já tenha vindo do SessionStorage
-                    window.atualizarMenuSeguro(window.funcionalidadesEquipe || []);
+                const elLogoMenu = document.getElementById('logo-equipe-menu') || document.getElementById('container-logo') || document.querySelector('aside div[class*="bg-cyan-"], aside div[class*="bg-blue-"]');
+                if (elLogoMenu) {
+                    if (equipeDados.logo) {
+                        elLogoMenu.style.background = 'transparent';
+                        elLogoMenu.innerHTML = `<img src="${equipeDados.logo}" class="w-full h-full object-cover rounded-xl shadow-md" alt="Logo">`;
+                    } else {
+                        elLogoMenu.style.background = '';
+                        elLogoMenu.innerHTML = `<span class="text-white font-black text-2xl">${equipeDados.nome.charAt(0).toUpperCase()}</span>`;
+                    }
                 }
             }
         }
@@ -837,6 +831,9 @@
             }
         }
 
+        // ========================================================
+        // 🚀 NOVO: FUNÇÃO PARA GERAR RELATÓRIO GERAL DE FREQUÊNCIA
+        // ========================================================
         window.gerarRelatorioGeralFrequencia = async function() {
             const btn = document.getElementById('btn-relatorio-freq');
             const originalTxt = btn.innerHTML;
@@ -935,7 +932,11 @@
             }
         }
 
-        window.carregarFrequenciaDoAluno = async function(idAluno) {
+
+        // ========================================================
+        // 🚀 FUNÇÕES DE FREQUÊNCIA NO PAINEL DO PROFESSOR (PERFIL INDIVIDUAL)
+        // ========================================================
+        async function carregarFrequenciaDoAluno(idAluno) {
             const listaEl = document.getElementById('admin-lista-checkins');
             listaEl.innerHTML = '<p class="text-center text-xs text-slate-400 py-6 italic">A carregar presenças...</p>';
             
@@ -979,7 +980,7 @@
         }
 
         window.filtrarFrequenciaAdmin = async function() {
-            const valFiltro = document.getElementById('filtro-mes-freq-admin').value; 
+            const valFiltro = document.getElementById('filtro-mes-freq-admin').value; // Formato YYYY-MM
             if (!valFiltro) return;
 
             const partes = valFiltro.split('-');
@@ -1049,22 +1050,6 @@
             alunoEditandoId = id;
             ficheiroFotoSelecionado = null;
             document.getElementById('cad-foto').value = "";
-            
-            // 🔒 TRAVA DA ABA DE FREQUÊNCIA
-            const btnAbaFreq = document.getElementById('btn-aba-frequencia');
-            if(btnAbaFreq) {
-                btnAbaFreq.style.display = recursoLiberado('frequência') || recursoLiberado('frequencia') ? 'inline-block' : 'none';
-            }
-
-            // 🔒 TRAVA DO BOTÃO CARTEIRINHA
-            const btnCarteirinha = document.getElementById('btn-abrir-carteirinha');
-            if (btnCarteirinha) {
-                if (recursoLiberado('carteirinha')) {
-                    btnCarteirinha.classList.remove('hidden');
-                } else {
-                    btnCarteirinha.classList.add('hidden');
-                }
-            }
 
             document.getElementById('modal-titulo').innerText = "Editar Ficha";
             document.getElementById('aluno-id-oculto').value = id;
@@ -1110,62 +1095,6 @@
                 imgPreview.src = "";
                 imgPreview.classList.add('hidden');
                 placeholder.classList.remove('hidden');
-            }
-
-            // --- PREENCHE A CARTEIRINHA DIGITAL VIRTUAL ---
-            const elCartNome = document.getElementById('cart-aluno-nome-txt');
-            const elCartFaixa = document.getElementById('cart-aluno-faixa-texto');
-            const elCartNasc = document.getElementById('cart-aluno-nascimento-txt');
-            const elCartMatricula = document.getElementById('cart-aluno-matricula-txt');
-            const elCartValidade = document.getElementById('cart-aluno-validade-txt');
-            const cartFaixaBorder = document.getElementById('cart-faixa-border');
-            
-            if (elCartNome) elCartNome.innerText = a.nome || 'ALUNO NOME';
-            if (elCartFaixa) elCartFaixa.innerText = a.faixa || 'BRANCA';
-            if (cartFaixaBorder) cartFaixaBorder.style.background = getCorFaixaDupla(a.faixa);
-
-            if (elCartNasc) {
-                if (a.data_nascimento) {
-                    const parts = a.data_nascimento.split('-');
-                    elCartNasc.innerText = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : a.data_nascimento;
-                } else {
-                    elCartNasc.innerText = '00/00/0000';
-                }
-            }
-            if (elCartMatricula) elCartMatricula.innerText = a.matricula || '00000';
-            if (elCartValidade) elCartValidade.innerText = (new Date().getFullYear() + 1).toString(); // Validade para o ano seguinte
-
-            // Preenche o nome e logo da equipe na carteirinha
-            const elCartEqNome = document.getElementById('cart-equipe-nome');
-            const elCartEqLogo = document.getElementById('cart-equipe-logo');
-            const elCartEqFallback = document.getElementById('cart-equipe-fallback');
-            
-            if (elCartEqNome) elCartEqNome.innerText = equipeDados.nome.toUpperCase();
-            
-            if (equipeDados.logo) {
-                if (elCartEqLogo) { elCartEqLogo.src = equipeDados.logo; elCartEqLogo.classList.remove('hidden'); }
-                if (elCartEqFallback) elCartEqFallback.classList.add('hidden');
-            } else {
-                if (elCartEqLogo) elCartEqLogo.classList.add('hidden');
-                if (elCartEqFallback) { elCartEqFallback.innerText = equipeDados.nome.charAt(0).toUpperCase(); elCartEqFallback.classList.remove('hidden'); }
-            }
-
-            // Foto do aluno na carteirinha
-            const cartFotoModal = document.getElementById('cart-aluno-foto-modal');
-            const cartFotoFallback = document.getElementById('cart-aluno-foto-fallback-modal');
-            if (a.foto_url) {
-                if (cartFotoModal) { cartFotoModal.src = a.foto_url; cartFotoModal.classList.remove('hidden'); }
-                if (cartFotoFallback) cartFotoFallback.classList.add('hidden');
-            } else {
-                if (cartFotoModal) cartFotoModal.classList.add('hidden');
-                if (cartFotoFallback) cartFotoFallback.classList.remove('hidden');
-            }
-
-            // QR Code API Pública Gratuita
-            const cartQrCode = document.getElementById('cart-qr-code');
-            if (cartQrCode) {
-                cartQrCode.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${a.matricula || id}`;
-                cartQrCode.style.display = 'block';
             }
 
             carregarFrequenciaDoAluno(id);
@@ -1278,6 +1207,7 @@
                 divPreenchida.classList.add('hidden');
             }
             
+            document.getElementById('btn-abrir-carteirinha').classList.remove('hidden');
             document.getElementById('btn-gerar-pdf').classList.remove('hidden');
 
             calcularIdade(); 
@@ -1297,9 +1227,8 @@
                     const statusAtual = (dadosEquipeCompleto && dadosEquipeCompleto.status_plano) ? dadosEquipeCompleto.status_plano : 'TESTE';
                     const planosBasicos = ['TESTE', 'BASICO', 'BÁSICO', 'BLACK_BELT'];
                     
-                    if (planosBasicos.includes(statusAtual.toUpperCase())) {
+                    if (planosBasicos.includes(statusAtual)) {
                         const alunosAtivos = todosAlunosCache.filter(a => a.status === 'ATIVO').length;
-                        
                         if (alunosAtivos >= 10) {
                             abrirPaywallLimite(); // Tranca a porta e mostra o Modal!
                             return; 
@@ -1395,33 +1324,33 @@
             }
         }
 
-        window.abrirModal = () => { 
+window.abrirModal = () => { 
+            // 🛑 LÓGICA DO PAYWALL DE LIMITE DE 10 ALUNOS (Plano Básico)
             const isImpersonating = sessionStorage.getItem('admin_impersonate') !== null;
             const isIsento = dadosEquipeCompleto && (dadosEquipeCompleto.isento === true || String(dadosEquipeCompleto.isento) === "true");
             
             if (!isImpersonating && !isIsento) {
+                // Lê o plano atual (se não houver, assume TESTE)
                 const statusAtual = (dadosEquipeCompleto && dadosEquipeCompleto.status_plano) ? dadosEquipeCompleto.status_plano : 'TESTE';
+                
+                // Mapeia os planos que sofrem o bloqueio de 10 alunos
                 const planosBasicos = ['TESTE', 'BASICO', 'BÁSICO'];
                 
                 if (planosBasicos.includes(statusAtual.toUpperCase())) {
+                    // Conta quantos alunos ATIVOS esta academia tem
                     const alunosAtivos = todosAlunosCache.filter(a => a.status === 'ATIVO').length;
                     
                     if (alunosAtivos >= 10) {
-                        abrirPaywallLimite(); 
-                        return; 
+                        abrirPaywallLimite(); // Abre o cadeado dourado!
+                        return; // ⛔ Impede a execução e não deixa abrir a ficha de matrícula
                     }
                 }
             }
 
+            // Se passou na segurança, limpa os campos e abre a ficha nova
             alunoEditandoId = null; 
             ficheiroFotoSelecionado = null;
             
-            // 🔒 TRAVA DA ABA DE FREQUÊNCIA NO NOVO ALUNO
-            const btnAbaFreq = document.getElementById('btn-aba-frequencia');
-            if(btnAbaFreq) {
-                btnAbaFreq.style.display = recursoLiberado('frequência') || recursoLiberado('frequencia') ? 'inline-block' : 'none';
-            }
-
             document.querySelectorAll('#modal-aluno input[type="text"], #modal-aluno input[type="email"], #modal-aluno input[type="date"]').forEach(i => i.value = ''); 
             document.querySelectorAll('#modal-aluno input[type="checkbox"]').forEach(i => i.checked = false);
             
@@ -1663,6 +1592,89 @@
             html2pdf().set(opt).from(element).save();
         }
 
+        window.abrirModalCarteirinha = function() {
+            const aluno = todosAlunosCache.find(a => a.id === alunoEditandoId);
+            if (!aluno) return;
+
+            // Preencher dados da equipe
+            document.getElementById('cart-equipe-nome').innerText = equipeDados.nome.toUpperCase();
+            
+            const logoEquipe = document.getElementById('cart-equipe-logo');
+            const fallbackEquipe = document.getElementById('cart-equipe-fallback');
+            if (equipeDados.logo) {
+                logoEquipe.src = equipeDados.logo;
+                logoEquipe.classList.remove('hidden');
+                fallbackEquipe.classList.add('hidden');
+            } else {
+                logoEquipe.classList.add('hidden');
+                fallbackEquipe.classList.remove('hidden');
+                fallbackEquipe.innerText = equipeDados.nome.charAt(0).toUpperCase();
+            }
+
+            // Watermark
+            const watermark = document.getElementById('cart-equipe-watermark');
+            const watermarkFallback = document.getElementById('cart-equipe-watermark-fallback');
+            if (equipeDados.logo) {
+                watermark.src = equipeDados.logo;
+                watermark.classList.remove('hidden');
+                watermarkFallback.classList.add('hidden');
+            } else {
+                watermark.classList.add('hidden');
+                watermarkFallback.classList.remove('hidden');
+                watermarkFallback.innerText = equipeDados.nome.charAt(0).toUpperCase();
+            }
+
+            // Dados do aluno
+            document.getElementById('cart-aluno-nome-txt').innerText = aluno.nome;
+            document.getElementById('cart-aluno-matricula-txt').innerText = aluno.matricula || 'S/N';
+            
+            const faixaTexto = `${aluno.faixa || 'Branca'} ${aluno.grau && aluno.grau !== 'Sem grau' ? aluno.grau : ''}`.trim();
+            document.getElementById('cart-aluno-faixa-texto').innerText = faixaTexto;
+            
+            // Cor da borda da faixa
+            const corFaixa = getCorFaixaDupla(aluno.faixa);
+            document.getElementById('cart-faixa-border').style.background = corFaixa;
+            if (aluno.faixa && (aluno.faixa.toLowerCase().includes('branca') || aluno.faixa.toLowerCase().includes('amarela'))) {
+                document.getElementById('cart-faixa-border').style.borderRight = '1px solid #cbd5e1';
+            }
+
+            // Data de nascimento
+            if (aluno.data_nascimento) {
+                const partes = aluno.data_nascimento.split('-');
+                if (partes.length === 3) {
+                    document.getElementById('cart-aluno-nascimento-txt').innerText = `${partes[2]}/${partes[1]}/${partes[0]}`;
+                }
+            }
+
+            // Validade (ano atual + 1)
+            const anoAtual = new Date().getFullYear();
+            document.getElementById('cart-aluno-validade-txt').innerText = (anoAtual + 1).toString();
+
+            // Foto do aluno
+            const fotoModal = document.getElementById('cart-aluno-foto-modal');
+            const fotoFallback = document.getElementById('cart-aluno-foto-fallback-modal');
+            if (aluno.foto_url) {
+                fotoModal.src = aluno.foto_url;
+                fotoModal.classList.remove('hidden');
+                fotoFallback.classList.add('hidden');
+            } else {
+                fotoModal.classList.add('hidden');
+                fotoFallback.classList.remove('hidden');
+                fotoFallback.innerText = aluno.nome.charAt(0).toUpperCase();
+            }
+
+            // QR Code
+            const qrCodeImg = document.getElementById('cart-qr-code');
+            const dadosQR = `${aluno.id}|${aluno.nome}|${aluno.matricula || ''}`;
+            qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(dadosQR)}&bgcolor=ffffff&color=000000`;
+
+            document.getElementById('modal-carteirinha').classList.replace('hidden', 'flex');
+        }
+
+        window.fecharModalCarteirinha = () => {
+            document.getElementById('modal-carteirinha').classList.replace('flex', 'hidden');
+        }
+
         window.showToast = (msg, type = 'error') => {
             const container = document.getElementById('toast-container');
             if(!container) return alert(msg);
@@ -1693,7 +1705,7 @@
                 }
             } 
         }
-        
+
         window.limparBusca = () => { document.getElementById('input-busca').value = ''; renderizarTabela(); }
     </script>
 </body>

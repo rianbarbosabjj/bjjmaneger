@@ -1190,7 +1190,7 @@
             new QRCode(qrContainer, { text: window.location.origin + '/validar.html?mat=' + a.matricula, width: 64, height: 64, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.M });
         }
 
-        async function convertImgToBase64(url) {
+async function convertImgToBase64(url) {
     try {
         const response = await fetch(url, { mode: 'cors' }); 
         const blob = await response.blob();
@@ -1219,16 +1219,17 @@ async function gerarCanvasCarteirinha() {
     divClone.style.backgroundColor = '#ffffff';
     divClone.style.zIndex = '-9999';
     divClone.style.pointerEvents = 'none';
+    divClone.style.overflow = 'hidden';
     
     const clone = elementoBase.cloneNode(true);
     
-    // 🚨 REMOVER TODAS AS CLASSES QUE PODEM CAUSAR DISTORÇÃO
+    // Remover classes que podem causar distorção
     clone.classList.remove(
         'mx-auto', 'shadow-2xl', 'w-full', 'max-w-[600px]', 
         'aspect-[1.58/1]', 'shrink-0', 'mt-4', 'relative'
     );
     
-    // 🚨 FORÇAR DIMENSÕES FIXAS EXATAS
+    // Forçar dimensões fixas exatas
     clone.style.position = 'relative';
     clone.style.top = '0';
     clone.style.left = '0';
@@ -1243,15 +1244,13 @@ async function gerarCanvasCarteirinha() {
     clone.style.transform = 'none';
     clone.style.boxSizing = 'border-box';
     clone.style.overflow = 'hidden';
-    
-    // 🚨 GARANTIR QUE O FUNDO ESTÁ BRANCO
     clone.style.backgroundColor = '#ffffff';
     clone.style.background = 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)';
     
-    // 🚨 REMOVER EFEITOS DE VIDRO (BACKDROP-BLUR) QUE PODEM CAUSAR BUGS NO CANVAS
-    const glassElements = clone.querySelectorAll('.backdrop-blur-sm, .bg-white\\/90, .bg-slate-100\\/50, .bg-white\\/50');
+    // Remover efeitos de vidro que causam bugs no canvas
+    const glassElements = clone.querySelectorAll('.backdrop-blur-sm, .bg-white\\/90, .bg-slate-100\\/50, .bg-white\\/50, .backdrop-blur-\\[1px\\]');
     glassElements.forEach(el => {
-        el.classList.remove('backdrop-blur-sm', 'bg-white/90', 'bg-slate-100/50', 'bg-white/50');
+        el.classList.remove('backdrop-blur-sm', 'bg-white/90', 'bg-slate-100/50', 'bg-white/50', 'backdrop-blur-[1px]');
         el.style.backdropFilter = 'none';
         el.style.webkitBackdropFilter = 'none';
         
@@ -1259,12 +1258,21 @@ async function gerarCanvasCarteirinha() {
             el.style.backgroundColor = '#f1f5f9';
         } else if (el.classList.contains('border-l-4')) {
             el.style.backgroundColor = '#ffffff';
+        } else if (el.classList.contains('bg-white/90')) {
+            el.style.backgroundColor = '#ffffff';
         } else {
             el.style.backgroundColor = '#ffffff';
         }
     });
     
-    // 🚨 CONVERTER TODAS AS IMAGENS PARA BASE64 (EVITA CORS)
+    // Garantir que os elementos decorativos não atrapalham
+    const decorativos = clone.querySelectorAll('.skew-x-\\[-20deg\\], .skew-y-\\[-5deg\\]');
+    decorativos.forEach(el => {
+        el.style.opacity = '0.3';
+        el.style.pointerEvents = 'none';
+    });
+    
+    // Converter todas as imagens para Base64 (evita CORS)
     const imgs = clone.querySelectorAll('img');
     for (let img of imgs) {
         if (img.src && img.src.startsWith('http')) {
@@ -1277,14 +1285,13 @@ async function gerarCanvasCarteirinha() {
         }
     }
     
-    // 🚨 GARANTIR QUE O QR CODE ESTÁ VISÍVEL
+    // Garantir que o QR Code está visível
     const qrCodeContainer = clone.querySelector('#cart-qr-code');
     if (qrCodeContainer) {
         qrCodeContainer.style.opacity = '1';
         qrCodeContainer.style.filter = 'none';
         qrCodeContainer.style.backgroundColor = '#ffffff';
         
-        // Forçar o canvas do QR Code a ser visível
         const qrCanvas = qrCodeContainer.querySelector('canvas');
         if (qrCanvas) {
             qrCanvas.style.width = '100%';
@@ -1293,7 +1300,7 @@ async function gerarCanvasCarteirinha() {
         }
     }
     
-    // 🚨 GARANTIR QUE A FOTO DO ALUNO ESTÁ VISÍVEL
+    // Garantir que a foto do aluno está visível
     const fotoAluno = clone.querySelector('#cart-aluno-foto-modal');
     if (fotoAluno) {
         fotoAluno.style.objectFit = 'cover';
@@ -1301,7 +1308,7 @@ async function gerarCanvasCarteirinha() {
         fotoAluno.style.height = '100%';
     }
     
-    // 🚨 FORÇAR TODOS OS TEXTOS A FICAREM DENTRO DAS CAIXAS
+    // Forçar todos os textos a ficarem dentro das caixas
     const textos = clone.querySelectorAll('p, span, h2, h3, h4');
     textos.forEach(el => {
         el.style.whiteSpace = 'nowrap';
@@ -1309,7 +1316,7 @@ async function gerarCanvasCarteirinha() {
         el.style.textOverflow = 'ellipsis';
     });
     
-    // 🚨 AJUSTAR O TAMANHO DA FONTE DO NOME PARA NÃO CORTAR
+    // Ajustar o tamanho da fonte do nome para não cortar
     const nomeTxt = clone.querySelector('#cart-aluno-nome-txt');
     if (nomeTxt) {
         nomeTxt.style.fontSize = '13px';
@@ -1317,14 +1324,7 @@ async function gerarCanvasCarteirinha() {
         nomeTxt.style.paddingBottom = '2px';
     }
     
-    // 🚨 GARANTIR QUE OS ELEMENTOS DECORATIVOS NÃO ATRAPALHAM
-    const decorativos = clone.querySelectorAll('.skew-x-\\[-20deg\\], .skew-y-\\[-5deg\\]');
-    decorativos.forEach(el => {
-        el.style.opacity = '0.3';
-        el.style.pointerEvents = 'none';
-    });
-    
-    // 🚨 ISOLAR O CONTEÚDO
+    // Isolar o conteúdo
     clone.style.isolation = 'isolate';
     clone.style.webkitMaskImage = '-webkit-radial-gradient(white, black)';
     
@@ -1334,7 +1334,7 @@ async function gerarCanvasCarteirinha() {
     // Aguardar o DOM atualizar
     await new Promise(r => setTimeout(r, 300));
     
-    // 🚨 CONFIGURAÇÕES OTIMIZADAS PARA O HTML2CANVAS
+    // Configurações otimizadas para o html2canvas
     const canvas = await html2canvas(clone, {
         scale: 4,
         useCORS: true,
@@ -1344,16 +1344,7 @@ async function gerarCanvasCarteirinha() {
         height: 380,
         windowWidth: 600,
         windowHeight: 380,
-        logging: false,
-        onclone: function(clonedDoc) {
-            // Garantir que o clone no documento clonado também está correto
-            const clonedElement = clonedDoc.getElementById('carteirinha');
-            if (clonedElement) {
-                clonedElement.style.width = '600px';
-                clonedElement.style.height = '380px';
-                clonedElement.style.transform = 'none';
-            }
-        }
+        logging: false
     });
     
     // Remover o clone do DOM
@@ -1373,7 +1364,6 @@ window.baixarCarteirinhaPNG = async function () {
     try { 
         const canvas = await gerarCanvasCarteirinha(); 
         
-        // Criar link de download
         const link = document.createElement('a'); 
         link.download = `Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.png`; 
         link.href = canvas.toDataURL('image/png', 1.0); 
@@ -1402,15 +1392,13 @@ window.baixarCarteirinhaPDF = async function () {
         const imgData = canvas.toDataURL('image/png', 1.0); 
         const { jsPDF } = window.jspdf; 
         
-        // 🚨 DIMENSÕES EXATAS PARA NÃO CORTAR NADA
-        // 85.6mm x 54mm é o tamanho padrão de uma carteirinha (CR80)
+        // Dimensões exatas para não cortar nada (85.6mm x 54mm = tamanho padrão CR80)
         const pdf = new jsPDF({ 
             orientation: 'landscape', 
             unit: 'mm', 
             format: [85.6, 54] 
         }); 
         
-        // Adicionar a imagem ocupando 100% do PDF
         pdf.addImage(imgData, 'PNG', 0, 0, 85.6, 54, undefined, 'FAST'); 
         pdf.save(`Carteirinha_${alunoLogado.nome.replace(/\s+/g, '_')}.pdf`); 
         
@@ -1444,20 +1432,18 @@ window.compartilharCarteirinha = async function () {
             if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) { 
                 try { 
                     await navigator.share({ 
-                        title: 'Carteirinha BJJ', 
-                        text: `Minha carteirinha oficial de ${alunoLogado.faixa || 'Jiu-Jitsu'}`, 
+                        title: '🥋 Carteirinha BJJ', 
+                        text: `${alunoLogado.nome} - ${alunoLogado.faixa || 'Branca'} - ${equipeDados?.nome_equipe || 'BJJ'}`, 
                         files: [file] 
                     }); 
                     showToast("✅ Compartilhado com sucesso!", "success");
                 } catch (shareError) { 
                     if (shareError.name !== 'AbortError') {
                         console.error("Erro ao compartilhar:", shareError);
-                        // Fallback para WhatsApp
                         abrirCompartilharFallback();
                     }
                 } 
             } else { 
-                // Fallback para navegadores que não suportam compartilhamento de arquivos
                 abrirCompartilharFallback();
             } 
         }, 'image/png', 1.0); 
@@ -1471,11 +1457,10 @@ window.compartilharCarteirinha = async function () {
     }
 }
 
-// 🚨 FUNÇÃO DE FALLBACK PARA COMPARTILHAMENTO
+// Função de fallback para compartilhamento
 function abrirCompartilharFallback() {
     const texto = encodeURIComponent(`🥋 Minha Carteirinha Digital BJJ\nAluno: ${alunoLogado.nome}\nFaixa: ${alunoLogado.faixa || 'Branca'}\nEquipe: ${equipeDados?.nome_equipe || 'BJJ'}`);
     
-    // Tentar abrir WhatsApp primeiro (mais comum)
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     
     if (isMobile) {
@@ -1484,7 +1469,7 @@ function abrirCompartilharFallback() {
         window.open(`https://wa.me/?text=${texto}`, '_blank');
     }
     
-    showToast("📱 Abra o WhatsApp para compartilhar!", "success");
+    showToast("📱 Compartilhe via WhatsApp!", "success");
 }
         async function buscarFaturasResiliente() {
             const lista = document.getElementById('lista-faturas'); if(!lista) return; lista.innerHTML = '<div class="text-center p-6 text-slate-500 text-xs italic">A carregar mensalidades...</div>';

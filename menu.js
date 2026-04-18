@@ -3,10 +3,22 @@
 function carregarMenu() {
     const paginaAtual = window.location.pathname.split("/").pop() || "dashboard.html";
 
-    // === ESTILOS ATUALIZADOS E MAIS MODERNOS ===
+    // --- 1. CAPTURA O ESTADO ATUAL (Para não perder o nome e a foto ao recarregar os cadeados) ---
+    const elEmail = document.getElementById('email-logado');
+    const elCargo = document.getElementById('lbl-cargo');
+    const elNome = document.getElementById('nome-equipe');
+    const elLogo = document.getElementById('container-logo');
+    
+    const cacheEmail = elEmail && elEmail.innerText !== 'Aguarde...' ? elEmail.innerText : 'Aguarde...';
+    const cacheCargo = elCargo && elCargo.innerText !== 'CONECTANDO' ? elCargo.innerText : 'CONECTANDO';
+    const cacheNome = elNome && elNome.innerText !== 'Carregando...' ? elNome.innerText : 'Carregando...';
+    const cacheLogoHTML = elLogo ? elLogo.innerHTML : '';
+    const cacheLogoBg = elLogo ? elLogo.style.background : '';
+
+    // --- 2. LÓGICA DE ESTILOS ---
     const classDesktop = (pagina, isBloqueado = false) => {
         if (isBloqueado) {
-            return "w-full text-left flex items-center justify-between px-4 py-3 text-sm font-semibold text-slate-600 border-l-4 border-transparent cursor-not-allowed opacity-60";
+            return "w-full text-left flex items-center justify-between px-4 py-3 text-sm font-semibold text-slate-600 border-l-4 border-transparent cursor-not-allowed opacity-60 bg-slate-900/30";
         }
         return paginaAtual === pagina 
             ? "w-full text-left flex items-center justify-between px-4 py-3 text-sm font-black text-white bg-gradient-to-r from-cyan-500/10 to-transparent border-l-4 border-cyan-500 transition-all group cursor-pointer" 
@@ -26,45 +38,40 @@ function carregarMenu() {
         return paginaAtual === pagina ? `<div class="absolute top-0 w-8 h-1 bg-cyan-500 rounded-b-full shadow-[0_0_10px_rgba(6,182,212,0.8)]"></div>` : "";
     };
 
-    // === FUNÇÃO DE VERIFICAÇÃO VISUAL ===
-    // Lê uma variável que deixaremos global (via script no dashboard)
-    const hasAccess = (funcionalidade) => {
-        if (!window.funcionalidadesEquipe) return true; // Libera se a verificação ainda não carregou
+    // --- 3. MOTOR DE PERMISSÕES BLINDADO ---
+    const hasAccess = (palavraChave) => {
+        // Se ainda não carregou do Firebase, libera o visual temporariamente para não piscar
+        if (!window.funcionalidadesEquipe) return true; 
         
-        // Mapeia o ID do botão para o texto exato salvo no Super Admin
-        const mapaFuncionalidades = {
-            'financeiro': "Controle Financeiro Blindado", // Ajuste para o texto exato do Super Admin se for diferente
-            'loja_virtual': "Vitrine Virtual (Loja Online)",
-            'certificados': "Emissão de Certificados Profissionais",
-            'turmas': "Gestão de Turmas e Frequência"
-        };
-        
-        const textoBusca = mapaFuncionalidades[funcionalidade];
-        if (!textoBusca) return true;
-
-        // Procura se o array de funcionalidades tem essa feature com um "✓"
-        return window.funcionalidadesEquipe.some(f => f.includes('✓') && f.includes(textoBusca));
+        // Busca a palavra-chave (ex: "Asaas") dentro dos recursos que têm um "✓"
+        return window.funcionalidadesEquipe.some(f => 
+            f.includes('✓') && f.toLowerCase().includes(palavraChave.toLowerCase())
+        );
     };
 
     const blockIcon = `<span class="text-xs">🔒</span>`;
     
-    // Verificações instantâneas
-    const canFin = hasAccess('financeiro');
-    const canLoja = hasAccess('loja_virtual');
-    const canCert = hasAccess('certificados');
-    const canTurmas = hasAccess('turmas');
+    // Mapeamento Inteligente
+    const canFin = hasAccess('Asaas') || hasAccess('Faturas'); 
+    const canLoja = hasAccess('Vitrine'); 
+    const canCert = hasAccess('Certificados'); 
+    const canTurmas = hasAccess('Turmas'); 
+    
+    // GESTÃO EXTRA: Se não tiver "Alunos Ilimitados" nem "Portal", é o Plano Básico, então bloqueia!
+    const canExtra = hasAccess('Ilimitados') || hasAccess('Portal'); 
 
     const clickAcao = (url, hasAcc) => {
         return hasAcc ? `window.location.href='${url}'` : `mostrarAvisoUpgrade()`;
     };
 
-    // === HTML DO MENU DESKTOP ===
+    // --- 4. HTML DO MENU DESKTOP ---
     const menuDesktop = `
         <aside class="hidden md:flex w-64 bg-slate-900 text-white flex-col h-full shadow-[5px_0_15px_rgba(0,0,0,0.3)] shrink-0 z-20 border-r border-slate-800">
             <div class="p-6 text-center border-b border-slate-800 flex flex-col items-center justify-center bg-slate-950/30">
-                <div id="container-logo" class="w-16 h-16 mb-4 rounded-2xl bg-gradient-to-tr from-slate-800 to-slate-700 flex items-center justify-center shadow-lg text-slate-300 font-black text-2xl overflow-hidden ring-1 ring-slate-700">
-                    </div>
-                <h1 class="text-[13px] font-black tracking-wider text-white uppercase truncate w-full px-2" id="nome-equipe">Carregando...</h1>
+                <div id="container-logo" class="w-16 h-16 mb-4 rounded-2xl bg-gradient-to-tr from-slate-800 to-slate-700 flex items-center justify-center shadow-lg text-slate-300 font-black text-2xl overflow-hidden ring-1 ring-slate-700" style="${cacheLogoBg}">
+                    ${cacheLogoHTML}
+                </div>
+                <h1 class="text-[13px] font-black tracking-wider text-white uppercase truncate w-full px-2" id="nome-equipe">${cacheNome}</h1>
                 <p class="text-[9px] text-cyan-500 font-black uppercase tracking-[0.2em] mt-1.5 bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/20">BJJ Manager</p>
             </div>
             
@@ -109,16 +116,19 @@ function carregarMenu() {
                     <p class="text-[9px] font-black text-slate-500/80 uppercase tracking-widest">Gestão Extra</p>
                 </div>
                 
-                <button onclick="${clickAcao('competicoes.html', true)}" class="${classDesktop('competicoes.html', false)}">
+                <button onclick="${clickAcao('competicoes.html', canExtra)}" class="${classDesktop('competicoes.html', !canExtra)}">
                     <div class="flex items-center"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'competicoes.html' ? 'drop-shadow-md' : 'opacity-70'}">🏆</span> Competições</div>
+                    ${!canExtra ? blockIcon : ''}
                 </button>
                 
-                <button onclick="${clickAcao('federacoes.html', true)}" class="${classDesktop('federacoes.html', false)}">
+                <button onclick="${clickAcao('federacoes.html', canExtra)}" class="${classDesktop('federacoes.html', !canExtra)}">
                     <div class="flex items-center"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'federacoes.html' ? 'drop-shadow-md' : 'opacity-70'}">🪪</span> Federações</div>
+                    ${!canExtra ? blockIcon : ''}
                 </button>
                 
-                <button onclick="${clickAcao('historico.html', true)}" class="${classDesktop('historico.html', false)}">
+                <button onclick="${clickAcao('historico.html', canExtra)}" class="${classDesktop('historico.html', !canExtra)}">
                     <div class="flex items-center"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'historico.html' ? 'drop-shadow-md' : 'opacity-70'}">🎓</span> Graduações</div>
+                    ${!canExtra ? blockIcon : ''}
                 </button>
             </nav>
             
@@ -126,8 +136,8 @@ function carregarMenu() {
                 <div class="bg-slate-800/80 p-3 rounded-xl flex items-center mb-3 border border-slate-700 shadow-inner hover:border-slate-600 transition-colors cursor-pointer">
                     <div class="w-9 h-9 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center font-black text-[10px] text-white shadow-md border border-slate-600 shrink-0">ADM</div>
                     <div class="ml-3 overflow-hidden flex-1">
-                        <p class="text-[11px] font-bold text-white truncate" id="email-logado">Aguarde...</p>
-                        <p class="text-[9px] text-cyan-400 uppercase tracking-widest mt-0.5 font-bold" id="lbl-cargo">Conectando</p>
+                        <p class="text-[11px] font-bold text-white truncate" id="email-logado">${cacheEmail}</p>
+                        <p class="text-[9px] text-cyan-400 uppercase tracking-widest mt-0.5 font-bold" id="lbl-cargo">${cacheCargo}</p>
                     </div>
                 </div>
                 <button onclick="sairDoSistema()" class="w-full px-4 py-3 bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white border border-rose-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center shadow-sm">
@@ -137,7 +147,7 @@ function carregarMenu() {
         </aside>
     `;
 
-    // === HTML DO MENU MOBILE ===
+    // --- 5. HTML DO MENU MOBILE ---
     const menuMobile = `
         <nav class="md:hidden fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-xl border-t border-slate-800 flex overflow-x-auto hide-scrollbar flex-nowrap items-center h-[76px] z-40 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.5)] snap-x scroll-smooth">
             <button onclick="${clickAcao('dashboard.html', true)}" class="${classMobile('dashboard.html', false)}">
@@ -186,20 +196,23 @@ function carregarMenu() {
                 <span class="text-[8px] font-bold uppercase tracking-wide">Currí.</span>
             </button>
             
-            <button onclick="${clickAcao('competicoes.html', true)}" class="${classMobile('competicoes.html', false)}">
+            <button onclick="${clickAcao('competicoes.html', canExtra)}" class="${classMobile('competicoes.html', !canExtra)} relative">
                 ${indicadorMobile('competicoes.html')}
+                ${!canExtra ? `<div class="absolute top-1 right-2 text-[10px]">🔒</div>` : ''}
                 <span class="text-2xl mb-1 ${paginaAtual === 'competicoes.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">🏆</span>
                 <span class="text-[8px] font-bold uppercase tracking-wide">Comp.</span>
             </button>
             
-            <button onclick="${clickAcao('federacoes.html', true)}" class="${classMobile('federacoes.html', false)}">
+            <button onclick="${clickAcao('federacoes.html', canExtra)}" class="${classMobile('federacoes.html', !canExtra)} relative">
                 ${indicadorMobile('federacoes.html')}
+                ${!canExtra ? `<div class="absolute top-1 right-2 text-[10px]">🔒</div>` : ''}
                 <span class="text-2xl mb-1 ${paginaAtual === 'federacoes.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">🪪</span>
                 <span class="text-[8px] font-bold uppercase tracking-wide">Fed.</span>
             </button>
             
-            <button onclick="${clickAcao('historico.html', true)}" class="${classMobile('historico.html', false)}">
+            <button onclick="${clickAcao('historico.html', canExtra)}" class="${classMobile('historico.html', !canExtra)} relative">
                 ${indicadorMobile('historico.html')}
+                ${!canExtra ? `<div class="absolute top-1 right-2 text-[10px]">🔒</div>` : ''}
                 <span class="text-2xl mb-1 ${paginaAtual === 'historico.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">🎓</span>
                 <span class="text-[8px] font-bold uppercase tracking-wide">Grad.</span>
             </button>
@@ -211,10 +224,9 @@ function carregarMenu() {
         </nav>
     `;
 
-    // Renderização
+    // --- 6. RENDERIZAÇÃO NA TELA ---
     const containerPrincipal = document.getElementById('interface-sistema');
     if (containerPrincipal) {
-        // Evita duplicar se já existir
         const oldMenu = document.querySelector('aside');
         if(oldMenu) oldMenu.remove();
         containerPrincipal.insertAdjacentHTML('afterbegin', menuDesktop);
@@ -225,24 +237,20 @@ function carregarMenu() {
     document.body.insertAdjacentHTML('beforeend', menuMobile);
 }
 
-// === LÓGICA DE UPGRADE ===
+// === ALERTAS DE BLOQUEIO ===
 window.mostrarAvisoUpgrade = function() {
     if(typeof showToast === 'function') {
-        showToast("Seu plano atual não possui este recurso. Acesse Meu Plano para fazer Upgrade.", "info");
+        showToast("O seu plano não possui este recurso. Aceda a 'Visão Geral' para fazer Upgrade.", "info");
     } else {
         alert("🔒 Recurso Bloqueado! Faça o Upgrade do seu plano para liberar esta funcionalidade.");
     }
-    // Pode redirecionar para uma página de upgrade se quiser:
-    // window.location.href = "meu_plano.html";
 };
 
-// Como o menu é injetado, ele só vai exibir os cadeados corretamente APÓS as funcionalidades 
-// serem carregadas do banco de dados na tela de dashboard. 
-// A função exportada que o dashboard vai chamar:
+// Esta função é chamada pelo dashboard.html quando o Firebase termina de ler os dados
 window.atualizarMenuSeguro = function(funcionalidadesDoPlano) {
     window.funcionalidadesEquipe = funcionalidadesDoPlano;
-    carregarMenu(); // Re-renderiza o menu já com as travas certas
+    carregarMenu(); // Reescreve o menu já com os cadeados no lugar!
 };
 
-// Render Inicial
+// Arranca o menu provisório antes do Firebase responder
 carregarMenu();

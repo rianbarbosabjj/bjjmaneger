@@ -153,7 +153,7 @@
         </div>
     </main>
 
-    <script type="module">
+<script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -315,7 +315,6 @@
                 document.getElementById('msg-isento').classList.remove('hidden');
             }
 
-            // Exibir o nome formatado do plano abaixo da tag
             if (txtPlanoAtual) {
                 let nomePlanoFormatado = equipePlanoAtual.replace('_', ' ');
                 if (equipePlanoAtual === 'TESTE' || equipePlanoAtual === 'BASICO') {
@@ -358,19 +357,17 @@
                     const descCupomPerc = cupomAtivo ? parseFloat(cupomAtivo.desconto_perc) : 0;
                     const descCupomApenas1oMes = cupomAtivo && cupomAtivo.duracao === 'PRIMEIRA_MENSALIDADE';
 
-                    // P1 (BASE)
                     if(planos.p1) {
                         document.getElementById('plano1-nome').innerText = planos.p1.nome;
                         document.getElementById('plano1-desc').innerText = planos.p1.desc;
                         renderizarListaFuncionalidades('plano1-features', planos.p1.features, 'emerald', 'slate-600');
                     }
 
-                    // Gravar os links Asaas globalmente
-                    if(planos.p2) linksAsaas['BLACK_BELT'] = planos.p2.link_asaas;
-                    if(planos.p3) linksAsaas['MASTER'] = planos.p3.link_asaas;
-                    if(planos.p4) linksAsaas['ELITE'] = planos.p4.link_asaas;
+                    // Tenta capturar o link de pagamento independente se ele foi salvo como link_asaas, url_asaas ou link
+                    if(planos.p2) linksAsaas['BLACK_BELT'] = planos.p2.link_asaas || planos.p2.url_asaas || planos.p2.link || null;
+                    if(planos.p3) linksAsaas['MASTER'] = planos.p3.link_asaas || planos.p3.url_asaas || planos.p3.link || null;
+                    if(planos.p4) linksAsaas['ELITE'] = planos.p4.link_asaas || planos.p4.url_asaas || planos.p4.link || null;
 
-                    // FUNÇÃO AUXILIAR PARA CALCULAR PREÇOS E POPULAR DADOS
                     function preencherCardPreco(planId, configPlano, colorTheme) {
                         if(!configPlano) return;
                         
@@ -415,16 +412,14 @@
                         }
                         
                         let textColor = 'slate-600';
-                        if(planId === 3) textColor = 'slate-200'; // Master é dark theme
+                        if(planId === 3) textColor = 'slate-200'; 
                         renderizarListaFuncionalidades(`plano${planId}-features`, configPlano.features, colorTheme, textColor);
                     }
 
-                    // Aplica as regras aos 3 planos pagos
                     preencherCardPreco(2, planos.p2, 'cyan');
                     preencherCardPreco(3, planos.p3, 'purple');
                     preencherCardPreco(4, planos.p4, 'amber');
 
-                    // Lógica para desabilitar o botão do plano atual
                     const bloquearBotao = (btnId, themeClass) => {
                         const btn = document.getElementById(btnId);
                         if(btn) {
@@ -466,17 +461,25 @@
             btn.disabled = true;
 
             try {
-                const linkDestino = linksAsaas[planoEscolhido];
+                let linkDestino = linksAsaas[planoEscolhido];
                 
                 if (linkDestino) {
                     showToast("Redirecionando para o Checkout Seguro...", "success");
+                    
+                    // Adiciona o e-mail do usuário no link do Asaas automaticamente
+                    if (auth.currentUser && auth.currentUser.email) {
+                        const conector = linkDestino.includes('?') ? '&' : '?';
+                        linkDestino += `${conector}email=${encodeURIComponent(auth.currentUser.email)}`;
+                    }
+
                     setTimeout(() => {
                         window.open(linkDestino, '_blank');
                         btn.innerHTML = originalTxt;
                         btn.disabled = false;
                     }, 1500);
                 } else {
-                    showToast("Link de pagamento indisponível no momento.", "error");
+                    // Erro claro caso falte o link no banco
+                    showToast("Erro: O campo 'link_asaas' não está configurado no Firebase para este plano.", "error");
                     btn.innerHTML = originalTxt;
                     btn.disabled = false;
                 }

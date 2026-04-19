@@ -152,7 +152,7 @@
         </div>
     </main>
 
-    <script type="module">
+<script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -174,7 +174,7 @@
         let equipePlanoAtual = null;
         let dadosEquipe = null;
         let cupomAtivo = null;
-        let linksAsaas = {}; // Guarda os links de checkout do Asaas
+        let linksAsaas = {}; 
 
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
@@ -192,7 +192,7 @@
                 const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
                 if (mestreDoc.exists()) {
                     dadosEquipe = mestreDoc.data();
-                    equipePlanoAtual = dadosEquipe.status_plano || 'TESTE';
+                    equipePlanoAtual = (dadosEquipe.status_plano || 'TESTE').toUpperCase();
                     atualizarStatusCabecalho();
                     
                     if(dadosEquipe.cupom_usado && !cupomAtivo) {
@@ -303,34 +303,34 @@
         }
 
         function atualizarStatusCabecalho() {
-            document.getElementById('nome-equipe').innerText = (dadosEquipe.nome_equipe || "Sua Equipe").toUpperCase();
+            document.getElementById('nome-equipe').innerText = (dadosEquipe.nome_equipe || dadosEquipe.nome || "Sua Equipe").toUpperCase();
             const badge = document.getElementById('status-badge');
             const icon = document.getElementById('status-icon');
             const txtVencimento = document.getElementById('plano-vencimento');
-            const status = dadosEquipe.status_plano || 'TESTE';
             const isento = (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true");
 
             if (isento) {
                 document.getElementById('msg-isento').classList.remove('hidden');
             }
 
-            if (status === 'TESTE') {
+            if (equipePlanoAtual === 'TESTE') {
                 badge.innerText = "PERÍODO DE TESTE";
                 badge.className = "px-4 py-1.5 rounded-full text-[10px] font-black uppercase bg-amber-500 text-white shadow-lg";
                 icon.innerText = "⏳";
-                txtVencimento.innerText = "Aproveite os seus 7 dias de teste grátis.";
+                txtVencimento.innerText = "Aproveite o seu teste grátis.";
             } 
-            else if (status === 'BLACK_BELT' || status === 'MASTER' || status === 'ELITE' || status === 'ATIVO') {
-                badge.innerText = "ASSINATURA ATIVA";
-                badge.className = "px-4 py-1.5 rounded-full text-[10px] font-black uppercase bg-emerald-500 text-white shadow-lg";
-                icon.innerText = "✅";
-                txtVencimento.innerText = "O seu acesso está garantido. Oss!";
-            }
-            else if (status === 'BLOQUEADO') {
+            else if (equipePlanoAtual === 'BLOQUEADO' || equipePlanoAtual === 'INATIVO') {
                 badge.innerText = "ACESSO SUSPENSO";
                 badge.className = "px-4 py-1.5 rounded-full text-[10px] font-black uppercase bg-rose-600 text-white shadow-lg";
                 icon.innerText = "🔒";
                 txtVencimento.innerText = "Sua assinatura expirou. Regularize para continuar.";
+            }
+            else {
+                // Abrange BASICO, BLACK_BELT, MASTER, ELITE, ATIVO e qualquer outro plano criado.
+                badge.innerText = "ASSINATURA ATIVA";
+                badge.className = "px-4 py-1.5 rounded-full text-[10px] font-black uppercase bg-emerald-500 text-white shadow-lg";
+                icon.innerText = "✅";
+                txtVencimento.innerText = "O seu acesso está garantido. Oss!";
             }
         }
 

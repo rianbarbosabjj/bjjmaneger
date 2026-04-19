@@ -553,11 +553,46 @@
         let dadosEquipeCompleto = null; 
         let alunoEditandoId = null;
         let ficheiroFotoSelecionado = null;
-        
         let checkinsDoAlunoAtualCache = []; 
 
-        const ordemDasAbas = ['aba-pessoal', 'aba-contato', 'aba-financeiro', 'aba-frequencia', 'aba-lgpd', 'aba-anamnese'];
+        // Agora a ordem das abas é dinâmica (muda conforme o plano)
+        let ordemDasAbas = [];
         let abaIndexAtual = 0;
+
+        // --- SISTEMA DE PERMISSÕES ---
+        window.verificarAcesso = function(idRecurso) {
+            const isImpersonating = sessionStorage.getItem('admin_impersonate') !== null;
+            const isIsento = dadosEquipeCompleto && (dadosEquipeCompleto.isento === true || String(dadosEquipeCompleto.isento) === "true");
+            
+            if (isImpersonating || isIsento) return true;
+
+            const features = JSON.parse(sessionStorage.getItem('bjj_features') || '[]');
+            if (features.length > 0) {
+                return features.some(f => f.includes('✓') && f.toLowerCase().includes(idRecurso.toLowerCase()));
+            }
+
+            const statusPlano = (dadosEquipeCompleto?.status_plano || 'TESTE').toUpperCase();
+            const basicos = ['TESTE', 'BASICO', 'BÁSICO'];
+            return !basicos.includes(statusPlano);
+        };
+
+        // Oculta/Exibe abas baseado no plano
+        function atualizarAbasPorPlano() {
+            const temAcessoPremium = window.verificarAcesso('frequencia'); // Validador de plano não-básico
+            
+            const btnFreq = document.getElementById('btn-aba-frequencia');
+            const btnSaude = document.getElementById('btn-aba-anamnese');
+
+            if (temAcessoPremium) {
+                btnFreq.classList.remove('hidden');
+                btnSaude.classList.remove('hidden');
+                ordemDasAbas = ['aba-pessoal', 'aba-contato', 'aba-financeiro', 'aba-frequencia', 'aba-lgpd', 'aba-anamnese'];
+            } else {
+                btnFreq.classList.add('hidden');
+                btnSaude.classList.add('hidden');
+                ordemDasAbas = ['aba-pessoal', 'aba-contato', 'aba-financeiro', 'aba-lgpd'];
+            }
+        }
 
         const selectVenc = document.getElementById('aluno-vencimento');
         if(selectVenc) {
@@ -851,9 +886,6 @@
             }
         }
 
-        // ========================================================
-        // 🚀 NOVO: FUNÇÃO PARA GERAR RELATÓRIO GERAL DE FREQUÊNCIA
-        // ========================================================
         window.gerarRelatorioGeralFrequencia = async function() {
             const btn = document.getElementById('btn-relatorio-freq');
             const originalTxt = btn.innerHTML;
@@ -952,10 +984,6 @@
             }
         }
 
-
-        // ========================================================
-        // 🚀 FUNÇÕES DE FREQUÊNCIA NO PAINEL DO PROFESSOR (PERFIL INDIVIDUAL)
-        // ========================================================
         async function carregarFrequenciaDoAluno(idAluno) {
             const listaEl = document.getElementById('admin-lista-checkins');
             listaEl.innerHTML = '<p class="text-center text-xs text-slate-400 py-6 italic">A carregar presenças...</p>';
@@ -1000,7 +1028,7 @@
         }
 
         window.filtrarFrequenciaAdmin = async function() {
-            const valFiltro = document.getElementById('filtro-mes-freq-admin').value; // Formato YYYY-MM
+            const valFiltro = document.getElementById('filtro-mes-freq-admin').value;
             if (!valFiltro) return;
 
             const partes = valFiltro.split('-');
@@ -1064,20 +1092,11 @@
             container.innerHTML = html;
         }
 
-        // ==========================================
-        // 🖨️ FUNÇÃO DE IMPRESSÃO DO CARTÃO PVC
-        // ==========================================
         window.abrirEImprimirPVC = function() {
-            // Pega o wrapper da carteirinha e prepara para impressão
-            const wrapper = document.querySelector('.print-carteirinha-wrapper');
-            if (wrapper) {
-                // Adiciona um aviso visual breve
-                showToast("Preparando cartão para impressão em PVC...", "info");
-                
-                setTimeout(() => {
-                    window.print();
-                }, 500);
-            }
+            if (!window.verificarAcesso('carteirinha')) return;
+            window.abrirModalCarteirinha();
+            showToast("Preparando cartão para impressão em PVC...", "info");
+            setTimeout(() => { window.print(); }, 1000);
         }
 
         window.abrirFichaAluno = (id) => {
@@ -1101,7 +1120,6 @@
             
             if(document.getElementById('aluno-senha-portal')) {
                 document.getElementById('aluno-senha-portal').value = a.senha_portal || '';
-                // Garante que o input volte a ser tipo senha se foi alternado antes
                 document.getElementById('aluno-senha-portal').type = "password";
             }
 
@@ -1243,31 +1261,12 @@
                 divPreenchida.classList.add('hidden');
             }
             
-            // Lógica de Permissão da Carteirinha
+            atualizarAbasPorPlano();
+
             const btnCartInfo = document.getElementById('btn-abrir-carteirinha');
             const btnCartPvc = document.getElementById('btn-imprimir-pvc');
             
-            let temAcessoCarteirinha = false;
-            const isIsento = dadosEquipeCompleto && (dadosEquipeCompleto.isento === true || String(dadosEquipeCompleto.isento) === "true");
-            const isImpersonating = sessionStorage.getItem('admin_impersonate') !== null;
-            
-            if (isIsento || isImpersonating) {
-                temAcessoCarteirinha = true;
-            } else {
-                // Pega as funcionalidades salvas pelo menu.js
-                const features = window.funcionalidadesEquipe || JSON.parse(sessionStorage.getItem('bjj_features') || '[]');
-                if (features.length > 0) {
-                    temAcessoCarteirinha = features.some(f => f.includes('✓') && f.toLowerCase().includes('carteirinha'));
-                } else {
-                    // Backup: verifica pelo nome do plano
-                    const statusAtual = dadosEquipeCompleto ? (dadosEquipeCompleto.status_plano || 'TESTE').toUpperCase() : 'TESTE';
-                    if (statusAtual !== 'TESTE' && statusAtual !== 'BASICO' && statusAtual !== 'BÁSICO') {
-                        temAcessoCarteirinha = true;
-                    }
-                }
-            }
-
-            if (temAcessoCarteirinha) {
+            if (window.verificarAcesso('carteirinha')) {
                 btnCartInfo.classList.remove('hidden');
                 btnCartPvc.classList.remove('hidden');
             } else {
@@ -1285,7 +1284,6 @@
         window.salvarAluno = async function() {
             const id = alunoEditandoId;
 
-            // 🛑 LÓGICA DO PAYWALL DE LIMITE DE ALUNOS (Apenas para novos cadastros)
             if (!id) {
                 const isImpersonating = sessionStorage.getItem('admin_impersonate') !== null;
                 const isIsento = dadosEquipeCompleto && (dadosEquipeCompleto.isento === true || String(dadosEquipeCompleto.isento) === "true");
@@ -1297,13 +1295,12 @@
                     if (planosBasicos.includes(statusAtual)) {
                         const alunosAtivos = todosAlunosCache.filter(a => a.status === 'ATIVO').length;
                         if (alunosAtivos >= 10) {
-                            abrirPaywallLimite(); // Tranca a porta e mostra o Modal!
+                            abrirPaywallLimite(); 
                             return; 
                         }
                     }
                 }
             }
-            // =========================================================================
 
             const nome = document.getElementById('aluno-nome').value.toUpperCase();
             const cpf = document.getElementById('aluno-cpf').value;
@@ -1391,30 +1388,24 @@
             }
         }
 
-window.abrirModal = () => { 
-            // 🛑 LÓGICA DO PAYWALL DE LIMITE DE 10 ALUNOS (Plano Básico)
+        window.abrirModal = () => { 
             const isImpersonating = sessionStorage.getItem('admin_impersonate') !== null;
             const isIsento = dadosEquipeCompleto && (dadosEquipeCompleto.isento === true || String(dadosEquipeCompleto.isento) === "true");
             
             if (!isImpersonating && !isIsento) {
-                // Lê o plano atual (se não houver, assume TESTE)
                 const statusAtual = (dadosEquipeCompleto && dadosEquipeCompleto.status_plano) ? dadosEquipeCompleto.status_plano : 'TESTE';
-                
-                // Mapeia os planos que sofrem o bloqueio de 10 alunos
                 const planosBasicos = ['TESTE', 'BASICO', 'BÁSICO'];
                 
                 if (planosBasicos.includes(statusAtual.toUpperCase())) {
-                    // Conta quantos alunos ATIVOS esta academia tem
                     const alunosAtivos = todosAlunosCache.filter(a => a.status === 'ATIVO').length;
                     
                     if (alunosAtivos >= 10) {
-                        abrirPaywallLimite(); // Abre o cadeado dourado!
-                        return; // ⛔ Impede a execução e não deixa abrir a ficha de matrícula
+                        abrirPaywallLimite(); 
+                        return; 
                     }
                 }
             }
 
-            // Se passou na segurança, limpa os campos e abre a ficha nova
             alunoEditandoId = null; 
             ficheiroFotoSelecionado = null;
             
@@ -1439,7 +1430,7 @@ window.abrirModal = () => {
             document.getElementById('btn-gerar-pdf').classList.add('hidden');
             
             calcularIdade();
-
+            atualizarAbasPorPlano();
             mudarAba('aba-pessoal'); 
             document.getElementById('modal-aluno').classList.replace('hidden', 'flex'); 
         }
@@ -1521,7 +1512,6 @@ window.abrirModal = () => {
             html2pdf().set(opt).from(element).save();
         }
 
-        // NOVA FUNÇÃO: Gerar o PDF da Ficha de Saúde (Anamnese)
         window.gerarPDF_Anamnese = function() {
             const aluno = todosAlunosCache.find(a => a.id === alunoEditandoId);
             if (!aluno || !aluno.anamnese_preenchida || !aluno.anamnese) {
@@ -1531,7 +1521,6 @@ window.abrirModal = () => {
             const an = aluno.anamnese;
             const nome = aluno.nome || 'NÃO INFORMADO';
             
-            // Verifica se é menor de idade para garantir que pega o responsável
             let isMenor = false;
             if (aluno.data_nascimento) {
                 const hoje = new Date();
@@ -1543,7 +1532,6 @@ window.abrirModal = () => {
             }
 
             const resp = aluno.nome_responsavel || '';
-            // Se for menor E tiver responsável, usa o responsável. Senão, usa o próprio aluno.
             const assinante = (isMenor && resp) ? resp.toUpperCase() : nome.toUpperCase();
             const tipoAssinante = (isMenor && resp) ? "RESPONSÁVEL LEGAL" : "ATLETA";
 
@@ -1664,7 +1652,6 @@ window.abrirModal = () => {
             const aluno = todosAlunosCache.find(a => a.id === alunoEditandoId);
             if (!aluno) return;
 
-            // Preencher dados da equipe
             document.getElementById('cart-equipe-nome').innerText = equipeDados.nome.toUpperCase();
             
             const logoEquipe = document.getElementById('cart-equipe-logo');
@@ -1679,7 +1666,6 @@ window.abrirModal = () => {
                 fallbackEquipe.innerText = equipeDados.nome.charAt(0).toUpperCase();
             }
 
-            // Watermark
             const watermark = document.getElementById('cart-equipe-watermark');
             const watermarkFallback = document.getElementById('cart-equipe-watermark-fallback');
             if (equipeDados.logo) {
@@ -1692,21 +1678,18 @@ window.abrirModal = () => {
                 watermarkFallback.innerText = equipeDados.nome.charAt(0).toUpperCase();
             }
 
-            // Dados do aluno
             document.getElementById('cart-aluno-nome-txt').innerText = aluno.nome;
             document.getElementById('cart-aluno-matricula-txt').innerText = aluno.matricula || 'S/N';
             
             const faixaTexto = `${aluno.faixa || 'Branca'} ${aluno.grau && aluno.grau !== 'Sem grau' ? aluno.grau : ''}`.trim();
             document.getElementById('cart-aluno-faixa-texto').innerText = faixaTexto;
             
-            // Cor da borda da faixa
             const corFaixa = getCorFaixaDupla(aluno.faixa);
             document.getElementById('cart-faixa-border').style.background = corFaixa;
             if (aluno.faixa && (aluno.faixa.toLowerCase().includes('branca') || aluno.faixa.toLowerCase().includes('amarela'))) {
                 document.getElementById('cart-faixa-border').style.borderRight = '1px solid #cbd5e1';
             }
 
-            // Data de nascimento
             if (aluno.data_nascimento) {
                 const partes = aluno.data_nascimento.split('-');
                 if (partes.length === 3) {
@@ -1714,11 +1697,9 @@ window.abrirModal = () => {
                 }
             }
 
-            // Validade (DEZ / ANO ATUAL)
             const anoAtual = new Date().getFullYear();
             document.getElementById('cart-aluno-validade-txt').innerText = `DEZ / ${anoAtual}`;
 
-            // Foto do aluno
             const fotoModal = document.getElementById('cart-aluno-foto-modal');
             const fotoFallback = document.getElementById('cart-aluno-foto-fallback-modal');
             if (aluno.foto_url) {
@@ -1731,7 +1712,6 @@ window.abrirModal = () => {
                 fotoFallback.innerText = aluno.nome.charAt(0).toUpperCase();
             }
 
-            // QR Code
             const qrCodeImg = document.getElementById('cart-qr-code');
             const dadosQR = `${aluno.id}|${aluno.nome}|${aluno.matricula || ''}`;
             qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(dadosQR)}&bgcolor=ffffff&color=000000`;
@@ -1776,7 +1756,5 @@ window.abrirModal = () => {
 
         window.limparBusca = () => { document.getElementById('input-busca').value = ''; renderizarTabela(); }
     </script>
-</body>
-</html>
 </body>
 </html>

@@ -442,16 +442,28 @@
             }
         }
 
-        window.iniciarCheckout = async function(planoEscolhido) {
+window.iniciarCheckout = async function(planoEscolhido) {
             const isento = (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true");
             if(isento) {
                 return showToast("Sua conta é isenta. O acesso já deveria estar ativo. Fale com o suporte.", "info");
             }
 
             let btnId = '';
-            if(planoEscolhido === 'ELITE') btnId = 'btn-plano4';
-            else if(planoEscolhido === 'MASTER') btnId = 'btn-plano3';
-            else if(planoEscolhido === 'BLACK_BELT') btnId = 'btn-plano2';
+            let linkDestino = '';
+
+            // COLOQUE SEUS LINKS DO ASAAS AQUI DENTRO DAS ASPAS:
+            if(planoEscolhido === 'ELITE') {
+                btnId = 'btn-plano4';
+                linkDestino = "COLE_O_LINK_DO_PLANO_ELITE_AQUI"; 
+            }
+            else if(planoEscolhido === 'MASTER') {
+                btnId = 'btn-plano3';
+                linkDestino = "COLE_O_LINK_DO_PLANO_MASTER_AQUI";
+            }
+            else if(planoEscolhido === 'BLACK_BELT') {
+                btnId = 'btn-plano2';
+                linkDestino = "COLE_O_LINK_DO_PLANO_BLACK_BELT_AQUI";
+            }
             
             const btn = document.getElementById(btnId);
             if(!btn) return;
@@ -461,9 +473,7 @@
             btn.disabled = true;
 
             try {
-                let linkDestino = linksAsaas[planoEscolhido];
-                
-                if (linkDestino) {
+                if (linkDestino && linkDestino !== "") {
                     showToast("Redirecionando para o Checkout Seguro...", "success");
                     
                     // Adiciona o e-mail do usuário no link do Asaas automaticamente
@@ -478,8 +488,7 @@
                         btn.disabled = false;
                     }, 1500);
                 } else {
-                    // Erro claro caso falte o link no banco
-                    showToast("Erro: O campo 'link_asaas' não está configurado no Firebase para este plano.", "error");
+                    showToast("Erro: O link do Asaas não foi configurado no código.", "error");
                     btn.innerHTML = originalTxt;
                     btn.disabled = false;
                 }

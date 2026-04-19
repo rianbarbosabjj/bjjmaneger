@@ -156,7 +156,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
@@ -170,12 +169,12 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const functions = getFunctions(app);
 
         let equipeId = null;
         let equipePlanoAtual = null;
         let dadosEquipe = null;
         let cupomAtivo = null;
+        let linksAsaas = {}; // Guarda os links de checkout do Asaas
 
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
@@ -353,7 +352,12 @@
                         renderizarListaFuncionalidades('plano1-features', planos.p1.features, 'emerald', 'slate-600');
                     }
 
-                    // FUNÇÃO AUXILIAR PARA CALCULAR PREÇOS (P2, P3, P4)
+                    // Gravar os links Asaas globalmente
+                    if(planos.p2) linksAsaas['BLACK_BELT'] = planos.p2.link_asaas;
+                    if(planos.p3) linksAsaas['MASTER'] = planos.p3.link_asaas;
+                    if(planos.p4) linksAsaas['ELITE'] = planos.p4.link_asaas;
+
+                    // FUNÇÃO AUXILIAR PARA CALCULAR PREÇOS E POPULAR DADOS
                     function preencherCardPreco(planId, configPlano, colorTheme) {
                         if(!configPlano) return;
                         
@@ -445,54 +449,27 @@
             if(!btn) return;
 
             const originalTxt = btn.innerHTML;
-            btn.innerHTML = "⏳ GERANDO LINK...";
+            btn.innerHTML = "⏳ REDIRECIONANDO...";
             btn.disabled = true;
 
             try {
-                const docSnap = await getDoc(doc(db, "sistema", "config_planos"));
-                let valorParaCobrar = 0;
+                const linkDestino = linksAsaas[planoEscolhido];
                 
-                if (docSnap.exists()) {
-                    const planos = docSnap.data();
-                    if(planoEscolhido === 'ELITE' && planos.p4) valorParaCobrar = parseFloat(planos.p4.preco);
-                    else if(planoEscolhido === 'MASTER' && planos.p3) valorParaCobrar = parseFloat(planos.p3.preco);
-                    else if(planoEscolhido === 'BLACK_BELT' && planos.p2) valorParaCobrar = parseFloat(planos.p2.preco);
-                }
-
-                let valorFinalACobrar = valorParaCobrar;
-                let codigoCupomParaEnviar = null;
-
-                if(cupomAtivo && cupomAtivo.desconto_perc !== undefined) {
-                    valorFinalACobrar = valorParaCobrar * (1 - (cupomAtivo.desconto_perc / 100));
-                    codigoCupomParaEnviar = cupomAtivo.codigo;
-                } else if (dadosEquipe.desconto_plano) {
-                    valorFinalACobrar = valorParaCobrar * (1 - (parseFloat(dadosEquipe.desconto_plano) / 100));
-                }
-
-                const gerarAssinatura = httpsCallable(functions, 'gerarAssinaturaSistema');
-                
-                const resultado = await gerarAssinatura({
-                    equipeId: equipeId,
-                    nomePlano: planoEscolhido,
-                    valor: valorFinalACobrar,
-                    email: auth.currentUser.email,
-                    nome: "Assinante BJJ Manager",
-                    cupom: codigoCupomParaEnviar
-                });
-
-                if (resultado.data.success) {
+                if (linkDestino) {
                     showToast("Redirecionando para o Checkout Seguro...", "success");
                     setTimeout(() => {
-                        window.open(resultado.data.url, '_blank');
+                        window.open(linkDestino, '_blank');
                         btn.innerHTML = originalTxt;
                         btn.disabled = false;
                     }, 1500);
                 } else {
-                    throw new Error(resultado.data.error);
+                    showToast("Link de pagamento indisponível no momento.", "error");
+                    btn.innerHTML = originalTxt;
+                    btn.disabled = false;
                 }
             } catch (error) {
                 console.error(error);
-                showToast("Erro ao gerar link de pagamento.", "error");
+                showToast("Erro ao redirecionar para o pagamento.", "error");
                 btn.innerHTML = originalTxt;
                 btn.disabled = false;
             }

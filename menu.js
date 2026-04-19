@@ -1,5 +1,33 @@
 // menu.js
 
+// --- INJETAR ESTILO DA BARRA DE ROLAGEM GLOBALMENTE ---
+if (!document.getElementById('bjj-menu-styles')) {
+    const style = document.createElement('style');
+    style.id = 'bjj-menu-styles';
+    style.innerHTML = `
+        /* Estilização elegante da barra de rolagem do menu lateral */
+        .custom-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background-color: #334155; /* slate-700 */
+            border-radius: 10px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background-color: #475569; /* slate-600 */
+        }
+        /* Suporte para Firefox */
+        .custom-scroll {
+            scrollbar-width: thin;
+            scrollbar-color: #334155 transparent;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
 function carregarMenu() {
     const paginaAtual = window.location.pathname.split("/").pop() || "dashboard.html";
 

@@ -292,3 +292,33 @@ window.atualizarMenuSeguro = function(funcionalidadesDoPlano) {
 
 // Render Inicial
 carregarMenu();
+// --- BOTÃO FLUTUANTE DE SUPORTE (INJETADO GLOBALMENTE) ---
+function injetarBotaoSuporte() {
+    // Evita duplicar se já existir
+    if (document.getElementById('btn-flutuante-suporte')) return;
+
+    const btnSuporte = document.createElement('button');
+    btnSuporte.id = 'btn-flutuante-suporte';
+    btnSuporte.onclick = () => window.location.href = 'suporte.html';
+    
+    // Classes do Tailwind para o botão flutuante
+    // bottom-24 no mobile (para ficar acima do menu inferior) e bottom-6 no desktop
+    btnSuporte.className = 'fixed bottom-24 md:bottom-6 right-4 md:right-6 bg-indigo-600 hover:bg-indigo-500 text-white w-12 h-12 md:w-14 md:h-14 rounded-full shadow-[0_8px_20px_rgba(79,70,229,0.4)] flex items-center justify-center text-xl md:text-2xl transition-all hover:scale-110 z-[100] group outline-none';
+    
+    btnSuporte.innerHTML = `
+        🎧
+        <span class="absolute right-full mr-3 bg-slate-800 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none hidden md:block shadow-md">
+            Precisa de Ajuda?
+        </span>
+        <span class="absolute top-0 right-0 w-3 h-3 bg-rose-500 border-2 border-slate-50 rounded-full animate-pulse"></span>
+    `;
+    
+    document.body.appendChild(btnSuporte);
+}
+
+// Injeta o botão assim que a página carregar
+document.addEventListener('DOMContentLoaded', injetarBotaoSuporte);
+// Caso o DOM já tenha carregado
+if (document.readyState === "interactive" || document.readyState === "complete") {
+    injetarBotaoSuporte();
+}

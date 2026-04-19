@@ -587,6 +587,22 @@
         let chartEvolucaoAno = null;
         let chartAcumuladoAno = null;
 
+        // Função Genérica de Auditoria
+        async function registrarLogAuditoria(acao, detalhes) {
+            try {
+                await addDoc(collection(db, "auditoria"), {
+                    equipe_id: uid,
+                    equipe_nome: equipeNomeGlobal,
+                    usuario_email: auth.currentUser.email,
+                    acao: acao,
+                    detalhes: detalhes,
+                    timestamp: new Date().toISOString()
+                });
+            } catch(e) {
+                console.error("Erro ao registrar auditoria:", e);
+            }
+        }
+
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -620,10 +636,7 @@
             }
 
             const statusAtual = (equipeDados && equipeDados.status_plano) ? equipeDados.status_plano : 'TESTE';
-            
-            // 🛡️ NOVO: Limpa a palavra. Ex: "BÁSICO (Ativo)" vira apenas "BÁSICO"
             const planoLimpo = statusAtual.toUpperCase().split(' ')[0].trim();
-            
             const nivelDaEquipe = HIERARQUIA_PLANOS[planoLimpo] || 1;
             const regra = REGRAS_DE_ACESSO[idRecurso];
             
@@ -874,6 +887,10 @@
                 await updateDoc(doc(db, "equipes", uid), { valor_prazo: p, valor_atraso: a, chave_pix: pix });
                 equipeBaseConfig.prazo = p; equipeBaseConfig.atraso = a; equipeBaseConfig.chave_pix = pix;
                 showToast("Configuração salva com sucesso!", "success");
+                
+                // 🕵️‍♂️ LOG DE AUDITORIA
+                registrarLogAuditoria("CONFIG_PRECOS", `Alterou as mensalidades base: Prazo (R$ ${p}), Atraso (R$ ${a}). Chave PIX: ${pix}`);
+
                 renderizarTabelas(); 
             } catch (e) { showToast("Erro ao salvar config.", "error"); } 
             finally { btn.innerHTML = origHTML; btn.disabled = false; }
@@ -893,6 +910,10 @@
                     equipeDados.asaas_repassar_taxa = repassarTaxa;
                     equipeDados.asaas_valor_taxa = valorTaxa;
                 }
+
+                // 🕵️‍♂️ LOG DE AUDITORIA
+                registrarLogAuditoria("CONFIG_TAXAS_ASAAS", `Repasse de Taxas: ${repassarTaxa ? 'Ativado' : 'Desativado'} - Valor (R$ ${valorTaxa})`);
+
             } catch(e) {
                 console.error("Erro ao salvar regras de repasse de taxas.", e);
             }
@@ -915,6 +936,9 @@
                 equipeDados.asaas_aceita_boleto = aceitaBoleto;
                 equipeDados.asaas_aceita_cartao = aceitaCartao;
                 
+                // 🕵️‍♂️ LOG DE AUDITORIA
+                registrarLogAuditoria("CONFIG_PAGAMENTO_ASAAS", `Boleto: ${aceitaBoleto ? 'Sim':'Não'} | Cartão: ${aceitaCartao ? 'Sim':'Não'}`);
+
                 showToast("Preferências de pagamento atualizadas com sucesso!", "success");
             } catch(e) {
                 showToast("Erro ao salvar preferências.", "error");
@@ -994,6 +1018,9 @@
                         pix_saque_tipo: tipo
                     });
 
+                    // 🕵️‍♂️ LOG DE AUDITORIA
+                    registrarLogAuditoria("SAQUE_ASAAS", `Saque Asaas de R$ ${valorNum} solicitado via PIX: ${chave}`);
+
                     carregarSaldoAsaas(); 
                 } else {
                     showToast("Erro do Banco: " + res.data.error, "error");
@@ -1063,6 +1090,10 @@
                 if(res.data.success) {
                     showToast("Conta Asaas ativada com sucesso!", "success");
                     equipeDados.status_asaas = "ATIVO";
+                    
+                    // 🕵️‍♂️ LOG DE AUDITORIA
+                    registrarLogAuditoria("CONTA_ASAAS_CRIADA", `Cadastro Asaas criado para ${nome} (${cpfCnpj})`);
+
                     carregarInfoEquipe({email: document.getElementById('email-logado') ? document.getElementById('email-logado').innerText : ''});
                 } else {
                     showToast("Erro Asaas: " + res.data.error, "error");
@@ -1087,7 +1118,6 @@
             let geradas = 0;
             const filaAsaas = []; 
             
-            // Pega a chave PIX que está na caixinha lá em cima na hora de gerar
             const chavePixAtual = document.getElementById('config-pix').value.trim();
 
             try {
@@ -1111,7 +1141,6 @@
 
                         const temAsaas = equipeDados && equipeDados.status_asaas === 'ATIVO' && verificarAcesso('asaas', true);
 
-                        // 🛑 Se não tem Asaas, a fatura leva a Chave PIX cravada nela!
                         if (!temAsaas && status !== 'ISENTO') {
                             faturaData.chave_pix_manual = chavePixAtual;
                         }
@@ -1119,7 +1148,6 @@
                         await addDoc(collection(db, "financeiro"), faturaData);
                         geradas++;
 
-                        // 🛑 TRAVA DE PLANO ASAAS: Só manda pro banco se tiver Premium/Ultimate
                         if (temAsaas && status !== 'ISENTO') {
                             
                             let valorCobrarAsaas = valor;
@@ -1140,6 +1168,9 @@
                 }
                 
                 if (geradas > 0) {
+                    // 🕵️‍♂️ LOG DE AUDITORIA
+                    registrarLogAuditoria("GEROU_FATURAS", `Gerou ${geradas} faturas para o mês ${mesAnoFiltro}`);
+
                     if (filaAsaas.length > 0) {
                         showToast(`Gerando ${filaAsaas.length} links de cobrança. Por favor, aguarde...`, "info");
                         const gerarCobranca = httpsCallable(functions, 'gerarCobrancaAsaas');
@@ -1449,6 +1480,10 @@
                 if(resultado.data.success) {
                     showToast("Link gerado com sucesso!", "success");
                     fatura.link_pagamento = resultado.data.url;
+                    
+                    // 🕵️‍♂️ LOG DE AUDITORIA
+                    registrarLogAuditoria("GEROU_LINK_ASAAS", `Gerou link de pagamento para ${alunoSelecionadoMens.nome} (R$ ${valorCobrarAsaas})`);
+
                     carregarDados();
                     abrirModalAcoes(alunoSelecionadoMens.id, alunoSelecionadoMens._calc); 
                 } else {
@@ -1473,6 +1508,10 @@
             try {
                 await updateDoc(doc(db, "alunos", alunoSelecionadoMens.id), { bolsa_perc: nb, dia_vencimento: nv });
                 showToast("Regras do atleta atualizadas!", "success");
+                
+                // 🕵️‍♂️ LOG DE AUDITORIA
+                registrarLogAuditoria("EDITOU_REGRA_ALUNO", `Editou ${alunoSelecionadoMens.nome}: Bolsa (${nb}%), Vencimento (Dia ${nv})`);
+
                 carregarDados();
             } catch(e) { showToast("Erro ao salvar regras.", "error"); } 
             finally { btn.innerText = origTxt; btn.disabled = false; }
@@ -1502,6 +1541,10 @@
                     status: 'PAGO', data_pagamento: dtPag, forma_pagamento: forma, valor: valorCalculado 
                 });
                 showToast("Pagamento Registrado!", "success");
+                
+                // 🕵️‍♂️ LOG DE AUDITORIA
+                registrarLogAuditoria("BAIXOU_MENSALIDADE", `Deu baixa manual para ${alunoSelecionadoMens.nome} (R$ ${valorCalculado}) via ${forma}`);
+
                 carregarDados(); 
             } catch (e) { showToast("Erro ao dar baixa na mensalidade.", "error"); } 
             finally { btn.innerHTML = origTxt; btn.disabled = false; }
@@ -1520,6 +1563,10 @@
                     status: 'PENDENTE', data_pagamento: null, forma_pagamento: null
                 });
                 showToast("Pagamento cancelado com sucesso.", "success");
+                
+                // 🕵️‍♂️ LOG DE AUDITORIA
+                registrarLogAuditoria("ESTORNOU_MENSALIDADE", `Estornou o pagamento de ${alunoSelecionadoMens.nome} do mês ${alunoSelecionadoMens._calc.reg.mes_ano}`);
+
                 carregarDados(); 
             } catch (e) { showToast("Erro ao cancelar.", "error"); } 
             finally { btn.innerText = origTxt; btn.disabled = false; }
@@ -1535,6 +1582,10 @@
             try {
                 await deleteDoc(doc(db, "financeiro", alunoSelecionadoMens._calc.fatura_id));
                 showToast("Fatura excluída com sucesso.", "success");
+                
+                // 🕵️‍♂️ LOG DE AUDITORIA
+                registrarLogAuditoria("EXCLUIU_FATURA", `Excluiu a fatura de ${alunoSelecionadoMens.nome} (Ref: ${alunoSelecionadoMens._calc.reg.mes_ano})`);
+
                 carregarDados(); 
             } catch (e) { showToast("Erro ao excluir.", "error"); } 
             finally { btn.innerText = origTxt; btn.disabled = false; }
@@ -1556,7 +1607,6 @@
             } else {
                 msg = `Oss, ${a.nome}! Tudo bem atleta? Passando só para lembrar da sua mensalidade de *${mesRef}* (R$ ${valorFomatado}). `;
                 
-                // Puxa a chave PIX salva na fatura, ou a global como backup
                 const chavePixFatura = fatura.chave_pix_manual || equipeBaseConfig.chave_pix;
 
                 if(fatura.link_pagamento) {
@@ -1937,6 +1987,10 @@
             try {
                 await addDoc(collection(db, "financeiro"), { equipe_id: uid, tipo: 'DESPESA', descricao: desc, valor: valorNum, data: data, fonte: fonte, mes_ano: mesAnoFiltro });
                 fecharModalDespesa(); carregarDados(); showToast("Despesa salva com sucesso!", "success");
+                
+                // 🕵️‍♂️ LOG DE AUDITORIA
+                registrarLogAuditoria("NOVA_DESPESA", `Registrou despesa de R$ ${valorNum} (${desc})`);
+
             } catch (e) { showToast("Erro ao salvar despesa.", "error"); } finally { btn.innerText = origTxt; btn.disabled = false; }
         }
 
@@ -1953,12 +2007,22 @@
             try {
                 await addDoc(collection(db, "financeiro"), { equipe_id: uid, tipo: 'RECEITA', descricao: `${cat}${desc ? ' - '+desc : ''}`, valor: valorNum, data: data, fonte: fonte, mes_ano: mesAnoFiltro });
                 fecharModalReceita(); carregarDados(); showToast("Receita salva com sucesso!", "success");
+                
+                // 🕵️‍♂️ LOG DE AUDITORIA
+                registrarLogAuditoria("NOVA_RECEITA", `Registrou receita extra de R$ ${valorNum} (${cat})`);
+
             } catch (e) { showToast("Erro ao salvar receita.", "error"); } finally { btn.innerText = origTxt; btn.disabled = false; }
         }
 
         window.excluirLancamento = async function(id) {
             if(!confirm("Deseja apagar este registo financeiro?")) return;
-            try { await deleteDoc(doc(db, "financeiro", id)); carregarDados(); showToast("Registo apagado com sucesso.", "success");
+            try { 
+                await deleteDoc(doc(db, "financeiro", id)); 
+                carregarDados(); showToast("Registo apagado com sucesso.", "success");
+                
+                // 🕵️‍♂️ LOG DE AUDITORIA
+                registrarLogAuditoria("EXCLUIU_LANCAMENTO", `Excluiu um lançamento financeiro extra (Despesa/Receita).`);
+
             } catch (e) { showToast("Erro ao apagar.", "error"); }
         }
 

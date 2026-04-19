@@ -25,32 +25,31 @@
         .table-row-hover:hover td { background-color: #F1F5F9; }
 
         @media print {
-            @page { size: landscape; margin: 0; }
-            body * { visibility: hidden; }
-            #interface-sistema, #modal-aluno, nav, #modal-carteirinha .flex.justify-end, #toast-container, #modal-paywall { display: none !important; }
-            
-            #area-impressao { 
-                display: block !important; 
-                visibility: visible !important; 
-                position: absolute !important; 
-                left: 0 !important; 
-                top: 0 !important; 
-                width: 100% !important; 
-                background: white !important; 
-                color: black !important; 
+            @page { 
+                size: 85.6mm 54mm landscape; /* Tamanho exato do cartão de PVC (CR80) */
+                margin: 0; 
             }
-            #area-impressao * { visibility: visible !important; }
-
+            body { margin: 0; padding: 0; background: white; }
+            body * { visibility: hidden; }
+            
+            #interface-sistema, #modal-aluno, nav, #modal-carteirinha .flex.justify-end, #toast-container, #modal-paywall, #btn-fechar-carteirinha, #btn-imprimir-carteirinha { display: none !important; }
+            
             .print-carteirinha-wrapper {
                 visibility: visible !important;
                 position: absolute !important;
-                left: 50% !important;
-                top: 50% !important;
-                transform: translate(-50%, -50%) !important;
-                width: 600px !important;
-                height: 380px !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 85.6mm !important;
+                height: 54mm !important;
                 box-shadow: none !important;
-                border: 1px solid #ccc !important;
+                border: none !important;
+                border-radius: 0 !important; /* Retira as bordas arredondadas para o corte da impressora */
+                margin: 0 !important;
+                padding: 0 !important;
+                transform: scale(0.53) !important; /* Ajusta o elemento Tailwind para caber em milímetros */
+                transform-origin: top left !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
             .print-carteirinha-wrapper * { visibility: visible !important; }
         }
@@ -127,16 +126,18 @@
         </main>
     </div>
 
-    <div id="area-impressao" class="hidden bg-white text-black p-10"></div>
-
     <div id="modal-aluno" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh] transform transition-transform">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh] transform transition-transform">
             <div class="bg-slate-900 p-4 md:p-5 flex justify-between items-center text-white shrink-0">
                 <div class="flex items-center space-x-3">
                     <div class="w-8 h-8 md:w-10 md:h-10 bg-cyan-500 rounded-full flex items-center justify-center text-lg md:text-xl font-black shadow-inner">🥋</div>
                     <h3 class="font-black text-base md:text-lg tracking-tight uppercase" id="modal-titulo">Ficha Cadastral</h3>
                 </div>
-                <button onclick="fecharModal()" class="text-slate-400 hover:text-white text-3xl leading-none">&times;</button>
+                <div class="flex items-center gap-2">
+                    <button onclick="abrirModalCarteirinha()" id="btn-abrir-carteirinha" class="bg-indigo-500/20 hover:bg-indigo-500 text-indigo-400 hover:text-white border border-indigo-500/50 font-black py-2 px-4 rounded-xl text-xs hidden uppercase tracking-widest transition-all">🪪 Ver Carteirinha</button>
+                    <button onclick="abrirEImprimirPVC()" id="btn-imprimir-pvc" class="bg-slate-700 hover:bg-slate-600 text-white font-black py-2 px-4 rounded-xl text-xs hidden uppercase tracking-widest transition-all shadow-sm" title="Imprimir em Cartão Plástico (CR80)">🖨️ Imprimir Cartão PVC</button>
+                    <button onclick="fecharModal()" class="text-slate-400 hover:text-white text-3xl leading-none ml-2">&times;</button>
+                </div>
             </div>
 
             <div class="flex border-b border-slate-200 bg-slate-50 px-2 overflow-x-auto hide-scrollbar shrink-0">
@@ -395,10 +396,9 @@
             </div>
 
             <div class="p-4 md:p-6 bg-slate-50 border-t border-slate-200 flex flex-wrap justify-end gap-3 rounded-b-3xl shrink-0">
-                <button onclick="abrirModalCarteirinha()" id="btn-abrir-carteirinha" class="flex-1 md:flex-none bg-indigo-500 hover:bg-indigo-600 text-white font-black py-3 px-6 rounded-xl text-sm hidden uppercase tracking-widest shadow-md transition-all">🪪 Carteirinha</button>
                 <button onclick="fecharModal()" class="flex-1 md:flex-none px-6 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-200 transition-colors text-sm">Cancelar</button>
                 <button onclick="proximaAba()" id="btn-proximo" class="flex-1 md:flex-none bg-slate-800 hover:bg-slate-900 text-white font-black py-3 px-8 rounded-xl shadow-md transition-all text-sm uppercase tracking-widest">Próximo ➔</button>
-                <button onclick="salvarAluno()" id="btn-salvar-aluno" class="flex-1 md:flex-none bg-cyan-500 hover:bg-cyan-600 text-white font-black py-3 px-8 rounded-xl shadow-md transition-all text-sm uppercase tracking-widest hidden">💾 Salvar</button>
+                <button onclick="salvarAluno()" id="btn-salvar-aluno" class="flex-1 md:flex-none bg-cyan-500 hover:bg-cyan-600 text-white font-black py-3 px-8 rounded-xl shadow-md transition-all text-sm uppercase tracking-widest hidden">💾 Salvar Alterações</button>
             </div>
         </div>
     </div>
@@ -428,8 +428,8 @@
             <div class="flex justify-between items-center mb-6 max-w-[600px] mx-auto">
                 <div class="text-white text-sm font-bold uppercase tracking-widest">Carteirinha Digital</div>
                 <div class="flex gap-2">
-                    <button onclick="window.print()" class="bg-cyan-500 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase shadow-lg hover:bg-cyan-600">🖨️ Imprimir</button>
-                    <button onclick="fecharModalCarteirinha()" class="bg-slate-700 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase shadow-lg hover:bg-slate-600">Voltar</button>
+                    <button id="btn-imprimir-carteirinha" onclick="window.print()" class="bg-cyan-500 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase shadow-lg hover:bg-cyan-600">🖨️ Imprimir</button>
+                    <button id="btn-fechar-carteirinha" onclick="fecharModalCarteirinha()" class="bg-slate-700 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase shadow-lg hover:bg-slate-600">Voltar</button>
                 </div>
             </div>
 
@@ -524,13 +524,12 @@
         let teamId = null;
         let todosAlunosCache = [];
         let equipeDados = { nome: "Sua Equipe", logo: "" };
-        let dadosEquipeCompleto = null; // Guarda o status do plano
+        let dadosEquipeCompleto = null; 
         let alunoEditandoId = null;
         let ficheiroFotoSelecionado = null;
         
         let checkinsDoAlunoAtualCache = []; 
 
-        // 🔁 ORDEM CORRIGIDA: Agora segue exatamente a ordem visual das abas
         const ordemDasAbas = ['aba-pessoal', 'aba-contato', 'aba-financeiro', 'aba-frequencia', 'aba-lgpd', 'aba-anamnese'];
         let abaIndexAtual = 0;
 
@@ -542,7 +541,6 @@
             selectVenc.value = "10";
         }
 
-        // --- SISTEMA DO OLHO DA SENHA ---
         window.toggleSenha = function(inputId, btnElement) {
             const input = document.getElementById(inputId);
             if (input.type === "password") {
@@ -554,9 +552,6 @@
             }
         }
 
-        // ==========================================
-        // 🔒 PAYWALL (Limite de Alunos)
-        // ==========================================
         window.abrirPaywallLimite = function() {
             const modal = document.getElementById('modal-paywall');
             const content = document.getElementById('modal-paywall-content');
@@ -578,7 +573,6 @@
                 modal.classList.remove('flex');
             }, 300);
         };
-        // ==========================================
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -616,7 +610,7 @@
             const eqSnap = await getDoc(doc(db, "equipes", teamId));
             if (eqSnap.exists()) {
                 const d = eqSnap.data();
-                dadosEquipeCompleto = d; // Guarda os dados completos (Status do Plano, Isento, etc)
+                dadosEquipeCompleto = d; 
                 equipeDados.nome = d.nome_equipe || d.nome || "Sua Equipe";
                 equipeDados.logo = d.url_logo || "";
                 
@@ -1044,6 +1038,25 @@
             container.innerHTML = html;
         }
 
+        // ==========================================
+        // 🖨️ FUNÇÃO DE IMPRESSÃO DO CARTÃO PVC
+        // ==========================================
+        window.abrirEImprimirPVC = function() {
+            // Verifica a permissão (Apenas quem tem acesso à carteirinha não-básica)
+            if (!window.verificarAcesso('carteirinha')) return;
+
+            // Pega o wrapper da carteirinha e prepara para impressão
+            const wrapper = document.querySelector('.print-carteirinha-wrapper');
+            if (wrapper) {
+                // Adiciona um aviso visual breve
+                showToast("Preparando cartão para impressão em PVC...", "info");
+                
+                setTimeout(() => {
+                    window.print();
+                }, 500);
+            }
+        }
+
         window.abrirFichaAluno = (id) => {
             const a = todosAlunosCache.find(x => x.id === id);
             if(!a) return;
@@ -1207,7 +1220,18 @@
                 divPreenchida.classList.add('hidden');
             }
             
-            document.getElementById('btn-abrir-carteirinha').classList.remove('hidden');
+            // Lógica de Permissão da Carteirinha
+            const btnCartInfo = document.getElementById('btn-abrir-carteirinha');
+            const btnCartPvc = document.getElementById('btn-imprimir-pvc');
+            
+            if (window.verificarAcesso && window.verificarAcesso('carteirinha', true)) {
+                btnCartInfo.classList.remove('hidden');
+                btnCartPvc.classList.remove('hidden');
+            } else {
+                btnCartInfo.classList.add('hidden');
+                btnCartPvc.classList.add('hidden');
+            }
+            
             document.getElementById('btn-gerar-pdf').classList.remove('hidden');
 
             calcularIdade(); 
@@ -1368,6 +1392,7 @@ window.abrirModal = () => {
             document.getElementById('aluno-status').value = "ATIVO";
             
             document.getElementById('btn-abrir-carteirinha').classList.add('hidden'); 
+            document.getElementById('btn-imprimir-pvc').classList.add('hidden'); 
             document.getElementById('btn-gerar-pdf').classList.add('hidden');
             
             calcularIdade();

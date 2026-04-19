@@ -501,7 +501,7 @@
 
     <script src="menu.js"></script>
 
-    <script type="module">
+<script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -1042,9 +1042,6 @@
         // 🖨️ FUNÇÃO DE IMPRESSÃO DO CARTÃO PVC
         // ==========================================
         window.abrirEImprimirPVC = function() {
-            // Verifica a permissão (Apenas quem tem acesso à carteirinha não-básica)
-            if (!window.verificarAcesso('carteirinha')) return;
-
             // Pega o wrapper da carteirinha e prepara para impressão
             const wrapper = document.querySelector('.print-carteirinha-wrapper');
             if (wrapper) {
@@ -1224,7 +1221,27 @@
             const btnCartInfo = document.getElementById('btn-abrir-carteirinha');
             const btnCartPvc = document.getElementById('btn-imprimir-pvc');
             
-            if (window.verificarAcesso && window.verificarAcesso('carteirinha', true)) {
+            let temAcessoCarteirinha = false;
+            const isIsento = dadosEquipeCompleto && (dadosEquipeCompleto.isento === true || String(dadosEquipeCompleto.isento) === "true");
+            const isImpersonating = sessionStorage.getItem('admin_impersonate') !== null;
+            
+            if (isIsento || isImpersonating) {
+                temAcessoCarteirinha = true;
+            } else {
+                // Pega as funcionalidades salvas pelo menu.js
+                const features = window.funcionalidadesEquipe || JSON.parse(sessionStorage.getItem('bjj_features') || '[]');
+                if (features.length > 0) {
+                    temAcessoCarteirinha = features.some(f => f.includes('✓') && f.toLowerCase().includes('carteirinha'));
+                } else {
+                    // Backup: verifica pelo nome do plano
+                    const statusAtual = dadosEquipeCompleto ? (dadosEquipeCompleto.status_plano || 'TESTE').toUpperCase() : 'TESTE';
+                    if (statusAtual !== 'TESTE' && statusAtual !== 'BASICO' && statusAtual !== 'BÁSICO') {
+                        temAcessoCarteirinha = true;
+                    }
+                }
+            }
+
+            if (temAcessoCarteirinha) {
                 btnCartInfo.classList.remove('hidden');
                 btnCartPvc.classList.remove('hidden');
             } else {
@@ -1733,5 +1750,7 @@ window.abrirModal = () => {
 
         window.limparBusca = () => { document.getElementById('input-busca').value = ''; renderizarTabela(); }
     </script>
+</body>
+</html>
 </body>
 </html>

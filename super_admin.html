@@ -1021,7 +1021,7 @@
             }
         }
 
-        window.renderizarEquipes = function() {
+window.renderizarEquipes = function() {
             const termo = document.getElementById('busca-equipe').value.toLowerCase();
             const tabela = document.getElementById('tabela-equipes');
             tabela.innerHTML = '';
@@ -1033,7 +1033,15 @@
             );
 
             filtradas.forEach(eq => {
-                const diasDeVida = Math.floor((new Date() - new Date(eq.data_cadastro)) / (1000 * 60 * 60 * 24));
+                // CORREÇÃO DO "NAN": Verifica se a data existe
+                let diasDeVidaStr = "Data não registrada";
+                if (eq.data_cadastro) {
+                    const diff = new Date() - new Date(eq.data_cadastro);
+                    if (!isNaN(diff)) {
+                        const diasDeVida = Math.floor(diff / (1000 * 60 * 60 * 24));
+                        diasDeVidaStr = `Criada há ${diasDeVida} dias`;
+                    }
+                }
                 
                 let saudeHTML = "";
                 if(eq.total_alunos > 10) saudeHTML = `<span class="text-emerald-400 font-bold text-xs">💪 Saudável (${eq.total_alunos})</span>`;
@@ -1082,7 +1090,7 @@
                             </div>
                             <div>
                                 <p class="font-black text-white uppercase text-xs">${eq.nome_equipe || 'SEM NOME'}</p>
-                                <p class="text-[9px] text-slate-500 uppercase mt-0.5 tracking-widest truncate w-40">Criada há ${diasDeVida} dias</p>
+                                <p class="text-[9px] text-slate-500 uppercase mt-0.5 tracking-widest truncate w-40">${diasDeVidaStr}</p>
                             </div>
                         </div>
                     </td>

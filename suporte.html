@@ -115,7 +115,7 @@
     </div>
 
     <script src="menu.js"></script>
-    <script type="module">
+<script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -179,6 +179,26 @@
                         teamId = colabDoc.data().equipe_id;
                         const eqDoc = await getDoc(doc(db, "equipes", teamId));
                         if(eqDoc.exists()) equipeDadosCache = eqDoc.data();
+                    }
+                }
+
+                // 🚀 CORREÇÃO: ATUALIZA A LOGO E O NOME NO MENU LATERAL
+                if (equipeDadosCache) {
+                    const nomeEquipe = equipeDadosCache.nome_equipe || equipeDadosCache.nome || "Sua Equipe";
+                    const logoEquipe = equipeDadosCache.url_logo || "";
+
+                    const elNome = document.getElementById('nome-equipe') || document.getElementById('lbl-equipe');
+                    if(elNome) elNome.innerText = nomeEquipe.toUpperCase();
+
+                    const elLogoMenu = document.getElementById('logo-equipe-menu') || document.getElementById('container-logo') || document.querySelector('aside div[class*="bg-cyan-"], aside div[class*="bg-blue-"]');
+                    if (elLogoMenu) {
+                        if (logoEquipe) {
+                            elLogoMenu.style.background = 'transparent';
+                            elLogoMenu.innerHTML = `<img src="${logoEquipe}" class="w-full h-full object-cover rounded-xl shadow-md" alt="Logo">`;
+                        } else {
+                            elLogoMenu.style.background = '';
+                            elLogoMenu.innerHTML = `<span class="text-white font-black text-2xl">${nomeEquipe.charAt(0).toUpperCase()}</span>`;
+                        }
                     }
                 }
 
@@ -326,7 +346,6 @@
         window.fecharModalLer = function() {
             document.getElementById('modal-ler-chamado').classList.replace('flex', 'hidden');
         }
-
     </script>
 </body>
 </html>

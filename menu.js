@@ -58,7 +58,7 @@ function carregarMenu() {
     const blockIcon = `<span class="text-xs">🔒</span>`;
     
     // Mapeamento Inteligente
-    const canFin = hasAccess('Asaas') || hasAccess('Faturas'); 
+    const canFin = true; // 🔓 DESBLOQUEADO PARA TODOS OS PLANOS
     const canLoja = hasAccess('Vitrine'); 
     const canCert = hasAccess('Certificados'); 
     const canTurmas = hasAccess('Turmas'); 

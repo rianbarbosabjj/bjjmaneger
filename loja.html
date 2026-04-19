@@ -28,10 +28,21 @@
         
         <main class="flex-1 flex flex-col h-full overflow-hidden relative">
             
-            <div class="flex items-center justify-between p-6 pb-0 max-w-7xl mx-auto w-full shrink-0">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 pb-0 max-w-7xl mx-auto w-full shrink-0 gap-4">
                 <div>
                     <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Vitrine da Equipe</h2>
                     <p class="text-xs text-slate-500 font-medium mt-1">Gerencie os produtos que os alunos podem encomendar</p>
+                </div>
+                
+                <div class="flex items-center gap-2 bg-white border border-slate-200 p-2 rounded-2xl shadow-sm w-full sm:w-auto">
+                    <span class="text-emerald-500 text-xl pl-2">💬</span>
+                    <div class="flex flex-col flex-1">
+                        <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none px-2">WhatsApp da Loja</label>
+                        <input type="text" id="config-whatsapp-loja" placeholder="(00) 00000-0000" oninput="mascaraTelefone(this)" class="bg-transparent border-none text-slate-700 text-xs font-bold outline-none px-2 py-1 placeholder:font-normal">
+                    </div>
+                    <button onclick="salvarWhatsappLoja()" id="btn-salvar-zap" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-colors shadow-sm shrink-0">
+                        Salvar
+                    </button>
                 </div>
             </div>
 
@@ -82,7 +93,7 @@
                             
                             <div class="flex gap-2 mt-4 pt-2 border-t border-slate-100">
                                 <button onclick="cancelarEdicaoProduto()" id="btn-cancelar-produto" class="hidden flex-1 bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold py-3 px-3 rounded-xl transition-all text-xs uppercase tracking-widest">Cancelar</button>
-                                <button onclick="salvarProduto()" id="btn-salvar-produto" class="flex-[2] bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 px-3 rounded-xl shadow-lg shadow-emerald-500/30 transition-transform transform hover:-translate-y-0.5 uppercase tracking-widest text-xs">💾 Salvar</button>
+                                <button onclick="salvarProduto()" id="btn-salvar-produto" class="flex-[2] bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 px-3 rounded-xl shadow-lg shadow-emerald-500/30 transition-transform transform hover:-translate-y-0.5 uppercase tracking-widest text-xs">💾 Salvar Produto</button>
                             </div>
                         </div>
                     </div>
@@ -132,8 +143,8 @@
         let produtoEditandoId = null;
 
         // Variaveis para o controle de múltiplas imagens
-        let imagensUrlsExistentes = []; // Imagens que já estão no banco
-        let novosArquivosImagem = []; // Novos arquivos selecionados para upload
+        let imagensUrlsExistentes = []; 
+        let novosArquivosImagem = []; 
 
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
@@ -144,6 +155,13 @@
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 4500);
         }
+
+        window.mascaraTelefone = (i) => { 
+            let v = i.value.replace(/\D/g, ""); 
+            v = v.replace(/^(\d{2})(\d)/g, "($1) $2"); 
+            v = v.replace(/(\d)(\d{4})$/, "$1-$2"); 
+            i.value = v; 
+        };
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -164,10 +182,18 @@
                 limparAcessando(); setTimeout(limparAcessando, 600);
 
                 const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
-                if (mestreDoc.exists()) { teamId = user.uid; } 
+                if (mestreDoc.exists()) { 
+                    teamId = user.uid; 
+                    const dados = mestreDoc.data();
+                    if(dados.whatsapp_loja) document.getElementById('config-whatsapp-loja').value = dados.whatsapp_loja;
+                } 
                 else {
                     const colabDoc = await getDoc(doc(db, "colaboradores", user.uid));
-                    if (colabDoc.exists()) teamId = colabDoc.data().equipe_id;
+                    if (colabDoc.exists()) {
+                        teamId = colabDoc.data().equipe_id;
+                        const eqDoc = await getDoc(doc(db, "equipes", teamId));
+                        if(eqDoc.exists() && eqDoc.data().whatsapp_loja) document.getElementById('config-whatsapp-loja').value = eqDoc.data().whatsapp_loja;
+                    }
                 }
 
                 if (teamId) {
@@ -176,6 +202,23 @@
                 }
             } else { window.location.href = "index.html"; }
         });
+
+        // --- SALVAR WHATSAPP DA LOJA ---
+        window.salvarWhatsappLoja = async function() {
+            const zap = document.getElementById('config-whatsapp-loja').value;
+            const btn = document.getElementById('btn-salvar-zap');
+            const origTxt = btn.innerHTML;
+            
+            btn.innerHTML = "⏳"; btn.disabled = true;
+            try {
+                await updateDoc(doc(db, "equipes", uid), { whatsapp_loja: zap });
+                showToast("WhatsApp da loja atualizado!", "success");
+            } catch (error) {
+                showToast("Erro ao salvar número.", "error");
+            } finally {
+                btn.innerHTML = origTxt; btn.disabled = false;
+            }
+        }
 
         // --- SISTEMA DE MÚLTIPLAS IMAGENS ---
         window.processarNovasImagens = function(input) {
@@ -376,7 +419,7 @@
                 showToast("Erro ao salvar o produto.", "error"); 
                 console.error(e);
             } finally {
-                btn.disabled = false; btn.innerHTML = "💾 Salvar";
+                btn.disabled = false; btn.innerHTML = "💾 Salvar Produto";
             }
         }
 

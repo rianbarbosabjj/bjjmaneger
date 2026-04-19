@@ -1,5 +1,3 @@
-// menu.js
-
 // --- INJETAR ESTILO DA BARRA DE ROLAGEM GLOBALMENTE ---
 if (!document.getElementById('bjj-menu-styles')) {
     const style = document.createElement('style');
@@ -31,7 +29,7 @@ if (!document.getElementById('bjj-menu-styles')) {
 function carregarMenu() {
     const paginaAtual = window.location.pathname.split("/").pop() || "dashboard.html";
 
-    // --- 1. RECUPERA O ESTADO GLOBAL DO NAVEGADOR (Para manter cadeados e dados nas outras telas) ---
+    // --- 1. RECUPERA O ESTADO GLOBAL DO NAVEGADOR ---
     if (!window.funcionalidadesEquipe) {
         const cacheFeatures = sessionStorage.getItem('bjj_features');
         if (cacheFeatures) {
@@ -40,8 +38,6 @@ function carregarMenu() {
     }
 
     // Tenta pegar os dados visuais salvos na sessão
-    const cacheEmail = sessionStorage.getItem('bjj_email') || 'Usuário Logado';
-    const cacheCargo = sessionStorage.getItem('bjj_cargo') || 'Administrador';
     const cacheNome = sessionStorage.getItem('bjj_equipe_nome') || 'SUA EQUIPE';
     const cacheLogoUrl = sessionStorage.getItem('bjj_equipe_logo');
     
@@ -167,15 +163,12 @@ function carregarMenu() {
                 </button>
             </nav>
             
-            <div class="p-4 border-t border-slate-800 bg-slate-900/80 backdrop-blur-sm z-30">
-                <div class="bg-slate-800/80 p-3 rounded-xl flex items-center mb-3 border border-slate-700 shadow-inner hover:border-slate-600 transition-colors cursor-pointer">
-                    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center font-black text-[10px] text-white shadow-md border border-slate-600 shrink-0">ADM</div>
-                    <div class="ml-3 overflow-hidden flex-1">
-                        <p class="text-[11px] font-bold text-white truncate" id="email-logado">${cacheEmail}</p>
-                        <p class="text-[9px] text-cyan-400 uppercase tracking-widest mt-0.5 font-bold" id="lbl-cargo">${cacheCargo}</p>
-                    </div>
-                </div>
-                <button onclick="sairDoSistema()" class="w-full px-4 py-3 bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white border border-rose-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center shadow-sm">
+            <div class="p-4 border-t border-slate-800 bg-slate-900/80 backdrop-blur-sm z-30 flex flex-col gap-3">
+                <button onclick="${clickAcao('suporte.html', true)}" class="w-full flex items-center justify-center text-slate-500 hover:text-indigo-400 transition-colors text-[10px] font-bold uppercase tracking-widest ${paginaAtual === 'suporte.html' ? 'text-indigo-400' : ''}">
+                    <span class="mr-2 text-sm">🎧</span> Central de Ajuda
+                </button>
+                
+                <button onclick="sairDoSistema()" class="w-full px-4 py-2.5 bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white border border-rose-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center shadow-sm">
                     <span class="mr-2 text-sm leading-none">🚪</span> Sair
                 </button>
             </div>
@@ -252,6 +245,12 @@ function carregarMenu() {
                 <span class="text-2xl mb-1 ${paginaAtual === 'historico.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">🎓</span>
                 <span class="text-[8px] font-bold uppercase tracking-wide">Grad.</span>
             </button>
+
+            <button onclick="${clickAcao('suporte.html', true)}" class="shrink-0 w-[4rem] flex flex-col items-center justify-center h-full text-slate-500 hover:text-indigo-400 transition-colors snap-center">
+                ${indicadorMobile('suporte.html')}
+                <span class="text-xl mb-1 ${paginaAtual === 'suporte.html' ? 'drop-shadow-[0_0_8px_rgba(99,102,241,0.8)] text-indigo-400' : 'opacity-60'}">🎧</span>
+                <span class="text-[7.5px] font-bold uppercase tracking-wide">Ajuda</span>
+            </button>
             
             <button onclick="sairDoSistema()" class="shrink-0 w-[4.5rem] flex flex-col items-center justify-center h-full text-rose-500 hover:text-rose-400 transition-colors snap-center">
                 <span class="text-2xl mb-1 opacity-80">🚪</span>
@@ -292,33 +291,3 @@ window.atualizarMenuSeguro = function(funcionalidadesDoPlano) {
 
 // Render Inicial
 carregarMenu();
-// --- BOTÃO FLUTUANTE DE SUPORTE (INJETADO GLOBALMENTE) ---
-function injetarBotaoSuporte() {
-    // Evita duplicar se já existir
-    if (document.getElementById('btn-flutuante-suporte')) return;
-
-    const btnSuporte = document.createElement('button');
-    btnSuporte.id = 'btn-flutuante-suporte';
-    btnSuporte.onclick = () => window.location.href = 'suporte.html';
-    
-    // Classes do Tailwind para o botão flutuante
-    // bottom-24 no mobile (para ficar acima do menu inferior) e bottom-6 no desktop
-    btnSuporte.className = 'fixed bottom-24 md:bottom-6 right-4 md:right-6 bg-indigo-600 hover:bg-indigo-500 text-white w-12 h-12 md:w-14 md:h-14 rounded-full shadow-[0_8px_20px_rgba(79,70,229,0.4)] flex items-center justify-center text-xl md:text-2xl transition-all hover:scale-110 z-[100] group outline-none';
-    
-    btnSuporte.innerHTML = `
-        🎧
-        <span class="absolute right-full mr-3 bg-slate-800 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none hidden md:block shadow-md">
-            Precisa de Ajuda?
-        </span>
-        <span class="absolute top-0 right-0 w-3 h-3 bg-rose-500 border-2 border-slate-50 rounded-full animate-pulse"></span>
-    `;
-    
-    document.body.appendChild(btnSuporte);
-}
-
-// Injeta o botão assim que a página carregar
-document.addEventListener('DOMContentLoaded', injetarBotaoSuporte);
-// Caso o DOM já tenha carregado
-if (document.readyState === "interactive" || document.readyState === "complete") {
-    injetarBotaoSuporte();
-}

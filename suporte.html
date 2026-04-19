@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Central de Ajuda | BJJ Manager</title>
+    
+    <link rel="icon" type="image/png" href="logo_bjj_maneger.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="flex flex-col h-[100dvh] overflow-hidden text-slate-800 bg-[#F8FAFC]">
+
+    <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
+    <div id="interface-sistema" class="flex w-full h-full relative overflow-hidden">
+        <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+            
+            <div class="flex items-center justify-between p-6 pb-0 max-w-5xl mx-auto w-full shrink-0">
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Central de Ajuda</h2>
+                    <p class="text-xs text-slate-500 font-medium mt-1">Abra chamados para a nossa equipa de suporte.</p>
+                </div>
+                <button onclick="abrirModalNovoChamado()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 px-5 rounded-xl shadow-lg shadow-indigo-600/30 transition-transform transform hover:-translate-y-0.5 text-xs uppercase tracking-widest flex items-center gap-2">
+                    <span class="text-base">🎧</span> Novo Chamado
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-hidden p-4 md:p-6 max-w-5xl mx-auto w-full h-full flex flex-col">
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-full overflow-hidden">
+                    <div class="p-5 border-b border-slate-100 bg-slate-50 flex items-center justify-between shrink-0">
+                        <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest">Meus Tickets</h3>
+                        <button onclick="carregarMeusChamados()" class="text-slate-400 hover:text-indigo-500 transition-colors" title="Atualizar Lista">🔄</button>
+                    </div>
+                    
+                    <div class="flex-1 overflow-y-auto p-4 hide-scrollbar bg-slate-50/50">
+                        <div id="lista-chamados" class="space-y-4">
+                            <div class="text-center text-slate-400 text-sm mt-10 italic">A carregar os seus chamados...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="modal-novo-chamado" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-[200] p-4 transition-opacity">
+        <div class="bg-white border border-slate-200 rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col">
+            <div class="bg-slate-900 p-5 flex justify-between items-center text-white border-b border-slate-800">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center text-lg font-black">📝</div>
+                    <h3 class="font-black text-sm tracking-widest uppercase">Abrir Chamado</h3>
+                </div>
+                <button onclick="fecharModalNovoChamado()" class="text-slate-400 hover:text-white text-2xl leading-none">&times;</button>
+            </div>
+            
+            <div class="p-6 space-y-5">
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Assunto / Problema</label>
+                    <input type="text" id="chamado-assunto" placeholder="Ex: Dúvida sobre o faturamento" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 outline-none focus:border-indigo-500 transition-colors">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Detalhes da Solicitação</label>
+                    <textarea id="chamado-mensagem" rows="5" class="w-full bg-slate-50 border border-slate-200 text-slate-700 rounded-xl p-4 outline-none focus:border-indigo-500 transition-all font-medium resize-none" placeholder="Descreva o seu problema detalhadamente para que possamos ajudar..."></textarea>
+                </div>
+            </div>
+
+            <div class="p-5 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+                <button onclick="fecharModalNovoChamado()" class="px-6 py-2.5 rounded-xl font-bold text-slate-500 hover:bg-slate-200 transition-colors text-xs uppercase tracking-widest">Cancelar</button>
+                <button onclick="enviarChamado()" id="btn-enviar-chamado" class="bg-indigo-600 hover:bg-indigo-500 text-white font-black py-2.5 px-6 rounded-xl shadow-md transition-all text-xs uppercase tracking-widest flex items-center gap-2">
+                    Enviar Solicitação
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-ler-chamado" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-[200] p-4 transition-opacity">
+        <div class="bg-white border border-slate-200 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-slate-900 p-5 flex justify-between items-center text-white border-b border-slate-800">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center text-lg font-black">🎧</div>
+                    <h3 class="font-black text-sm tracking-widest uppercase" id="ler-titulo">Ticket #000</h3>
+                </div>
+                <button onclick="fecharModalLer()" class="text-slate-400 hover:text-white text-2xl leading-none">&times;</button>
+            </div>
+            
+            <div class="p-6 space-y-6 overflow-y-auto hide-scrollbar flex-1">
+                <div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">A sua mensagem original</p>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <p class="text-sm font-bold text-slate-800 mb-2" id="ler-assunto">Assunto</p>
+                        <p class="text-xs text-slate-600 whitespace-pre-wrap" id="ler-mensagem">Mensagem...</p>
+                    </div>
+                </div>
+                
+                <div id="area-resposta" class="hidden">
+                    <p class="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-1">Resposta do Suporte</p>
+                    <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 shadow-sm relative">
+                        <div class="absolute top-4 right-4 text-2xl opacity-20">💬</div>
+                        <p class="text-sm text-indigo-900 whitespace-pre-wrap font-medium" id="ler-resposta">Resposta...</p>
+                    </div>
+                </div>
+                
+                <div id="area-aguardando" class="bg-amber-50 p-4 rounded-xl border border-amber-100 text-center">
+                    <p class="text-xs font-bold text-amber-600">A sua solicitação está na fila de atendimento.</p>
+                    <p class="text-[10px] text-amber-500 mt-1">Iremos responder o mais breve possível.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="menu.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
+            authDomain: "bjj-maneger.firebaseapp.com",
+            projectId: "bjj-maneger",
+            storageBucket: "bjj-maneger.firebasestorage.app",
+            messagingSenderId: "415548255893",
+            appId: "1:415548255893:web:61186696fe097be870759c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let uid = null;
+        let equipeDadosCache = null;
+        let emailUsuario = null;
+        let meusChamadosCache = [];
+
+        window.showToast = function(message, type = 'error') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-emerald-500' : 'bg-rose-500';
+            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transition-all duration-300 transform translate-x-0 font-bold text-sm z-50 pointer-events-auto`;
+            toast.innerText = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4500);
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const limparAcessando = () => {
+                    const aside = document.querySelector('aside');
+                    if (aside) {
+                        const elementos = aside.querySelectorAll('p, span, h4');
+                        elementos.forEach(el => {
+                            if (el.innerText.includes('carregando') || el.innerText.includes('rianbarbosa')) el.innerText = user.email;
+                            if (el.innerText.includes('ACESSANDO')) {
+                                el.innerText = 'ADMINISTRADOR';
+                                el.classList.remove('animate-pulse');
+                                el.style.opacity = "1";
+                            }
+                        });
+                    }
+                };
+                limparAcessando(); setTimeout(limparAcessando, 600);
+
+                emailUsuario = user.email;
+                let teamId = null;
+
+                const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
+                if (mestreDoc.exists()) { 
+                    teamId = user.uid; 
+                    equipeDadosCache = mestreDoc.data();
+                } else {
+                    const colabDoc = await getDoc(doc(db, "colaboradores", user.uid));
+                    if (colabDoc.exists()) {
+                        teamId = colabDoc.data().equipe_id;
+                        const eqDoc = await getDoc(doc(db, "equipes", teamId));
+                        if(eqDoc.exists()) equipeDadosCache = eqDoc.data();
+                    }
+                }
+
+                if (teamId) {
+                    uid = teamId;
+                    carregarMeusChamados();
+                }
+            } else { window.location.href = "index.html"; }
+        });
+
+        window.abrirModalNovoChamado = function() {
+            document.getElementById('chamado-assunto').value = '';
+            document.getElementById('chamado-mensagem').value = '';
+            document.getElementById('modal-novo-chamado').classList.replace('hidden', 'flex');
+        }
+        
+        window.fecharModalNovoChamado = function() {
+            document.getElementById('modal-novo-chamado').classList.replace('flex', 'hidden');
+        }
+
+        window.enviarChamado = async function() {
+            const assunto = document.getElementById('chamado-assunto').value.trim();
+            const mensagem = document.getElementById('chamado-mensagem').value.trim();
+
+            if(!assunto || !mensagem) return showToast("Por favor, preencha o assunto e a mensagem.", "error");
+
+            const btn = document.getElementById('btn-enviar-chamado');
+            const txt = btn.innerHTML;
+            btn.innerHTML = "⏳ Enviando..."; btn.disabled = true;
+
+            try {
+                await addDoc(collection(db, "chamados_suporte"), {
+                    equipe_id: uid,
+                    equipe_nome: equipeDadosCache?.nome_equipe || equipeDadosCache?.nome || "Academia",
+                    remetente_email: emailUsuario,
+                    assunto: assunto,
+                    mensagem: mensagem,
+                    status: 'ABERTO',
+                    data_criacao: new Date().toISOString()
+                });
+
+                showToast("Chamado enviado com sucesso! Iremos responder em breve.", "success");
+                fecharModalNovoChamado();
+                carregarMeusChamados();
+            } catch(e) {
+                showToast("Erro ao enviar chamado. Tente novamente.", "error");
+            } finally {
+                btn.innerHTML = txt; btn.disabled = false;
+            }
+        }
+
+        window.carregarMeusChamados = async function() {
+            const container = document.getElementById('lista-chamados');
+            container.innerHTML = '<div class="text-center text-slate-400 text-sm mt-10 italic">A atualizar...</div>';
+            
+            try {
+                const q = query(collection(db, "chamados_suporte"), where("equipe_id", "==", uid));
+                const snap = await getDocs(q);
+                
+                meusChamadosCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                
+                // Ordenar por data mais recente
+                meusChamadosCache.sort((a,b) => {
+                    const dA = a.data_criacao || "";
+                    const dB = b.data_criacao || "";
+                    return dB.localeCompare(dA);
+                });
+
+                if(meusChamadosCache.length === 0) {
+                    container.innerHTML = `
+                        <div class="flex flex-col items-center justify-center p-10 text-slate-400">
+                            <span class="text-4xl mb-3">🎧</span>
+                            <p class="text-sm font-bold">Nenhum chamado aberto.</p>
+                            <p class="text-xs mt-1">Precisa de ajuda? Clique em 'Novo Chamado'.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = '';
+                meusChamadosCache.forEach(tk => {
+                    let bgStatus = 'bg-rose-50 border-rose-200';
+                    let textStatus = 'text-rose-600';
+                    let labelStatus = 'Em Análise';
+                    
+                    if(tk.status === 'RESPONDIDO') {
+                        bgStatus = 'bg-indigo-50 border-indigo-200';
+                        textStatus = 'text-indigo-600';
+                        labelStatus = 'Respondido';
+                    } else if(tk.status === 'RESOLVIDO') {
+                        bgStatus = 'bg-emerald-50 border-emerald-200';
+                        textStatus = 'text-emerald-600';
+                        labelStatus = 'Resolvido';
+                    }
+
+                    const dataFormatada = tk.data_criacao ? new Date(tk.data_criacao).toLocaleDateString('pt-BR') : '--/--/----';
+
+                    html += `
+                        <div onclick="lerChamado('${tk.id}')" class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all cursor-pointer group flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div class="flex items-start md:items-center gap-4">
+                                <div class="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-slate-400 border border-slate-100 group-hover:bg-indigo-50 group-hover:text-indigo-500 transition-colors shrink-0">🎫</div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition-colors truncate max-w-xs md:max-w-md">${tk.assunto}</h4>
+                                    <p class="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Ticket #${tk.id.substring(0,6).toUpperCase()} • Aberto em ${dataFormatada}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 self-end md:self-auto shrink-0">
+                                <span class="px-3 py-1 rounded-lg border ${bgStatus} ${textStatus} text-[9px] font-black uppercase tracking-widest">${labelStatus}</span>
+                                <span class="text-slate-300 group-hover:text-indigo-400 transition-colors hidden md:block">➔</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+
+            } catch (e) {
+                container.innerHTML = '<div class="text-center text-rose-500 text-sm mt-10 font-bold">Erro ao carregar os chamados.</div>';
+            }
+        }
+
+        window.lerChamado = function(id) {
+            const tk = meusChamadosCache.find(t => t.id === id);
+            if(!tk) return;
+
+            document.getElementById('ler-titulo').innerText = `Ticket #${tk.id.substring(0,6).toUpperCase()}`;
+            document.getElementById('ler-assunto').innerText = tk.assunto;
+            document.getElementById('ler-mensagem').innerText = tk.mensagem;
+
+            const areaResposta = document.getElementById('area-resposta');
+            const areaAguardando = document.getElementById('area-aguardando');
+
+            if (tk.resposta) {
+                areaResposta.classList.remove('hidden');
+                areaAguardando.classList.add('hidden');
+                document.getElementById('ler-resposta').innerText = tk.resposta;
+            } else {
+                areaResposta.classList.add('hidden');
+                areaAguardando.classList.remove('hidden');
+            }
+
+            document.getElementById('modal-ler-chamado').classList.replace('hidden', 'flex');
+        }
+
+        window.fecharModalLer = function() {
+            document.getElementById('modal-ler-chamado').classList.replace('flex', 'hidden');
+        }
+
+    </script>
+</body>
+</html>

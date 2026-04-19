@@ -15,23 +15,23 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Estilo para as bolinhas do carrossel */
-        .carousel-dot { transition: all 0.3s ease; }
-        .carousel-dot.active { background-color: #06b6d4; width: 1rem; }
+        /* Animação suave para as miniaturas */
+        .miniatura-img { transition: transform 0.3s ease; }
+        .miniatura-hover:hover .miniatura-img { transform: scale(1.05); }
     </style>
 </head>
 <body class="flex flex-col h-[100dvh] overflow-hidden text-slate-800 bg-[#F8FAFC]">
 
     <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
-    <div id="interface-sistema" class="flex-1 flex w-full h-full relative overflow-hidden">
+    <div id="interface-sistema" class="flex w-full h-full relative overflow-hidden">
         
         <main class="flex-1 flex flex-col h-full overflow-hidden relative">
             
             <div class="flex items-center justify-between p-6 pb-0 max-w-7xl mx-auto w-full shrink-0">
                 <div>
                     <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Vitrine da Equipe</h2>
-                    <p class="text-xs text-slate-500 font-medium mt-1">Gere os produtos que os alunos podem encomendar</p>
+                    <p class="text-xs text-slate-500 font-medium mt-1">Gerencie os produtos que os alunos podem encomendar</p>
                 </div>
             </div>
 
@@ -58,9 +58,8 @@
                                         <span class="text-[8px] font-black text-cyan-600 uppercase mt-1">Fotos</span>
                                         <input type="file" id="produto-foto" accept="image/*" multiple class="hidden" onchange="processarNovasImagens(this)">
                                     </label>
-                                    
-                                    </div>
-                                <p class="text-[9px] text-slate-400 mt-1">Podes selecionar várias imagens (até 5MB por foto).</p>
+                                </div>
+                                <p class="text-[9px] text-slate-400 mt-1">Selecione até 5 imagens (Máx 5MB por foto).</p>
                             </div>
 
                             <div>
@@ -97,7 +96,7 @@
                     
                     <div class="flex-1 overflow-y-auto p-4 md:p-6 hide-scrollbar bg-slate-50/50">
                         <div id="lista-produtos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                            <div class="col-span-full text-center text-slate-400 text-sm mt-10 italic">A carregar produtos...</div>
+                            <div class="col-span-full text-center text-slate-400 text-sm mt-10 italic">Carregando vitrine...</div>
                         </div>
                     </div>
                 </div>
@@ -182,7 +181,6 @@
         window.processarNovasImagens = function(input) {
             if (input.files && input.files.length > 0) {
                 for(let i = 0; i < input.files.length; i++) {
-                    // Proteção extra: Limita a 5 imagens por produto para não pesar
                     if (imagensUrlsExistentes.length + novosArquivosImagem.length >= 5) {
                         showToast("Máximo de 5 fotos por produto.", "error");
                         break;
@@ -191,7 +189,7 @@
                 }
                 atualizarContainerMiniaturas();
             }
-            input.value = ""; // Reseta o input para permitir selecionar o mesmo arquivo novamente se quiser
+            input.value = ""; 
         };
 
         window.removerImagemExistente = function(index) {
@@ -205,20 +203,17 @@
         };
 
         function atualizarContainerMiniaturas() {
-            // Pegamos as divs que já estão lá (mantendo o botão de add)
             const container = document.getElementById('container-miniaturas');
-            const btnAdd = container.firstElementChild; // Salva o botão "➕ Fotos"
+            const btnAdd = container.firstElementChild; 
             
             container.innerHTML = '';
             container.appendChild(btnAdd);
 
-            // 1. Renderiza imagens que já existem no banco
             imagensUrlsExistentes.forEach((url, index) => {
                 const div = criarMiniatura(url, () => removerImagemExistente(index));
                 container.appendChild(div);
             });
 
-            // 2. Renderiza as imagens novas que vão ser upadas
             novosArquivosImagem.forEach((file, index) => {
                 const objectUrl = URL.createObjectURL(file);
                 const div = criarMiniatura(objectUrl, () => removerNovoArquivo(index));
@@ -228,9 +223,9 @@
 
         function criarMiniatura(src, funcRemover) {
             const div = document.createElement('div');
-            div.className = "shrink-0 w-20 h-20 rounded-2xl border border-slate-200 bg-white relative overflow-hidden group shadow-sm";
+            div.className = "shrink-0 w-20 h-20 rounded-2xl border border-slate-200 bg-white relative overflow-hidden group shadow-sm miniatura-hover";
             div.innerHTML = `
-                <img src="${src}" class="w-full h-full object-cover">
+                <img src="${src}" class="w-full h-full object-cover miniatura-img">
                 <div class="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <button type="button" class="text-white bg-rose-500 hover:bg-rose-600 rounded-full w-8 h-8 flex items-center justify-center shadow-lg font-bold" title="Remover foto">🗑️</button>
                 </div>
@@ -252,7 +247,6 @@
             }
         }
 
-        // Função utilitária para tratar cliques do scroll do carrossel (Scroll ScrollSnap Native)
         window.scrollCarrossel = function(idCarrossel, direcao) {
             const el = document.getElementById(idCarrossel);
             if(el) {
@@ -265,10 +259,9 @@
             const container = document.getElementById('lista-produtos');
             container.innerHTML = produtosCache.length === 0 ? "<div class='col-span-full text-center p-10 text-slate-400 text-sm'>Nenhum produto cadastrado na vitrine virtual.</div>" : "";
             
-            produtosCache.forEach((p, indexProduto) => {
+            produtosCache.forEach((p) => {
                 const precoFormatado = p.valor ? parseFloat(p.valor).toFixed(2).replace('.', ',') : "0,00";
                 
-                // Trata as imagens para suportar produtos velhos (com 1 imagem) e novos (array de imagens)
                 let arrayDeImagens = [];
                 if (p.imagens_urls && p.imagens_urls.length > 0) arrayDeImagens = p.imagens_urls;
                 else if (p.imagem_url) arrayDeImagens = [p.imagem_url];
@@ -279,7 +272,6 @@
                     ? '<span class="absolute top-3 left-3 z-20 bg-emerald-500 text-white text-[8px] font-black px-2.5 py-1 rounded-md uppercase tracking-widest shadow-md">Na vitrine</span>'
                     : '<span class="absolute top-3 left-3 z-20 bg-slate-500 text-white text-[8px] font-black px-2.5 py-1 rounded-md uppercase tracking-widest shadow-md">Oculto</span>';
 
-                // Renderiza o Carrossel (HTML Interno do card)
                 let idUnicoCarrossel = `carousel-${p.id}`;
                 
                 let slidesHtml = '';
@@ -287,7 +279,6 @@
                     slidesHtml += `<div class="w-full h-full shrink-0 flex items-center justify-center snap-center relative overflow-hidden"><img src="${img}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"></div>`;
                 });
 
-                // Setas apenas se houver mais de 1 imagem
                 let setasHtml = '';
                 if (arrayDeImagens.length > 1) {
                     setasHtml = `
@@ -329,8 +320,8 @@
             const valor = parseFloat(document.getElementById('produto-valor').value);
             const status = document.getElementById('produto-status').value;
 
-            if (!nome || isNaN(valor)) return showToast("Preenche o nome e o preço corretamente.", "error");
-            if (imagensUrlsExistentes.length === 0 && novosArquivosImagem.length === 0) return showToast("Adiciona pelo menos uma foto.", "error");
+            if (!nome || isNaN(valor)) return showToast("Preencha o nome e o preço corretamente.", "error");
+            if (imagensUrlsExistentes.length === 0 && novosArquivosImagem.length === 0) return showToast("Adicione pelo menos uma foto.", "error");
             
             const btn = document.getElementById('btn-salvar-produto');
             btn.disabled = true; btn.innerHTML = "⏳ Salvando...";
@@ -344,9 +335,8 @@
 
                 let urlsGeradas = [];
 
-                // Faz upload apenas das novas imagens selecionadas
                 if (novosArquivosImagem.length > 0) {
-                    btn.innerHTML = `⏳ A enviar ${novosArquivosImagem.length} fotos...`;
+                    btn.innerHTML = `⏳ Enviando ${novosArquivosImagem.length} fotos...`;
                     for (let file of novosArquivosImagem) {
                         const fotoRef = ref(storage, `loja_fotos/${uid}_${Date.now()}_${file.name}`);
                         await uploadBytes(fotoRef, file);
@@ -355,17 +345,21 @@
                     }
                 }
 
-                // Junta as fotos velhas que não foram removidas com as recém upadas
+                // A nova lista de URLs junta o que sobrou das antigas com as recém subidas.
                 dados.imagens_urls = [...imagensUrlsExistentes, ...urlsGeradas];
 
                 if (produtoEditandoId) {
-                    // Pega o produto antes de atualizar para apagar do Storage as fotos que o professor removeu agora
                     const pAntigo = produtosCache.find(x => x.id === produtoEditandoId);
+                    
+                    // Compara e apaga do Storage as fotos antigas que o usuário removeu da UI
                     if (pAntigo && pAntigo.imagens_urls) {
                         const fotosRemovidas = pAntigo.imagens_urls.filter(urlAntiga => !imagensUrlsExistentes.includes(urlAntiga));
                         for (let urlRemover of fotosRemovidas) {
-                            try { await deleteObject(ref(storage, urlRemover)); } catch(e) {}
+                            try { await deleteObject(ref(storage, urlRemover)); } catch(e) { console.error("Erro ao apagar foto velha", e); }
                         }
+                    } else if (pAntigo && pAntigo.imagem_url && !imagensUrlsExistentes.includes(pAntigo.imagem_url)) {
+                        // Compatibilidade com a versão antiga do banco que tinha apenas 'imagem_url'
+                         try { await deleteObject(ref(storage, pAntigo.imagem_url)); } catch(e) {}
                     }
 
                     await updateDoc(doc(db, "produtos", produtoEditandoId), dados);
@@ -392,16 +386,15 @@
             
             produtoEditandoId = id;
             
-            // Carrega as imagens atuais no estado
             if (p.imagens_urls && p.imagens_urls.length > 0) {
                 imagensUrlsExistentes = [...p.imagens_urls];
             } else if (p.imagem_url) {
-                imagensUrlsExistentes = [p.imagem_url]; // Fallback pra produto velho
+                imagensUrlsExistentes = [p.imagem_url]; 
             } else {
                 imagensUrlsExistentes = [];
             }
             
-            novosArquivosImagem = []; // Zera uploads novos
+            novosArquivosImagem = []; 
             atualizarContainerMiniaturas();
 
             document.getElementById('produto-nome').value = p.nome || "";
@@ -410,16 +403,15 @@
 
             document.getElementById('titulo-form').innerText = "✏️ Editar Produto";
             document.getElementById('btn-cancelar-produto').classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // Sobe a tela no celular
+            window.scrollTo({ top: 0, behavior: 'smooth' }); 
         }
 
         window.excluirProduto = async function(id) {
-            if(!confirm("Tem a certeza que desejas excluir este produto da vitrine? Esta ação apagará todas as fotos associadas.")) return;
+            if(!confirm("Tem certeza que deseja excluir este produto da vitrine? Esta ação apagará todas as fotos associadas.")) return;
             try {
                 const p = produtosCache.find(x => x.id === id);
                 await deleteDoc(doc(db, "produtos", id));
                 
-                // Tenta apagar TODAS as imagens vinculadas no storage
                 let imagensParaApagar = [];
                 if (p.imagens_urls) imagensParaApagar = [...p.imagens_urls];
                 else if (p.imagem_url) imagensParaApagar = [p.imagem_url];

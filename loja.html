@@ -117,7 +117,7 @@
     </div>
 
     <script src="menu.js"></script>
-    <script type="module">
+<script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -181,19 +181,48 @@
                 };
                 limparAcessando(); setTimeout(limparAcessando, 600);
 
+                let equipeDados = null;
+
                 const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
                 if (mestreDoc.exists()) { 
                     teamId = user.uid; 
-                    const dados = mestreDoc.data();
-                    if(dados.whatsapp_loja) document.getElementById('config-whatsapp-loja').value = dados.whatsapp_loja;
+                    equipeDados = mestreDoc.data();
+                    if(equipeDados.whatsapp_loja) document.getElementById('config-whatsapp-loja').value = equipeDados.whatsapp_loja;
                 } 
                 else {
                     const colabDoc = await getDoc(doc(db, "colaboradores", user.uid));
                     if (colabDoc.exists()) {
                         teamId = colabDoc.data().equipe_id;
                         const eqDoc = await getDoc(doc(db, "equipes", teamId));
-                        if(eqDoc.exists() && eqDoc.data().whatsapp_loja) document.getElementById('config-whatsapp-loja').value = eqDoc.data().whatsapp_loja;
+                        if(eqDoc.exists()) {
+                            equipeDados = eqDoc.data();
+                            if(equipeDados.whatsapp_loja) document.getElementById('config-whatsapp-loja').value = equipeDados.whatsapp_loja;
+                        }
                     }
+                }
+
+                // ATUALIZA A LOGO E O NOME NO MENU LATERAL
+                if (equipeDados) {
+                    const nomeEquipe = equipeDados.nome_equipe || equipeDados.nome || "Sua Equipe";
+                    const logoEquipe = equipeDados.url_logo || "";
+
+                    const elNome = document.getElementById('nome-equipe');
+                    if(elNome) elNome.innerText = nomeEquipe.toUpperCase();
+
+                    const elLogo = document.getElementById('container-logo');
+                    if(elLogo) {
+                        if(logoEquipe) {
+                            elLogo.style.background = 'transparent';
+                            elLogo.innerHTML = `<img src="${logoEquipe}" class="w-full h-full object-cover" alt="Logo">`;
+                        } else {
+                            elLogo.style.background = '';
+                            elLogo.innerHTML = nomeEquipe.charAt(0).toUpperCase();
+                        }
+                    }
+                    
+                    // Salva na sessão para manter a transição rápida entre as telas
+                    sessionStorage.setItem('bjj_equipe_nome', nomeEquipe);
+                    sessionStorage.setItem('bjj_equipe_logo', logoEquipe);
                 }
 
                 if (teamId) {

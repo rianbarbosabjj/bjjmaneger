@@ -676,7 +676,7 @@
         // ==========================================
         // 🏥 MONITOR DE SAÚDE E ACADEMIAS
         // ==========================================
-        window.carregarImperio = async function() {
+window.carregarImperio = async function() {
             document.getElementById('tabela-equipes').innerHTML = '<tr><td colspan="5" class="text-center p-8 text-slate-500 italic text-xs">Carregando império...</td></tr>';
             try {
                 const snapEquipes = await getDocs(collection(db, "equipes"));
@@ -685,7 +685,11 @@
                 const snapAlunos = await getDocs(collection(db, "alunos"));
                 const todosAlunos = snapAlunos.docs.map(d => d.data());
                 
-                totalAlunosGeral = todosAlunos.filter(a => a.status === 'ATIVO').length;
+                // Cria um conjunto (Set) rápido apenas com os IDs das equipes válidas (que não foram apagadas)
+                const idsEquipesValidas = new Set(equipesCache.map(eq => eq.id));
+
+                // Conta apenas os alunos que são ATIVOS E que pertencem a uma equipe válida
+                totalAlunosGeral = todosAlunos.filter(a => a.status === 'ATIVO' && idsEquipesValidas.has(a.equipe_id)).length;
 
                 let inativas = 0; let leads = 0;
                 equipesCache.forEach(eq => {

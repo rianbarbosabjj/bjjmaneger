@@ -1434,62 +1434,27 @@ window.abrirPagamento = async function(faturaId) {
             }
         }
 
-        window.comprarProdutoViaAsaas = async function(produtoId) {
+window.comprarProdutoViaAsaas = async function(produtoId) {
             const p = produtosCache.find(x => x.id === produtoId);
             if(!p) return showToast("Produto não encontrado.", "error");
 
-            const temPlanoAsaas = equipeDados && equipeDados.plano_asaas === true;
+            // Busca o WhatsApp da Loja configurado pela Equipe (ou o telefone principal como backup)
+            const zapLoja = equipeDados.whatsapp_loja || equipeDados.telefone_whatsapp || equipeDados.celular || '';
             
-            if (temPlanoAsaas) {
-                const btn = document.getElementById(`btn-comprar-${produtoId}`);
-                const textoOriginal = btn.innerHTML;
-                btn.innerHTML = "⏳ A Gerar...";
-                btn.disabled = true;
-
-                try {
-                    const gerarCobranca = httpsCallable(functions, 'gerarCobrancaAsaas');
-                    const resultado = await gerarCobranca({ 
-                        alunoId: alunoLogado.id, 
-                        valor: p.valor, 
-                        mesAno: 'LOJA',
-                        descricao: `Loja Virtual: ${p.nome}` 
-                    });
-
-                    if (resultado.data.success) { 
-                        await addDoc(collection(db, "financeiro"), {
-                            equipe_id: alunoLogado.equipe_id,
-                            aluno_id: alunoLogado.id,
-                            aluno_nome: alunoLogado.nome,
-                            tipo: 'LOJA', 
-                            produto_nome: p.nome,
-                            produto_id: p.id,
-                            status: 'PENDENTE', 
-                            valor: p.valor,
-                            data_criacao: new Date().toISOString(),
-                            forma_pagamento: 'Asaas',
-                            link_pagamento: resultado.data.url
-                        });
-
-                        showToast("✅ Redirecionando para pagamento seguro!", "success"); 
-                        window.open(resultado.data.url, '_blank'); 
-                    } else { 
-                        showToast("❌ Erro ao gerar cobrança: " + resultado.data.error, "error"); 
-                    }
-                } catch (error) { 
-                    showToast("🚨 Falha na ligação ao servidor financeiro.", "error"); 
-                } finally { 
-                    btn.innerHTML = textoOriginal; 
-                    btn.disabled = false; 
-                }
-            } else {
-                const zap = equipeDados.telefone_whatsapp || '';
-                if(!zap) return showToast("O professor não configurou o WhatsApp da academia.", "error");
-                
-                const precoFormatado = parseFloat(p.valor).toFixed(2).replace('.',',');
-                const msg = encodeURIComponent(`Olá, Oss! Gostaria de comprar o produto: *${p.nome}* no valor de R$ ${precoFormatado}. Como podemos efetuar o pagamento?`);
-                
-                window.open(`https://wa.me/55${zap.replace(/\D/g,'')}?text=${msg}`, '_blank');
+            if(!zapLoja) {
+                return showToast("A academia não configurou o WhatsApp de atendimento da loja.", "error");
             }
+            
+            // Limpa o número para deixar só os dígitos
+            const numeroLimpo = zapLoja.replace(/\D/g, '');
+            
+            const precoFormatado = parseFloat(p.valor).toFixed(2).replace('.',',');
+            
+            // Monta a mensagem inteligente
+            const msg = encodeURIComponent(`Olá, Oss! Sou o aluno(a) *${alunoLogado.nome}*.\nGostaria de encomendar o produto: *${p.nome}* no valor de R$ ${precoFormatado}.\nComo podemos efetuar o pagamento e combinar a entrega?`);
+            
+            // Abre o WhatsApp direto
+            window.open(`https://wa.me/55${numeroLimpo}?text=${msg}`, '_blank');
         };
 
         window.registrarCheckin = async function(turmaId, nomeTurma) {

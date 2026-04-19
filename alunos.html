@@ -1389,13 +1389,30 @@ function atualizarAbasPorPlano() {
                     dados.foto_url = fotoUrlFinal;
                 }
 
+                let acaoLog = "";
+                let detalhesLog = "";
+
                 if (id) {
                     await updateDoc(doc(db, "alunos", id), dados);
                     showToast("Ficha atualizada com sucesso!", "success");
+                    acaoLog = "EDITOU_ALUNO";
+                    detalhesLog = `Atualizou a ficha do aluno: ${nome}`;
                 } else {
                     if (fotoUrlFinal) await updateDoc(doc(db, "alunos", docRefId), { foto_url: fotoUrlFinal });
                     showToast("Matrícula criada com sucesso!", "success");
+                    acaoLog = "NOVA_MATRICULA";
+                    detalhesLog = `Cadastrou o aluno: ${nome}`;
                 }
+
+                // 🕵️‍♂️ GRAVAR LOG DE AUDITORIA
+                await addDoc(collection(db, "auditoria"), {
+                    equipe_id: teamId,
+                    equipe_nome: equipeDados.nome,
+                    usuario_email: auth.currentUser.email,
+                    acao: acaoLog,
+                    detalhes: detalhesLog,
+                    timestamp: new Date().toISOString()
+                });
                 
                 fecharModal(); 
                 buscarAlunosFirebase(); 

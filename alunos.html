@@ -24,14 +24,12 @@
         ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
         .table-row-hover:hover td { background-color: #F1F5F9; }
 
-        @media print {
-            /* 1. Configura o tamanho físico do cartão PVC (CR80) */
+@media print {
             @page { 
                 size: 85.6mm 54mm landscape; 
                 margin: 0 !important; 
             }
             
-            /* 2. Reseta o ambiente de impressão */
             html, body {
                 margin: 0 !important;
                 padding: 0 !important;
@@ -42,12 +40,10 @@
                 print-color-adjust: exact !important;
             }
 
-            /* 3. Esconde tudo na tela (sem remover do fluxo, para não quebrar a hierarquia) */
-            body * { 
-                visibility: hidden !important; 
-            }
+            /* Esconde absolutamente tudo */
+            body * { visibility: hidden !important; }
             
-            /* 4. Torna apenas o modal e a carteirinha visíveis */
+            /* Torna visível apenas o essencial */
             #modal-carteirinha, 
             #modal-carteirinha *,
             .print-carteirinha-wrapper, 
@@ -55,29 +51,24 @@
                 visibility: visible !important; 
             }
 
-            /* 5. Posiciona a carteirinha exatamente no canto superior esquerdo da impressão */
+            /* Container de Impressão */
             .print-carteirinha-wrapper {
-                display: flex !important; /* Mantém o layout flexível interno */
+                display: flex !important;
                 position: fixed !important;
                 top: 0 !important;
                 left: 0 !important;
-                width: 600px !important; /* Tamanho base de design */
+                width: 600px !important;
                 height: 380px !important;
                 margin: 0 !important;
                 border: none !important;
                 border-radius: 0 !important;
                 box-shadow: none !important;
-                background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
+                background: white !important;
                 
-                /* Escala para converter 600px em 85.6mm */
+                /* Escala matemática: 600px -> 85.6mm */
                 transform: scale(0.539) !important;
                 transform-origin: top left !important;
                 z-index: 99999 !important;
-            }
-
-            /* Garante que a marca d'água e logo apareçam */
-            #cart-equipe-watermark, #cart-equipe-logo {
-                display: block !important;
             }
         }
     </style>

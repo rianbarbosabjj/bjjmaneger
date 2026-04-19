@@ -25,53 +25,53 @@
         .table-row-hover:hover td { background-color: #F1F5F9; }
 
         @media print {
-            /* 1. Define o tamanho exato do cartão PVC e remove as margens que geram link/data */
+            /* 1. Remove margens, cabeçalhos e rodapés do navegador */
             @page { 
-                size: 85.6mm 54mm; 
-                margin: 0mm !important; 
+                size: 85.6mm 54mm landscape; 
+                margin: 0 !important; 
             }
             
-            /* 2. Limpa toda a tela para não dar conflito de rolagem */
+            /* 2. Limpa o corpo da página e garante fundo branco */
             html, body {
                 width: 85.6mm !important;
                 height: 54mm !important;
                 margin: 0 !important;
                 padding: 0 !important;
+                background: white !important;
                 overflow: hidden !important;
-                background-color: white !important;
-            }
-
-            /* 3. Esconde tudo na tela */
-            body * { visibility: hidden !important; display: none !important; }
-            
-            /* 4. Traz de volta APENAS a carteirinha e os elementos dentro dela */
-            .print-carteirinha-wrapper { display: flex !important; }
-            .print-carteirinha-wrapper, .print-carteirinha-wrapper * { 
-                visibility: visible !important; 
-            }
-            
-            /* 5. Posiciona e converte o tamanho da tela (px) para o tamanho físico (mm) */
-            .print-carteirinha-wrapper {
-                position: fixed !important;
-                left: 0 !important;
-                top: 0 !important;
-                width: 600px !important;
-                height: 380px !important;
-                min-width: 600px !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                box-shadow: none !important;
-                border: none !important;
-                border-radius: 0 !important; /* Sem bordas arredondadas para a impressora */
-                
-                /* Força a impressão das cores de fundo e marca d'água */
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
-                color-adjust: exact !important;
+            }
+
+            /* 3. Esconde absolutamente tudo na tela por padrão */
+            body * { 
+                display: none !important; 
+            }
+            
+            /* 4. Torna visível apenas o wrapper da carteirinha e o que está dentro dele */
+            .print-carteirinha-wrapper, 
+            .print-carteirinha-wrapper * { 
+                display: block !important;
+                visibility: visible !important; 
+            }
+
+            /* 5. Força o layout flexível apenas para a carteirinha */
+            .print-carteirinha-wrapper {
+                display: flex !important;
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 600px !important; /* Tamanho base em pixels */
+                height: 380px !important;
+                margin: 0 !important;
+                border: none !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
                 
-                /* Escala mágica: reduz de 600px para exatos 85.6mm */
+                /* Escala necessária para converter 600px em 85.6mm */
                 transform: scale(0.539) !important;
                 transform-origin: top left !important;
+                z-index: 9999;
             }
         }
     </style>

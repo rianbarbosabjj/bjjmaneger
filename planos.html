@@ -36,9 +36,10 @@
                         <p id="plano-vencimento" class="text-sm text-slate-500 font-medium">A analisar o seu plano...</p>
                     </div>
                 </div>
-                <div class="shrink-0 text-center md:text-right">
+                <div class="shrink-0 text-center md:text-right flex flex-col items-center md:items-end">
                     <span id="status-badge" class="px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest bg-slate-200 text-slate-500">A CARREGAR</span>
-                    <p id="msg-isento" class="hidden text-[9px] text-indigo-500 font-black mt-2 uppercase tracking-widest">Equipe Isenta de Cobrança</p>
+                    <p id="nome-plano-atual" class="hidden text-[10px] text-slate-500 font-black mt-2 uppercase tracking-widest"></p>
+                    <p id="msg-isento" class="hidden text-[9px] text-indigo-500 font-black mt-1 uppercase tracking-widest">Equipe Isenta de Cobrança</p>
                 </div>
             </div>
 
@@ -152,7 +153,7 @@
         </div>
     </main>
 
-<script type="module">
+    <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -307,10 +308,23 @@
             const badge = document.getElementById('status-badge');
             const icon = document.getElementById('status-icon');
             const txtVencimento = document.getElementById('plano-vencimento');
+            const txtPlanoAtual = document.getElementById('nome-plano-atual');
             const isento = (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true");
 
             if (isento) {
                 document.getElementById('msg-isento').classList.remove('hidden');
+            }
+
+            // Exibir o nome formatado do plano abaixo da tag
+            if (txtPlanoAtual) {
+                let nomePlanoFormatado = equipePlanoAtual.replace('_', ' ');
+                if (equipePlanoAtual === 'TESTE' || equipePlanoAtual === 'BASICO') {
+                    nomePlanoFormatado = 'PLANO BASE';
+                } else {
+                    nomePlanoFormatado = `PLANO ${nomePlanoFormatado}`;
+                }
+                txtPlanoAtual.innerText = nomePlanoFormatado;
+                txtPlanoAtual.classList.remove('hidden');
             }
 
             if (equipePlanoAtual === 'TESTE') {
@@ -326,7 +340,6 @@
                 txtVencimento.innerText = "Sua assinatura expirou. Regularize para continuar.";
             }
             else {
-                // Abrange BASICO, BLACK_BELT, MASTER, ELITE, ATIVO e qualquer outro plano criado.
                 badge.innerText = "ASSINATURA ATIVA";
                 badge.className = "px-4 py-1.5 rounded-full text-[10px] font-black uppercase bg-emerald-500 text-white shadow-lg";
                 icon.innerText = "✅";

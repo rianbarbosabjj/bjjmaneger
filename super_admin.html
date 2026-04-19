@@ -48,6 +48,9 @@
                 <button onclick="mudarAbaMaster('faturamento')" id="menu-faturamento" class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-xl font-bold text-xs uppercase tracking-widest transition-all border border-transparent">
                     <span class="text-lg">💳</span> Faturamento
                 </button>
+                <button onclick="mudarAbaMaster('auditoria')" id="menu-auditoria" class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-xl font-bold text-xs uppercase tracking-widest transition-all border border-transparent">
+                    <span class="text-lg">🕵️‍♂️</span> Auditoria (Logs)
+                </button>
                 <button onclick="mudarAbaMaster('planos')" id="menu-planos" class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-xl font-bold text-xs uppercase tracking-widest transition-all border border-transparent">
                     <span class="text-lg">⚙️</span> Planos do Site
                 </button>
@@ -311,6 +314,43 @@
                         </thead>
                         <tbody id="tabela-faturamento" class="divide-y divide-slate-800/50 text-sm">
                             <tr><td colspan="6" class="text-center p-8 text-slate-500 italic text-xs">Calculando faturamento...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="aba-auditoria" class="p-6 md:p-10 max-w-7xl mx-auto w-full space-y-8 hidden">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight uppercase">Logs de Auditoria</h2>
+                    <p class="text-sm text-slate-400 mt-1 font-medium">Saiba exatamente quem fez o quê dentro do sistema das academias.</p>
+                </div>
+                <button onclick="carregarAuditoria()" class="bg-slate-800 hover:bg-slate-700 text-white font-black py-3 px-6 rounded-xl text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2">
+                    <span>🔄</span> Recarregar Logs
+                </button>
+            </div>
+
+            <div class="bg-slate-900 rounded-3xl border border-slate-800 shadow-xl overflow-hidden flex flex-col">
+                <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-800/20 gap-4 flex-wrap">
+                    <div class="relative w-full max-w-md">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-500">🔍</div>
+                        <input type="text" id="busca-log" onkeyup="renderizarAuditoria()" class="bg-slate-950 border border-slate-800 text-white text-xs rounded-xl w-full pl-9 p-3 outline-none focus:border-indigo-500 transition-all" placeholder="Buscar por Equipe, Ação ou Email...">
+                    </div>
+                </div>
+                <div class="overflow-x-auto w-full">
+                    <table class="w-full text-left border-collapse whitespace-nowrap min-w-[900px]">
+                        <thead>
+                            <tr class="bg-slate-950/50 border-b border-slate-800 text-slate-400">
+                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Data / Hora</th>
+                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Equipe</th>
+                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Ação / Tipo</th>
+                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Detalhes</th>
+                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-right">Usuário Responsável</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-auditoria" class="divide-y divide-slate-800/50 text-sm">
+                            <tr><td colspan="5" class="text-center p-8 text-slate-500 italic text-xs">Carregando logs de segurança...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -626,7 +666,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, collection, getDocs, updateDoc, deleteDoc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, getDocs, updateDoc, deleteDoc, query, where, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
 
         const firebaseConfig = {
@@ -646,7 +686,8 @@
         let masterUid = null;
         let equipesCache = [];
         let cuponsCache = [];
-        let chamadosCache = []; // Cache do Helpdesk
+        let chamadosCache = [];
+        let auditoriaCache = [];
         let equipeEditandoId = null;
         let totalAlunosGeral = 0;
         
@@ -683,13 +724,68 @@
         });
 
         // ==========================================
+        // 🕵️‍♂️ AUDITORIA (LOGS)
+        // ==========================================
+        window.carregarAuditoria = async function() {
+            const tabela = document.getElementById('tabela-auditoria');
+            tabela.innerHTML = '<tr><td colspan="5" class="text-center p-8 text-slate-500 italic text-xs">Lendo registros na caixa preta...</td></tr>';
+            try {
+                const q = query(collection(db, "auditoria"), orderBy("timestamp", "desc"), limit(200));
+                const snap = await getDocs(q);
+                
+                auditoriaCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderizarAuditoria();
+            } catch(e) { 
+                console.error(e);
+                tabela.innerHTML = '<tr><td colspan="5" class="text-center p-8 text-rose-500 font-bold text-xs">Erro de permissão. Libere a coleção "auditoria" nas regras do Firebase.</td></tr>';
+            }
+        }
+
+        window.renderizarAuditoria = function() {
+            const termo = document.getElementById('busca-log').value.toLowerCase();
+            const tabela = document.getElementById('tabela-auditoria');
+            tabela.innerHTML = '';
+
+            const filtrados = auditoriaCache.filter(log => 
+                (log.acao || "").toLowerCase().includes(termo) || 
+                (log.detalhes || "").toLowerCase().includes(termo) ||
+                (log.equipe_nome || "").toLowerCase().includes(termo) ||
+                (log.usuario_email || "").toLowerCase().includes(termo)
+            );
+
+            if (filtrados.length === 0) {
+                tabela.innerHTML = '<tr><td colspan="5" class="text-center p-8 text-slate-500 italic text-xs">Nenhum log encontrado.</td></tr>';
+                return;
+            }
+
+            filtrados.forEach(log => {
+                const dataFormatada = log.timestamp ? new Date(log.timestamp).toLocaleString('pt-BR') : '--/--/---- --:--';
+                
+                let corBadge = "bg-slate-800 text-slate-300 border-slate-700";
+                if (log.acao.includes("EXCLUIU")) corBadge = "bg-rose-500/20 text-rose-500 border-rose-500/30";
+                if (log.acao.includes("CRIOU") || log.acao.includes("NOVO")) corBadge = "bg-emerald-500/20 text-emerald-400 border-emerald-500/30";
+                if (log.acao.includes("EDITOU") || log.acao.includes("ATUALIZOU")) corBadge = "bg-indigo-500/20 text-indigo-400 border-indigo-500/30";
+
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors";
+                tr.innerHTML = `
+                    <td class="px-6 py-4 font-mono text-[10px] text-slate-400">${dataFormatada}</td>
+                    <td class="px-6 py-4 text-xs font-bold text-white uppercase">${log.equipe_nome || 'Desconhecida'}</td>
+                    <td class="px-6 py-4"><span class="px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest border ${corBadge}">${log.acao}</span></td>
+                    <td class="px-6 py-4 text-xs text-slate-300 max-w-xs truncate" title="${log.detalhes}">${log.detalhes}</td>
+                    <td class="px-6 py-4 text-right text-[10px] font-mono text-cyan-400">${log.usuario_email || 'Sistema'}</td>
+                `;
+                tabela.appendChild(tr);
+            });
+        }
+
+        // ==========================================
         // 🎧 HELPDESK (SUPORTE)
         // ==========================================
         window.carregarChamados = async function() {
             const tabela = document.getElementById('tabela-suporte');
             tabela.innerHTML = '<tr><td colspan="5" class="text-center p-8 text-slate-500 italic text-xs">Carregando chamados...</td></tr>';
             try {
-                // A coleção onde a academia abre o chamado (configure o app da academia para salvar aqui)
                 const snap = await getDocs(collection(db, "chamados_suporte")); 
                 chamadosCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 renderizarChamados();
@@ -708,7 +804,7 @@
             chamadosCache.sort((a, b) => {
                 const dateA = a.data_criacao || "";
                 const dateB = b.data_criacao || "";
-                return dateB.localeCompare(dateA); // Mais recentes primeiro
+                return dateB.localeCompare(dateA);
             });
 
             if (chamadosCache.length === 0) {
@@ -780,7 +876,7 @@
                 });
                 showToast("Chamado atualizado com sucesso!", "success");
                 fecharModalTicket();
-                carregarChamados(); // recarrega a tabela para atualizar status
+                carregarChamados(); 
             } catch(e) {
                 showToast("Erro ao atualizar chamado.", "error");
             }
@@ -1021,7 +1117,7 @@
             }
         }
 
-window.renderizarEquipes = function() {
+        window.renderizarEquipes = function() {
             const termo = document.getElementById('busca-equipe').value.toLowerCase();
             const tabela = document.getElementById('tabela-equipes');
             tabela.innerHTML = '';
@@ -1033,7 +1129,6 @@ window.renderizarEquipes = function() {
             );
 
             filtradas.forEach(eq => {
-                // CORREÇÃO DO "NAN": Verifica se a data existe
                 let diasDeVidaStr = "Data não registrada";
                 if (eq.data_cadastro) {
                     const diff = new Date() - new Date(eq.data_cadastro);
@@ -1260,7 +1355,8 @@ window.renderizarEquipes = function() {
             if(abaID === 'cupons') carregarCupons();
             if(abaID === 'comunicacao') carregarAvisoGlobal();
             if(abaID === 'academias') renderizarGraficos();
-            if(abaID === 'suporte') carregarChamados(); // Dispara atualização da tabela do Helpdesk
+            if(abaID === 'suporte') carregarChamados(); 
+            if(abaID === 'auditoria') carregarAuditoria();
         }
 
         window.acessarComoEquipe = function(id) {

@@ -287,7 +287,7 @@
                     </div>
                     
                     <ul id="p1-features" class="space-y-4 mb-8 flex-1 text-[13px] text-slate-300"></ul>
-                    <a href="cadastro_equipe.html?plano=p1" class="w-full mt-auto bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-colors border border-slate-700">
+                    <a href="cadastro_equipe.html?plano=p1" id="btn-p1" class="w-full mt-auto bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-colors border border-slate-700">
                         Testar Agora
                     </a>
                 </div>
@@ -309,7 +309,7 @@
                     </div>
                     
                     <ul id="p2-features" class="space-y-4 mb-8 flex-1 text-[13px] text-slate-300"></ul>
-                    <a href="cadastro_equipe.html?plano=p2" class="w-full mt-auto bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-colors border border-slate-700 hover:border-cyan-500/50">
+                    <a href="cadastro_equipe.html?plano=p2" id="btn-p2" class="w-full mt-auto bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-colors border border-slate-700 hover:border-cyan-500/50">
                         Assinar Agora
                     </a>
                 </div>
@@ -334,7 +334,7 @@
                     </div>
                     
                     <ul id="p3-features" class="space-y-4 mb-8 flex-1 text-[13px] text-slate-200"></ul>
-                    <a href="cadastro_equipe.html?plano=p3" class="w-full mt-auto bg-purple-600 hover:bg-purple-700 text-white font-black py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-all shadow-lg transform hover:-translate-y-0.5">
+                    <a href="cadastro_equipe.html?plano=p3" id="btn-p3" class="w-full mt-auto bg-purple-600 hover:bg-purple-700 text-white font-black py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-all shadow-lg transform hover:-translate-y-0.5">
                         Assinar Agora
                     </a>
                 </div>
@@ -356,7 +356,7 @@
                     </div>
                     
                     <ul id="p4-features" class="space-y-4 mb-8 flex-1 text-[13px] text-slate-300"></ul>
-                    <a href="cadastro_equipe.html?plano=p4" class="w-full mt-auto bg-transparent hover:bg-slate-800 text-amber-500 font-bold py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-colors border border-amber-500/50 hover:border-amber-500">
+                    <a href="cadastro_equipe.html?plano=p4" id="btn-p4" class="w-full mt-auto bg-transparent hover:bg-slate-800 text-amber-500 font-bold py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-colors border border-amber-500/50 hover:border-amber-500">
                         Assinar Plano Elite
                     </a>
                 </div>
@@ -490,6 +490,11 @@
                             document.getElementById('p1-preco-antigo').innerText = `De R$ ${parseFloat(planos.p1.preco_original).toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
                         }
                         renderizarLista('p1-features', planos.p1.features, 'emerald-500', false);
+
+                        const btn = document.getElementById('btn-p1');
+                        if(planos.p1.link_asaas) {
+                            btn.href = `cadastro_equipe.html?plano=p1&checkout=${encodeURIComponent(planos.p1.link_asaas)}`;
+                        }
                     }
 
                     // ==============================
@@ -506,6 +511,11 @@
                             document.getElementById('p2-preco-antigo').innerText = `De R$ ${parseFloat(planos.p2.preco_original).toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
                         }
                         renderizarLista('p2-features', planos.p2.features, 'cyan-400', false);
+
+                        const btn = document.getElementById('btn-p2');
+                        if(planos.p2.link_asaas) {
+                            btn.href = `cadastro_equipe.html?plano=p2&checkout=${encodeURIComponent(planos.p2.link_asaas)}`;
+                        }
                     }
 
                     // ==============================
@@ -522,6 +532,11 @@
                             document.getElementById('p3-preco-antigo').innerText = `De R$ ${parseFloat(planos.p3.preco_original).toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
                         }
                         renderizarLista('p3-features', planos.p3.features, 'purple-400', true);
+
+                        const btn = document.getElementById('btn-p3');
+                        if(planos.p3.link_asaas) {
+                            btn.href = `cadastro_equipe.html?plano=p3&checkout=${encodeURIComponent(planos.p3.link_asaas)}`;
+                        }
                     }
 
                     // ==============================
@@ -538,6 +553,11 @@
                             document.getElementById('p4-preco-antigo').innerText = `De R$ ${parseFloat(planos.p4.preco_original).toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
                         }
                         renderizarLista('p4-features', planos.p4.features, 'amber-500', true);
+
+                        const btn = document.getElementById('btn-p4');
+                        if(planos.p4.link_asaas) {
+                            btn.href = `cadastro_equipe.html?plano=p4&checkout=${encodeURIComponent(planos.p4.link_asaas)}`;
+                        }
                     }
 
                 } else {

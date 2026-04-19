@@ -577,8 +577,14 @@
         };
 
         // Oculta/Exibe abas baseado no plano
-        function atualizarAbasPorPlano() {
-            const temAcessoPremium = window.verificarAcesso('frequencia'); // Validador de plano não-básico
+function atualizarAbasPorPlano() {
+            const isImpersonating = sessionStorage.getItem('admin_impersonate') !== null;
+            const isIsento = dadosEquipeCompleto && (dadosEquipeCompleto.isento === true || String(dadosEquipeCompleto.isento) === "true");
+            const statusPlano = (dadosEquipeCompleto?.status_plano || 'TESTE').toUpperCase();
+            const planosBasicos = ['TESTE', 'BASICO', 'BÁSICO'];
+            
+            // Se for isento, admin (impersonating) ou o plano NÃO for básico, tem acesso!
+            const temAcessoPremium = isImpersonating || isIsento || !planosBasicos.includes(statusPlano);
             
             const btnFreq = document.getElementById('btn-aba-frequencia');
             const btnSaude = document.getElementById('btn-aba-anamnese');

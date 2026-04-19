@@ -57,11 +57,17 @@
             transform: scale(calc(min(100vw - 32px, 600px) / 600));
         }
         
-@media screen and (max-width: 650px) {
-            #modal-carteirinha .print-carteirinha-wrapper {
-                /* Diminui o cartão de 600px para caber na largura do ecrã do telemóvel */
-                transform: scale(calc((100vw - 32px) / 600));
-                transform-origin: center center;
+        #cart-preview-container {
+            width: 600px;
+            height: 380px;
+            transform-origin: top center;
+        }
+        @media screen and (max-width: 650px) {
+            #cart-preview-container {
+                /* Escala matemática consoante a largura do ecrã */
+                transform: scale(calc((100vw - 40px) / 600));
+                /* Ajusta a margem para o modal não ficar com fundo vazio enorme */
+                margin-bottom: -150px; 
             }
         }
 

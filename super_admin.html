@@ -1171,6 +1171,16 @@
 
                 if(isIsento) planoBadge += ` <span class="px-2 py-1 rounded bg-indigo-500/20 text-indigo-400 text-[9px] font-black uppercase border border-indigo-500/30 ml-1" title="Equipe Isenta">ISENTO</span>`;
 
+                // 🚀 NOVO: Indicador Visual de Automação do SaaS (Webhook Preparado)
+                let asaasSaaSBadge = "";
+                if (!isIsento && st !== 'TESTE') {
+                    if (eq.asaas_customer_id) {
+                        asaasSaaSBadge = `<div class="mt-1.5 flex items-center justify-center gap-1" title="Automação Asaas Ativada (Pagamento Recorrente)"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_5px_#10b981]"></span><span class="text-[8px] text-emerald-500 font-bold uppercase tracking-widest">Cobrança Auto</span></div>`;
+                    } else {
+                        asaasSaaSBadge = `<div class="mt-1.5 flex items-center justify-center gap-1" title="Falta vincular ao Asaas. Esta equipe não será bloqueada automaticamente se não pagar."><span class="text-[8px] text-rose-500 font-bold uppercase tracking-widest">⚠️ Sem Automação</span></div>`;
+                    }
+                }
+
                 let asaasBadge = `<span class="text-slate-500 font-bold text-[10px] flex items-center justify-center gap-1">⚪ Sem Asaas</span>`;
                 if(eq.status_asaas === 'ATIVO') asaasBadge = `<span class="text-emerald-400 font-bold text-[10px] flex items-center justify-center gap-1">🟢 Conectado</span>`;
                 else if(eq.status_asaas === 'PENDENTE') asaasBadge = `<span class="text-amber-400 font-bold text-[10px] flex items-center justify-center gap-1">🟡 Pendente</span>`;
@@ -1191,7 +1201,10 @@
                     </td>
                     <td class="px-6 py-4 text-center">${saudeHTML}</td>
                     <td class="px-6 py-4 text-center">${dataAcessoBadge}</td>
-                    <td class="px-6 py-4 text-center">${planoBadge}</td>
+                    <td class="px-6 py-4 text-center">
+                        ${planoBadge}
+                        ${asaasSaaSBadge}
+                    </td>
                     <td class="px-6 py-4 text-center">${asaasBadge}</td>
                     <td class="px-6 py-4 flex gap-2 justify-center">
                         <button onclick="abrirModalEditarEquipe('${eq.id}')" class="bg-slate-800 p-2 rounded hover:bg-slate-700" title="Configurar Licença">⚙️</button>

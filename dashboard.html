@@ -8,7 +8,6 @@
     <link rel="icon" type="image/png" href="logo_bjj_maneger.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
@@ -154,11 +153,10 @@
                             
                             <div class="lg:col-span-2 card-premium p-6 flex flex-col min-h-[350px]">
                                 <div class="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
-                                    <h3 class="font-black text-slate-800 uppercase tracking-widest text-[11px] flex items-center gap-2"><span class="text-lg">📊</span> Distribuição de Faixas</h3>
+                                    <h3 class="font-black text-slate-800 uppercase tracking-widest text-[11px] flex items-center gap-2"><span class="text-lg">🥋</span> Raio-X da Equipe (Faixas)</h3>
                                 </div>
-                                <div class="flex-1 relative w-full h-[250px] flex items-center justify-center">
-                                    <p id="chart-faixas-loading" class="text-slate-400 text-xs italic absolute">Processando graduações...</p>
-                                    <canvas id="chartFaixas"></canvas>
+                                <div class="flex-1 flex flex-wrap gap-3 content-start overflow-y-auto custom-scroll pr-2" id="grid-faixas">
+                                    <span class="text-slate-400 text-sm">Calculando faixas...</span>
                                 </div>
                             </div>
 
@@ -304,7 +302,9 @@
             </div>
             <div class="p-4 bg-slate-50 border-t border-slate-200 flex gap-3">
                 <button onclick="fecharModalPagamentoRapido()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold py-3 rounded-xl transition-all text-xs uppercase tracking-widest">Cancelar</button>
-                <button onclick="confirmarPagamentoRapido()" id="btn-confirma-pag-rapido" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 rounded-xl shadow-md transition-all uppercase tracking-widest text-xs">Confirmar</button>
+                <button onclick="confirmarPagamentoRapido()" id="btn-confirma-pag-rapido" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 rounded-xl shadow-md transition-all uppercase tracking-widest text-xs flex items-center justify-center">
+                    Confirmar
+                </button>
             </div>
         </div>
     </div>
@@ -341,7 +341,6 @@
         let pagRapidoDados = null; 
         let mensagensCache = [];
         let mensagemEditandoId = null;
-        let graficoFaixasObj = null;
 
         // Data no topo
         const opcoesData = { weekday: 'long', day: 'numeric', month: 'long' };
@@ -350,7 +349,7 @@
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : 'bg-slate-800');
+            const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : (type === 'info' ? 'bg-blue-500' : 'bg-slate-800'));
             const icon = type === 'success' ? '✅' : (type === 'error' ? '🚨' : 'ℹ️');
             toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transition-all duration-300 transform translate-x-0 font-bold text-sm z-50 pointer-events-auto max-w-sm`;
             toast.innerHTML = `<span class="text-xl">${icon}</span> <span class="flex-1">${message}</span>`;
@@ -457,7 +456,6 @@
                         if (equipeImpersonada) {
                             uid = equipeImpersonada; 
                             isImpersonating = true;
-                            // Botão modo suporte (oculto no CSS para não desalinhar)
                         }
                     }
 
@@ -543,17 +541,32 @@
         });
 
         // ==========================================
-        // GERAÇÃO DOS GRÁFICOS E MÉTRICAS
+        // GERAÇÃO DOS DADOS
         // ==========================================
-        function corFaixaGrafico(faixa) {
-            const cores = {
-                'Branca': '#f8fafc', 'Cinza e branca': '#cbd5e1', 'Cinza': '#94a3b8', 'Cinza e preta': '#475569',
-                'Amarela e branca': '#fef08a', 'Amarela': '#eab308', 'Amarela e preta': '#854d0e',
-                'Laranja e branca': '#fdba74', 'Laranja': '#f97316', 'Laranja e preta': '#9a3412',
-                'Verde e branca': '#86efac', 'Verde': '#22c55e', 'Verde e preta': '#166534',
-                'Azul': '#3b82f6', 'Roxa': '#a855f7', 'Marrom': '#78350f', 'Preta': '#020617'
+        function obterEstiloFaixa(faixa) {
+            const faixasInfo = {
+                'Branca': 'background-color: #f8fafc',
+                'Cinza e branca': 'background: linear-gradient(135deg, #cbd5e1 50%, #ffffff 50%)',
+                'Cinza': 'background-color: #94a3b8',
+                'Cinza e preta': 'background: linear-gradient(135deg, #475569 50%, #000000 50%)',
+                'Amarela e branca': 'background: linear-gradient(135deg, #fef08a 50%, #ffffff 50%)',
+                'Amarela': 'background-color: #eab308',
+                'Amarela e preta': 'background: linear-gradient(135deg, #854d0e 50%, #000000 50%)',
+                'Laranja e branca': 'background: linear-gradient(135deg, #fdba74 50%, #ffffff 50%)',
+                'Laranja': 'background-color: #f97316',
+                'Laranja e preta': 'background: linear-gradient(135deg, #9a3412 50%, #000000 50%)',
+                'Verde e branca': 'background: linear-gradient(135deg, #86efac 50%, #ffffff 50%)',
+                'Verde': 'background-color: #22c55e',
+                'Verde e preta': 'background: linear-gradient(135deg, #166534 50%, #000000 50%)',
+                'Azul': 'background-color: #3b82f6',
+                'Roxa': 'background-color: #a855f7',
+                'Marrom': 'background-color: #78350f',
+                'Preta': 'background-color: #020617',
+                'Coral': 'background: linear-gradient(135deg, #ef4444 50%, #000000 50%)',
+                'Vermelha': 'background-color: #dc2626'
             };
-            return cores[faixa] || '#cbd5e1';
+            const faixaNormalizada = faixa ? faixa.charAt(0).toUpperCase() + faixa.slice(1).toLowerCase().trim() : 'Branca';
+            return faixasInfo[faixaNormalizada] || 'background-color: #cbd5e1'; 
         }
 
         async function carregarDashboard() {
@@ -622,14 +635,14 @@
                             }
                         }
 
-                        // Pendências (Apenas Atrasados para enxugar a lista)
+                        // Pendências
                         const diaVenc = parseInt(aluno.dia_vencimento, 10);
                         const statusFaturaObj = faturasDoMes[alunoId]; 
                         const statusFatura = statusFaturaObj ? statusFaturaObj.status : null;
 
                         if (statusFatura !== 'PAGO' && statusFatura !== 'ISENTO' && parseInt(aluno.bolsa_perc || 0) !== 100) {
                             if (!isNaN(diaVenc) && diaVenc > 0 && diaVenc <= 31) {
-                                if (diaVenc < diaHoje || (diaVenc === diaHoje)) { // Vence Hoje ou Atrasado
+                                if (diaVenc < diaHoje || (diaVenc === diaHoje)) {
                                     const bolsa = aluno.bolsa_perc || 0;
                                     let valorDaDivida = (diaVenc < diaHoje ? valAtraso : valPrazo) * (1 - bolsa/100);
                                     valorAtrasado += valorDaDivida; 
@@ -709,41 +722,21 @@
                     document.getElementById('lista-pendencias').innerHTML = pendenciasHTML || `<div class="flex flex-col items-center justify-center h-full text-emerald-400 mt-8"><span class="text-4xl mb-2">✅</span><p class="text-xs font-black uppercase tracking-widest">Caixa 100% em dia!</p></div>`;
                     document.getElementById('lista-checkins').innerHTML = checkinsHTML;
 
-                    // --- RENDERIZA O GRÁFICO DONUT (FAIXAS) ---
-                    const ctxFaixas = document.getElementById('chartFaixas');
-                    const labelCarregando = document.getElementById('chart-faixas-loading');
-                    
-                    if (ctxFaixas && Object.keys(faixasCount).length > 0) {
-                        if(labelCarregando) labelCarregando.style.display = 'none';
-                        if(graficoFaixasObj) graficoFaixasObj.destroy();
-                        
-                        const labelsGrafico = Object.keys(faixasCount);
-                        const dadosGrafico = Object.values(faixasCount);
-                        const coresGrafico = labelsGrafico.map(f => corFaixaGrafico(f));
-                        
-                        graficoFaixasObj = new Chart(ctxFaixas, {
-                            type: 'doughnut',
-                            data: {
-                                labels: labelsGrafico,
-                                datasets: [{
-                                    data: dadosGrafico,
-                                    backgroundColor: coresGrafico,
-                                    borderWidth: 2,
-                                    borderColor: '#ffffff',
-                                    hoverOffset: 10
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                cutout: '65%',
-                                plugins: {
-                                    legend: { position: 'right', labels: { boxWidth: 12, usePointStyle: true, font: { family: 'Inter', size: 11, weight: 'bold' }, color: '#475569' } }
-                                }
-                            }
-                        });
-                    } else if (labelCarregando) {
-                        labelCarregando.innerText = "Sem alunos para formar o gráfico.";
+                    // --- RENDERIZA AS ETIQUETAS DE FAIXAS ---
+                    const gridFaixas = document.getElementById('grid-faixas');
+                    gridFaixas.innerHTML = ''; 
+                    if (Object.keys(faixasCount).length === 0) {
+                        gridFaixas.innerHTML = '<span class="text-slate-400 text-sm font-medium">Nenhum aluno ativo mapeado.</span>';
+                    } else {
+                        for (const [faixa, qtd] of Object.entries(faixasCount)) {
+                            const estiloCss = obterEstiloFaixa(faixa);
+                            gridFaixas.innerHTML += `
+                                <div class="bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-sm transition-transform hover:scale-105">
+                                    <span class="w-3 h-3 rounded-full border border-slate-300 shadow-inner" style="${estiloCss}"></span>
+                                    <span class="text-xs font-bold text-slate-700">${faixa}: <span class="text-slate-900">${qtd}</span></span>
+                                </div>
+                            `;
+                        }
                     }
                 }
 
@@ -762,7 +755,7 @@
         window.excluirMensagemEquipe = async function(msgId) { /* ... mantido ... */ };
         
         window.switchConfigTab = function(tab) { /* ... mantido ... */ };
-        window.abrirModalConfig = function() { /* ... mantido original ... */
+        window.abrirModalConfig = function() {
             document.getElementById('modal-config-equipe').classList.remove('hidden');
             document.getElementById('modal-config-equipe').classList.add('flex');
             document.getElementById('config-nome-equipe').value = nomeEquipeAtual;
@@ -773,7 +766,35 @@
             document.getElementById('modal-config-equipe').classList.add('hidden');
             document.getElementById('modal-config-equipe').classList.remove('flex');
         };
-        window.salvarConfigEquipe = async function() { /* ... mantido ... */ };
+        
+        window.salvarConfigEquipe = async function() {
+            const btn = document.getElementById('btn-salvar-config');
+            const novoNome = document.getElementById('config-nome-equipe').value.trim();
+            const arquivoLogo = document.getElementById('config-logo').files[0];
+
+            if (!novoNome) return showToast("O nome da equipe não pode ficar em branco.", "error");
+            btn.disabled = true; btn.innerHTML = "Processando...";
+
+            try {
+                let updates = { nome_equipe: novoNome };
+                if (arquivoLogo) {
+                    if (logoEquipeAnterior) {
+                        try { const refLogoAntiga = ref(storage, logoEquipeAnterior); await deleteObject(refLogoAntiga); } catch (e) {}
+                    }
+                    const timestamp = new Date().getTime();
+                    const caminhoRef = ref(storage, `equipes_logos/${uid}_${timestamp}_${arquivoLogo.name}`);
+                    await uploadBytes(caminhoRef, arquivoLogo);
+                    updates.url_logo = await getDownloadURL(caminhoRef);
+                }
+                await updateDoc(doc(db, "equipes", uid), updates);
+                showToast("Equipe atualizada!", "success");
+                setTimeout(() => window.location.reload(), 1000);
+            } catch (error) {
+                showToast("Erro ao atualizar.", "error");
+                btn.disabled = false; btn.innerHTML = "Salvar Dados";
+            }
+        };
+
         window.carregarColaboradores = async function() { /* ... mantido ... */ };
         window.adicionarColaborador = async function() { /* ... mantido ... */ };
         window.removerColaborador = async function(docId) { /* ... mantido ... */ };
@@ -818,7 +839,6 @@
                     });
                 }
                 
-                // 🕵️‍♂️ LOG DE AUDITORIA
                 await addDoc(collection(db, "auditoria"), {
                     equipe_id: uid, equipe_nome: nomeEquipeAtual, usuario_email: auth.currentUser.email,
                     acao: "BAIXOU_MENSALIDADE", detalhes: `Deu baixa rápida para ${nomeAluno} (R$ ${valor}) via ${formaEscolhida}`,
@@ -831,84 +851,6 @@
         };
 
         window.sairDoSistema = () => signOut(auth).then(() => window.location.href = "index.html");
-
-        // Regras repetidas mas necessárias para o modal config
-        window.salvarConfigEquipe = async function() {
-            const btn = document.getElementById('btn-salvar-config');
-            const novoNome = document.getElementById('config-nome-equipe').value.trim();
-            const arquivoLogo = document.getElementById('config-logo').files[0];
-
-            if (!novoNome) return showToast("O nome da equipe não pode ficar em branco.", "error");
-            btn.disabled = true; btn.innerHTML = "Processando...";
-
-            try {
-                let updates = { nome_equipe: novoNome };
-                if (arquivoLogo) {
-                    if (logoEquipeAnterior) {
-                        try { const refLogoAntiga = ref(storage, logoEquipeAnterior); await deleteObject(refLogoAntiga); } catch (e) {}
-                    }
-                    const timestamp = new Date().getTime();
-                    const caminhoRef = ref(storage, `equipes_logos/${uid}_${timestamp}_${arquivoLogo.name}`);
-                    await uploadBytes(caminhoRef, arquivoLogo);
-                    updates.url_logo = await getDownloadURL(caminhoRef);
-                }
-                await updateDoc(doc(db, "equipes", uid), updates);
-                showToast("Equipe atualizada!", "success");
-                setTimeout(() => window.location.reload(), 1000);
-            } catch (error) {
-                showToast("Erro ao atualizar.", "error");
-                btn.disabled = false; btn.innerHTML = "Salvar Dados";
-            }
-        };
-
-        window.carregarColaboradores = async function() {
-            const listaEl = document.getElementById('lista-colaboradores');
-            listaEl.innerHTML = '<div class="text-center text-slate-400 text-xs italic py-4">Carregando equipe...</div>';
-            try {
-                const q = query(collection(db, "colaboradores"), where("equipe_id", "==", uid));
-                const snap = await getDocs(q);
-                if (snap.empty) { listaEl.innerHTML = '<div class="text-center text-slate-400 text-xs py-4">Nenhum colaborador adicionado.</div>'; return; }
-                let html = '';
-                snap.forEach(doc => {
-                    html += `
-                        <div class="flex items-center justify-between p-3 bg-slate-50 border border-slate-100 rounded-xl shadow-sm">
-                            <span class="text-sm font-bold text-slate-700 truncate pr-2">${doc.data().email}</span>
-                            <button onclick="removerColaborador('${doc.id}')" class="text-rose-500 hover:bg-rose-100 p-1.5 rounded-lg transition-colors">🗑️</button>
-                        </div>
-                    `;
-                });
-                listaEl.innerHTML = html;
-            } catch (e) { listaEl.innerHTML = '<div class="text-center text-rose-500 text-xs py-4">Erro.</div>'; }
-        };
-
-        window.adicionarColaborador = async function() {
-            const emailInput = document.getElementById('novo-colab-email');
-            const email = emailInput.value.trim().toLowerCase();
-            if(!email || !email.includes('@')) return showToast("Digite um e-mail válido!", "error");
-            try {
-                await addDoc(collection(db, "colaboradores"), { email: email, equipe_id: uid, data_cadastro: new Date().toISOString() });
-                emailInput.value = ''; showToast("Co-Administrador adicionado!", "success"); carregarColaboradores();
-            } catch (e) { showToast("Erro ao adicionar.", "error"); }
-        };
-
-        window.removerColaborador = async function(docId) {
-            if(!confirm("Remover o acesso deste co-administrador?")) return;
-            try { await deleteDoc(doc(db, "colaboradores", docId)); showToast("Acesso removido.", "success"); carregarColaboradores();
-            } catch (e) { showToast("Erro ao remover.", "error"); }
-        };
-
-        window.gerarLinksConvite = function() {
-            if(!uid) return;
-            let baseUrl = window.location.origin; 
-            document.getElementById('link-convite-prof').value = `${baseUrl}/cadastro_externo.html?tipo=prof&equipe=${uid}`;
-            document.getElementById('link-convite-aluno').value = `${baseUrl}/cadastro_externo.html?tipo=aluno&equipe=${uid}`;
-        };
-
-        window.copiarLink = function(idInput) {
-            const input = document.getElementById(idInput);
-            input.select(); input.setSelectionRange(0, 99999); 
-            navigator.clipboard.writeText(input.value).then(() => { showToast("Link copiado!", "success"); });
-        };
 
     </script>
 </body>

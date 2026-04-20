@@ -195,9 +195,9 @@
 
                             <div id="asaas-ativo-panel" class="hidden flex-col gap-6">
                                 
-                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                     
-                                    <div class="card-premium p-8 bg-gradient-to-br from-slate-900 to-slate-800 text-white shadow-2xl relative overflow-hidden flex flex-col justify-between h-full">
+                                    <div class="card-premium p-8 bg-gradient-to-br from-slate-900 to-slate-800 text-white shadow-2xl relative overflow-hidden flex flex-col justify-between">
                                         <div class="relative z-10">
                                             <p class="text-cyan-400 text-[10px] font-black uppercase tracking-[0.2em] mb-4">Saldo Disponível na Subconta</p>
                                             <h3 class="text-5xl font-black tracking-tighter mb-6" id="asaas-saldo-display">R$ 0,00</h3>
@@ -223,7 +223,44 @@
                                         <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl font-black pointer-events-none"></div>
                                     </div>
 
-                                    <div class="card-premium p-8 bg-white flex flex-col justify-between border-t-4 border-t-cyan-500 h-full">
+                                    <div class="card-premium p-8 bg-white border-t-4 border-t-purple-500 flex flex-col">
+                                        <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                            <span class="bg-purple-100 text-purple-600 p-2 rounded-lg">⚙️</span> Formas de Pagamento
+                                        </h4>
+                                        <p class="text-[11px] text-slate-500 font-bold mb-4">Escolha como seus alunos poderão pagar através do link automático.</p>
+
+                                        <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl mb-6 shadow-sm">
+                                            <p class="text-[10px] font-black text-amber-700 uppercase tracking-widest mb-1 flex items-center gap-1"><span>⚠️</span> Prazos de Compensação</p>
+                                            <p class="text-[10px] text-amber-600 font-medium leading-relaxed">
+                                                O <b>PIX</b> é creditado instantaneamente. O <b>Boleto Bancário</b> leva até <b>3 dias úteis</b> após o pagamento. Pagamentos via <b>Cartão de Crédito</b> levam <b>30 dias</b> para compor o seu saldo disponível.
+                                            </p>
+                                        </div>
+                                        
+                                        <div class="space-y-3 relative z-10 flex-1">
+                                            <label class="flex items-center justify-between p-3.5 bg-slate-50 rounded-2xl border border-slate-200 opacity-70 cursor-not-allowed">
+                                                <div class="flex items-center gap-3"><span class="text-xl">⚡</span><div><p class="text-xs font-black text-slate-700">PIX (Obrigatório)</p><p class="text-[9px] font-bold text-emerald-500">Liberação Imediata</p></div></div>
+                                                <input type="checkbox" checked disabled class="w-5 h-5 text-cyan-600 rounded border-none shadow-sm cursor-not-allowed">
+                                            </label>
+                                            <label class="flex items-center justify-between p-3.5 bg-white border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50 transition-colors shadow-sm">
+                                                <div class="flex items-center gap-3"><span class="text-xl">🏦</span><div><p class="text-xs font-black text-slate-700">Boleto Bancário</p><p class="text-[9px] font-bold text-amber-500">Compensa em até 3 dias</p></div></div>
+                                                <input type="checkbox" id="asaas-aceita-boleto" class="w-5 h-5 text-cyan-600 rounded border-slate-300 focus:ring-cyan-500">
+                                            </label>
+                                            <label class="flex items-center justify-between p-3.5 bg-white border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50 transition-colors shadow-sm">
+                                                <div class="flex items-center gap-3"><span class="text-xl">💳</span><div><p class="text-xs font-black text-slate-700">Cartão de Crédito</p><p class="text-[9px] font-bold text-rose-500">Compensa em 30 dias</p></div></div>
+                                                <input type="checkbox" id="asaas-aceita-cartao" class="w-5 h-5 text-cyan-600 rounded border-slate-300 focus:ring-cyan-500">
+                                            </label>
+                                        </div>
+
+                                        <button onclick="salvarConfigPagamento()" id="btn-salvar-pagamentos" class="mt-4 bg-cyan-600 hover:bg-cyan-700 text-white text-[10px] font-black px-6 py-4 rounded-2xl transition-colors uppercase tracking-widest w-full shadow-md">
+                                            💾 Salvar Preferências
+                                        </button>
+                                    </div>
+
+                                </div>
+
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    
+                                    <div class="card-premium p-8 bg-white flex flex-col border-t-4 border-t-cyan-500">
                                         <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-6 flex items-center gap-2">
                                             <span class="bg-cyan-100 text-cyan-600 p-2 rounded-lg">💸</span> Transferir / Sacar
                                         </h4>
@@ -255,86 +292,49 @@
                                         </form>
                                     </div>
 
-                                    <div class="card-premium p-8 bg-white border-t-4 border-t-purple-500 flex flex-col justify-between h-full">
-                                        <div>
-                                            <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                                <span class="bg-purple-100 text-purple-600 p-2 rounded-lg">⚙️</span> Formas de Pagamento
-                                            </h4>
-                                            <p class="text-[11px] text-slate-500 font-bold mb-4">Escolha como seus alunos poderão pagar através do link automático.</p>
-
-                                            <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl mb-6 shadow-sm">
-                                                <p class="text-[10px] font-black text-amber-700 uppercase tracking-widest mb-1 flex items-center gap-1"><span>⚠️</span> Prazos de Compensação</p>
-                                                <p class="text-[10px] text-amber-600 font-medium leading-relaxed">
-                                                    O <b>PIX</b> é creditado instantaneamente. O <b>Boleto Bancário</b> leva até <b>3 dias úteis</b> após o pagamento. Pagamentos via <b>Cartão de Crédito</b> levam <b>30 dias</b> para compor o seu saldo disponível.
-                                                </p>
+                                    <div id="asaas-verificacao-panel" class="hidden card-premium p-8 border-t-4 border-t-slate-500 bg-white flex flex-col justify-between">
+                                        <div class="flex items-start justify-between mb-6">
+                                            <div>
+                                                <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest">Identidade (KYC)</h4>
+                                                <p class="text-[11px] text-slate-500 font-bold mt-1">Obrigatório para habilitar saques e PIX automático.</p>
                                             </div>
-                                            
-                                            <div class="space-y-3 relative z-10 flex-1">
-                                                <label class="flex items-center justify-between p-3.5 bg-slate-50 rounded-2xl border border-slate-200 opacity-70 cursor-not-allowed">
-                                                    <div class="flex items-center gap-3"><span class="text-xl">⚡</span><div><p class="text-xs font-black text-slate-700">PIX (Obrigatório)</p><p class="text-[9px] font-bold text-emerald-500">Liberação Imediata</p></div></div>
-                                                    <input type="checkbox" checked disabled class="w-5 h-5 text-cyan-600 rounded border-none shadow-sm cursor-not-allowed">
-                                                </label>
-                                                <label class="flex items-center justify-between p-3.5 bg-white border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50 transition-colors shadow-sm">
-                                                    <div class="flex items-center gap-3"><span class="text-xl">🏦</span><div><p class="text-xs font-black text-slate-700">Boleto Bancário</p><p class="text-[9px] font-bold text-amber-500">Compensa em até 3 dias</p></div></div>
-                                                    <input type="checkbox" id="asaas-aceita-boleto" class="w-5 h-5 text-cyan-600 rounded border-slate-300 focus:ring-cyan-500">
-                                                </label>
-                                                <label class="flex items-center justify-between p-3.5 bg-white border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50 transition-colors shadow-sm">
-                                                    <div class="flex items-center gap-3"><span class="text-xl">💳</span><div><p class="text-xs font-black text-slate-700">Cartão de Crédito</p><p class="text-[9px] font-bold text-rose-500">Compensa em 30 dias</p></div></div>
-                                                    <input type="checkbox" id="asaas-aceita-cartao" class="w-5 h-5 text-cyan-600 rounded border-slate-300 focus:ring-cyan-500">
-                                                </label>
-                                            </div>
+                                            <span class="bg-slate-100 text-slate-600 p-3 rounded-2xl text-xl">🛡️</span>
                                         </div>
 
-                                        <button onclick="salvarConfigPagamento()" id="btn-salvar-pagamentos" class="mt-4 bg-cyan-600 hover:bg-cyan-700 text-white text-[10px] font-black px-6 py-4 rounded-2xl transition-colors uppercase tracking-widest w-full shadow-md">
-                                            💾 Salvar Preferências
-                                        </button>
-                                    </div>
-
-                                    <div id="asaas-verificacao-panel" class="hidden card-premium p-8 border-t-4 border-t-slate-500 bg-white flex-col justify-between h-full">
-                                        <div>
-                                            <div class="flex items-start justify-between mb-6">
-                                                <div>
-                                                    <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest">Identidade (KYC)</h4>
-                                                    <p class="text-[11px] text-slate-500 font-bold mt-1">Obrigatório para habilitar saques e PIX automático.</p>
+                                        <div class="grid grid-cols-3 gap-3 mb-6">
+                                            <div class="flex flex-col gap-2">
+                                                <label class="text-[9px] font-black text-slate-400 uppercase text-center">Frente</label>
+                                                <div class="relative group">
+                                                    <input type="file" id="file-document-front" accept="image/*" class="hidden" onchange="previewFile(this, 'preview-front')">
+                                                    <label for="file-document-front" class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-slate-200 rounded-2xl cursor-pointer hover:border-cyan-400 hover:bg-cyan-50 transition-all overflow-hidden bg-slate-50">
+                                                        <div id="preview-front" class="flex flex-col items-center justify-center w-full h-full text-center group-hover:scale-105 transition-transform">
+                                                            <span class="text-2xl mb-1">📇</span><span class="text-[8px] font-black text-slate-400">UPLOAD</span>
+                                                        </div>
+                                                    </label>
                                                 </div>
-                                                <span class="bg-slate-100 text-slate-600 p-3 rounded-2xl text-xl">🛡️</span>
                                             </div>
 
-                                            <div class="grid grid-cols-3 gap-3 mb-6">
-                                                <div class="flex flex-col gap-2">
-                                                    <label class="text-[9px] font-black text-slate-400 uppercase text-center">Frente</label>
-                                                    <div class="relative group">
-                                                        <input type="file" id="file-document-front" accept="image/*" class="hidden" onchange="previewFile(this, 'preview-front')">
-                                                        <label for="file-document-front" class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-slate-200 rounded-2xl cursor-pointer hover:border-cyan-400 hover:bg-cyan-50 transition-all overflow-hidden bg-slate-50">
-                                                            <div id="preview-front" class="flex flex-col items-center justify-center w-full h-full text-center group-hover:scale-105 transition-transform">
-                                                                <span class="text-2xl mb-1">📇</span><span class="text-[8px] font-black text-slate-400">UPLOAD</span>
-                                                            </div>
-                                                        </label>
-                                                    </div>
+                                            <div class="flex flex-col gap-2">
+                                                <label class="text-[9px] font-black text-slate-400 uppercase text-center">Verso</label>
+                                                <div class="relative group">
+                                                    <input type="file" id="file-document-back" accept="image/*" class="hidden" onchange="previewFile(this, 'preview-back')">
+                                                    <label for="file-document-back" class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-slate-200 rounded-2xl cursor-pointer hover:border-cyan-400 hover:bg-cyan-50 transition-all overflow-hidden bg-slate-50">
+                                                        <div id="preview-back" class="flex flex-col items-center justify-center w-full h-full text-center group-hover:scale-105 transition-transform">
+                                                            <span class="text-2xl mb-1">📑</span><span class="text-[8px] font-black text-slate-400">UPLOAD</span>
+                                                        </div>
+                                                    </label>
                                                 </div>
+                                            </div>
 
-                                                <div class="flex flex-col gap-2">
-                                                    <label class="text-[9px] font-black text-slate-400 uppercase text-center">Verso</label>
-                                                    <div class="relative group">
-                                                        <input type="file" id="file-document-back" accept="image/*" class="hidden" onchange="previewFile(this, 'preview-back')">
-                                                        <label for="file-document-back" class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-slate-200 rounded-2xl cursor-pointer hover:border-cyan-400 hover:bg-cyan-50 transition-all overflow-hidden bg-slate-50">
-                                                            <div id="preview-back" class="flex flex-col items-center justify-center w-full h-full text-center group-hover:scale-105 transition-transform">
-                                                                <span class="text-2xl mb-1">📑</span><span class="text-[8px] font-black text-slate-400">UPLOAD</span>
-                                                            </div>
-                                                        </label>
-                                                    </div>
-                                                </div>
-
-                                                <div class="flex flex-col gap-2">
-                                                    <label class="text-[9px] font-black text-slate-400 uppercase text-center">Selfie</label>
-                                                    <div class="relative group">
-                                                        <input type="file" id="file-selfie" accept="image/*" class="hidden" onchange="previewFile(this, 'preview-selfie')">
-                                                        <label for="file-selfie" class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-slate-200 rounded-2xl cursor-pointer hover:border-cyan-400 hover:bg-cyan-50 transition-all overflow-hidden bg-slate-50">
-                                                            <div id="preview-selfie" class="flex flex-col items-center justify-center w-full h-full text-center group-hover:scale-105 transition-transform">
-                                                                <span class="text-2xl mb-1">🤳</span><span class="text-[8px] font-black text-slate-400">UPLOAD</span>
-                                                            </div>
-                                                        </label>
-                                                    </div>
+                                            <div class="flex flex-col gap-2">
+                                                <label class="text-[9px] font-black text-slate-400 uppercase text-center">Selfie</label>
+                                                <div class="relative group">
+                                                    <input type="file" id="file-selfie" accept="image/*" class="hidden" onchange="previewFile(this, 'preview-selfie')">
+                                                    <label for="file-selfie" class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-slate-200 rounded-2xl cursor-pointer hover:border-cyan-400 hover:bg-cyan-50 transition-all overflow-hidden bg-slate-50">
+                                                        <div id="preview-selfie" class="flex flex-col items-center justify-center w-full h-full text-center group-hover:scale-105 transition-transform">
+                                                            <span class="text-2xl mb-1">🤳</span><span class="text-[8px] font-black text-slate-400">UPLOAD</span>
+                                                        </div>
+                                                    </label>
                                                 </div>
                                             </div>
                                         </div>
@@ -342,9 +342,9 @@
                                             📤 Enviar para Análise do Banco
                                         </button>
                                     </div>
-                                    
                                 </div>
-                                <div class="card-premium p-8 bg-white border-t-4 border-t-emerald-500 flex flex-col w-full">
+                                
+                                <div class="card-premium p-8 bg-white border-t-4 border-t-emerald-500 flex flex-col">
                                     <div class="flex items-center justify-between mb-6">
                                         <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
                                             <span class="bg-emerald-100 text-emerald-600 p-2 rounded-lg">📜</span> Histórico de Saques
@@ -369,8 +369,7 @@
                                         </table>
                                     </div>
                                 </div>
-
-                            </div> 
+                                </div> 
                             <form id="asaas-form-panel" class="card-premium p-8 space-y-6 bg-white" onsubmit="event.preventDefault(); criarSubcontaAsaas();">
                                 <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl">
                                     <p class="text-xs font-bold text-amber-700">⚠️ Para garantir a sua segurança e obedecer às regras do Banco Central, preencha os dados do responsável financeiro da equipe para habilitarmos a emissão de cobranças e baixa de pagamentos automáticos.</p>

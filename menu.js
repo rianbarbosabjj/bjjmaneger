@@ -51,11 +51,11 @@ function carregarMenu() {
     // --- 2. LÓGICA DE ESTILOS ---
     const classDesktop = (pagina, isBloqueado = false) => {
         if (isBloqueado) {
-            return "w-full text-left flex items-center justify-between px-4 py-3 text-sm font-semibold text-slate-600 border-l-4 border-transparent cursor-not-allowed opacity-60 bg-slate-900/30";
+            return "w-full text-left flex items-center justify-between px-4 py-3 text-[13px] font-semibold text-slate-600 border-l-4 border-transparent cursor-not-allowed opacity-60 bg-slate-900/30";
         }
         return paginaAtual === pagina 
-            ? "w-full text-left flex items-center justify-between px-4 py-3 text-sm font-black text-white bg-gradient-to-r from-cyan-500/10 to-transparent border-l-4 border-cyan-500 transition-all group cursor-pointer" 
-            : "w-full text-left flex items-center justify-between px-4 py-3 text-sm font-semibold text-slate-400 border-l-4 border-transparent hover:border-slate-700 hover:text-white hover:bg-slate-800/50 transition-all group cursor-pointer";
+            ? "w-full text-left flex items-center justify-between px-4 py-3 text-[13px] font-black text-white bg-gradient-to-r from-cyan-500/10 to-transparent border-l-4 border-cyan-500 transition-all group cursor-pointer" 
+            : "w-full text-left flex items-center justify-between px-4 py-3 text-[13px] font-semibold text-slate-400 border-l-4 border-transparent hover:border-slate-700 hover:text-white hover:bg-slate-800/50 transition-all group cursor-pointer";
     };
 
     const classMobile = (pagina, isBloqueado = false) => {
@@ -79,7 +79,7 @@ function carregarMenu() {
         );
     };
 
-    const blockIcon = `<span class="text-xs">🔒</span>`;
+    const blockIcon = `<span class="text-[10px]">🔒</span>`;
     
     // Mapeamento Inteligente
     const canFin = true; // 🔓 DESBLOQUEADO PARA TODOS OS PLANOS
@@ -97,78 +97,78 @@ function carregarMenu() {
     // --- 4. HTML DO MENU DESKTOP ---
     const menuDesktop = `
         <aside class="hidden md:flex w-56 bg-slate-900 text-white flex-col h-full shadow-[5px_0_15px_rgba(0,0,0,0.3)] shrink-0 z-20 border-r border-slate-800">
-            <div class="p-6 text-center border-b border-slate-800 flex flex-col items-center justify-center bg-slate-950/30">
-                <div id="container-logo" class="w-16 h-16 mb-4 rounded-2xl bg-gradient-to-tr from-slate-800 to-slate-700 flex items-center justify-center shadow-lg text-slate-300 font-black text-2xl overflow-hidden ring-1 ring-slate-700" style="${cacheLogoBg}">
+            <div class="p-5 text-center border-b border-slate-800 flex flex-col items-center justify-center bg-slate-950/30">
+                <div id="container-logo" class="w-14 h-14 mb-3 rounded-2xl bg-gradient-to-tr from-slate-800 to-slate-700 flex items-center justify-center shadow-lg text-slate-300 font-black text-xl overflow-hidden ring-1 ring-slate-700" style="${cacheLogoBg}">
                     ${cacheLogoHTML}
                 </div>
-                <h1 class="text-[13px] font-black tracking-wider text-white uppercase truncate w-full px-2" id="nome-equipe">${cacheNome}</h1>
-                <p class="text-[9px] text-cyan-500 font-black uppercase tracking-[0.2em] mt-1.5 bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/20">BJJ Manager</p>
+                <h1 class="text-xs font-black tracking-wider text-white uppercase truncate w-full px-2" id="nome-equipe">${cacheNome}</h1>
+                <p class="text-[8px] text-cyan-500 font-black uppercase tracking-[0.2em] mt-1.5 bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/20">BJJ Manager</p>
             </div>
             
-            <nav class="flex-1 py-4 space-y-1 overflow-y-auto custom-scroll flex flex-col">
+            <nav class="flex-1 py-4 space-y-0.5 overflow-y-auto custom-scroll flex flex-col">
                 <button onclick="${clickAcao('dashboard.html', true)}" class="${classDesktop('dashboard.html', false)}">
-                    <div class="flex items-center"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'dashboard.html' ? 'drop-shadow-md' : 'opacity-70'}">📊</span> Visão Geral</div>
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'dashboard.html' ? 'drop-shadow-md' : 'opacity-70'}">📊</span> Visão Geral</div>
                 </button>
                 
                 <button onclick="${clickAcao('financeiro.html', canFin)}" class="${classDesktop('financeiro.html', !canFin)}">
-                    <div class="flex items-center"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'financeiro.html' ? 'drop-shadow-md' : 'opacity-70'}">💰</span> Financeiro</div>
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'financeiro.html' ? 'drop-shadow-md' : 'opacity-70'}">💰</span> Financeiro</div>
                     ${!canFin ? blockIcon : ''}
                 </button>
                 
                 <button onclick="${clickAcao('alunos.html', true)}" class="${classDesktop('alunos.html', false)}">
-                    <div class="flex items-center"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'alunos.html' ? 'drop-shadow-md' : 'opacity-70'}">🥋</span> Alunos</div>
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'alunos.html' ? 'drop-shadow-md' : 'opacity-70'}">🥋</span> Alunos</div>
                 </button>
                 
                 <button onclick="${clickAcao('turmas.html', canTurmas)}" class="${classDesktop('turmas.html', !canTurmas)}">
-                    <div class="flex items-center"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'turmas.html' ? 'drop-shadow-md' : 'opacity-70'}">🗓️</span> Turmas</div>
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'turmas.html' ? 'drop-shadow-md' : 'opacity-70'}">🗓️</span> Turmas</div>
                     ${!canTurmas ? blockIcon : ''}
                 </button>
                 
                 <button onclick="${clickAcao('loja.html', canLoja)}" class="${classDesktop('loja.html', !canLoja)}">
-                    <div class="flex items-center"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'loja.html' ? 'drop-shadow-md' : 'opacity-70'}">🛒</span> Vitrine Virtual</div>
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'loja.html' ? 'drop-shadow-md' : 'opacity-70'}">🛒</span> Vitrine Virtual</div>
                     ${!canLoja ? blockIcon : ''}
                 </button>
                 
-                <div class="px-5 pt-5 pb-2">
-                    <p class="text-[9px] font-black text-slate-500/80 uppercase tracking-widest">Acadêmico</p>
+                <div class="px-4 pt-4 pb-1">
+                    <p class="text-[8px] font-black text-slate-500/80 uppercase tracking-widest">Acadêmico</p>
                 </div>
                 
                 <button onclick="${clickAcao('certificados.html', canCert)}" class="${classDesktop('certificados.html', !canCert)}">
-                    <div class="flex items-center"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'certificados.html' ? 'drop-shadow-md' : 'opacity-70'}">📜</span> Certificados</div>
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'certificados.html' ? 'drop-shadow-md' : 'opacity-70'}">📜</span> Certificados</div>
                     ${!canCert ? blockIcon : ''}
                 </button>
                 
                 <button onclick="${clickAcao('curriculo.html', canExtra)}" class="${classDesktop('curriculo.html', !canExtra)}">
-                    <div class="flex items-center"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'curriculo.html' ? 'drop-shadow-md' : 'opacity-70'}">📄</span> Currículo</div>
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'curriculo.html' ? 'drop-shadow-md' : 'opacity-70'}">📄</span> Currículo</div>
                     ${!canExtra ? blockIcon : ''}
                 </button>
                 
-                <div class="px-5 pt-5 pb-2">
-                    <p class="text-[9px] font-black text-slate-500/80 uppercase tracking-widest">Gestão Extra</p>
+                <div class="px-4 pt-4 pb-1">
+                    <p class="text-[8px] font-black text-slate-500/80 uppercase tracking-widest">Gestão Extra</p>
                 </div>
                 
                 <button onclick="${clickAcao('competicoes.html', canExtra)}" class="${classDesktop('competicoes.html', !canExtra)}">
-                    <div class="flex items-center"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'competicoes.html' ? 'drop-shadow-md' : 'opacity-70'}">🏆</span> Competições</div>
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'competicoes.html' ? 'drop-shadow-md' : 'opacity-70'}">🏆</span> Competições</div>
                     ${!canExtra ? blockIcon : ''}
                 </button>
                 
                 <button onclick="${clickAcao('federacoes.html', canExtra)}" class="${classDesktop('federacoes.html', !canExtra)}">
-                    <div class="flex items-center"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'federacoes.html' ? 'drop-shadow-md' : 'opacity-70'}">🪪</span> Federações</div>
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'federacoes.html' ? 'drop-shadow-md' : 'opacity-70'}">🪪</span> Federações</div>
                     ${!canExtra ? blockIcon : ''}
                 </button>
                 
                 <button onclick="${clickAcao('historico.html', canExtra)}" class="${classDesktop('historico.html', !canExtra)}">
-                    <div class="flex items-center"><span class="mr-3 text-lg group-hover:scale-110 transition-transform ${paginaAtual === 'historico.html' ? 'drop-shadow-md' : 'opacity-70'}">🎓</span> Graduações</div>
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'historico.html' ? 'drop-shadow-md' : 'opacity-70'}">🎓</span> Graduações</div>
                     ${!canExtra ? blockIcon : ''}
                 </button>
             </nav>
             
             <div class="p-4 border-t border-slate-800 bg-slate-900/80 backdrop-blur-sm z-30 flex flex-col gap-3">
-                <button onclick="${clickAcao('suporte.html', true)}" class="w-full flex items-center justify-center text-slate-500 hover:text-indigo-400 transition-colors text-[10px] font-bold uppercase tracking-widest ${paginaAtual === 'suporte.html' ? 'text-indigo-400' : ''}">
+                <button onclick="${clickAcao('suporte.html', true)}" class="w-full flex items-center justify-center text-slate-500 hover:text-indigo-400 transition-colors text-[9px] font-bold uppercase tracking-widest ${paginaAtual === 'suporte.html' ? 'text-indigo-400' : ''}">
                     <span class="mr-2 text-sm">🎧</span> Central de Ajuda
                 </button>
                 
-                <button onclick="sairDoSistema()" class="w-full px-4 py-2.5 bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white border border-rose-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center shadow-sm">
+                <button onclick="sairDoSistema()" class="w-full px-4 py-2 bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white border border-rose-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center shadow-sm">
                     <span class="mr-2 text-sm leading-none">🚪</span> Sair
                 </button>
             </div>

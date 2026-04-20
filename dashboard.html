@@ -391,4 +391,1140 @@
                     <button onclick="adicionarColaborador()" class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest shrink-0 transition-colors shadow-sm">Adicionar</button>
                 </div>
                 <div class="border-t border-slate-100 pt-4 mt-2 flex-1">
-                    <h4 class="text-[10px] font-black text-slate-
+                    <h4 class="text-[10px] font-black text-slate-400 uppercase mb-3">Colaboradores Ativos</h4>
+                    <div id="lista-colaboradores" class="space-y-2">
+                        <div class="text-center text-slate-400 text-xs italic py-4">Carregando equipe...</div>
+                    </div>
+                </div>
+            </div>
+            <div id="tab-convites" class="hidden p-6 flex-1 overflow-y-auto flex-col space-y-6">
+                <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
+                    <h4 class="text-xs font-black text-indigo-700 uppercase mb-1 flex items-center"><span class="mr-2 text-base">👥</span> Para Co-Adminsitrador(a) / Auxiliares</h4>
+                    <p class="text-[10px] text-indigo-500/80 font-medium mb-3 leading-relaxed">Compartilhe este link. Ao se cadastrarem, eles entrarão automaticamente como Co-Administradores.</p>
+                    <div class="flex gap-2">
+                        <input type="text" id="link-convite-prof" readonly class="w-full p-2.5 bg-white border border-indigo-200 rounded-lg text-[10px] text-slate-600 font-mono outline-none">
+                        <button onclick="copiarLink('link-convite-prof')" class="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-2.5 rounded-lg text-[10px] font-black uppercase shrink-0 transition-colors shadow-sm">Copiar</button>
+                    </div>
+                </div>
+                <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
+                    <h4 class="text-xs font-black text-emerald-700 uppercase mb-1 flex items-center"><span class="mr-2 text-base">🥋</span> Para Alunos</h4>
+                    <p class="text-[10px] text-emerald-500/80 font-medium mb-3 leading-relaxed">Envie no grupo do WhatsApp. Os alunos preenchem os próprios dados e caem direto na sua lista.</p>
+                    <div class="flex gap-2">
+                        <input type="text" id="link-convite-aluno" readonly class="w-full p-2.5 bg-white border border-emerald-200 rounded-lg text-[10px] text-slate-600 font-mono outline-none">
+                        <button onclick="copiarLink('link-convite-aluno')" class="bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-2.5 rounded-lg text-[10px] font-black uppercase shrink-0 transition-colors shadow-sm">Copiar</button>
+                    </div>
+                </div>
+            </div>
+            <div class="p-5 bg-slate-50 border-t border-slate-100 flex gap-3 shrink-0">
+                <button onclick="fecharModalConfig()" class="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-200 rounded-xl transition-colors">Fechar</button>
+                <button id="btn-salvar-config" onclick="salvarConfigEquipe()" class="flex-1 py-3 text-sm font-black text-white bg-cyan-500 hover:bg-cyan-600 rounded-xl shadow-lg uppercase tracking-widest transition-transform transform hover:-translate-y-0.5">Salvar Dados</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PAGAMENTO RÁPIDO -->
+    <div id="modal-pagamento-rapido" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col">
+            <div class="bg-emerald-500 p-4 text-white font-black uppercase tracking-widest text-sm flex items-center justify-between">
+                <span>✅ Registro Rápido</span>
+                <button onclick="fecharModalPagamentoRapido()" class="text-emerald-200 hover:text-white text-2xl leading-none">&times;</button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 text-center">
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-widest mb-1">Atleta</p>
+                    <h3 id="lbl-pag-rapido-nome" class="font-black text-slate-800 text-lg truncate">--</h3>
+                    <p class="text-[10px] text-slate-400 mt-2 uppercase">Valor da Mensalidade</p>
+                    <p id="lbl-pag-rapido-valor" class="font-black text-emerald-600 text-xl">R$ 0,00</p>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Como foi pago?</label>
+                    <select id="select-pag-rapido-forma" class="w-full p-3.5 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-emerald-500 outline-none transition-all cursor-pointer shadow-sm">
+                        <option value="PIX">PIX</option>
+                        <option value="Dinheiro">Dinheiro</option>
+                        <option value="Cartão">Cartão</option>
+                    </select>
+                </div>
+            </div>
+            <div class="p-4 bg-slate-50 border-t border-slate-200 flex gap-3">
+                <button onclick="fecharModalPagamentoRapido()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold py-3 rounded-xl transition-all text-xs uppercase tracking-widest">Cancelar</button>
+                <button onclick="confirmarPagamentoRapido()" id="btn-confirma-pag-rapido" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 rounded-xl shadow-md transition-all uppercase tracking-widest text-xs flex items-center justify-center">
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="menu.js"></script>
+
+    <!-- SCRIPT PRINCIPAL (MANTIDO ÍNTEGRO PARA NÃO QUEBRAR LÓGICA) -->
+    <script type="module">
+        // Todo o código JavaScript original mantido exatamente igual
+        // Apenas pequenas adaptações visuais nos seletores de loading
+        
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
+            authDomain: "bjj-maneger.firebaseapp.com",
+            projectId: "bjj-maneger",
+            storageBucket: "bjj-maneger.firebasestorage.app",
+            messagingSenderId: "415548255893",
+            appId: "1:415548255893:web:61186696fe097be870759c"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+        
+        let uid = null;        
+        let dadosEquipe = null; 
+        let configPlanosCache = null;
+        let nomeEquipeAtual = "";
+        let logoEquipeAnterior = ""; 
+        
+        let valPrazo = 70.0;
+        let valAtraso = 100.0;
+        let pagRapidoDados = null; 
+        
+        let mensagensCache = [];
+        let mensagemEditandoId = null;
+
+        window.showToast = function(message, type = 'error') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : 'bg-slate-800');
+            const icon = type === 'success' ? '✅' : (type === 'error' ? '🚨' : 'ℹ️');
+            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transition-all duration-300 transform translate-x-0 font-bold text-sm z-50 pointer-events-auto max-w-sm flex items-center gap-3`;
+            toast.innerHTML = `<span class="text-xl">${icon}</span> <span class="flex-1">${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('translate-x-full', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 4500);
+        }
+
+        const HIERARQUIA_PLANOS = {
+            'TESTE': 1, 'BASICO': 1, 'BLACK_BELT': 1,
+            'INTERMEDIARIO': 2, 'MASTER': 2,
+            'PREMIUM': 3, 'ELITE': 3,
+            'ULTIMATE': 4
+        };
+
+        const REGRAS_DE_ACESSO = {
+            'mural_avisos': { nivel: 2, nome: 'Portal do Aluno (App)' }
+        };
+
+        window.verificarAcesso = function(idRecurso) {
+            const isImpersonating = sessionStorage.getItem('admin_impersonate') !== null;
+            if (isImpersonating || (dadosEquipe && (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true"))) {
+                return true; 
+            }
+
+            const statusAtual = (dadosEquipe && dadosEquipe.status_plano) ? dadosEquipe.status_plano : 'TESTE';
+            const nivelDaEquipe = HIERARQUIA_PLANOS[statusAtual.toUpperCase()] || 1;
+            
+            const regra = REGRAS_DE_ACESSO[idRecurso];
+            if (!regra) return true;
+
+            if (nivelDaEquipe < regra.nivel) {
+                window.abrirPaywall(regra.nome);
+                return false; 
+            }
+
+            return true; 
+        };
+
+        window.abrirPaywall = function(nomeRecurso) {
+            const elNome = document.getElementById('paywall-recurso-nome');
+            if(elNome) elNome.innerText = nomeRecurso;
+            
+            const modal = document.getElementById('modal-paywall');
+            const content = document.getElementById('modal-paywall-content');
+            
+            if(modal && content) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                
+                setTimeout(() => {
+                    content.classList.remove('scale-95', 'opacity-0');
+                    content.classList.add('scale-100', 'opacity-100');
+                }, 50);
+            }
+        };
+
+        window.fecharPaywall = function() {
+            const modal = document.getElementById('modal-paywall');
+            const content = document.getElementById('modal-paywall-content');
+            
+            if(modal && content) {
+                content.classList.remove('scale-100', 'opacity-100');
+                content.classList.add('scale-95', 'opacity-0');
+                
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }, 300);
+            }
+        };
+
+        async function verificarAvisoGlobal() {
+            try {
+                const snap = await getDoc(doc(db, "sistema", "aviso_global"));
+                if(snap.exists()) {
+                    const aviso = snap.data();
+                    
+                    let avisoValido = aviso.ativo === true && aviso.texto;
+
+                    if (avisoValido && aviso.data_expiracao) {
+                        const dataHoje = new Date();
+                        const dataExpiracao = new Date(aviso.data_expiracao + "T23:59:59"); 
+
+                        if (dataHoje > dataExpiracao) {
+                            avisoValido = false; 
+                        }
+                    }
+
+                    if(avisoValido) {
+                        const banner = document.getElementById('banner-aviso-global');
+                        const textoEl = document.getElementById('texto-aviso-global');
+                        const interfaceSistema = document.getElementById('interface-sistema');
+                        
+                        textoEl.innerText = aviso.texto;
+                        
+                        banner.className = `w-full text-center px-5 py-3.5 text-sm font-bold text-white shadow-lg z-40 fixed top-0 left-0 transition-all duration-500 transform -translate-y-full flex items-center justify-center ${aviso.cor || 'bg-indigo-600'}`;
+                        
+                        setTimeout(() => {
+                            banner.classList.remove('hidden', '-translate-y-full');
+                            banner.classList.add('translate-y-0');
+                            interfaceSistema.style.marginTop = banner.offsetHeight + 'px';
+                        }, 500);
+                    }
+                }
+            } catch(e) { console.error("Erro ao buscar aviso global", e); }
+        }
+
+        window.fecharBannerAviso = function() {
+            const banner = document.getElementById('banner-aviso-global');
+            const interfaceSistema = document.getElementById('interface-sistema');
+            banner.classList.add('-translate-y-full');
+            banner.classList.remove('translate-y-0');
+            interfaceSistema.style.marginTop = '0px';
+            setTimeout(() => banner.classList.add('hidden'), 300);
+        }
+
+        window.switchMsgTab = function(tab) {
+            if(tab === 'nova' && !mensagemEditandoId) {
+                document.getElementById('tab-btn-msg-nova').innerText = "Novo Aviso";
+                document.getElementById('btn-enviar-msg').innerHTML = "Publicar Aviso";
+            }
+            if(tab === 'lista') {
+                cancelarEdicaoMensagem(); 
+            }
+            
+            ['nova', 'lista'].forEach(t => {
+                document.getElementById('tab-msg-' + t).classList.add('hidden');
+                document.getElementById('tab-msg-' + t).classList.remove('flex', 'flex-col', 'block');
+                document.getElementById('tab-btn-msg-' + t).className = "flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors whitespace-nowrap";
+            });
+
+            const abaAtiva = document.getElementById('tab-msg-' + tab);
+            abaAtiva.classList.remove('hidden');
+            
+            if (tab === 'nova') {
+                abaAtiva.classList.add('block');
+                document.getElementById('btn-enviar-msg').style.display = 'block';
+            } else {
+                abaAtiva.classList.add('flex', 'flex-col');
+                document.getElementById('btn-enviar-msg').style.display = 'none';
+                carregarMensagensEquipe();
+            }
+
+            const btnAtivo = document.getElementById('tab-btn-msg-' + tab);
+            btnAtivo.className = "flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-indigo-600 border-b-2 border-indigo-500 transition-colors whitespace-nowrap";
+        };
+
+        window.cancelarEdicaoMensagem = function() {
+            mensagemEditandoId = null;
+            document.getElementById('msg-titulo').value = '';
+            document.getElementById('msg-conteudo').value = '';
+            document.getElementById('msg-validade').value = '';
+            document.querySelector('input[name="msg-urgencia"][value="normal"]').checked = true;
+            document.getElementById('btn-enviar-msg').innerHTML = "Publicar Aviso";
+            document.getElementById('tab-btn-msg-nova').innerText = "Novo Aviso";
+        };
+
+        window.abrirModalMensagem = function() {
+            document.getElementById('modal-mensagem').classList.remove('hidden');
+            document.getElementById('modal-mensagem').classList.add('flex');
+            cancelarEdicaoMensagem(); 
+            switchMsgTab('nova');
+        };
+
+        window.fecharModalMensagem = function() {
+            document.getElementById('modal-mensagem').classList.add('hidden');
+            document.getElementById('modal-mensagem').classList.remove('flex');
+        };
+
+        window.editarMensagemEquipe = function(msgId) {
+            const msg = mensagensCache.find(m => m.id === msgId);
+            if (!msg) return;
+
+            mensagemEditandoId = msgId;
+            document.getElementById('msg-titulo').value = msg.titulo || '';
+            document.getElementById('msg-conteudo').value = msg.conteudo || '';
+            
+            if (msg.data_expiracao) {
+                document.getElementById('msg-validade').value = msg.data_expiracao.split('T')[0];
+            } else {
+                document.getElementById('msg-validade').value = '';
+            }
+
+            const r = document.querySelector(`input[name="msg-urgencia"][value="${msg.urgencia || 'normal'}"]`);
+            if (r) r.checked = true;
+
+            document.getElementById('btn-enviar-msg').innerHTML = "Salvar Alterações";
+            document.getElementById('tab-btn-msg-nova').innerText = "Editar Aviso";
+            
+            ['nova', 'lista'].forEach(t => {
+                document.getElementById('tab-msg-' + t).classList.add('hidden');
+                document.getElementById('tab-msg-' + t).classList.remove('flex', 'flex-col', 'block');
+                document.getElementById('tab-btn-msg-' + t).className = "flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors whitespace-nowrap";
+            });
+
+            document.getElementById('tab-msg-nova').classList.remove('hidden');
+            document.getElementById('tab-msg-nova').classList.add('block');
+            document.getElementById('btn-enviar-msg').style.display = 'block';
+            
+            const btnAtivo = document.getElementById('tab-btn-msg-nova');
+            btnAtivo.className = "flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-indigo-600 border-b-2 border-indigo-500 transition-colors whitespace-nowrap";
+        };
+
+        window.enviarMensagemEquipe = async function() {
+            const titulo = document.getElementById('msg-titulo').value.trim();
+            const conteudo = document.getElementById('msg-conteudo').value.trim();
+            const urgenciaSelecionada = document.querySelector('input[name="msg-urgencia"]:checked').value;
+            const dataValidade = document.getElementById('msg-validade').value; 
+            
+            if (!titulo || !conteudo) {
+                return showToast("Preencha o título e a mensagem!", "error");
+            }
+
+            if (!uid) {
+                return showToast("Erro: ID da equipe não encontrado.", "error");
+            }
+
+            let dataExpiracaoIso = null;
+            if (dataValidade) {
+                dataExpiracaoIso = new Date(dataValidade + 'T23:59:59').toISOString();
+            }
+
+            const btn = document.getElementById('btn-enviar-msg');
+            btn.disabled = true;
+            btn.innerHTML = "A enviar...";
+
+            try {
+                if (mensagemEditandoId) {
+                    await updateDoc(doc(db, "mensagens", mensagemEditandoId), {
+                        titulo: titulo,
+                        conteudo: conteudo,
+                        urgencia: urgenciaSelecionada,
+                        data_expiracao: dataExpiracaoIso
+                    });
+                    showToast("Aviso atualizado com sucesso!", "success");
+                } else {
+                    await addDoc(collection(db, "mensagens"), {
+                        equipe_id: uid,
+                        titulo: titulo,
+                        conteudo: conteudo,
+                        urgencia: urgenciaSelecionada,
+                        data_envio: new Date().toISOString(),
+                        data_expiracao: dataExpiracaoIso,
+                        status: 'ativo'
+                    });
+                    showToast("Aviso publicado com sucesso!", "success");
+                }
+                
+                cancelarEdicaoMensagem();
+                switchMsgTab('lista'); 
+                
+            } catch (error) {
+                console.error(error);
+                if (error.code === 'permission-denied') {
+                    showToast("Erro de Permissão! Verifique as regras do Firestore.", "error");
+                } else {
+                    showToast("Erro ao salvar aviso. Tente novamente.", "error");
+                }
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = "Publicar Aviso";
+            }
+        };
+
+        window.carregarMensagensEquipe = async function() {
+            const listaEl = document.getElementById('lista-mensagens-ativas');
+            listaEl.innerHTML = '<div class="text-center text-slate-400 text-xs italic py-4">Buscando avisos...</div>';
+            
+            if (!uid) return;
+
+            try {
+                const q = query(collection(db, "mensagens"), where("equipe_id", "==", uid));
+                const snap = await getDocs(q);
+                
+                if (snap.empty) {
+                    listaEl.innerHTML = '<div class="text-center text-slate-400 text-xs py-4">Nenhum aviso ativo.</div>';
+                    return;
+                }
+
+                let msgs = [];
+                snap.forEach(doc => msgs.push({ id: doc.id, ...doc.data() }));
+                
+                msgs.sort((a,b) => new Date(b.data_envio || 0) - new Date(a.data_envio || 0));
+                mensagensCache = msgs; 
+
+                let html = '';
+                msgs.forEach(msg => {
+                    let cor = 'bg-slate-100 border-slate-200 text-slate-700';
+                    let icone = '📌';
+                    if (msg.urgencia === 'importante') { cor = 'bg-amber-50 border-amber-200 text-amber-700'; icone = '⚠️'; }
+                    if (msg.urgencia === 'urgente') { cor = 'bg-rose-50 border-rose-200 text-rose-700'; icone = '🚨'; }
+
+                    let dataLim = "Sem expiração";
+                    if (msg.data_expiracao) {
+                        const dl = new Date(msg.data_expiracao);
+                        dataLim = `${String(dl.getDate()).padStart(2, '0')}/${String(dl.getMonth() + 1).padStart(2, '0')}/${dl.getFullYear()}`;
+                    }
+
+                    html += `
+                        <div class="p-4 rounded-xl border shadow-sm relative ${cor} group pr-24">
+                            <div>
+                                <h4 class="text-xs font-black uppercase mb-1 flex items-center gap-1"><span>${icone}</span> ${msg.titulo}</h4>
+                                <p class="text-[10px] opacity-80 mb-2 truncate">${msg.conteudo}</p>
+                                <span class="text-[8px] font-bold uppercase tracking-widest opacity-60">Expira: ${dataLim}</span>
+                            </div>
+                            <div class="absolute top-1/2 -translate-y-1/2 right-3 flex gap-1.5 opacity-100 transition-opacity">
+                                <button onclick="editarMensagemEquipe('${msg.id}')" class="w-8 h-8 flex items-center justify-center bg-white border border-slate-200 hover:bg-amber-500 hover:border-amber-500 rounded-lg text-slate-400 hover:text-white shadow-sm transition-all" title="Editar Aviso">
+                                    ✏️
+                                </button>
+                                <button onclick="excluirMensagemEquipe('${msg.id}')" class="w-8 h-8 flex items-center justify-center bg-white border border-rose-100 hover:bg-rose-500 hover:border-rose-500 rounded-lg text-rose-500 hover:text-white shadow-sm transition-all" title="Excluir Aviso">
+                                    🗑️
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                listaEl.innerHTML = html;
+
+            } catch (error) {
+                console.error(error);
+                listaEl.innerHTML = '<div class="text-center text-rose-500 text-xs py-4">Erro ao buscar avisos.</div>';
+            }
+        };
+
+        window.excluirMensagemEquipe = async function(msgId) {
+            if (!confirm("Tem certeza que deseja excluir este aviso? Ele sumirá do portal dos alunos imediatamente.")) return;
+            
+            try {
+                await deleteDoc(doc(db, "mensagens", msgId));
+                showToast("Aviso excluído com sucesso!", "success");
+                carregarMensagensEquipe(); 
+            } catch (error) {
+                console.error(error);
+                showToast("Erro ao excluir aviso.", "error");
+            }
+        };
+
+        window.switchConfigTab = function(tab) {
+            ['dados', 'colabs', 'convites'].forEach(t => {
+                document.getElementById('tab-' + t).classList.add('hidden');
+                document.getElementById('tab-' + t).classList.remove('flex', 'flex-col');
+                document.getElementById('tab-btn-' + t).className = "flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors whitespace-nowrap";
+            });
+
+            const abaAtiva = document.getElementById('tab-' + tab);
+            abaAtiva.classList.remove('hidden');
+            if(tab === 'dados') abaAtiva.classList.add('block');
+            else abaAtiva.classList.add('flex', 'flex-col'); 
+
+            const btnAtivo = document.getElementById('tab-btn-' + tab);
+            const btnSalvar = document.getElementById('btn-salvar-config');
+
+            if (tab === 'dados') {
+                btnAtivo.className = "flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-cyan-600 border-b-2 border-cyan-500 transition-colors whitespace-nowrap";
+                btnSalvar.style.display = 'block';
+            } else if (tab === 'colabs') {
+                btnAtivo.className = "flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-indigo-600 border-b-2 border-indigo-500 transition-colors whitespace-nowrap";
+                btnSalvar.style.display = 'none';
+                carregarColaboradores();
+            } else if (tab === 'convites') {
+                btnAtivo.className = "flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-emerald-600 border-b-2 border-emerald-500 transition-colors whitespace-nowrap";
+                btnSalvar.style.display = 'none';
+                gerarLinksConvite();
+            }
+        };
+
+        window.gerarLinksConvite = function() {
+            if(!uid) return;
+            let baseUrl = window.location.origin; 
+            document.getElementById('link-convite-prof').value = `${baseUrl}/cadastro_externo.html?tipo=prof&equipe=${uid}`;
+            document.getElementById('link-convite-aluno').value = `${baseUrl}/cadastro_externo.html?tipo=aluno&equipe=${uid}`;
+        };
+
+        window.copiarLink = function(idInput) {
+            const input = document.getElementById(idInput);
+            input.select();
+            input.setSelectionRange(0, 99999); 
+            navigator.clipboard.writeText(input.value).then(() => {
+                showToast("Link copiado! Cole no WhatsApp ou envie para a pessoa.", "success");
+            });
+        };
+
+        window.abrirModalConfig = function() {
+            const modal = document.getElementById('modal-config-equipe');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.getElementById('config-nome-equipe').value = nomeEquipeAtual;
+            document.getElementById('config-logo').value = ""; 
+            switchConfigTab('dados'); 
+        };
+
+        window.fecharModalConfig = function() {
+            const modal = document.getElementById('modal-config-equipe');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        window.carregarColaboradores = async function() {
+            const listaEl = document.getElementById('lista-colaboradores');
+            listaEl.innerHTML = '<div class="text-center text-slate-400 text-xs italic py-4">Carregando equipe...</div>';
+            try {
+                const q = query(collection(db, "colaboradores"), where("equipe_id", "==", uid));
+                const snap = await getDocs(q);
+                if (snap.empty) {
+                    listaEl.innerHTML = '<div class="text-center text-slate-400 text-xs py-4">Nenhum colaborador adicionado.</div>';
+                    return;
+                }
+                let html = '';
+                snap.forEach(doc => {
+                    html += `
+                        <div class="flex items-center justify-between p-3 bg-slate-50 border border-slate-100 rounded-xl shadow-sm">
+                            <span class="text-sm font-bold text-slate-700 truncate pr-2">${doc.data().email}</span>
+                            <button onclick="removerColaborador('${doc.id}')" class="text-rose-500 hover:bg-rose-100 p-1.5 rounded-lg transition-colors">🗑️</button>
+                        </div>
+                    `;
+                });
+                listaEl.innerHTML = html;
+            } catch (e) { listaEl.innerHTML = '<div class="text-center text-rose-500 text-xs py-4">Erro.</div>'; }
+        };
+
+        window.adicionarColaborador = async function() {
+            const emailInput = document.getElementById('novo-colab-email');
+            const email = emailInput.value.trim().toLowerCase();
+            if(!email || !email.includes('@')) return showToast("Digite um e-mail válido!", "error");
+            try {
+                await addDoc(collection(db, "colaboradores"), { email: email, equipe_id: uid, data_cadastro: new Date().toISOString() });
+                emailInput.value = '';
+                showToast("Co-Administrador adicionado!", "success");
+                carregarColaboradores();
+            } catch (e) { showToast("Erro ao adicionar.", "error"); }
+        };
+
+        window.removerColaborador = async function(docId) {
+            if(!confirm("Remover o acesso deste co-administrador?")) return;
+            try {
+                await deleteDoc(doc(db, "colaboradores", docId));
+                showToast("Acesso removido.", "success");
+                carregarColaboradores();
+            } catch (e) { showToast("Erro ao remover.", "error"); }
+        };
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                let isSuper = false;
+                try {
+                    const superSnap = await getDoc(doc(db, "super_admins", user.uid));
+                    if (superSnap.exists()) isSuper = true;
+                } catch(e) { isSuper = false; }
+
+                try {
+                    let isImpersonating = false;
+
+                    if (isSuper) {
+                        const equipeImpersonada = sessionStorage.getItem('admin_impersonate');
+                        if (equipeImpersonada) {
+                            uid = equipeImpersonada; 
+                            isImpersonating = true;
+                            
+                            setTimeout(() => {
+                                const aside = document.querySelector('aside');
+                                if (aside) {
+                                    const btnSairSuporte = document.createElement('button');
+                                    btnSairSuporte.onclick = sairModoSuporte;
+                                    btnSairSuporte.className = "mx-4 mb-2 bg-rose-500/10 border border-rose-500/20 text-rose-500 hover:bg-rose-500 hover:text-white font-black text-[9px] uppercase tracking-widest py-2.5 rounded-xl transition-all flex items-center justify-center gap-2";
+                                    btnSairSuporte.innerHTML = "<span>🚨 MODO SUPORTE (SAIR)</span>";
+                                    
+                                    const botoesNoMenu = Array.from(aside.querySelectorAll('button, a'));
+                                    const btnSairOriginal = botoesNoMenu.find(el => el.textContent.toUpperCase().includes('SAIR'));
+                                    
+                                    if (btnSairOriginal && btnSairOriginal.parentNode) {
+                                        btnSairOriginal.parentNode.insertBefore(btnSairSuporte, btnSairOriginal);
+                                    } else {
+                                        aside.appendChild(btnSairSuporte);
+                                    }
+                                }
+                            }, 800);
+                        }
+                    }
+
+                    if (!isImpersonating) {
+                        uid = user.uid;
+                        const docMestre = await getDoc(doc(db, "equipes", uid));
+                        if (!docMestre.exists()) {
+                            const colabSnap = await getDoc(doc(db, "colaboradores", uid));
+                            if(colabSnap.exists()) {
+                                uid = colabSnap.data().equipe_id;
+                            }
+                        }
+                    }
+
+                    document.getElementById('body-content').classList.remove('hidden');
+                    
+                    const emailLogado = document.getElementById('email-logado');
+                    if (emailLogado) emailLogado.innerText = user.email;
+
+                    try {
+                        const planosSnap = await getDoc(doc(db, "sistema", "config_planos"));
+                        if(planosSnap.exists()) {
+                            configPlanosCache = planosSnap.data();
+                        }
+                    } catch(e) { console.error("Erro ao ler config de planos", e); }
+
+                    const docSnap = await getDoc(doc(db, "equipes", uid));
+                    
+                    if (docSnap.exists()) {
+                        const lblCargo = document.getElementById('lbl-cargo');
+                        if(lblCargo) lblCargo.innerText = (isSuper && isImpersonating) ? "SUPER ADMIN (SUPORTE)" : "Mestre / Administrador";
+                        document.getElementById('btn-config-equipe').classList.remove('hidden');
+                        dadosEquipe = docSnap.data();
+                    } else {
+                        const colabSnap2 = await getDoc(doc(db, "colaboradores", user.uid));
+                        if(colabSnap2.exists()) {
+                            const lblCargo = document.getElementById('lbl-cargo');
+                            if(lblCargo) lblCargo.innerText = "Co-Administrador";
+                            const equipeMestreSnap = await getDoc(doc(db, "equipes", uid));
+                            if(equipeMestreSnap.exists()) dadosEquipe = equipeMestreSnap.data();
+                        }
+                    }
+
+                    if (dadosEquipe) {
+                        
+                        if (dadosEquipe.status_plano === 'BLOQUEADO' && !isImpersonating) {
+                            document.getElementById('interface-sistema').classList.add('hidden');
+                            document.getElementById('tela-bloqueio').classList.remove('hidden');
+                            document.getElementById('tela-bloqueio').classList.add('flex');
+                            return; 
+                        }
+
+                        const badgeStatus = document.getElementById('status-badge');
+                        const txtNomePlano = document.getElementById('nome-equipe');
+                        
+                        if (txtNomePlano) txtNomePlano.innerText = (dadosEquipe.nome_equipe || "SUA EQUIPE").toUpperCase();
+
+                        const statusAt = (dadosEquipe.status_plano || 'TESTE').toUpperCase();
+                        let idDoPlano = dadosEquipe.plano_escolhido || 'p1';
+
+                        if (statusAt === 'BASICO' || statusAt === 'BLACK_BELT') idDoPlano = 'p1';
+                        else if (statusAt === 'INTERMEDIARIO' || statusAt === 'MASTER') idDoPlano = 'p2';
+                        else if (statusAt === 'PREMIUM') idDoPlano = 'p3';
+                        else if (statusAt === 'ULTIMATE' || statusAt === 'ELITE') idDoPlano = 'p4';
+
+                        let nomeRealDoPlano = statusAt; 
+
+                        if (configPlanosCache && configPlanosCache[idDoPlano]) {
+                            nomeRealDoPlano = configPlanosCache[idDoPlano].nome || statusAt;
+                            window.funcionalidadesEquipe = configPlanosCache[idDoPlano].features ? configPlanosCache[idDoPlano].features.split('\n') : [];
+                        } else {
+                            window.funcionalidadesEquipe = [];
+                        }
+
+                        if (isImpersonating || String(dadosEquipe.isento) === "true") {
+                            window.funcionalidadesEquipe = [
+                                "✓ Automação Asaas (PIX/Cartão)", "✓ Vitrine Virtual (Loja Online)", 
+                                "✓ Emissão de Certificados Profissionais", "✓ Gestão de Turmas e Frequência",
+                                "✓ Cadastro de Alunos Ilimitados", "✓ Portal do Aluno Completo (App)",
+                                "✓ Baixa Automática de Faturas"
+                            ];
+                        }
+
+                        if (badgeStatus) {
+                            if (statusAt === 'TESTE') {
+                                badgeStatus.innerText = `TESTE: ${nomeRealDoPlano.toUpperCase()}`;
+                                badgeStatus.className = "px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-700 border border-amber-200 shadow-sm badge-pulse";
+                            } else {
+                                badgeStatus.innerText = `${nomeRealDoPlano.toUpperCase()}`;
+                                badgeStatus.className = "px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-700 border border-emerald-200 shadow-sm";
+                            }
+                        }
+
+                        if (typeof window.atualizarMenuSeguro === "function") {
+                            window.atualizarMenuSeguro(window.funcionalidadesEquipe);
+                        }
+
+                        nomeEquipeAtual = dadosEquipe.nome_equipe || "";
+                        if(dadosEquipe.url_logo) logoEquipeAnterior = dadosEquipe.url_logo;
+                        if (dadosEquipe.valor_prazo) valPrazo = parseFloat(dadosEquipe.valor_prazo);
+                        if (dadosEquipe.valor_atraso) valAtraso = parseFloat(dadosEquipe.valor_atraso);
+
+                        const elNomeEquipe = document.getElementById('nome-equipe') || document.getElementById('lbl-equipe');
+                        if(elNomeEquipe) elNomeEquipe.innerText = nomeEquipeAtual.toUpperCase();
+
+                        const elLogo = document.getElementById('container-logo');
+                        const imgTopo = document.getElementById('img-topo-equipe');
+
+                        if (dadosEquipe.url_logo) {
+                            if (elLogo) {
+                                elLogo.style.background = 'transparent';
+                                elLogo.innerHTML = `<img src="${dadosEquipe.url_logo}" class="w-full h-full object-cover" alt="Logo">`;
+                            }
+                            if (imgTopo) {
+                                imgTopo.src = dadosEquipe.url_logo;
+                                imgTopo.style.display = 'block';
+                            }
+                        } else {
+                            if (elLogo) {
+                                elLogo.style.background = ''; 
+                                elLogo.innerHTML = nomeEquipeAtual ? nomeEquipeAtual.charAt(0).toUpperCase() : 'E';
+                            }
+                        }
+                    }
+                    
+                    verificarAvisoGlobal();
+                    carregarDashboard();
+
+                } catch (error) { console.log(error); }
+                
+            } else { window.location.href = "index.html"; }
+        });
+
+        window.sairModoSuporte = function() {
+            sessionStorage.removeItem('admin_impersonate');
+            window.location.href = "super_admin.html";
+        };
+
+        window.pagamentoRapido = function(alunoId, nomeAluno, valor, faturaId) {
+            pagRapidoDados = { alunoId, nomeAluno, valor, faturaId };
+            document.getElementById('lbl-pag-rapido-nome').innerText = nomeAluno;
+            document.getElementById('lbl-pag-rapido-valor').innerText = `R$ ${valor.toFixed(2).replace('.', ',')}`;
+            document.getElementById('select-pag-rapido-forma').value = "PIX"; 
+            document.getElementById('modal-pagamento-rapido').classList.remove('hidden');
+            document.getElementById('modal-pagamento-rapido').classList.add('flex');
+        };
+
+        window.fecharModalPagamentoRapido = function() {
+            pagRapidoDados = null;
+            document.getElementById('modal-pagamento-rapido').classList.add('hidden');
+            document.getElementById('modal-pagamento-rapido').classList.remove('flex');
+        };
+
+        window.confirmarPagamentoRapido = async function() {
+            if (!pagRapidoDados) return;
+
+            const formaEscolhida = document.getElementById('select-pag-rapido-forma').value;
+            const { alunoId, nomeAluno, valor, faturaId } = pagRapidoDados;
+            
+            const btn = document.getElementById('btn-confirma-pag-rapido');
+            btn.disabled = true;
+            btn.innerHTML = "⏳ Processando...";
+
+            const dataHoje = new Date().toISOString().split('T')[0];
+            const dataHojeCompleta = new Date();
+            const mesAno = `${dataHojeCompleta.getFullYear()}-${String(dataHojeCompleta.getMonth() + 1).padStart(2, '0')}`;
+
+            try {
+                if (faturaId) {
+                    await updateDoc(doc(db, "financeiro", faturaId), {
+                        status: 'PAGO', data: dataHoje, forma_pagamento: formaEscolhida, valor: valor
+                    });
+                } else {
+                    await addDoc(collection(db, "financeiro"), {
+                        equipe_id: uid, aluno_id: alunoId, tipo: 'MENSALIDADE', status: 'PAGO',
+                        valor: valor, mes_ano: mesAno, descricao: `Mensalidade - ${nomeAluno}`,
+                        data_criacao: new Date().toISOString(), data: dataHoje, forma_pagamento: formaEscolhida
+                    });
+                }
+                
+                fecharModalPagamentoRapido();
+                showToast("Pagamento registrado!", "success");
+                carregarDashboard(); 
+            } catch (e) {
+                showToast("Erro ao registrar.", "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = "Confirmar";
+            }
+        };
+
+        function obterEstiloFaixa(faixa) {
+            const faixasInfo = {
+                'Branca': 'bg-white border-gray-300',
+                'Cinza e branca': 'bg-gradient-to-r from-gray-400 to-white',
+                'Cinza': 'bg-gray-400',
+                'Cinza e preta': 'bg-gradient-to-r from-gray-400 to-black',
+                'Amarela e branca': 'bg-gradient-to-r from-yellow-500 to-white',
+                'Amarela': 'bg-yellow-500',
+                'Amarela e preta': 'bg-gradient-to-r from-yellow-500 to-black',
+                'Laranja e branca': 'bg-gradient-to-r from-orange-500 to-white',
+                'Laranja': 'bg-orange-500',
+                'Laranja e preta': 'bg-gradient-to-r from-orange-500 to-black',
+                'Verde e branca': 'bg-gradient-to-r from-green-500 to-white',
+                'Verde': 'bg-green-500',
+                'Verde e preta': 'bg-gradient-to-r from-green-500 to-black',
+                'Azul': 'bg-blue-500',
+                'Roxa': 'bg-purple-500',
+                'Marrom': 'bg-amber-800',
+                'Preta': 'bg-black',
+                'Coral': 'bg-gradient-to-r from-red-500 to-black',
+                'Vermelha': 'bg-red-600'
+            };
+            
+            const faixaNormalizada = faixa ? faixa.charAt(0).toUpperCase() + faixa.slice(1).toLowerCase().trim() : 'Branca';
+            return faixasInfo[faixaNormalizada] || 'bg-slate-400'; 
+        }
+
+        async function carregarDashboard() {
+            try {
+                const turmasQuery = query(collection(db, "turmas"), where("equipe_id", "==", uid));
+                const turmasSnap = await getDocs(turmasQuery);
+                
+                let turmasMap = {};
+                let alunoParaTurmas = {}; 
+                
+                turmasSnap.forEach((doc) => {
+                    const t = doc.data();
+                    const nomeDaTurma = t.nome_turma || t.nome || t.titulo || "Turma sem nome";
+                    if (!turmasMap[nomeDaTurma]) turmasMap[nomeDaTurma] = [];
+                    if (t.alunos_ids && Array.isArray(t.alunos_ids)) {
+                        t.alunos_ids.forEach(alunoId => {
+                            if (!alunoParaTurmas[alunoId]) alunoParaTurmas[alunoId] = [];
+                            alunoParaTurmas[alunoId].push(nomeDaTurma);
+                        });
+                    }
+                });
+
+                const dataHoje = new Date();
+                const mesAtual = dataHoje.getMonth() + 1; 
+                const anoAtual = dataHoje.getFullYear();
+                const diaHoje = dataHoje.getDate();
+                const mesAnoFiltro = `${anoAtual}-${String(mesAtual).padStart(2, '0')}`;
+
+                let caixaDoMes = 0;
+                let despesasDoMes = 0;
+                let faturasDoMes = {}; 
+
+                try {
+                    const financeiroQuery = query(collection(db, "financeiro"), where("equipe_id", "==", uid), where("mes_ano", "==", mesAnoFiltro));
+                    const financeiroSnap = await getDocs(financeiroQuery);
+                    financeiroSnap.forEach((doc) => {
+                        const mov = doc.data();
+                        if (mov.tipo === 'MENSALIDADE') {
+                            faturasDoMes[mov.aluno_id] = { status: mov.status, id: doc.id };
+                            if (mov.status === 'PAGO') caixaDoMes += parseFloat(mov.valor || 0);
+                        } else if (mov.tipo === 'RECEITA') {
+                            caixaDoMes += parseFloat(mov.valor || 0);
+                        } else if (mov.tipo === 'DESPESA') {
+                            despesasDoMes += parseFloat(mov.valor || 0);
+                        }
+                    });
+                } catch(err) { console.error("Erro ao buscar financeiro do dashboard", err); }
+
+                const alunosQuery = query(collection(db, "alunos"), where("equipe_id", "==", uid));
+                const alunosSnap = await getDocs(alunosQuery);
+                
+                let ativos = 0, valorAtrasado = 0;
+                let faixasCount = {}, aniversariantesHTML = '', pendenciasHTML = '';
+
+                const totalAlunosAtivos = alunosSnap.docs.filter(doc => {
+                    const status = String(doc.data().status || 'ativo').toLowerCase().trim();
+                    return status === 'ativo';
+                }).length;
+
+                alunosSnap.forEach((doc) => {
+                    const aluno = doc.data();
+                    const alunoId = doc.id;
+                    let statusAluno = String(aluno.status || 'ativo').toLowerCase().trim();
+
+                    if (statusAluno === 'ativo') {
+                        ativos++;
+                        let faixa = aluno.faixa ? aluno.faixa.charAt(0).toUpperCase() + aluno.faixa.slice(1).toLowerCase().trim() : 'Branca';
+                        faixasCount[faixa] = (faixasCount[faixa] || 0) + 1;
+
+                        if (aluno.data_nascimento) {
+                            let mesNiver = null, diaNiver = null;
+                            if (typeof aluno.data_nascimento === 'string') {
+                                const partes = aluno.data_nascimento.split('-');
+                                if (partes.length >= 3) { mesNiver = parseInt(partes[1], 10); diaNiver = parseInt(partes[2], 10); }
+                            } else if (aluno.data_nascimento.toDate) {
+                                const dataNasc = aluno.data_nascimento.toDate();
+                                mesNiver = dataNasc.getMonth() + 1; diaNiver = dataNasc.getDate();
+                            }
+
+                            if (mesNiver === mesAtual) {
+                                aniversariantesHTML += `
+                                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200 hover:shadow-md transition-shadow">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-black text-xs">${diaNiver}</div>
+                                            <span class="text-sm font-bold text-slate-700 truncate w-32">${aluno.nome || 'Aluno'}</span>
+                                        </div>
+                                        <span class="text-[9px] uppercase font-black text-slate-500 bg-white px-2 py-1 rounded-md border border-slate-200">${faixa}</span>
+                                    </div>
+                                `;
+                            }
+                        }
+
+                        let turmasDoAluno = alunoParaTurmas[alunoId] || [aluno.turma_id || "SEM TURMA DEFINIDA"];
+                        if(turmasDoAluno.length === 0 || turmasDoAluno[0] === undefined) turmasDoAluno = ["SEM TURMA DEFINIDA"];
+
+                        turmasDoAluno.forEach(nomeTurma => {
+                            if (!turmasMap[nomeTurma]) turmasMap[nomeTurma] = [];
+                            turmasMap[nomeTurma].push({ nome: aluno.nome || 'Aluno', faixa: faixa });
+                        });
+
+                        let isAlerta = false, msgAlerta = '', tema = 'rose'; 
+                        const diaVenc = parseInt(aluno.dia_vencimento, 10);
+                        const statusFaturaObj = faturasDoMes[alunoId]; 
+                        const statusFatura = statusFaturaObj ? statusFaturaObj.status : null;
+
+                        if (statusFatura !== 'PAGO' && statusFatura !== 'ISENTO' && parseInt(aluno.bolsa_perc || 0) !== 100) {
+                            if (!isNaN(diaVenc) && diaVenc > 0 && diaVenc <= 31) {
+                                if (diaVenc < diaHoje) { isAlerta = true; msgAlerta = `Venceu dia ${diaVenc}`; tema = 'rose'; } 
+                                else if (diaVenc >= diaHoje && diaVenc <= diaHoje + 10) { isAlerta = true; msgAlerta = diaVenc === diaHoje ? `Vence HOJE` : `Vence dia ${diaVenc}`; tema = 'amber'; }
+                            }
+                        }
+
+                        if (isAlerta) {
+                            const bolsa = aluno.bolsa_perc || 0;
+                            let valorDaDivida = (tema === 'rose' ? valAtraso : valPrazo) * (1 - bolsa/100);
+                            valorAtrasado += valorDaDivida; 
+
+                            const cssBg = tema === 'rose' ? 'bg-rose-50/80' : 'bg-amber-50/80';
+                            const cssBorder = tema === 'rose' ? 'border-rose-200' : 'border-amber-200';
+                            const cssTextLight = tema === 'rose' ? 'text-rose-600' : 'text-amber-600';
+                            const cssTextDark = tema === 'rose' ? 'text-rose-700' : 'text-amber-700';
+                            const idSafe = statusFaturaObj ? `'${statusFaturaObj.id}'` : 'null';
+
+                            pendenciasHTML += `
+                                <div class="flex items-center justify-between p-3 ${cssBg} rounded-xl border ${cssBorder} hover:shadow-sm transition-shadow">
+                                    <div class="flex-1 overflow-hidden pr-2">
+                                        <p class="text-sm font-bold text-slate-800 truncate">${aluno.nome || 'Aluno'}</p>
+                                        <p class="text-[10px] uppercase font-black ${cssTextLight} mt-0.5">${msgAlerta}</p>
+                                    </div>
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <span class="text-xs font-black ${cssTextDark}">${valorDaDivida > 0 ? 'R$ ' + valorDaDivida.toFixed(2).replace('.', ',') : '-'}</span>
+                                        <button onclick="pagamentoRapido('${alunoId}', '${(aluno.nome||'').replace(/'/g, "\\'")}', ${valorDaDivida}, ${idSafe})" class="bg-white hover:bg-emerald-500 text-emerald-600 hover:text-white border border-emerald-200 p-1.5 rounded-lg transition-all flex items-center justify-center shadow-sm">
+                                            ✅
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    }
+                });
+
+                const dataHojeStr = new Date().toISOString().split('T')[0];
+                let checkinsHTML = '';
+                
+                try {
+                    const checkinQuery = query(collection(db, "checkins"), where("equipe_id", "==", uid), where("data", "==", dataHojeStr));
+                    const checkinSnap = await getDocs(checkinQuery);
+                    let checkins = [];
+                    checkinSnap.forEach(doc => checkins.push(doc.data()));
+
+                    checkins.sort((a,b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+                    if(checkins.length === 0) {
+                        checkinsHTML = `
+                            <div class="flex flex-col items-center justify-center h-full text-slate-400 py-10">
+                                <span class="text-3xl mb-3 opacity-50">😴</span>
+                                <p class="text-sm font-medium">Ainda sem presenças hoje</p>
+                                <p class="text-[10px] mt-1 opacity-70">Os check-ins aparecerão aqui</p>
+                            </div>
+                        `;
+                    } else {
+                        checkins.forEach(ck => {
+                            const hora = new Date(ck.timestamp).toLocaleTimeString('pt-PT', {hour: '2-digit', minute:'2-digit'});
+                            checkinsHTML += `
+                                <div class="flex items-center justify-between p-3 bg-emerald-50/50 rounded-xl border border-emerald-200 hover:shadow-sm transition-shadow">
+                                    <div class="flex items-center gap-3 overflow-hidden">
+                                        <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-black text-xs shrink-0 shadow-sm">📍</div>
+                                        <div class="truncate">
+                                            <span class="text-xs font-bold text-slate-700 truncate block">${ck.aluno_nome}</span>
+                                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider truncate block">${ck.turma_nome}</span>
+                                        </div>
+                                    </div>
+                                    <span class="text-[10px] font-black text-emerald-600 bg-white px-2.5 py-1 rounded-lg border border-emerald-200 shrink-0 shadow-sm">${hora}</span>
+                                </div>
+                            `;
+                        });
+                    }
+                } catch(e) {
+                    console.error("Erro a carregar checkins:", e);
+                    checkinsHTML = `<div class="text-center text-rose-500 text-xs py-8">Erro ao carregar presenças.</div>`;
+                }
+                
+                const elListaCheckins = document.getElementById('lista-checkins');
+                if (elListaCheckins) elListaCheckins.innerHTML = checkinsHTML;
+
+                const painelMetricas = document.getElementById('painel-metricas');
+                const painelOnboarding = document.getElementById('painel-onboarding');
+
+                if (ativos === 0) {
+                    painelMetricas.classList.add('hidden');
+                    painelOnboarding.classList.remove('hidden');
+                } else {
+                    painelMetricas.classList.remove('hidden');
+                    painelOnboarding.classList.add('hidden');
+
+                    document.getElementById('card-ativos').innerText = ativos;
+                    document.getElementById('card-receitas').innerText = `R$ ${caixaDoMes.toFixed(2).replace('.', ',')}`;
+                    document.getElementById('card-inadimplencia').innerText = `R$ ${valorAtrasado.toFixed(2).replace('.', ',')}`;
+                    document.getElementById('card-despesas').innerText = `R$ ${despesasDoMes.toFixed(2).replace('.', ',')}`;
+
+                    const gridFaixas = document.getElementById('grid-faixas');
+                    gridFaixas.innerHTML = ''; 
+                    if (Object.keys(faixasCount).length === 0) {
+                        gridFaixas.innerHTML = '<span class="text-slate-400 text-sm font-medium">Nenhum aluno ativo mapeado.</span>';
+                    } else {
+                        for (const [faixa, qtd] of Object.entries(faixasCount)) {
+                            const estiloCss = obterEstiloFaixa(faixa);
+                            gridFaixas.innerHTML += `
+                                <div class="bg-slate-50 border border-slate-200 px-4 py-2 rounded-xl flex items-center gap-3 shadow-sm hover:shadow transition-shadow">
+                                    <span class="w-4 h-4 rounded-full border border-slate-300 shadow-inner ${estiloCss}"></span>
+                                    <span class="text-xs font-bold text-slate-700">${faixa}: <span class="text-slate-900 ml-1">${qtd}</span></span>
+                                </div>
+                            `;
+                        }
+                    }
+
+                    document.getElementById('lista-niver').innerHTML = aniversariantesHTML || `
+                        <div class="flex flex-col items-center justify-center h-full text-slate-400 py-10">
+                            <span class="text-3xl mb-3 opacity-50">🎈</span>
+                            <p class="text-sm font-medium">Nenhum aniversariante este mês</p>
+                            <p class="text-[10px] mt-1 opacity-70">Os aniversários aparecerão aqui</p>
+                        </div>
+                    `;
+
+                    document.getElementById('lista-pendencias').innerHTML = pendenciasHTML || `
+                        <div class="flex flex-col items-center justify-center h-full text-slate-400 py-10">
+                            <span class="text-3xl mb-3 opacity-50">✅</span>
+                            <p class="text-sm font-medium">Nenhuma pendência financeira!</p>
+                            <p class="text-[10px] mt-1 opacity-70">Tudo em dia por aqui</p>
+                        </div>
+                    `;
+
+                    let turmasHTML = '';
+                    for (const [turmaNome, alunosDaTurma] of Object.entries(turmasMap)) {
+                        if (turmaNome === "SEM TURMA DEFINIDA" && alunosDaTurma.length === 0) continue;
+                        alunosDaTurma.sort((a, b) => a.nome.localeCompare(b.nome));
+
+                        let listaAlunosHTML = '';
+                        if (alunosDaTurma.length === 0) {
+                            listaAlunosHTML = `<p class="text-[10px] text-slate-400 text-center italic py-3">Turma Vazia</p>`;
+                        } else {
+                            for (const al of alunosDaTurma) {
+                                const estiloCss = obterEstiloFaixa(al.faixa);
+                                listaAlunosHTML += `
+                                    <div class="flex justify-between items-center bg-white p-2.5 rounded-lg border border-slate-200 hover:shadow-sm transition-shadow">
+                                        <span class="text-[11px] font-bold text-slate-700 truncate pr-2 max-w-[65%]">${al.nome}</span>
+                                        <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-slate-50 border border-slate-200 text-[9px] font-bold text-slate-600 shadow-sm shrink-0">
+                                            <span class="w-2 h-2 rounded-full shadow-inner border border-slate-200 ${estiloCss}"></span>${al.faixa}
+                                        </span>
+                                    </div>
+                                `;
+                            }
+                        }
+
+                        const bgHeaderTurma = turmaNome === "SEM TURMA DEFINIDA" ? "bg-amber-50 border-amber-200" : "bg-slate-50 border-slate-200";
+                        const iconeTurma = turmaNome === "SEM TURMA DEFINIDA" ? "⚠️" : "🥋";
+                        const corTextoTurma = turmaNome === "SEM TURMA DEFINIDA" ? "text-amber-700" : "text-slate-700";
+
+                        turmasHTML += `
+                            <div class="p-3 ${bgHeaderTurma} rounded-xl border shadow-sm">
+                                <h4 class="text-[10px] font-black ${corTextoTurma} uppercase tracking-wider mb-3 flex items-center gap-2 border-b border-slate-200/60 pb-2">
+                                    <span class="text-base">${iconeTurma}</span> ${turmaNome}
+                                    <span class="ml-auto bg-slate-700 text-white px-2 py-0.5 rounded-md text-[9px] shadow-sm">${alunosDaTurma.length}</span>
+                                </h4>
+                                <div class="flex flex-col max-h-52 overflow-y-auto hide-scrollbar space-y-1.5 pr-1">${listaAlunosHTML}</div>
+                            </div>
+                        `;
+                    }
+                    
+                    document.getElementById('lista-turmas').innerHTML = turmasHTML || `
+                        <div class="flex flex-col items-center justify-center h-full text-slate-400 py-10">
+                            <span class="text-3xl mb-3 opacity-50">🥋</span>
+                            <p class="text-sm font-medium">Nenhuma turma mapeada</p>
+                            <p class="text-[10px] mt-1 opacity-70">Crie turmas para organizar seus alunos</p>
+                        </div>
+                    `;
+                }
+
+            } catch (error) { console.error(error); }
+        }
+
+        window.salvarConfigEquipe = async function() {
+            const btn = document.getElementById('btn-salvar-config');
+            const novoNome = document.getElementById('config-nome-equipe').value.trim();
+            const arquivoLogo = document.getElementById('config-logo').files[0];
+
+            if (!novoNome) return showToast("O nome da equipe não pode ficar em branco.", "error");
+            btn.disabled = true; btn.innerHTML = "Processando...";
+
+            try {
+                let updates = { nome_equipe: novoNome };
+                
+                if (arquivoLogo) {
+                    if (logoEquipeAnterior) {
+                        try {
+                            const refLogoAntiga = ref(storage, logoEquipeAnterior);
+                            await deleteObject(refLogoAntiga);
+                            console.log("Logo antiga apagada do Storage.");
+                        } catch (errorDelete) {
+                            console.log("Aviso: Não foi possível apagar a logo antiga.");
+                        }
+                    }
+
+                    const timestamp = new Date().getTime();
+                    const caminhoRef = ref(storage, `equipes_logos/${uid}_${timestamp}_${arquivoLogo.name}`);
+                    await uploadBytes(caminhoRef, arquivoLogo);
+                    updates.url_logo = await getDownloadURL(caminhoRef);
+                }
+                
+                await updateDoc(doc(db, "equipes", uid), updates);
+                showToast("Equipe atualizada!", "success");
+                setTimeout(() => window.location.reload(), 1500);
+            } catch (error) {
+                console.error(error);
+                showToast("Erro ao atualizar.", "error");
+                btn.disabled = false; btn.innerHTML = "Salvar Dados";
+            }
+        };
+
+        window.sairDoSistema = () => signOut(auth).then(() => window.location.href = "index.html");
+    </script>
+    
+    <script>
+        const radarSuporte = setInterval(() => {
+            Array.from(document.body.children).forEach(el => {
+                if (el.tagName === 'DIV' && el.id !== 'interface-sistema' && (el.textContent || '').toUpperCase().includes('MODO SUPORTE ATIVADO')) {
+                    el.style.display = 'none'; 
+                    clearInterval(radarSuporte);
+                }
+            });
+        }, 200);
+    </script>
+</body>
+</html>

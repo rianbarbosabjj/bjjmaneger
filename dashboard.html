@@ -14,67 +14,37 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-        
-        * { font-family: 'Inter', sans-serif; }
-        body { background-color: #F1F5F9; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
         
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: #F1F5F9; border-radius: 10px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
-
-        /* Animações suaves */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .animate-card {
-            animation: fadeInUp 0.4s ease-out forwards;
-        }
-
-        /* Gradientes especiais */
-        .gradient-metrics {
-            background: linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%);
-        }
-
-        /* Status badge pulsante para teste */
-        @keyframes softPulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-        
-        .badge-pulse {
-            animation: softPulse 2s ease-in-out infinite;
-        }
     </style>
 </head>
-<body class="flex h-[100dvh] overflow-hidden text-slate-700 hidden" id="body-content">
+<body class="flex h-[100dvh] overflow-hidden text-slate-800 bg-[#F8FAFC] hidden" id="body-content">
 
-    <!-- TOAST CONTAINER -->
     <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
-    <!-- BANNER AVISO GLOBAL -->
-    <div id="banner-aviso-global" class="hidden w-full text-center px-5 py-3.5 text-sm font-bold text-white shadow-lg z-40 fixed top-0 left-0 transition-all duration-500 transform -translate-y-full">
-        <span id="texto-aviso-global" class="tracking-wide">Carregando aviso...</span>
-        <button onclick="fecharBannerAviso()" class="absolute right-4 top-1/2 -translate-y-1/2 hover:opacity-70 text-2xl leading-none">&times;</button>
+    <div id="banner-aviso-global" class="hidden w-full text-center px-4 py-3 text-xs md:text-sm font-bold text-white shadow-md z-40 fixed top-0 left-0 transition-transform transform translate-y-[-100%]">
+        <span id="texto-aviso-global">Carregando aviso...</span>
+        <button onclick="fecharBannerAviso()" class="absolute right-4 top-1/2 -translate-y-1/2 hover:opacity-70 text-lg">&times;</button>
     </div>
 
-    <!-- TELA BLOQUEIO -->
-    <div id="tela-bloqueio" class="fixed inset-0 bg-slate-900/95 backdrop-blur-sm z-[90] hidden flex-col items-center justify-center p-6 text-center">
-        <div class="bg-slate-800 p-8 rounded-3xl shadow-2xl max-w-md w-full border border-rose-500/20">
-            <div class="w-20 h-20 bg-rose-500/10 text-rose-500 rounded-2xl flex items-center justify-center text-4xl mx-auto mb-6 shadow-[0_0_30px_rgba(244,63,94,0.2)]">
+    <div id="tela-bloqueio" class="fixed inset-0 bg-slate-900 z-[90] hidden flex-col items-center justify-center p-6 text-center">
+        <div class="bg-slate-800 p-8 rounded-3xl shadow-2xl max-w-md w-full border border-rose-500/30">
+            <div class="w-20 h-20 bg-rose-500/20 text-rose-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 shadow-[0_0_20px_rgba(244,63,94,0.3)]">
                 🔒
             </div>
-            <h2 class="text-2xl font-black text-white mb-3 uppercase tracking-tight">Acesso Suspenso</h2>
+            <h2 class="text-2xl font-black text-white mb-2 uppercase tracking-tight">Acesso Suspenso</h2>
             <p class="text-slate-400 text-sm mb-8 leading-relaxed">
-                A assinatura desta equipe encontra-se bloqueada. Regularize para restaurar o acesso.
+                A assinatura desta equipe encontra-se bloqueada. Por favor, regularize a situação financeira para restaurar o acesso ao sistema.
             </p>
-            <a href="https://wa.me/5521981716074" target="_blank" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-xl transition-all flex items-center justify-center gap-2 uppercase tracking-widest text-xs shadow-lg shadow-emerald-500/20 mb-4">
+            <a href="https://wa.me/5521981716074?text=Olá! Minha conta no BJJ Manager foi suspensa e gostaria de regularizar o acesso da minha equipe." target="_blank" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-xl transition-all flex items-center justify-center gap-2 uppercase tracking-widest text-xs shadow-lg shadow-emerald-500/30 mb-4">
                 <span>📱</span> Falar com o Suporte
             </a>
             <button onclick="sairDoSistema()" class="text-slate-500 hover:text-white text-xs font-bold uppercase tracking-widest transition-colors">
@@ -83,20 +53,19 @@
         </div>
     </div>
 
-    <!-- MODAL PAYWALL -->
     <div id="modal-paywall" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden items-center justify-center z-[300] p-4 transition-opacity">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col text-center border-t-4 border-amber-500 transform transition-all duration-300 scale-95 opacity-0" id="modal-paywall-content">
             <div class="p-8">
-                <div class="w-20 h-20 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center text-4xl mx-auto mb-5 shadow-inner">
+                <div class="w-20 h-20 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 shadow-inner">
                     🔒
                 </div>
                 <h3 class="font-black text-slate-800 text-xl uppercase tracking-tight mb-2">Recurso Premium</h3>
                 <p class="text-sm text-slate-500 font-medium leading-relaxed mb-6">
-                    A função <span id="paywall-recurso-nome" class="font-black text-amber-600">--</span> é exclusiva para planos superiores.
+                    A função <span id="paywall-recurso-nome" class="font-black text-amber-600">--</span> é exclusiva para planos superiores. Faça o upgrade da sua licença para desbloquear esta e outras ferramentas.
                 </p>
                 <div class="flex gap-3">
-                    <button onclick="fecharPaywall()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl text-xs uppercase tracking-widest transition-colors">Voltar</button>
-                    <a href="planos.html" class="flex-1 py-3 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-white font-black rounded-xl text-xs uppercase tracking-widest shadow-lg shadow-amber-500/30 transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-1">
+                    <button onclick="fecharPaywall()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold rounded-xl text-xs uppercase tracking-widest transition-colors">Voltar</button>
+                    <a href="planos.html" class="flex-1 py-3 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-white font-black rounded-xl text-xs uppercase tracking-widest shadow-[0_0_15px_rgba(245,158,11,0.4)] transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-1">
                         <span>⚡</span> Upgrade
                     </a>
                 </div>
@@ -104,219 +73,167 @@
         </div>
     </div>
 
-    <!-- INTERFACE PRINCIPAL -->
-    <div id="interface-sistema" class="flex w-full h-full relative transition-all duration-300">
-        <main class="flex-1 flex flex-col h-full overflow-hidden relative bg-gradient-to-br from-slate-50 to-slate-100">
-            
-            <!-- CONTEÚDO COM SCROLL -->
-            <div class="flex-1 overflow-y-auto p-5 md:p-8 pb-24 md:pb-8">
+    <div id="interface-sistema" class="flex w-full h-full relative mt-0 transition-all duration-300">
+        
+        <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+            <div class="flex-1 overflow-y-auto p-5 md:p-8 pb-24 md:pb-10">
                 <div class="max-w-7xl mx-auto">
                     
-                    <!-- LOGO TOPO -->
-                    <div class="flex justify-center mb-6 md:mb-10">
-                        <img id="img-topo-equipe" src="topo_curriculo.png" alt="Logo da Equipe" class="h-16 md:h-20 object-contain drop-shadow-md" onerror="this.style.display='none'">
+                    <div class="flex justify-center mb-8 md:mb-12">
+                        <img id="img-topo-equipe" src="topo_curriculo.png" alt="Logo da Equipe" class="h-20 md:h-24 object-contain drop-shadow-sm" onerror="this.style.display='none'">
                     </div>
 
-                    <!-- CABEÇALHO COM AÇÕES -->
-                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 mb-8">
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 mb-6 md:mb-8">
                         <div>
-                            <div class="flex items-center gap-3 mb-1.5">
-                                <h2 class="text-3xl md:text-4xl font-black text-slate-800 tracking-tight">Dashboard</h2>
-                                <span id="status-badge" class="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-slate-200 text-slate-500 border border-slate-300 shadow-sm">CARREGANDO</span>
+                            <div class="flex items-center gap-3 mb-1">
+                                <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Visão Geral</h2>
+                                <span id="status-badge" class="px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-slate-200 text-slate-500 border border-slate-300 shadow-sm mt-1">A CARREGAR</span>
                             </div>
                             <div class="flex items-center gap-2">
-                                <p class="text-sm text-slate-500 font-medium">Visão geral da sua equipe</p>
+                                <p class="text-xs md:text-sm text-slate-500 font-medium">Sua equipe na palma da mão</p>
                                 <span class="text-slate-300">•</span>
-                                <a href="planos.html" class="text-xs font-bold text-cyan-600 hover:text-cyan-700 underline decoration-cyan-200 underline-offset-2 transition-colors">Upgrade de Plano</a>
+                                <a href="planos.html" class="text-[10px] md:text-xs font-bold text-cyan-600 hover:text-cyan-700 underline decoration-cyan-200 underline-offset-2 transition-colors">Fazer Upgrade de Plano</a>
                             </div>
                         </div>
                         
-                        <!-- BOTÕES DE AÇÃO -->
-                        <div class="flex flex-wrap gap-2.5">
-                            <button onclick="if(window.verificarAcesso('mural_avisos')) abrirModalMensagem()" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2.5 px-4 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center text-xs gap-2">
-                                <span>📢</span> <span class="hidden sm:inline">Mural</span>
+                        <div class="flex flex-wrap gap-2 md:gap-3 justify-center sm:justify-start">
+                            <button onclick="if(window.verificarAcesso('mural_avisos')) abrirModalMensagem()" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2.5 px-3 md:px-4 rounded-xl shadow-md transition-all flex items-center text-xs md:text-sm">
+                                <span class="mr-1 md:mr-2">📢</span> <span class="hidden sm:inline">Avisos</span>
                             </button>
-                            <button id="btn-config-equipe" onclick="abrirModalConfig()" class="hidden bg-slate-700 hover:bg-slate-800 text-white font-bold py-2.5 px-4 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center text-xs gap-2">
-                                <span>⚙️</span> <span class="hidden sm:inline">Configurações</span>
+
+                            <button id="btn-config-equipe" onclick="abrirModalConfig()" class="hidden bg-slate-700 hover:bg-slate-800 text-white font-bold py-2.5 px-3 md:px-4 rounded-xl shadow-md transition-all flex items-center text-xs md:text-sm">
+                                <span class="mr-1 md:mr-2">⚙️</span> <span class="hidden sm:inline">Configurar Equipe</span>
                             </button>
-                            <a href="cadastro.html" class="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-bold py-2.5 px-4 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center text-xs gap-2">
-                                <span>➕</span> <span class="hidden sm:inline">Novo Aluno</span>
+                            
+                            <a href="cadastro.html" class="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2.5 px-3 md:px-4 rounded-xl shadow-md transition-all flex items-center text-xs md:text-sm">
+                                <span class="mr-1 md:mr-2">➕</span> <span class="hidden sm:inline">Novo Aluno</span>
                             </a>
                         </div>
                     </div>
 
-                    <!-- PAINEL ONBOARDING -->
-                    <div id="painel-onboarding" class="hidden animate-card">
-                        <div class="bg-white rounded-3xl shadow-xl border border-slate-200/80 overflow-hidden">
-                            <div class="bg-gradient-to-br from-cyan-500 to-blue-600 p-10 md:p-14 text-center relative overflow-hidden">
-                                <div class="absolute inset-0 opacity-10">
-                                    <div class="absolute -right-10 -top-10 w-40 h-40 bg-white rounded-full"></div>
-                                    <div class="absolute -left-10 -bottom-10 w-60 h-60 bg-white rounded-full"></div>
-                                </div>
-                                <span class="text-7xl mb-5 block relative z-10 drop-shadow-lg">🥋</span>
-                                <h2 class="text-3xl md:text-5xl font-black text-white mb-3 relative z-10 tracking-tight drop-shadow-md">Bem-vindo ao BJJ Manager!</h2>
-                                <p class="text-cyan-100 text-lg font-medium max-w-2xl mx-auto relative z-10 leading-relaxed">
-                                    Seu tatame digital está pronto. Siga os 3 passos abaixo para começar a utilizar o sistema.
-                                </p>
+                    <div id="painel-onboarding" class="hidden">
+                        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                            <div class="bg-gradient-to-r from-cyan-500 to-blue-600 p-8 md:p-12 text-center relative overflow-hidden">
+                                <div class="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9IiNmZmYiLz48L3N2Zz4=')]"></div>
+                                <span class="text-6xl mb-4 block relative z-10">🥋</span>
+                                <h2 class="text-2xl md:text-4xl font-black text-white mb-2 relative z-10 tracking-tight">Bem-vindo ao BJJ Manager!</h2>
+                                <p class="text-cyan-100 md:text-lg font-medium max-w-2xl mx-auto relative z-10">O seu tatame digital está pronto. Não encontrei nenhum atleta matriculado na sua equipe ainda. Siga os 3 passos abaixo para começar a utilizar o sistema em pleno.</p>
                             </div>
                             
-                            <div class="p-8 md:p-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-                                <!-- PASSO 1 -->
-                                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-7 flex flex-col h-full hover:shadow-lg transition-all duration-300 group">
-                                    <div class="w-14 h-14 bg-slate-800 text-white rounded-xl flex items-center justify-center text-2xl font-black mb-5 shadow-md group-hover:scale-105 transition-transform">1</div>
-                                    <h3 class="font-black text-slate-800 uppercase tracking-wider text-xs mb-3">Configure sua Equipe</h3>
-                                    <p class="text-sm text-slate-500 leading-relaxed mb-8 flex-1">Adicione sua logo e configure os valores padrão da mensalidade.</p>
-                                    <button onclick="abrirModalConfig()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3.5 rounded-xl text-xs uppercase tracking-widest transition-all shadow-md hover:shadow-lg">⚙️ Configurar</button>
+                            <div class="p-6 md:p-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div class="bg-slate-50 border border-slate-100 rounded-2xl p-6 flex flex-col h-full hover:-translate-y-1 transition-transform">
+                                    <div class="w-12 h-12 bg-slate-800 text-white rounded-xl flex items-center justify-center text-xl font-black mb-4 shadow-md">1</div>
+                                    <h3 class="font-black text-slate-800 uppercase tracking-widest text-xs mb-2">Configure sua Equipe</h3>
+                                    <p class="text-xs text-slate-500 leading-relaxed mb-6 flex-1">Adicione a sua logo oficial, configure os valores padrão da mensalidade e convide os seus professores (co-administradores).</p>
+                                    <button onclick="abrirModalConfig()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-widest transition-colors">⚙️ Configurações</button>
                                 </div>
                                 
-                                <!-- PASSO 2 -->
-                                <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-7 flex flex-col h-full hover:shadow-lg transition-all duration-300 group">
-                                    <div class="w-14 h-14 bg-indigo-500 text-white rounded-xl flex items-center justify-center text-2xl font-black mb-5 shadow-md group-hover:scale-105 transition-transform">2</div>
-                                    <h3 class="font-black text-indigo-900 uppercase tracking-wider text-xs mb-3">Crie as Turmas</h3>
-                                    <p class="text-sm text-indigo-700/80 leading-relaxed mb-8 flex-1">Registre os horários de treinos para organizar seus alunos.</p>
-                                    <a href="turmas.html" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3.5 rounded-xl text-xs uppercase tracking-widest transition-all shadow-md hover:shadow-lg text-center">🗓️ Criar Turmas</a>
+                                <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-6 flex flex-col h-full hover:-translate-y-1 transition-transform">
+                                    <div class="w-12 h-12 bg-indigo-500 text-white rounded-xl flex items-center justify-center text-xl font-black mb-4 shadow-md">2</div>
+                                    <h3 class="font-black text-indigo-900 uppercase tracking-widest text-xs mb-2">Crie as Turmas</h3>
+                                    <p class="text-xs text-indigo-700/80 leading-relaxed mb-6 flex-1">Registe os horários de treinos (ex: "Adulto Noite", "Kids") para poder organizar e separar os seus alunos de forma inteligente.</p>
+                                    <a href="turmas.html" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-widest transition-colors text-center block">🗓️ Criar Turmas</a>
                                 </div>
 
-                                <!-- PASSO 3 -->
-                                <div class="bg-cyan-50 border border-cyan-200 rounded-2xl p-7 flex flex-col h-full hover:shadow-lg transition-all duration-300 group">
-                                    <div class="w-14 h-14 bg-cyan-500 text-white rounded-xl flex items-center justify-center text-2xl font-black mb-5 shadow-md group-hover:scale-105 transition-transform">3</div>
-                                    <h3 class="font-black text-cyan-900 uppercase tracking-wider text-xs mb-3">Matricule Atletas</h3>
-                                    <p class="text-sm text-cyan-700/80 leading-relaxed mb-8 flex-1">Adicione seus alunos e o sistema gerará carteirinhas e mensalidades.</p>
-                                    <a href="cadastro.html" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-3.5 rounded-xl text-xs uppercase tracking-widest transition-all shadow-md hover:shadow-lg text-center">➕ Novo Aluno</a>
+                                <div class="bg-cyan-50 border border-cyan-100 rounded-2xl p-6 flex flex-col h-full hover:-translate-y-1 transition-transform">
+                                    <div class="w-12 h-12 bg-cyan-500 text-white rounded-xl flex items-center justify-center text-xl font-black mb-4 shadow-md">3</div>
+                                    <h3 class="font-black text-cyan-900 uppercase tracking-widest text-xs mb-2">Matricule Atletas</h3>
+                                    <p class="text-xs text-cyan-700/80 leading-relaxed mb-6 flex-1">Adicione os seus alunos. O sistema irá gerar imediatamente as mensalidades, as carteirinhas digitais e o gerenciar sua equipe.</p>
+                                    <a href="cadastro.html" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-widest transition-colors text-center block">➕ Novo Aluno</a>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- PAINEL MÉTRICAS (DASHBOARD ATIVO) -->
-                    <div id="painel-metricas" class="hidden space-y-6">
-                        
-                        <!-- CARDS PRINCIPAIS -->
-                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                            <!-- Alunos Ativos -->
-                            <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200/80 hover:shadow-lg transition-all duration-300 group animate-card" style="animation-delay: 0.05s">
-                                <div class="flex items-start justify-between mb-2">
-                                    <h3 class="text-slate-400 text-[11px] font-black tracking-widest uppercase">Alunos Ativos</h3>
-                                    <span class="text-cyan-500 bg-cyan-50 p-1.5 rounded-lg text-lg leading-none">🥋</span>
-                                </div>
-                                <p class="text-3xl md:text-4xl font-black text-slate-800 tracking-tight" id="card-ativos">0</p>
-                                <div class="mt-3 h-1 w-full bg-slate-100 rounded-full overflow-hidden">
-                                    <div class="h-full bg-gradient-to-r from-cyan-400 to-cyan-600 rounded-full w-0 transition-all duration-1000" id="barra-ativos" style="width: 0%"></div>
-                                </div>
+                    <div id="painel-metricas" class="hidden">
+                        <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-cyan-500 flex flex-col justify-center hover:-translate-y-1 transition-transform">
+                                <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">Alunos Ativos</h3>
+                                <p class="text-2xl md:text-3xl font-black text-slate-800" id="card-ativos">⏳</p>
                             </div>
-
-                            <!-- Receita do Mês -->
-                            <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200/80 hover:shadow-lg transition-all duration-300 group animate-card" style="animation-delay: 0.1s">
-                                <div class="flex items-start justify-between mb-2">
-                                    <h3 class="text-slate-400 text-[11px] font-black tracking-widest uppercase" id="lbl-receita">Receita do Mês</h3>
-                                    <span class="text-emerald-500 bg-emerald-50 p-1.5 rounded-lg text-lg leading-none">💰</span>
-                                </div>
-                                <p class="text-2xl md:text-3xl font-black text-emerald-600 truncate tracking-tight" id="card-receitas">R$ 0,00</p>
-                                <div class="mt-3 text-[10px] font-bold text-emerald-500/70 uppercase tracking-wider">Total recebido</div>
+                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-emerald-500 flex flex-col justify-center hover:-translate-y-1 transition-transform">
+                                <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1" id="lbl-receita">Caixa do Mês</h3>
+                                <p class="text-xl md:text-2xl font-black text-emerald-600 truncate" id="card-receitas">⏳</p>
                             </div>
-
-                            <!-- A Receber -->
-                            <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200/80 hover:shadow-lg transition-all duration-300 group animate-card" style="animation-delay: 0.15s">
-                                <div class="flex items-start justify-between mb-2">
-                                    <h3 class="text-slate-400 text-[11px] font-black tracking-widest uppercase">A Receber</h3>
-                                    <span class="text-amber-500 bg-amber-50 p-1.5 rounded-lg text-lg leading-none">⚠️</span>
-                                </div>
-                                <p class="text-2xl md:text-3xl font-black text-amber-600 truncate tracking-tight" id="card-inadimplencia">R$ 0,00</p>
-                                <div class="mt-3 text-[10px] font-bold text-amber-500/70 uppercase tracking-wider">Pendências</div>
+                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-amber-500 flex flex-col justify-center hover:-translate-y-1 transition-transform">
+                                <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">A Receber</h3>
+                                <p class="text-xl md:text-2xl font-black text-amber-500 truncate" id="card-inadimplencia">⏳</p>
                             </div>
-
-                            <!-- Despesas -->
-                            <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200/80 hover:shadow-lg transition-all duration-300 group animate-card" style="animation-delay: 0.2s">
-                                <div class="flex items-start justify-between mb-2">
-                                    <h3 class="text-slate-400 text-[11px] font-black tracking-widest uppercase">Despesas</h3>
-                                    <span class="text-rose-500 bg-rose-50 p-1.5 rounded-lg text-lg leading-none">📉</span>
-                                </div>
-                                <p class="text-2xl md:text-3xl font-black text-rose-500 truncate tracking-tight" id="card-despesas">R$ 0,00</p>
-                                <div class="mt-3 text-[10px] font-bold text-rose-500/70 uppercase tracking-wider">Este mês</div>
+                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-rose-500 flex flex-col justify-center hover:-translate-y-1 transition-transform">
+                                <h3 class="text-slate-400 text-[9px] md:text-[10px] font-black tracking-widest uppercase mb-1">Despesas (Mês)</h3>
+                                <p class="text-xl md:text-2xl font-black text-rose-500 truncate" id="card-despesas">⏳</p>
                             </div>
                         </div>
 
-                        <!-- RÁIO-X DAS FAIXAS -->
-                        <div class="bg-white rounded-2xl shadow-md border border-slate-200/80 p-6 animate-card" style="animation-delay: 0.25s">
-                            <h3 class="font-black text-slate-800 uppercase tracking-wider text-xs mb-5 flex items-center gap-2">
-                                <span class="text-xl">🌈</span> Distribuição por Faixas (Ativos)
-                            </h3>
+                        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-5 md:p-6 mb-6">
+                            <h3 class="font-black text-slate-800 uppercase tracking-widest text-xs mb-4 border-b border-slate-100 pb-3">🥋 Raio-X da Equipe (Ativos)</h3>
                             <div class="flex flex-wrap gap-3" id="grid-faixas">
-                                <span class="text-slate-400 text-sm flex items-center gap-2"><span class="inline-block w-4 h-4 bg-slate-200 rounded-full animate-pulse"></span> Calculando...</span>
+                                <span class="text-slate-400 text-sm">Calculando faixas...</span>
                             </div>
                         </div>
 
-                        <!-- GRID DE WIDGETS -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                             
-                            <!-- ANIVERSARIANTES -->
-                            <div class="bg-white rounded-2xl shadow-md border border-slate-200/80 flex flex-col h-[350px] overflow-hidden animate-card" style="animation-delay: 0.3s">
-                                <div class="p-5 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white shrink-0">
-                                    <h3 class="font-black text-slate-800 text-xs uppercase tracking-wider flex items-center gap-2">
-                                        <span class="text-xl">🎂</span> Aniversariantes do Mês
-                                    </h3>
+                            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-80">
+                                <div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-3xl shrink-0">
+                                    <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">🎂</span> Aniversariantes</h3>
                                 </div>
                                 <div class="flex-1 overflow-y-auto p-4 hide-scrollbar space-y-2" id="lista-niver">
-                                    <div class="text-center text-slate-400 text-sm py-8">Buscando aniversariantes...</div>
+                                    <div class="text-center text-slate-400 text-sm mt-5">A procurar festas...</div>
                                 </div>
                             </div>
 
-                            <!-- TURMAS E FAIXAS -->
-                            <div class="bg-white rounded-2xl shadow-md border border-slate-200/80 flex flex-col h-[350px] overflow-hidden animate-card" style="animation-delay: 0.35s">
-                                <div class="p-5 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white shrink-0">
-                                    <h3 class="font-black text-slate-800 text-xs uppercase tracking-wider flex items-center gap-2">
-                                        <span class="text-xl">👥</span> Alunos por Turma
-                                    </h3>
+                            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-80">
+                                <div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-3xl shrink-0">
+                                    <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">👥</span> Faixas por Turma</h3>
                                 </div>
-                                <div class="flex-1 overflow-y-auto p-4 hide-scrollbar space-y-3" id="lista-turmas">
-                                    <div class="text-center text-slate-400 text-sm py-8">Mapeando turmas...</div>
+                                <div class="flex-1 overflow-y-auto p-4 hide-scrollbar space-y-4" id="lista-turmas">
+                                    <div class="text-center text-slate-400 text-sm mt-5">A mapear turmas...</div>
                                 </div>
                             </div>
 
-                            <!-- ATENÇÃO FINANCEIRA -->
-                            <div class="bg-white rounded-2xl shadow-md border border-slate-200/80 flex flex-col h-[350px] overflow-hidden border-t-4 border-t-amber-400 animate-card" style="animation-delay: 0.4s">
-                                <div class="p-5 border-b border-slate-100 bg-gradient-to-r from-amber-50/50 to-white shrink-0">
-                                    <h3 class="font-black text-amber-800 text-xs uppercase tracking-wider flex items-center gap-2">
-                                        <span class="text-xl">⚠️</span> Pendências Financeiras
-                                    </h3>
+                            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-80">
+                                <div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-3xl flex justify-between items-center shrink-0">
+                                    <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">⚠️</span> Atenção (Finanças)</h3>
                                 </div>
                                 <div class="flex-1 overflow-y-auto p-4 hide-scrollbar space-y-2" id="lista-pendencias">
-                                    <div class="text-center text-slate-400 text-sm py-8">Analisando mensalidades...</div>
+                                    <div class="text-center text-slate-400 text-sm mt-5">A calcular mensalidades...</div>
                                 </div>
                             </div>
 
-                            <!-- CHECK-INS DO DIA -->
-                            <div class="bg-white rounded-2xl shadow-md border border-slate-200/80 flex flex-col h-[350px] overflow-hidden border-t-4 border-t-emerald-400 animate-card" style="animation-delay: 0.45s">
-                                <div class="p-5 border-b border-slate-100 bg-gradient-to-r from-emerald-50/50 to-white shrink-0">
-                                    <h3 class="font-black text-emerald-800 text-xs uppercase tracking-wider flex items-center gap-2">
-                                        <span class="text-xl">📍</span> Presenças de Hoje
-                                    </h3>
+                            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 flex flex-col h-80 border-t-4 border-t-emerald-500">
+                                <div class="p-4 border-b border-slate-100 bg-slate-50 rounded-t-3xl shrink-0">
+                                    <h3 class="font-black text-emerald-700 text-xs uppercase tracking-widest flex items-center"><span class="text-lg mr-2">📍</span> Hoje no Tatame</h3>
                                 </div>
                                 <div class="flex-1 overflow-y-auto p-4 hide-scrollbar space-y-2" id="lista-checkins">
-                                    <div class="text-center text-slate-400 text-sm py-8">Carregando check-ins...</div>
+                                    <div class="text-center text-slate-400 text-sm mt-5">A procurar presenças...</div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
+
                 </div>
             </div>
+
         </main>
     </div>
 
-    <!-- MODAIS (MANTIDOS IGUAIS PARA NÃO QUEBRAR FUNCIONALIDADES) -->
     <div id="modal-mensagem" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
-        <!-- Conteúdo do modal de mensagens permanece igual -->
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
             <div class="bg-indigo-600 p-4 text-white font-black uppercase tracking-widest text-sm flex justify-between items-center shrink-0">
                 <span>📢 Mural de Avisos (Alunos)</span>
                 <button onclick="fecharModalMensagem()" class="text-indigo-200 hover:text-white text-xl leading-none">&times;</button>
             </div>
+            
             <div class="flex border-b border-slate-200 shrink-0 overflow-x-auto hide-scrollbar">
                 <button id="tab-btn-msg-nova" onclick="switchMsgTab('nova')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-indigo-600 border-b-2 border-indigo-500 transition-colors whitespace-nowrap">Novo Aviso</button>
                 <button id="tab-btn-msg-lista" onclick="switchMsgTab('lista')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors whitespace-nowrap">Avisos Ativos</button>
             </div>
+
             <div id="tab-msg-nova" class="p-6 flex-1 overflow-y-auto space-y-4">
                 <p class="text-[11px] text-slate-500 font-medium leading-relaxed mb-2">Este aviso aparecerá no portal digital de todos os alunos ativos da sua equipe.</p>
+                
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Título do Aviso</label>
@@ -327,6 +244,7 @@
                         <input type="date" id="msg-validade" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 font-bold text-slate-600 cursor-pointer">
                     </div>
                 </div>
+
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Urgência do Aviso</label>
                     <div class="flex gap-2">
@@ -344,16 +262,19 @@
                         </label>
                     </div>
                 </div>
+                
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Mensagem</label>
                     <textarea id="msg-conteudo" rows="4" placeholder="Escreva o recado para os alunos..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 text-sm text-slate-700 resize-none"></textarea>
                 </div>
             </div>
+
             <div id="tab-msg-lista" class="hidden p-6 flex-1 overflow-y-auto flex-col space-y-4 bg-slate-50/50">
                 <div id="lista-mensagens-ativas" class="space-y-3">
                     <div class="text-center text-slate-400 text-xs italic py-4">Buscando avisos...</div>
                 </div>
             </div>
+
             <div class="p-5 bg-slate-50 border-t border-slate-100 flex gap-3 shrink-0">
                 <button onclick="fecharModalMensagem()" class="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-200 rounded-xl transition-colors">Fechar</button>
                 <button id="btn-enviar-msg" onclick="enviarMensagemEquipe()" class="flex-1 py-3 text-sm font-black text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-lg uppercase tracking-widest transition-transform transform hover:-translate-y-0.5">Publicar Aviso</button>
@@ -361,29 +282,32 @@
         </div>
     </div>
     
-    <!-- MODAL CONFIGURAÇÕES -->
     <div id="modal-config-equipe" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
             <div class="bg-slate-800 p-4 text-white font-black uppercase tracking-widest text-sm flex justify-between items-center shrink-0">
                 <span>⚙️ Configurar Equipe</span>
                 <button onclick="fecharModalConfig()" class="text-slate-400 hover:text-white text-xl leading-none">&times;</button>
             </div>
+            
             <div class="flex border-b border-slate-200 shrink-0 overflow-x-auto hide-scrollbar">
                 <button id="tab-btn-dados" onclick="switchConfigTab('dados')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-cyan-600 border-b-2 border-cyan-500 transition-colors whitespace-nowrap">Dados</button>
                 <button id="tab-btn-colabs" onclick="switchConfigTab('colabs')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors whitespace-nowrap">Equipe Técnica</button>
                 <button id="tab-btn-convites" onclick="switchConfigTab('convites')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors whitespace-nowrap">Convites</button>
             </div>
+
             <div id="tab-dados" class="p-6 flex-1 overflow-y-auto space-y-4">
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome da Equipe</label>
                     <input type="text" id="config-nome-equipe" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700 uppercase">
                 </div>
+                
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Alterar Logo (Opcional)</label>
                     <input type="file" id="config-logo" accept="image/png, image/jpeg" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-cyan-50 file:text-cyan-600 hover:file:bg-cyan-100 transition-all cursor-pointer">
                     <p class="text-[9px] text-slate-400 mt-1">Formatos: JPG ou PNG. Máximo: 2MB.</p>
                 </div>
             </div>
+
             <div id="tab-colabs" class="hidden p-6 flex-1 overflow-y-auto flex-col space-y-4">
                 <p class="text-[11px] text-slate-500 font-medium leading-relaxed">Adicione o e-mail de co-administrador para que eles tenham acesso instantâneo ao sistema da sua equipe.</p>
                 <div class="flex gap-2">
@@ -397,6 +321,7 @@
                     </div>
                 </div>
             </div>
+
             <div id="tab-convites" class="hidden p-6 flex-1 overflow-y-auto flex-col space-y-6">
                 <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
                     <h4 class="text-xs font-black text-indigo-700 uppercase mb-1 flex items-center"><span class="mr-2 text-base">👥</span> Para Co-Adminsitrador(a) / Auxiliares</h4>
@@ -415,6 +340,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="p-5 bg-slate-50 border-t border-slate-100 flex gap-3 shrink-0">
                 <button onclick="fecharModalConfig()" class="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-200 rounded-xl transition-colors">Fechar</button>
                 <button id="btn-salvar-config" onclick="salvarConfigEquipe()" class="flex-1 py-3 text-sm font-black text-white bg-cyan-500 hover:bg-cyan-600 rounded-xl shadow-lg uppercase tracking-widest transition-transform transform hover:-translate-y-0.5">Salvar Dados</button>
@@ -422,7 +348,6 @@
         </div>
     </div>
 
-    <!-- MODAL PAGAMENTO RÁPIDO -->
     <div id="modal-pagamento-rapido" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col">
             <div class="bg-emerald-500 p-4 text-white font-black uppercase tracking-widest text-sm flex items-center justify-between">
@@ -456,11 +381,7 @@
     
     <script src="menu.js"></script>
 
-    <!-- SCRIPT PRINCIPAL (MANTIDO ÍNTEGRO PARA NÃO QUEBRAR LÓGICA) -->
     <script type="module">
-        // Todo o código JavaScript original mantido exatamente igual
-        // Apenas pequenas adaptações visuais nos seletores de loading
-        
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -482,7 +403,7 @@
         
         let uid = null;        
         let dadosEquipe = null; 
-        let configPlanosCache = null;
+        let configPlanosCache = null; // Guardará o nome de cada plano
         let nomeEquipeAtual = "";
         let logoEquipeAnterior = ""; 
         
@@ -490,6 +411,7 @@
         let valAtraso = 100.0;
         let pagRapidoDados = null; 
         
+        // VARIÁVEIS GLOBAIS PARA MENSAGENS
         let mensagensCache = [];
         let mensagemEditandoId = null;
 
@@ -498,7 +420,7 @@
             const toast = document.createElement('div');
             const bgColor = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : 'bg-slate-800');
             const icon = type === 'success' ? '✅' : (type === 'error' ? '🚨' : 'ℹ️');
-            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transition-all duration-300 transform translate-x-0 font-bold text-sm z-50 pointer-events-auto max-w-sm flex items-center gap-3`;
+            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transition-all duration-300 transform translate-x-0 font-bold text-sm z-50 pointer-events-auto max-w-sm`;
             toast.innerHTML = `<span class="text-xl">${icon}</span> <span class="flex-1">${message}</span>`;
             container.appendChild(toast);
             setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 10);
@@ -508,6 +430,9 @@
             }, 4500);
         }
 
+        // ==========================================
+        // 🔒 MOTOR DE PERMISSÕES E PAYWALL
+        // ==========================================
         const HIERARQUIA_PLANOS = {
             'TESTE': 1, 'BASICO': 1, 'BLACK_BELT': 1,
             'INTERMEDIARIO': 2, 'MASTER': 2,
@@ -572,6 +497,28 @@
             }
         };
 
+        // ==========================================
+        // 🔒 PROTEÇÃO DE ROTAS (ANTI-BURLA)
+        // ==========================================
+        function protegerPaginaRestrita(recursoNomeEsperado) {
+            const isImpersonating = sessionStorage.getItem('admin_impersonate') !== null;
+            if (isImpersonating || (dadosEquipe && (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true"))) {
+                return; // Tem passe livre
+            }
+
+            if (!window.funcionalidadesEquipe) return;
+
+            // Se as features da equipe não incluírem a funcionalidade, recusa e volta ao dashboard
+            const temAcesso = window.funcionalidadesEquipe.some(f => f.includes('✓') && f.includes(recursoNomeEsperado));
+            
+            if (!temAcesso) {
+                alert(`🔒 Acesso Restrito. O seu plano atual não inclui a funcionalidade: ${recursoNomeEsperado}`);
+                window.location.href = "dashboard.html";
+            }
+        }
+
+        // ==========================================
+
         async function verificarAvisoGlobal() {
             try {
                 const snap = await getDoc(doc(db, "sistema", "aviso_global"));
@@ -596,11 +543,10 @@
                         
                         textoEl.innerText = aviso.texto;
                         
-                        banner.className = `w-full text-center px-5 py-3.5 text-sm font-bold text-white shadow-lg z-40 fixed top-0 left-0 transition-all duration-500 transform -translate-y-full flex items-center justify-center ${aviso.cor || 'bg-indigo-600'}`;
+                        banner.className = `w-full text-center px-4 py-3 text-xs md:text-sm font-bold text-white shadow-md z-40 fixed top-0 left-0 transition-transform transform translate-y-[-100%] flex items-center justify-center ${aviso.cor || 'bg-indigo-600'}`;
                         
                         setTimeout(() => {
-                            banner.classList.remove('hidden', '-translate-y-full');
-                            banner.classList.add('translate-y-0');
+                            banner.classList.remove('hidden', 'translate-y-[-100%]');
                             interfaceSistema.style.marginTop = banner.offsetHeight + 'px';
                         }, 500);
                     }
@@ -611,12 +557,12 @@
         window.fecharBannerAviso = function() {
             const banner = document.getElementById('banner-aviso-global');
             const interfaceSistema = document.getElementById('interface-sistema');
-            banner.classList.add('-translate-y-full');
-            banner.classList.remove('translate-y-0');
+            banner.classList.add('translate-y-[-100%]');
             interfaceSistema.style.marginTop = '0px';
             setTimeout(() => banner.classList.add('hidden'), 300);
         }
 
+        // --- CONTROLE MODAL DE MENSAGENS COM ABAS ---
         window.switchMsgTab = function(tab) {
             if(tab === 'nova' && !mensagemEditandoId) {
                 document.getElementById('tab-btn-msg-nova').innerText = "Novo Aviso";
@@ -943,6 +889,7 @@
             } catch (e) { showToast("Erro ao remover.", "error"); }
         };
 
+        // --- AUTENTICAÇÃO E CARREGAMENTO DE PLANO (O CÉREBRO) ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 let isSuper = false;
@@ -997,6 +944,7 @@
                     const emailLogado = document.getElementById('email-logado');
                     if (emailLogado) emailLogado.innerText = user.email;
 
+                    // 1. CARREGA OS NOMES DOS PLANOS DO SUPER ADMIN
                     try {
                         const planosSnap = await getDoc(doc(db, "sistema", "config_planos"));
                         if(planosSnap.exists()) {
@@ -1023,6 +971,7 @@
 
                     if (dadosEquipe) {
                         
+                        // BLOQUEIO GERAL (CHURN)
                         if (dadosEquipe.status_plano === 'BLOQUEADO' && !isImpersonating) {
                             document.getElementById('interface-sistema').classList.add('hidden');
                             document.getElementById('tela-bloqueio').classList.remove('hidden');
@@ -1030,6 +979,7 @@
                             return; 
                         }
 
+                        // --- TRATA O NOME DO PLANO E O STATUS DO CABEÇALHO ---
                         const badgeStatus = document.getElementById('status-badge');
                         const txtNomePlano = document.getElementById('nome-equipe');
                         
@@ -1052,6 +1002,7 @@
                             window.funcionalidadesEquipe = [];
                         }
 
+                        // PASSE LIVRE
                         if (isImpersonating || String(dadosEquipe.isento) === "true") {
                             window.funcionalidadesEquipe = [
                                 "✓ Automação Asaas (PIX/Cartão)", "✓ Vitrine Virtual (Loja Online)", 
@@ -1064,10 +1015,10 @@
                         if (badgeStatus) {
                             if (statusAt === 'TESTE') {
                                 badgeStatus.innerText = `TESTE: ${nomeRealDoPlano.toUpperCase()}`;
-                                badgeStatus.className = "px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-700 border border-amber-200 shadow-sm badge-pulse";
+                                badgeStatus.className = "px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-amber-100 text-amber-700 border border-amber-200 mt-1";
                             } else {
                                 badgeStatus.innerText = `${nomeRealDoPlano.toUpperCase()}`;
-                                badgeStatus.className = "px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-700 border border-emerald-200 shadow-sm";
+                                badgeStatus.className = "px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-700 border border-emerald-200 mt-1 shadow-sm shadow-emerald-500/20";
                             }
                         }
 
@@ -1075,6 +1026,7 @@
                             window.atualizarMenuSeguro(window.funcionalidadesEquipe);
                         }
 
+                        // GUARDA AS VARIÁVEIS PARA O RESTO DA TELA
                         nomeEquipeAtual = dadosEquipe.nome_equipe || "";
                         if(dadosEquipe.url_logo) logoEquipeAnterior = dadosEquipe.url_logo;
                         if (dadosEquipe.valor_prazo) valPrazo = parseFloat(dadosEquipe.valor_prazo);
@@ -1103,6 +1055,7 @@
                         }
                     }
                     
+                    // Dispara as buscas de dados
                     verificarAvisoGlobal();
                     carregarDashboard();
 
@@ -1171,29 +1124,30 @@
 
         function obterEstiloFaixa(faixa) {
             const faixasInfo = {
-                'Branca': 'bg-white border-gray-300',
-                'Cinza e branca': 'bg-gradient-to-r from-gray-400 to-white',
-                'Cinza': 'bg-gray-400',
-                'Cinza e preta': 'bg-gradient-to-r from-gray-400 to-black',
-                'Amarela e branca': 'bg-gradient-to-r from-yellow-500 to-white',
-                'Amarela': 'bg-yellow-500',
-                'Amarela e preta': 'bg-gradient-to-r from-yellow-500 to-black',
-                'Laranja e branca': 'bg-gradient-to-r from-orange-500 to-white',
-                'Laranja': 'bg-orange-500',
-                'Laranja e preta': 'bg-gradient-to-r from-orange-500 to-black',
-                'Verde e branca': 'bg-gradient-to-r from-green-500 to-white',
-                'Verde': 'bg-green-500',
-                'Verde e preta': 'bg-gradient-to-r from-green-500 to-black',
-                'Azul': 'bg-blue-500',
-                'Roxa': 'bg-purple-500',
-                'Marrom': 'bg-amber-800',
-                'Preta': 'bg-black',
-                'Coral': 'bg-gradient-to-r from-red-500 to-black',
-                'Vermelha': 'bg-red-600'
+                'Branca': 'background-color: #ffffff',
+                'Cinza e branca': 'background: linear-gradient(135deg, #94a3b8 50%, #ffffff 50%)',
+                'Cinza': 'background-color: #94a3b8',
+                'Cinza e preta': 'background: linear-gradient(135deg, #94a3b8 50%, #000000 50%)',
+                'Amarela e branca': 'background: linear-gradient(135deg, #eab308 50%, #ffffff 50%)',
+                'Amarela': 'background-color: #eab308',
+                'Amarela e preta': 'background: linear-gradient(135deg, #eab308 50%, #000000 50%)',
+                'Laranja e branca': 'background: linear-gradient(135deg, #f97316 50%, #ffffff 50%)',
+                'Laranja': 'background-color: #f97316',
+                'Laranja e preta': 'background: linear-gradient(135deg, #f97316 50%, #000000 50%)',
+                'Verde e branca': 'background: linear-gradient(135deg, #22c55e 50%, #ffffff 50%)',
+                'Verde': 'background-color: #22c55e',
+                'Verde e preta': 'background: linear-gradient(135deg, #22c55e 50%, #000000 50%)',
+                'Azul': 'background-color: #3b82f6',
+                'Roxa': 'background-color: #a855f7',
+                'Marrom': 'background-color: #78350f',
+                'Preta': 'background-color: #000000',
+                'Coral': 'background: linear-gradient(135deg, #ef4444 50%, #000000 50%)',
+                'Vermelha': 'background-color: #dc2626'
             };
             
             const faixaNormalizada = faixa ? faixa.charAt(0).toUpperCase() + faixa.slice(1).toLowerCase().trim() : 'Branca';
-            return faixasInfo[faixaNormalizada] || 'bg-slate-400'; 
+            
+            return faixasInfo[faixaNormalizada] || 'background-color: #cbd5e1'; 
         }
 
         async function carregarDashboard() {
@@ -1248,11 +1202,6 @@
                 let ativos = 0, valorAtrasado = 0;
                 let faixasCount = {}, aniversariantesHTML = '', pendenciasHTML = '';
 
-                const totalAlunosAtivos = alunosSnap.docs.filter(doc => {
-                    const status = String(doc.data().status || 'ativo').toLowerCase().trim();
-                    return status === 'ativo';
-                }).length;
-
                 alunosSnap.forEach((doc) => {
                     const aluno = doc.data();
                     const alunoId = doc.id;
@@ -1275,7 +1224,7 @@
 
                             if (mesNiver === mesAtual) {
                                 aniversariantesHTML += `
-                                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200 hover:shadow-md transition-shadow">
+                                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100 mb-2 shadow-sm">
                                         <div class="flex items-center gap-3">
                                             <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-black text-xs">${diaNiver}</div>
                                             <span class="text-sm font-bold text-slate-700 truncate w-32">${aluno.nome || 'Aluno'}</span>
@@ -1294,6 +1243,7 @@
                             turmasMap[nomeTurma].push({ nome: aluno.nome || 'Aluno', faixa: faixa });
                         });
 
+                        // ATENÇÃO FINANCEIRA
                         let isAlerta = false, msgAlerta = '', tema = 'rose'; 
                         const diaVenc = parseInt(aluno.dia_vencimento, 10);
                         const statusFaturaObj = faturasDoMes[alunoId]; 
@@ -1311,21 +1261,21 @@
                             let valorDaDivida = (tema === 'rose' ? valAtraso : valPrazo) * (1 - bolsa/100);
                             valorAtrasado += valorDaDivida; 
 
-                            const cssBg = tema === 'rose' ? 'bg-rose-50/80' : 'bg-amber-50/80';
-                            const cssBorder = tema === 'rose' ? 'border-rose-200' : 'border-amber-200';
-                            const cssTextLight = tema === 'rose' ? 'text-rose-600' : 'text-amber-600';
-                            const cssTextDark = tema === 'rose' ? 'text-rose-700' : 'text-amber-700';
+                            const cssBg = tema === 'rose' ? 'bg-rose-50' : 'bg-amber-50';
+                            const cssBorder = tema === 'rose' ? 'border-rose-100' : 'border-amber-100';
+                            const cssTextLight = tema === 'rose' ? 'text-rose-500' : 'text-amber-500';
+                            const cssTextDark = tema === 'rose' ? 'text-rose-600' : 'text-amber-600';
                             const idSafe = statusFaturaObj ? `'${statusFaturaObj.id}'` : 'null';
 
                             pendenciasHTML += `
-                                <div class="flex items-center justify-between p-3 ${cssBg} rounded-xl border ${cssBorder} hover:shadow-sm transition-shadow">
+                                <div class="flex items-center justify-between p-3 ${cssBg} rounded-xl border ${cssBorder} mb-2 shadow-sm">
                                     <div class="flex-1 overflow-hidden pr-2">
                                         <p class="text-sm font-bold text-slate-800 truncate">${aluno.nome || 'Aluno'}</p>
-                                        <p class="text-[10px] uppercase font-black ${cssTextLight} mt-0.5">${msgAlerta}</p>
+                                        <p class="text-[9px] uppercase font-black ${cssTextLight} mt-0.5">${msgAlerta}</p>
                                     </div>
                                     <div class="flex items-center gap-2 shrink-0">
                                         <span class="text-xs font-black ${cssTextDark}">${valorDaDivida > 0 ? 'R$ ' + valorDaDivida.toFixed(2).replace('.', ',') : '-'}</span>
-                                        <button onclick="pagamentoRapido('${alunoId}', '${(aluno.nome||'').replace(/'/g, "\\'")}', ${valorDaDivida}, ${idSafe})" class="bg-white hover:bg-emerald-500 text-emerald-600 hover:text-white border border-emerald-200 p-1.5 rounded-lg transition-all flex items-center justify-center shadow-sm">
+                                        <button onclick="pagamentoRapido('${alunoId}', '${(aluno.nome||'').replace(/'/g, "\\'")}', ${valorDaDivida}, ${idSafe})" class="bg-white hover:bg-emerald-100 text-emerald-500 border border-emerald-200 p-1.5 rounded-lg transition-colors flex items-center justify-center shadow-sm">
                                             ✅
                                         </button>
                                     </div>
@@ -1348,32 +1298,30 @@
 
                     if(checkins.length === 0) {
                         checkinsHTML = `
-                            <div class="flex flex-col items-center justify-center h-full text-slate-400 py-10">
-                                <span class="text-3xl mb-3 opacity-50">😴</span>
-                                <p class="text-sm font-medium">Ainda sem presenças hoje</p>
-                                <p class="text-[10px] mt-1 opacity-70">Os check-ins aparecerão aqui</p>
+                            <div class="flex flex-col items-center justify-center h-full text-slate-400 mt-8">
+                                <span class="text-2xl mb-2">😴</span><p class="text-sm font-medium">Ainda sem presenças registadas</p>
                             </div>
                         `;
                     } else {
                         checkins.forEach(ck => {
                             const hora = new Date(ck.timestamp).toLocaleTimeString('pt-PT', {hour: '2-digit', minute:'2-digit'});
                             checkinsHTML += `
-                                <div class="flex items-center justify-between p-3 bg-emerald-50/50 rounded-xl border border-emerald-200 hover:shadow-sm transition-shadow">
+                                <div class="flex items-center justify-between p-3 bg-emerald-50/50 rounded-xl border border-emerald-100 mb-2 shadow-sm">
                                     <div class="flex items-center gap-3 overflow-hidden">
-                                        <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-black text-xs shrink-0 shadow-sm">📍</div>
+                                        <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-black text-xs shrink-0">📍</div>
                                         <div class="truncate">
                                             <span class="text-xs font-bold text-slate-700 truncate block">${ck.aluno_nome}</span>
-                                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider truncate block">${ck.turma_nome}</span>
+                                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest truncate block">${ck.turma_nome}</span>
                                         </div>
                                     </div>
-                                    <span class="text-[10px] font-black text-emerald-600 bg-white px-2.5 py-1 rounded-lg border border-emerald-200 shrink-0 shadow-sm">${hora}</span>
+                                    <span class="text-[9px] font-black text-emerald-500 bg-white px-2 py-1 rounded-md border border-emerald-100 shrink-0 shadow-sm">${hora}</span>
                                 </div>
                             `;
                         });
                     }
                 } catch(e) {
                     console.error("Erro a carregar checkins:", e);
-                    checkinsHTML = `<div class="text-center text-rose-500 text-xs py-8">Erro ao carregar presenças.</div>`;
+                    checkinsHTML = `<div class="text-center text-rose-500 text-xs py-4">Erro ao carregar presenças.</div>`;
                 }
                 
                 const elListaCheckins = document.getElementById('lista-checkins');
@@ -1402,27 +1350,23 @@
                         for (const [faixa, qtd] of Object.entries(faixasCount)) {
                             const estiloCss = obterEstiloFaixa(faixa);
                             gridFaixas.innerHTML += `
-                                <div class="bg-slate-50 border border-slate-200 px-4 py-2 rounded-xl flex items-center gap-3 shadow-sm hover:shadow transition-shadow">
-                                    <span class="w-4 h-4 rounded-full border border-slate-300 shadow-inner ${estiloCss}"></span>
-                                    <span class="text-xs font-bold text-slate-700">${faixa}: <span class="text-slate-900 ml-1">${qtd}</span></span>
+                                <div class="bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-sm">
+                                    <span class="w-3 h-3 rounded-full border border-slate-300 shadow-inner" style="${estiloCss}"></span>
+                                    <span class="text-xs font-bold text-slate-700">${faixa}: <span class="text-slate-900">${qtd}</span></span>
                                 </div>
                             `;
                         }
                     }
 
                     document.getElementById('lista-niver').innerHTML = aniversariantesHTML || `
-                        <div class="flex flex-col items-center justify-center h-full text-slate-400 py-10">
-                            <span class="text-3xl mb-3 opacity-50">🎈</span>
-                            <p class="text-sm font-medium">Nenhum aniversariante este mês</p>
-                            <p class="text-[10px] mt-1 opacity-70">Os aniversários aparecerão aqui</p>
+                        <div class="flex flex-col items-center justify-center h-full text-slate-400 mt-8">
+                            <span class="text-2xl mb-2">🎈</span><p class="text-sm font-medium">Nenhum aniversariante este mês</p>
                         </div>
                     `;
 
                     document.getElementById('lista-pendencias').innerHTML = pendenciasHTML || `
-                        <div class="flex flex-col items-center justify-center h-full text-slate-400 py-10">
-                            <span class="text-3xl mb-3 opacity-50">✅</span>
-                            <p class="text-sm font-medium">Nenhuma pendência financeira!</p>
-                            <p class="text-[10px] mt-1 opacity-70">Tudo em dia por aqui</p>
+                        <div class="flex flex-col items-center justify-center h-full text-slate-400 mt-8">
+                            <span class="text-2xl mb-2">✅</span><p class="text-sm font-medium">Nenhuma pendência financeira!</p>
                         </div>
                     `;
 
@@ -1433,41 +1377,39 @@
 
                         let listaAlunosHTML = '';
                         if (alunosDaTurma.length === 0) {
-                            listaAlunosHTML = `<p class="text-[10px] text-slate-400 text-center italic py-3">Turma Vazia</p>`;
+                            listaAlunosHTML = `<p class="text-[10px] text-slate-400 text-center italic py-2">Turma Vazia</p>`;
                         } else {
                             for (const al of alunosDaTurma) {
                                 const estiloCss = obterEstiloFaixa(al.faixa);
                                 listaAlunosHTML += `
-                                    <div class="flex justify-between items-center bg-white p-2.5 rounded-lg border border-slate-200 hover:shadow-sm transition-shadow">
-                                        <span class="text-[11px] font-bold text-slate-700 truncate pr-2 max-w-[65%]">${al.nome}</span>
+                                    <div class="flex justify-between items-center bg-white p-2.5 rounded-xl border border-slate-100 mb-1.5 shadow-sm">
+                                        <span class="text-[11px] font-bold text-slate-700 truncate pr-2 w-[65%]">${al.nome}</span>
                                         <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-slate-50 border border-slate-200 text-[9px] font-bold text-slate-600 shadow-sm shrink-0">
-                                            <span class="w-2 h-2 rounded-full shadow-inner border border-slate-200 ${estiloCss}"></span>${al.faixa}
+                                            <span class="w-2 h-2 rounded-full shadow-inner border border-slate-200" style="${estiloCss}"></span>${al.faixa}
                                         </span>
                                     </div>
                                 `;
                             }
                         }
 
-                        const bgHeaderTurma = turmaNome === "SEM TURMA DEFINIDA" ? "bg-amber-50 border-amber-200" : "bg-slate-50 border-slate-200";
+                        const bgHeaderTurma = turmaNome === "SEM TURMA DEFINIDA" ? "bg-amber-100/50 border-amber-200" : "bg-slate-50 border-slate-200";
                         const iconeTurma = turmaNome === "SEM TURMA DEFINIDA" ? "⚠️" : "🥋";
-                        const corTextoTurma = turmaNome === "SEM TURMA DEFINIDA" ? "text-amber-700" : "text-slate-700";
+                        const corTextoTurma = turmaNome === "SEM TURMA DEFINIDA" ? "text-amber-800" : "text-slate-600";
 
                         turmasHTML += `
-                            <div class="p-3 ${bgHeaderTurma} rounded-xl border shadow-sm">
-                                <h4 class="text-[10px] font-black ${corTextoTurma} uppercase tracking-wider mb-3 flex items-center gap-2 border-b border-slate-200/60 pb-2">
+                            <div class="p-3 ${bgHeaderTurma} rounded-2xl border mb-4 shadow-sm">
+                                <h4 class="text-[10px] font-black ${corTextoTurma} uppercase tracking-widest mb-3 flex items-center gap-2 border-b border-slate-200/60 pb-2">
                                     <span class="text-base">${iconeTurma}</span> ${turmaNome}
-                                    <span class="ml-auto bg-slate-700 text-white px-2 py-0.5 rounded-md text-[9px] shadow-sm">${alunosDaTurma.length}</span>
+                                    <span class="ml-auto bg-slate-800 text-white px-1.5 py-0.5 rounded text-[9px]">${alunosDaTurma.length}</span>
                                 </h4>
-                                <div class="flex flex-col max-h-52 overflow-y-auto hide-scrollbar space-y-1.5 pr-1">${listaAlunosHTML}</div>
+                                <div class="flex flex-col max-h-48 overflow-y-auto hide-scrollbar">${listaAlunosHTML}</div>
                             </div>
                         `;
                     }
                     
                     document.getElementById('lista-turmas').innerHTML = turmasHTML || `
-                        <div class="flex flex-col items-center justify-center h-full text-slate-400 py-10">
-                            <span class="text-3xl mb-3 opacity-50">🥋</span>
-                            <p class="text-sm font-medium">Nenhuma turma mapeada</p>
-                            <p class="text-[10px] mt-1 opacity-70">Crie turmas para organizar seus alunos</p>
+                        <div class="flex flex-col items-center justify-center h-full text-slate-400 mt-8">
+                            <span class="text-2xl mb-2">🥋</span><p class="text-sm font-medium">Nenhuma turma mapeada</p>
                         </div>
                     `;
                 }
@@ -1493,7 +1435,7 @@
                             await deleteObject(refLogoAntiga);
                             console.log("Logo antiga apagada do Storage.");
                         } catch (errorDelete) {
-                            console.log("Aviso: Não foi possível apagar a logo antiga.");
+                            console.log("Aviso: Não foi possível apagar a logo antiga (pode já ter sido apagada ou URL externa).");
                         }
                     }
 

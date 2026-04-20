@@ -343,7 +343,33 @@
                                         </button>
                                     </div>
                                 </div>
-                            </div> 
+                                
+                                <div class="card-premium p-8 bg-white border-t-4 border-t-emerald-500 flex flex-col">
+                                    <div class="flex items-center justify-between mb-6">
+                                        <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
+                                            <span class="bg-emerald-100 text-emerald-600 p-2 rounded-lg">📜</span> Histórico de Saques
+                                        </h4>
+                                        <button onclick="carregarHistoricoSaques()" class="text-xs font-bold text-slate-400 hover:text-emerald-500 transition-colors flex items-center gap-1">
+                                            <span>🔄</span> Atualizar
+                                        </button>
+                                    </div>
+                                    <div class="overflow-x-auto w-full">
+                                        <table class="w-full text-left border-collapse whitespace-nowrap">
+                                            <thead>
+                                                <tr class="bg-slate-50 border-b border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                                    <th class="px-6 py-4 rounded-tl-xl">Data / Hora</th>
+                                                    <th class="px-6 py-4 text-right">Valor Solicitado</th>
+                                                    <th class="px-6 py-4 text-center">Chave de Destino</th>
+                                                    <th class="px-6 py-4 text-center rounded-tr-xl">Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tabela-historico-saques" class="divide-y divide-slate-50 text-sm">
+                                                <tr><td colspan="4" class="text-center py-8 text-slate-400 text-xs font-bold">Carregando histórico...</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                </div> 
                             <form id="asaas-form-panel" class="card-premium p-8 space-y-6 bg-white" onsubmit="event.preventDefault(); criarSubcontaAsaas();">
                                 <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl">
                                     <p class="text-xs font-bold text-amber-700">⚠️ Para garantir a sua segurança e obedecer às regras do Banco Central, preencha os dados do responsável financeiro da equipe para habilitarmos a emissão de cobranças e baixa de pagamentos automáticos.</p>
@@ -866,6 +892,7 @@
                         }
 
                         carregarSaldoAsaas();
+                        carregarHistoricoSaques();
                     } else {
                         document.getElementById('asaas-ativo-panel').classList.add('hidden');
                         document.getElementById('asaas-form-panel').classList.remove('hidden');
@@ -1017,6 +1044,17 @@
                         pix_saque_chave: chave,
                         pix_saque_tipo: tipo
                     });
+
+                    // Salva o saque no histórico e atualiza a tabela
+                    await addDoc(collection(db, "saques"), {
+                        equipe_id: uid,
+                        valor: valorNum,
+                        chave_pix: chave,
+                        tipo_chave: tipo,
+                        data: new Date().toISOString(),
+                        status: 'SOLICITADO' 
+                    });
+                    carregarHistoricoSaques();
 
                     // 🕵️‍♂️ LOG DE AUDITORIA
                     registrarLogAuditoria("SAQUE_ASAAS", `Saque Asaas de R$ ${valorNum} solicitado via PIX: ${chave}`);
@@ -2024,6 +2062,55 @@
                 registrarLogAuditoria("EXCLUIU_LANCAMENTO", `Excluiu um lançamento financeiro extra (Despesa/Receita).`);
 
             } catch (e) { showToast("Erro ao apagar.", "error"); }
+        }
+
+        window.carregarHistoricoSaques = async function() {
+            const cont = document.getElementById('tabela-historico-saques');
+            if(!cont) return;
+            cont.innerHTML = '<tr><td colspan="4" class="text-center py-8 text-slate-400 text-xs font-bold">⏳ Carregando histórico...</td></tr>';
+
+            try {
+                const q = query(collection(db, "saques"), where("equipe_id", "==", uid));
+                const snap = await getDocs(q);
+                const saques = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+                if(saques.length === 0) {
+                    cont.innerHTML = '<tr><td colspan="4" class="text-center py-8 text-slate-400 text-xs font-bold">Nenhum saque realizado ainda.</td></tr>';
+                    return;
+                }
+
+                // Ordenar do mais recente para o mais antigo
+                saques.sort((a,b) => new Date(b.data) - new Date(a.data));
+                cont.innerHTML = '';
+
+                saques.forEach(s => {
+                    const dataObj = new Date(s.data);
+                    const dataFormatada = dataObj.toLocaleDateString('pt-BR') + ' às ' + dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+                    
+                    let corStatus = 'bg-amber-100 text-amber-700 border-amber-200';
+                    if(s.status === 'CONCLUÍDO') corStatus = 'bg-emerald-100 text-emerald-700 border-emerald-200';
+                    if(s.status === 'FALHOU' || s.status === 'CANCELADO') corStatus = 'bg-rose-100 text-rose-700 border-rose-200';
+                    
+                    const txtStatus = s.status || 'SOLICITADO';
+
+                    cont.innerHTML += `
+                        <tr class="hover:bg-slate-50 transition-colors border-b border-slate-50">
+                            <td class="px-6 py-4 text-xs font-bold text-slate-500">${dataFormatada}</td>
+                            <td class="px-6 py-4 text-right text-sm font-black text-slate-700">R$ ${floatToStr(s.valor)}</td>
+                            <td class="px-6 py-4 text-center">
+                                <div class="text-xs font-bold text-slate-600">${s.chave_pix}</div>
+                                <div class="text-[9px] text-slate-400 uppercase tracking-widest">${s.tipo_chave}</div>
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                <span class="text-[9px] font-black px-2.5 py-1 rounded-md border ${corStatus} uppercase tracking-widest">${txtStatus}</span>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch(e) {
+                console.error("Erro ao carregar saques:", e);
+                cont.innerHTML = '<tr><td colspan="4" class="text-center py-8 text-rose-500 text-xs font-bold">Erro ao carregar histórico.</td></tr>';
+            }
         }
 
         // Inicialização garantida

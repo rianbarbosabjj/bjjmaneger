@@ -96,7 +96,7 @@ function carregarMenu() {
 
     // --- 4. HTML DO MENU DESKTOP ---
     const menuDesktop = `
-        <aside class="hidden md:flex w-56 bg-slate-900 text-white flex-col h-full shadow-[5px_0_15px_rgba(0,0,0,0.3)] shrink-0 z-20 border-r border-slate-800">
+        <aside class="hidden md:flex w-50 bg-slate-900 text-white flex-col h-full shadow-[5px_0_15px_rgba(0,0,0,0.3)] shrink-0 z-20 border-r border-slate-800">
             <div class="p-6 text-center border-b border-slate-800 flex flex-col items-center justify-center bg-slate-950/30">
                 <div id="container-logo" class="w-16 h-16 mb-4 rounded-2xl bg-gradient-to-tr from-slate-800 to-slate-700 flex items-center justify-center shadow-lg text-slate-300 font-black text-2xl overflow-hidden ring-1 ring-slate-700" style="${cacheLogoBg}">
                     ${cacheLogoHTML}

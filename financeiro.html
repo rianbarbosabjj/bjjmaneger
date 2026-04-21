@@ -14,7 +14,10 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         
-        body { font-family: 'Inter', sans-serif; background-color: #F1F5F9; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #F1F5F9; 
+        }
         
         /* 🎨 DESIGN CORPORATE PREMIUM */
         .card-premium {
@@ -143,11 +146,25 @@
                 <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3 w-full xl:w-auto">
                     <span class="text-xl sm:text-2xl hidden sm:block">💰</span>
                     <select id="filtro-mes" class="bg-slate-800 border-none text-white text-xs sm:text-sm font-bold rounded-xl p-2 sm:p-2.5 outline-none cursor-pointer">
-                        <option value="01">Jan</option><option value="02">Fev</option><option value="03">Mar</option><option value="04">Abr</option><option value="05">Mai</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ago</option><option value="09">Set</option><option value="10">Out</option><option value="11">Nov</option><option value="12">Dez</option>
+                        <option value="01">Jan</option>
+                        <option value="02">Fev</option>
+                        <option value="03">Mar</option>
+                        <option value="04">Abr</option>
+                        <option value="05">Mai</option>
+                        <option value="06">Jun</option>
+                        <option value="07">Jul</option>
+                        <option value="08">Ago</option>
+                        <option value="09">Set</option>
+                        <option value="10">Out</option>
+                        <option value="11">Nov</option>
+                        <option value="12">Dez</option>
                     </select>
                     <span class="font-black text-slate-500">/</span>
                     <select id="filtro-ano" class="bg-slate-800 border-none text-white text-xs sm:text-sm font-bold rounded-xl p-2 sm:p-2.5 outline-none cursor-pointer">
-                        <option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option>
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>
+                        <option value="2026">2026</option>
+                        <option value="2027">2027</option>
                     </select>
                     <button onclick="carregarDados()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl text-xs transition-colors shrink-0 shadow-md">
                         Atualizar Dados
@@ -188,10 +205,11 @@
                 </div>
             </div>
 
-            <div class="flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-10 transition-colors">
+            <div class="flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-10 bg-[#F1F5F9] dark:bg-slate-950 transition-colors">
                 <div class="max-w-7xl mx-auto space-y-6">
 
                     <div id="tab-mensalidades" class="aba-content flex flex-col gap-6">
+                        
                         <div class="flex flex-col sm:flex-row justify-between items-start gap-6 bg-white dark:bg-slate-900 p-6 card-premium border-slate-200 dark:border-slate-800">
                             <div class="flex gap-8 mt-2">
                                 <div>
@@ -257,6 +275,7 @@
 
                     <div id="tab-config-asaas" class="aba-content hidden flex-col gap-6">
                         <div class="max-w-5xl mx-auto w-full space-y-6">
+                            
                             <div class="flex items-center gap-4 px-2">
                                 <div>
                                     <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Recebimento Digital</h2>
@@ -265,6 +284,7 @@
                             </div>
 
                             <div id="asaas-ativo-panel" class="hidden flex-col gap-6">
+                                
                                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                     
                                     <div class="card-premium p-8 bg-gradient-to-br from-slate-900 to-slate-800 text-white shadow-2xl relative overflow-hidden flex flex-col justify-between border-slate-700">
@@ -563,8 +583,7 @@
                             </div>
                         </div>
                     </div>
-
-                </div>
+                    </div>
             </div>
         </main>
     </div>
@@ -1678,6 +1697,7 @@
             if(document.getElementById('ano-saidas')) document.getElementById('ano-saidas').innerText = `R$ ${floatToStr(totalDespAno)}`;
             if(document.getElementById('ano-saldo')) document.getElementById('ano-saldo').innerText = `R$ ${floatToStr(saldoAcumulado)}`;
 
+            // Variáveis de Tema
             const isDark = document.documentElement.classList.contains('dark');
             const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(203, 213, 225, 0.3)';
             const textColor = isDark ? '#94a3b8' : '#64748b';
@@ -1685,10 +1705,12 @@
             const tooltipText = isDark ? '#f8fafc' : '#1e293b';
             const tooltipBody = isDark ? '#cbd5e1' : '#475569';
 
+            // Gráfico de Evolução Mensal - Modernizado
             if(chartEvolucaoAno) chartEvolucaoAno.destroy();
             const ctxEvo = document.getElementById('chartEvolucaoAno');
             if(ctxEvo) {
                 const ctxEvoCtx = ctxEvo.getContext('2d');
+
                 let gradVerde = ctxEvoCtx.createLinearGradient(0, 0, 0, 400);
                 gradVerde.addColorStop(0, 'rgba(16, 185, 129, 0.9)'); gradVerde.addColorStop(1, 'rgba(16, 185, 129, 0.2)');
 
@@ -1719,12 +1741,15 @@
                 });
             }
 
+            // Gráfico de Crescimento do Caixa - Modernizado
             if(chartAcumuladoAno) chartAcumuladoAno.destroy();
             const ctxAcum = document.getElementById('chartAcumuladoAno');
             if(ctxAcum) {
                 const ctxAcumCtx = ctxAcum.getContext('2d');
+
                 let gradLinha = ctxAcumCtx.createLinearGradient(0, 0, 0, 400);
-                gradLinha.addColorStop(0, 'rgba(6, 182, 212, 0.5)'); gradLinha.addColorStop(1, 'rgba(6, 182, 212, 0.0)');
+                gradLinha.addColorStop(0, 'rgba(6, 182, 212, 0.5)');
+                gradLinha.addColorStop(1, 'rgba(6, 182, 212, 0.0)');
 
                 chartAcumuladoAno = new Chart(ctxAcumCtx, {
                     type: 'line',
@@ -1885,6 +1910,7 @@
             }
         }
 
+        // Inicialização garantida
         window.onload = () => {
             mudarAba('tab-mensalidades');
         };

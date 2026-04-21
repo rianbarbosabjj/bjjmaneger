@@ -1,4 +1,66 @@
-// --- INJETAR ESTILO DA BARRA DE ROLAGEM GLOBALMENTE ---
+// ==========================================
+// 🌙 MOTOR GLOBAL DE MODO ESCURO
+// ==========================================
+const injetarModoEscuro = () => {
+    // 1. Cria a folha de estilos mágica que reescreve as cores do Tailwind
+    if (!document.getElementById('bjj-dark-mode-styles')) {
+        const style = document.createElement('style');
+        style.id = 'bjj-dark-mode-styles';
+        style.innerHTML = `
+            /* Quando a tag HTML tiver a classe 'dark', estas regras entram em ação e esmagam as cores claras */
+            
+            /* Fundos da Página */
+            html.dark body, html.dark main, html.dark #interface-sistema { background-color: #020617 !important; }
+            html.dark .bg-[#F4F7F8], html.dark .bg-[#F8FAFC] { background-color: #020617 !important; }
+            
+            /* Caixas e Cards (bg-white vira escuro) */
+            html.dark .bg-white, html.dark .card-premium { background-color: #0f172a !important; border-color: #1e293b !important; }
+            html.dark .bg-slate-50, html.dark .bg-slate-100 { background-color: #1e293b !important; border-color: #334155 !important; }
+            
+            /* Textos (escuro vira claro) */
+            html.dark .text-slate-900, html.dark .text-slate-800, html.dark .text-slate-700 { color: #f8fafc !important; }
+            html.dark .text-slate-600, html.dark .text-slate-500 { color: #94a3b8 !important; }
+            
+            /* Bordas */
+            html.dark .border-slate-200, html.dark .border-slate-100 { border-color: #1e293b !important; }
+            
+            /* Inputs e Selects */
+            html.dark input, html.dark select, html.dark textarea { 
+                background-color: #1e293b !important; 
+                color: #f8fafc !important; 
+                border-color: #334155 !important; 
+            }
+            html.dark input::placeholder, html.dark textarea::placeholder { color: #475569 !important; }
+        `;
+        document.head.appendChild(style);
+    }
+
+    // 2. Verifica a memória do navegador para saber se ele já escolheu o tema escuro antes
+    if (localStorage.getItem('bjj-theme') === 'dark') {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+};
+
+// Executa a injeção logo que o arquivo carrega
+injetarModoEscuro();
+
+// 3. Função que o botão vai chamar para ligar/desligar
+window.toggleDarkMode = function() {
+    const htmlTag = document.documentElement;
+    if (htmlTag.classList.contains('dark')) {
+        htmlTag.classList.remove('dark');
+        localStorage.setItem('bjj-theme', 'light');
+    } else {
+        htmlTag.classList.add('dark');
+        localStorage.setItem('bjj-theme', 'dark');
+    }
+};
+
+// ==========================================
+// 🎨 ESTILO DA BARRA DE ROLAGEM GLOBALMENTE
+// ==========================================
 if (!document.getElementById('bjj-menu-styles')) {
     const style = document.createElement('style');
     style.id = 'bjj-menu-styles';
@@ -26,6 +88,9 @@ if (!document.getElementById('bjj-menu-styles')) {
     document.head.appendChild(style);
 }
 
+// ==========================================
+// 📱 CONSTRUTOR DO MENU
+// ==========================================
 function carregarMenu() {
     const paginaAtual = window.location.pathname.split("/").pop() || "dashboard.html";
 
@@ -164,6 +229,11 @@ function carregarMenu() {
             </nav>
             
             <div class="p-4 border-t border-slate-800 bg-slate-900/80 backdrop-blur-sm z-30 flex flex-col gap-3">
+                
+                <button onclick="toggleDarkMode()" class="w-full flex items-center justify-center text-amber-500 hover:text-amber-400 transition-colors text-[10px] font-bold uppercase tracking-widest bg-slate-800/50 py-2.5 rounded-xl border border-slate-700 shadow-sm">
+                    <span class="mr-2 text-sm leading-none">🌗</span> Tema Escuro
+                </button>
+
                 <button onclick="${clickAcao('suporte.html', true)}" class="w-full flex items-center justify-center text-slate-500 hover:text-indigo-400 transition-colors text-[9px] font-bold uppercase tracking-widest ${paginaAtual === 'suporte.html' ? 'text-indigo-400' : ''}">
                     <span class="mr-2 text-sm">🎧</span> Central de Ajuda
                 </button>
@@ -246,6 +316,11 @@ function carregarMenu() {
                 <span class="text-[8px] font-bold uppercase tracking-wide">Grad.</span>
             </button>
 
+            <button onclick="toggleDarkMode()" class="shrink-0 w-[4rem] flex flex-col items-center justify-center h-full text-amber-500 hover:text-amber-400 transition-colors snap-center">
+                <span class="text-xl mb-1 opacity-80">🌗</span>
+                <span class="text-[7.5px] font-bold uppercase tracking-wide">Tema</span>
+            </button>
+
             <button onclick="${clickAcao('suporte.html', true)}" class="shrink-0 w-[4rem] flex flex-col items-center justify-center h-full text-slate-500 hover:text-indigo-400 transition-colors snap-center">
                 ${indicadorMobile('suporte.html')}
                 <span class="text-xl mb-1 ${paginaAtual === 'suporte.html' ? 'drop-shadow-[0_0_8px_rgba(99,102,241,0.8)] text-indigo-400' : 'opacity-60'}">🎧</span>
@@ -288,64 +363,6 @@ window.atualizarMenuSeguro = function(funcionalidadesDoPlano) {
     sessionStorage.setItem('bjj_features', JSON.stringify(funcionalidadesDoPlano));
     carregarMenu(); 
 };
-// ==========================================
-// 🌙 MOTOR GLOBAL DE MODO ESCURO
-// ==========================================
-const injetarModoEscuro = () => {
-    // 1. Cria a folha de estilos mágica que reescreve as cores do Tailwind
-    if (!document.getElementById('bjj-dark-mode-styles')) {
-        const style = document.createElement('style');
-        style.id = 'bjj-dark-mode-styles';
-        style.innerHTML = `
-            /* Quando a tag HTML tiver a classe 'dark', estas regras entram em ação e esmagam as cores claras */
-            
-            /* Fundos da Página */
-            html.dark body, html.dark main, html.dark #interface-sistema { background-color: #020617 !important; }
-            html.dark .bg-[#F4F7F8], html.dark .bg-[#F8FAFC] { background-color: #020617 !important; }
-            
-            /* Caixas e Cards (bg-white vira escuro) */
-            html.dark .bg-white, html.dark .card-premium { background-color: #0f172a !important; border-color: #1e293b !important; }
-            html.dark .bg-slate-50, html.dark .bg-slate-100 { background-color: #1e293b !important; border-color: #334155 !important; }
-            
-            /* Textos (escuro vira claro) */
-            html.dark .text-slate-900, html.dark .text-slate-800, html.dark .text-slate-700 { color: #f8fafc !important; }
-            html.dark .text-slate-600, html.dark .text-slate-500 { color: #94a3b8 !important; }
-            
-            /* Bordas */
-            html.dark .border-slate-200, html.dark .border-slate-100 { border-color: #1e293b !important; }
-            
-            /* Inputs e Selects */
-            html.dark input, html.dark select, html.dark textarea { 
-                background-color: #1e293b !important; 
-                color: #f8fafc !important; 
-                border-color: #334155 !important; 
-            }
-            html.dark input::placeholder, html.dark textarea::placeholder { color: #475569 !important; }
-        `;
-        document.head.appendChild(style);
-    }
 
-    // 2. Verifica a memória do navegador para saber se ele já escolheu o tema escuro antes
-    if (localStorage.getItem('bjj-theme') === 'dark') {
-        document.documentElement.classList.add('dark');
-    } else {
-        document.documentElement.classList.remove('dark');
-    }
-};
-
-// Executa a injeção logo que o menu carrega
-injetarModoEscuro();
-
-// 3. Função que o botão vai chamar para ligar/desligar
-window.toggleDarkMode = function() {
-    const htmlTag = document.documentElement;
-    if (htmlTag.classList.contains('dark')) {
-        htmlTag.classList.remove('dark');
-        localStorage.setItem('bjj-theme', 'light');
-    } else {
-        htmlTag.classList.add('dark');
-        localStorage.setItem('bjj-theme', 'dark');
-    }
-};
 // Render Inicial
 carregarMenu();

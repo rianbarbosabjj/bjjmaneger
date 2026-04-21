@@ -111,7 +111,10 @@
                         </div>
                         <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                             <button id="btn-relatorio-freq" onclick="gerarRelatorioGeralFrequencia()" class="w-full sm:w-auto bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold py-3 md:py-2.5 px-4 md:px-6 rounded-xl shadow-sm transition-all flex items-center justify-center text-xs md:text-sm">
-                                <span class="mr-2 text-base">📊</span> Relatório de Frequência
+                                <span class="mr-2 text-base">📊</span> Relatório
+                            </button>
+                            <button onclick="tentarEnviarConvite()" class="w-full sm:w-auto bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border border-cyan-200 font-bold py-3 md:py-2.5 px-4 md:px-6 rounded-xl shadow-sm transition-all flex items-center justify-center text-xs md:text-sm">
+                                <span class="mr-2 text-base">✉️</span> Convidar
                             </button>
                             <button onclick="abrirModal()" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 md:py-2.5 px-4 md:px-6 rounded-xl shadow-md transition-all flex items-center justify-center text-xs md:text-sm">
                                 <span class="mr-2 text-base">➕</span> Nova Matrícula
@@ -449,9 +452,9 @@
                 <div class="w-20 h-20 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 shadow-inner">
                     🔒
                 </div>
-                <h3 class="font-black text-slate-800 text-xl uppercase tracking-tight mb-2">Limite Atingido</h3>
+                <h3 class="font-black text-slate-800 text-xl uppercase tracking-tight mb-2">Recurso Limitado</h3>
                 <p class="text-sm text-slate-500 font-medium leading-relaxed mb-6" id="paywall-texto">
-                    O seu plano atual permite o cadastro de até 10 alunos ativos. Faça o upgrade da sua licença para desbloquear matrículas ilimitadas e libertar todo o potencial da sua equipa!
+                    O seu plano atual atingiu o limite ou a função é exclusiva de planos superiores. Faça o upgrade da sua licença para desbloquear este recurso!
                 </p>
                 <div class="flex gap-3">
                     <button onclick="fecharPaywall()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold rounded-xl text-xs uppercase tracking-widest transition-colors">Voltar</button>
@@ -572,7 +575,7 @@
         let ordemDasAbas = [];
         let abaIndexAtual = 0;
 
-        // --- SISTEMA DE PERMISSÕES ---
+        // --- SISTEMA DE PERMISSÕES E PAYWALL ---
         window.verificarAcesso = function(idRecurso) {
             const isImpersonating = sessionStorage.getItem('admin_impersonate') !== null;
             const isIsento = dadosEquipeCompleto && (dadosEquipeCompleto.isento === true || String(dadosEquipeCompleto.isento) === "true");
@@ -589,8 +592,56 @@
             return !basicos.includes(statusPlano);
         };
 
+        window.abrirPaywallLimite = function(msgCustomizada) {
+            const modal = document.getElementById('modal-paywall');
+            const content = document.getElementById('modal-paywall-content');
+            const textoEl = document.getElementById('paywall-texto');
+
+            if (msgCustomizada) {
+                textoEl.innerText = msgCustomizada;
+            } else {
+                textoEl.innerText = "O seu plano atual permite o cadastro de até 10 alunos ativos. Faça o upgrade da sua licença para desbloquear matrículas ilimitadas e libertar todo o potencial da sua equipa!";
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 50);
+        };
+
+        window.fecharPaywall = function() {
+            const modal = document.getElementById('modal-paywall');
+            const content = document.getElementById('modal-paywall-content');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        };
+
+        window.tentarEnviarConvite = function() {
+            const isImpersonating = sessionStorage.getItem('admin_impersonate') !== null;
+            const isIsento = dadosEquipeCompleto && (dadosEquipeCompleto.isento === true || String(dadosEquipeCompleto.isento) === "true");
+            
+            if (!isImpersonating && !isIsento) {
+                const statusAtual = (dadosEquipeCompleto && dadosEquipeCompleto.status_plano) ? dadosEquipeCompleto.status_plano : 'TESTE';
+                const planosBasicos = ['TESTE', 'BASICO', 'BÁSICO'];
+                
+                if (planosBasicos.includes(statusAtual.toUpperCase())) {
+                    abrirPaywallLimite("A funcionalidade de Envio de Convites (onde o próprio aluno preenche a ficha no celular) é exclusiva para planos superiores. Faça o upgrade e poupe muito tempo na gestão!");
+                    return;
+                }
+            }
+
+            // Se for permitido, redireciona o usuário para as configurações (onde o modal existe nativamente)
+            window.location.href = "configuracoes.html"; 
+        };
+
         // Oculta/Exibe abas baseado no plano
-function atualizarAbasPorPlano() {
+        function atualizarAbasPorPlano() {
             const isImpersonating = sessionStorage.getItem('admin_impersonate') !== null;
             const isIsento = dadosEquipeCompleto && (dadosEquipeCompleto.isento === true || String(dadosEquipeCompleto.isento) === "true");
             const statusPlano = (dadosEquipeCompleto?.status_plano || 'TESTE').toUpperCase();
@@ -631,28 +682,6 @@ function atualizarAbasPorPlano() {
                 btnElement.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>`;
             }
         }
-
-        window.abrirPaywallLimite = function() {
-            const modal = document.getElementById('modal-paywall');
-            const content = document.getElementById('modal-paywall-content');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            setTimeout(() => {
-                content.classList.remove('scale-95', 'opacity-0');
-                content.classList.add('scale-100', 'opacity-100');
-            }, 50);
-        };
-
-        window.fecharPaywall = function() {
-            const modal = document.getElementById('modal-paywall');
-            const content = document.getElementById('modal-paywall-content');
-            content.classList.remove('scale-100', 'opacity-100');
-            content.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }, 300);
-        };
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -1396,7 +1425,7 @@ function atualizarAbasPorPlano() {
                     await updateDoc(doc(db, "alunos", id), dados);
                     showToast("Ficha atualizada com sucesso!", "success");
                     acaoLog = "EDITOU_ALUNO";
-                    detalhesLog = `Atualizou a ficha do aluno: ${nome}`;
+                    dethesLog = `Atualizou a ficha do aluno: ${nome}`;
                 } else {
                     if (fotoUrlFinal) await updateDoc(doc(db, "alunos", docRefId), { foto_url: fotoUrlFinal });
                     showToast("Matrícula criada com sucesso!", "success");

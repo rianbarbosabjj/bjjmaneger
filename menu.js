@@ -1,996 +1,735 @@
 // ==========================================
-// 🌙 SISTEMA DE TEMA DINÂMICO COM CSS VARIABLES
+// 🌙 MOTOR GLOBAL DE MODO ESCURO
 // ==========================================
-const temaManager = {
-    init() {
-        const savedTheme = localStorage.getItem('bjj-theme') || 'light';
-        this.setTheme(savedTheme);
-        
-        // Observa mudanças no sistema
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            if (!localStorage.getItem('bjj-theme')) {
-                this.setTheme(e.matches ? 'dark' : 'light');
-            }
-        });
-    },
-    
-    setTheme(theme) {
-        const root = document.documentElement;
-        if (theme === 'dark') {
-            root.classList.add('dark');
-            root.style.setProperty('--bg-primary', '#020617');
-            root.style.setProperty('--bg-card', '#0f172a');
-            root.style.setProperty('--bg-hover', '#1e293b');
-            root.style.setProperty('--text-primary', '#f8fafc');
-            root.style.setProperty('--text-secondary', '#94a3b8');
-            root.style.setProperty('--text-muted', '#64748b');
-            root.style.setProperty('--border-color', '#1e293b');
-            root.style.setProperty('--accent-primary', '#06b6d4');
-            root.style.setProperty('--accent-secondary', '#3b82f6');
-            root.style.setProperty('--success', '#10b981');
-            root.style.setProperty('--warning', '#f59e0b');
-            root.style.setProperty('--danger', '#ef4444');
-            root.style.setProperty('--shadow-sm', '0 1px 2px 0 rgba(0, 0, 0, 0.3)');
-            root.style.setProperty('--shadow-md', '0 4px 6px -1px rgba(0, 0, 0, 0.4)');
-            root.style.setProperty('--shadow-lg', '0 10px 15px -3px rgba(0, 0, 0, 0.5)');
-        } else {
-            root.classList.remove('dark');
-            root.style.setProperty('--bg-primary', '#f8fafc');
-            root.style.setProperty('--bg-card', '#ffffff');
-            root.style.setProperty('--bg-hover', '#f1f5f9');
-            root.style.setProperty('--text-primary', '#0f172a');
-            root.style.setProperty('--text-secondary', '#475569');
-            root.style.setProperty('--text-muted', '#94a3b8');
-            root.style.setProperty('--border-color', '#e2e8f0');
-            root.style.setProperty('--accent-primary', '#0ea5e9');
-            root.style.setProperty('--accent-secondary', '#6366f1');
-            root.style.setProperty('--success', '#10b981');
-            root.style.setProperty('--warning', '#f59e0b');
-            root.style.setProperty('--danger', '#ef4444');
-            root.style.setProperty('--shadow-sm', '0 1px 2px 0 rgba(0, 0, 0, 0.05)');
-            root.style.setProperty('--shadow-md', '0 4px 6px -1px rgba(0, 0, 0, 0.1)');
-            root.style.setProperty('--shadow-lg', '0 10px 15px -3px rgba(0, 0, 0, 0.1)');
-        }
-        localStorage.setItem('bjj-theme', theme);
-        
-        // Dispara evento para outros componentes
-        window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme } }));
-    },
-    
-    toggle() {
-        const newTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
-        this.setTheme(newTheme);
-    }
-};
-
-// ==========================================
-// 🎨 ESTILOS GLOBAIS MODERNOS
-// ==========================================
-const injectGlobalStyles = () => {
-    if (!document.getElementById('bjj-global-styles')) {
+const injetarModoEscuro = () => {
+    // 1. Cria a folha de estilos mágica que reescreve as cores do Tailwind
+    if (!document.getElementById('bjj-dark-mode-styles')) {
         const style = document.createElement('style');
-        style.id = 'bjj-global-styles';
+        style.id = 'bjj-dark-mode-styles';
         style.innerHTML = `
-            /* Reset e Base */
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
+            /* Quando a tag HTML tiver a classe 'dark', estas regras entram em ação e esmagam as cores claras */
             
-            body {
-                background-color: var(--bg-primary);
-                color: var(--text-primary);
-                font-family: 'Inter', system-ui, -apple-system, sans-serif;
-                transition: background-color 0.3s ease, color 0.3s ease;
-                overflow-x: hidden;
-            }
+            /* Fundos da Página */
+            html.dark body, html.dark main, html.dark #interface-sistema { background-color: #020617 !important; }
+            html.dark .bg-[#F4F7F8], html.dark .bg-[#F8FAFC] { background-color: #020617 !important; }
             
-            /* Animações Globais */
-            @keyframes fadeIn {
-                from {
-                    opacity: 0;
-                    transform: translateY(10px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
+            /* Caixas e Cards (bg-white vira escuro) */
+            html.dark .bg-white, html.dark .card-premium { background-color: #0f172a !important; border-color: #1e293b !important; }
+            html.dark .bg-slate-50, html.dark .bg-slate-100 { background-color: #1e293b !important; border-color: #334155 !important; }
             
-            @keyframes slideIn {
-                from {
-                    transform: translateX(-100%);
-                }
-                to {
-                    transform: translateX(0);
-                }
-            }
+            /* Textos (escuro vira claro) */
+            html.dark .text-slate-900, html.dark .text-slate-800, html.dark .text-slate-700 { color: #f8fafc !important; }
+            html.dark .text-slate-600, html.dark .text-slate-500 { color: #94a3b8 !important; }
             
-            @keyframes pulse {
-                0%, 100% {
-                    transform: scale(1);
-                }
-                50% {
-                    transform: scale(1.05);
-                }
-            }
+            /* Bordas */
+            html.dark .border-slate-200, html.dark .border-slate-100 { border-color: #1e293b !important; }
             
-            @keyframes shimmer {
-                0% {
-                    background-position: -1000px 0;
-                }
-                100% {
-                    background-position: 1000px 0;
-                }
+            /* Inputs e Selects */
+            html.dark input, html.dark select, html.dark textarea { 
+                background-color: #1e293b !important; 
+                color: #f8fafc !important; 
+                border-color: #334155 !important; 
             }
-            
-            /* Scrollbar Personalizada */
-            ::-webkit-scrollbar {
-                width: 8px;
-                height: 8px;
-            }
-            
-            ::-webkit-scrollbar-track {
-                background: var(--bg-primary);
-            }
-            
-            ::-webkit-scrollbar-thumb {
-                background: var(--text-muted);
-                border-radius: 4px;
-            }
-            
-            ::-webkit-scrollbar-thumb:hover {
-                background: var(--text-secondary);
-            }
-            
-            /* Utilitários de Transição */
-            .transition-all {
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            }
-            
-            /* Loading Skeleton */
-            .skeleton {
-                background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-hover) 50%, var(--bg-card) 75%);
-                background-size: 1000px 100%;
-                animation: shimmer 2s infinite;
-            }
-            
-            /* Tooltip Moderno */
-            [data-tooltip] {
-                position: relative;
-            }
-            
-            [data-tooltip]:before {
-                content: attr(data-tooltip);
-                position: absolute;
-                bottom: 100%;
-                left: 50%;
-                transform: translateX(-50%) translateY(-8px);
-                padding: 4px 8px;
-                background: var(--bg-card);
-                color: var(--text-primary);
-                font-size: 12px;
-                white-space: nowrap;
-                border-radius: 4px;
-                box-shadow: var(--shadow-md);
-                opacity: 0;
-                pointer-events: none;
-                transition: all 0.2s;
-                z-index: 1000;
-                border: 1px solid var(--border-color);
-            }
-            
-            [data-tooltip]:hover:before {
-                opacity: 1;
-                transform: translateX(-50%) translateY(-12px);
-            }
+            html.dark input::placeholder, html.dark textarea::placeholder { color: #475569 !important; }
         `;
         document.head.appendChild(style);
+    }
+
+    // 2. Verifica a memória do navegador para saber se ele já escolheu o tema escuro antes
+    if (localStorage.getItem('bjj-theme') === 'dark') {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+};
+
+// Executa a injeção logo que o arquivo carrega
+injetarModoEscuro();
+
+// 3. Função que o botão vai chamar para ligar/desligar
+window.toggleDarkMode = function() {
+    const htmlTag = document.documentElement;
+    if (htmlTag.classList.contains('dark')) {
+        htmlTag.classList.remove('dark');
+        localStorage.setItem('bjj-theme', 'light');
+    } else {
+        htmlTag.classList.add('dark');
+        localStorage.setItem('bjj-theme', 'dark');
     }
 };
 
 // ==========================================
-// 📱 MENU RESPONSIVO MODERNO
+// 🎨 ESTILO DA BARRA DE ROLAGEM GLOBALMENTE
 // ==========================================
-const menuResponsivo = {
-    init() {
-        this.createToggleButton();
-        this.loadMenuState();
-        this.setupResizeHandler();
-        this.setupKeyboardShortcuts();
-    },
-    
-    createToggleButton() {
-        if (document.getElementById('menu-toggle')) return;
-        
-        const toggleBtn = document.createElement('button');
-        toggleBtn.id = 'menu-toggle';
-        toggleBtn.className = 'menu-toggle-btn';
-        toggleBtn.setAttribute('data-tooltip', 'Menu de Navegação');
-        toggleBtn.innerHTML = `
-            <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-        `;
-        
-        const style = document.createElement('style');
-        style.textContent = `
-            .menu-toggle-btn {
-                position: fixed;
-                top: 1rem;
-                left: 1rem;
-                z-index: 1000;
-                width: 44px;
-                height: 44px;
-                border-radius: 12px;
-                background: var(--bg-card);
-                border: 1px solid var(--border-color);
-                color: var(--text-primary);
-                cursor: pointer;
-                display: none;
-                align-items: center;
-                justify-content: center;
-                transition: all 0.3s;
-                box-shadow: var(--shadow-md);
-            }
-            
-            .menu-toggle-btn:hover {
-                transform: scale(1.05);
-                background: var(--accent-primary);
-                color: white;
-            }
-            
-            .menu-icon {
-                width: 20px;
-                height: 20px;
-            }
-            
-            @media (max-width: 768px) {
-                .menu-toggle-btn {
-                    display: flex;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-        document.body.appendChild(toggleBtn);
-        
-        toggleBtn.addEventListener('click', () => this.toggleMobileMenu());
-    },
-    
-    toggleMobileMenu() {
-        const sidebar = document.querySelector('.modern-sidebar');
-        if (sidebar) {
-            sidebar.classList.toggle('mobile-open');
-            const overlay = document.querySelector('.menu-overlay');
-            if (sidebar.classList.contains('mobile-open')) {
-                if (!overlay) this.createOverlay();
-                document.querySelector('.menu-overlay').classList.add('active');
-                document.body.style.overflow = 'hidden';
-            } else {
-                if (overlay) overlay.classList.remove('active');
-                document.body.style.overflow = '';
-            }
+if (!document.getElementById('bjj-menu-styles')) {
+    const style = document.createElement('style');
+    style.id = 'bjj-menu-styles';
+    style.innerHTML = `
+        /* Estilização elegante da barra de rolagem do menu lateral */
+        .custom-scroll::-webkit-scrollbar {
+            width: 5px;
         }
-    },
-    
-    createOverlay() {
-        const overlay = document.createElement('div');
-        overlay.className = 'menu-overlay';
-        overlay.onclick = () => this.toggleMobileMenu();
-        
-        const style = document.createElement('style');
-        style.textContent = `
-            .menu-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0, 0, 0, 0.5);
-                backdrop-filter: blur(4px);
-                z-index: 90;
-                opacity: 0;
-                pointer-events: none;
-                transition: opacity 0.3s;
-            }
-            
-            .menu-overlay.active {
-                opacity: 1;
-                pointer-events: auto;
-            }
-        `;
-        document.head.appendChild(style);
-        document.body.appendChild(overlay);
-    },
-    
-    loadMenuState() {
-        const isCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';
-        if (window.innerWidth >= 768 && isCollapsed) {
-            const sidebar = document.querySelector('.modern-sidebar');
-            if (sidebar) {
-                sidebar.classList.add('collapsed');
-                this.collapseMenuItems();
-            }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: transparent;
         }
-    },
-    
-    collapseMenuItems() {
-        document.querySelectorAll('.modern-sidebar .nav-text, .modern-sidebar .logo-info, .modern-sidebar .footer-text').forEach(el => {
-            el.classList.add('hidden');
-        });
-        document.querySelectorAll('.modern-sidebar .nav-item').forEach(btn => {
-            btn.classList.add('justify-center');
-        });
-    },
-    
-    setupResizeHandler() {
-        let timeout;
-        window.addEventListener('resize', () => {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
-                if (window.innerWidth >= 768) {
-                    const sidebar = document.querySelector('.modern-sidebar');
-                    if (sidebar) sidebar.classList.remove('mobile-open');
-                    const overlay = document.querySelector('.menu-overlay');
-                    if (overlay) overlay.classList.remove('active');
-                    document.body.style.overflow = '';
-                }
-            }, 250);
-        });
-    },
-    
-    setupKeyboardShortcuts() {
-        document.addEventListener('keydown', (e) => {
-            // Alt + M para toggle do menu
-            if (e.altKey && e.key === 'm') {
-                if (window.innerWidth <= 768) {
-                    this.toggleMobileMenu();
-                } else {
-                    const sidebar = document.querySelector('.modern-sidebar');
-                    sidebar.classList.toggle('collapsed');
-                    localStorage.setItem('sidebar-collapsed', sidebar.classList.contains('collapsed'));
-                    if (sidebar.classList.contains('collapsed')) {
-                        this.collapseMenuItems();
-                    } else {
-                        document.querySelectorAll('.modern-sidebar .nav-text, .modern-sidebar .logo-info, .modern-sidebar .footer-text').forEach(el => {
-                            el.classList.remove('hidden');
-                        });
-                        document.querySelectorAll('.modern-sidebar .nav-item').forEach(btn => {
-                            btn.classList.remove('justify-center');
-                        });
-                    }
-                }
-            }
-            
-            // Alt + T para toggle do tema
-            if (e.altKey && e.key === 't') {
-                temaManager.toggle();
-            }
-        });
-    }
-};
-
-// ==========================================
-// 🔔 SISTEMA DE NOTIFICAÇÕES
-// ==========================================
-class SistemaNotificacoes {
-    constructor() {
-        this.notificacoes = new Map();
-        this.init();
-    }
-    
-    init() {
-        this.carregarNotificacoes();
-        setInterval(() => this.verificarAtualizacoes(), 30000);
-    }
-    
-    adicionarBadge(itemId, count, type = 'default') {
-        const item = document.querySelector(`[data-item="${itemId}"]`);
-        if (item) {
-            const existingBadge = item.querySelector('.badge');
-            if (existingBadge) existingBadge.remove();
-            
-            const badge = document.createElement('span');
-            badge.className = `badge badge-${type}`;
-            badge.textContent = count > 99 ? '99+' : count;
-            item.appendChild(badge);
-            
-            // Animação de pulso
-            badge.style.animation = 'pulse 0.5s ease-in-out';
-            
-            const style = document.createElement('style');
-            style.textContent = `
-                .badge {
-                    position: absolute;
-                    top: -4px;
-                    right: -4px;
-                    min-width: 18px;
-                    height: 18px;
-                    padding: 0 4px;
-                    border-radius: 9px;
-                    font-size: 10px;
-                    font-weight: bold;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    background: var(--danger);
-                    color: white;
-                }
-                
-                .badge-success {
-                    background: var(--success);
-                }
-                
-                .badge-warning {
-                    background: var(--warning);
-                }
-                
-                .badge-info {
-                    background: var(--accent-primary);
-                }
-            `;
-            document.head.appendChild(style);
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background-color: #334155; /* slate-700 */
+            border-radius: 10px;
         }
-    }
-    
-    async verificarAtualizacoes() {
-        // Simula verificação de atualizações
-        // Em produção, substituir por chamada real à API
-        const updates = await this.fetchUpdates();
-        updates.forEach(update => {
-            this.adicionarBadge(update.itemId, update.count, update.type);
-        });
-    }
-    
-    async fetchUpdates() {
-        // Simulação - substituir por chamada real
-        return [
-            // { itemId: 'alunos', count: 3, type: 'info' }
-        ];
-    }
-    
-    carregarNotificacoes() {
-        // Carrega notificações salvas
-        const saved = localStorage.getItem('bjj-notifications');
-        if (saved) {
-            const data = JSON.parse(saved);
-            Object.entries(data).forEach(([key, value]) => {
-                this.adicionarBadge(key, value.count, value.type);
-            });
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background-color: #475569; /* slate-600 */
         }
-    }
+        /* Suporte para Firefox */
+        .custom-scroll {
+            scrollbar-width: thin;
+            scrollbar-color: #334155 transparent;
+        }
+    `;
+    document.head.appendChild(style);
 }
 
 // ==========================================
-// 🎨 CONSTRUTOR DO MENU MODERNO
+// 📱 CONSTRUTOR DO MENU
 // ==========================================
-function criarMenuModerno(paginaAtual, permissoes) {
-    const items = [
-        { id: 'dashboard', nome: 'Visão Geral', icone: '📊', url: 'dashboard.html', sempreAtivo: true, categoria: 'principal' },
-        { id: 'financeiro', nome: 'Financeiro', icone: '💰', url: 'financeiro.html', permissao: 'Financeiro', categoria: 'principal' },
-        { id: 'alunos', nome: 'Alunos', icone: '🥋', url: 'alunos.html', sempreAtivo: true, categoria: 'principal' },
-        { id: 'turmas', nome: 'Turmas', icone: '🗓️', url: 'turmas.html', permissao: 'Turmas', categoria: 'principal' },
-        { id: 'loja', nome: 'Vitrine Virtual', icone: '🛒', url: 'loja.html', permissao: 'Vitrine', categoria: 'principal' },
-        { id: 'certificados', nome: 'Certificados', icone: '📜', url: 'certificados.html', permissao: 'Certificados', categoria: 'academico' },
-        { id: 'curriculo', nome: 'Currículo', icone: '📄', url: 'curriculo.html', permissao: 'extra', categoria: 'academico' },
-        { id: 'competicoes', nome: 'Competições', icone: '🏆', url: 'competicoes.html', permissao: 'extra', categoria: 'gestao' },
-        { id: 'federacoes', nome: 'Federações', icone: '🪪', url: 'federacoes.html', permissao: 'extra', categoria: 'gestao' },
-        { id: 'historico', nome: 'Graduações', icone: '🎓', url: 'historico.html', permissao: 'extra', categoria: 'gestao' }
-    ];
-    
-    const categorias = {
-        principal: { nome: 'Menu Principal', icone: '🏠' },
-        academico: { nome: 'Acadêmico', icone: '📚' },
-        gestao: { nome: 'Gestão Avançada', icone: '⚙️' }
-    };
-    
-    const cacheNome = sessionStorage.getItem('bjj_equipe_nome') || 'SUA EQUIPE';
-    const cacheLogoUrl = sessionStorage.getItem('bjj_equipe_logo');
-    
-    let cacheLogoHTML = cacheNome.charAt(0).toUpperCase();
-    let cacheLogoBg = "";
-    if (cacheLogoUrl && cacheLogoUrl !== "null" && cacheLogoUrl !== "") {
-        cacheLogoHTML = `<img src="${cacheLogoUrl}" class="logo-image" alt="Logo">`;
-        cacheLogoBg = "background: transparent;";
-    }
-    
-    let menuHTML = `
-        <aside class="modern-sidebar">
-            <div class="sidebar-header">
-                <div class="logo-container">
-                    <div class="logo-wrapper" style="${cacheLogoBg}">
-                        ${cacheLogoHTML}
-                    </div>
-                    <div class="logo-info">
-                        <h1 class="logo-title" id="nome-equipe">${cacheNome}</h1>
-                        <span class="logo-badge">BJJ Manager Pro</span>
-                    </div>
-                </div>
-                <button class="sidebar-collapse-btn" data-tooltip="Recolher Menu">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M15 18l-6-6 6-6"/>
-                    </svg>
-                </button>
-            </div>
-            
-            <nav class="sidebar-nav">
-    `;
-    
-    // Agrupa itens por categoria
-    Object.entries(categorias).forEach(([catKey, catInfo]) => {
-        const categoriaItems = items.filter(item => item.categoria === catKey);
-        const itemsVisiveis = categoriaItems.filter(item => 
-            item.sempreAtivo || (item.permissao && permissoes[item.permissao])
-        );
-        
-        if (itemsVisiveis.length > 0) {
-            menuHTML += `
-                <div class="nav-group">
-                    <div class="nav-group-title">
-                        <span class="group-icon">${catInfo.icone}</span>
-                        <span class="group-text">${catInfo.nome}</span>
-                    </div>
-                    <div class="nav-group-items">
-            `;
-            
-            itemsVisiveis.forEach(item => {
-                const isActive = paginaAtual === item.url;
-                const hasAccess = item.sempreAtivo || (item.permissao && permissoes[item.permissao]);
-                
-                menuHTML += `
-                    <button onclick="${hasAccess ? `window.location.href='${item.url}'` : 'mostrarAvisoUpgrade()'}" 
-                            class="nav-item ${isActive ? 'active' : ''} ${!hasAccess ? 'blocked' : ''}"
-                            data-item="${item.id}"
-                            data-tooltip="${item.nome}">
-                        <span class="nav-icon">${item.icone}</span>
-                        <span class="nav-text">${item.nome}</span>
-                        ${!hasAccess ? '<span class="nav-badge">🔒</span>' : ''}
-                        ${isActive ? '<div class="nav-indicator"></div>' : ''}
-                    </button>
-                `;
-            });
-            
-            menuHTML += `</div></div>`;
-        }
-    });
-    
-    menuHTML += `
-            </nav>
-            
-            <div class="sidebar-footer">
-                <button onclick="temaManager.toggle()" class="footer-btn theme-toggle" data-tooltip="Alternar Tema">
-                    <span class="footer-icon">🌗</span>
-                    <span class="footer-text">Alternar Tema</span>
-                    <span class="shortcut-hint">Alt+T</span>
-                </button>
-                
-                <button onclick="window.location.href='suporte.html'" class="footer-btn support-btn" data-tooltip="Central de Ajuda">
-                    <span class="footer-icon">🎧</span>
-                    <span class="footer-text">Suporte 24/7</span>
-                </button>
-                
-                <button onclick="sairDoSistema()" class="footer-btn logout-btn" data-tooltip="Sair do Sistema">
-                    <span class="footer-icon">🚪</span>
-                    <span class="footer-text">Sair</span>
-                </button>
-            </div>
-        </aside>
-        
-        <style>
-            .modern-sidebar {
-                position: fixed;
-                left: 0;
-                top: 0;
-                bottom: 0;
-                width: 280px;
-                background: var(--bg-card);
-                border-right: 1px solid var(--border-color);
-                display: flex;
-                flex-direction: column;
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                z-index: 100;
-                box-shadow: var(--shadow-lg);
-            }
-            
-            .modern-sidebar.collapsed {
-                width: 80px;
-            }
-            
-            .modern-sidebar.collapsed .logo-info,
-            .modern-sidebar.collapsed .nav-text,
-            .modern-sidebar.collapsed .footer-text,
-            .modern-sidebar.collapsed .group-text,
-            .modern-sidebar.collapsed .shortcut-hint {
-                display: none;
-            }
-            
-            .modern-sidebar.collapsed .nav-group-title {
-                justify-content: center;
-                padding: 0.75rem;
-            }
-            
-            .modern-sidebar.collapsed .nav-item {
-                justify-content: center;
-                padding: 0.75rem;
-            }
-            
-            .modern-sidebar.collapsed .nav-icon {
-                margin-right: 0;
-                font-size: 1.5rem;
-            }
-            
-            .modern-sidebar.collapsed .footer-btn {
-                justify-content: center;
-                padding: 0.625rem;
-            }
-            
-            @media (max-width: 768px) {
-                .modern-sidebar {
-                    transform: translateX(-100%);
-                    width: 85%;
-                    max-width: 320px;
-                }
-                
-                .modern-sidebar.mobile-open {
-                    transform: translateX(0);
-                    animation: slideIn 0.3s ease-out;
-                }
-            }
-            
-            .sidebar-header {
-                padding: 1.5rem;
-                border-bottom: 1px solid var(--border-color);
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-            }
-            
-            .logo-container {
-                display: flex;
-                align-items: center;
-                gap: 0.75rem;
-                flex: 1;
-            }
-            
-            .logo-wrapper {
-                width: 48px;
-                height: 48px;
-                border-radius: 12px;
-                background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-weight: bold;
-                font-size: 1.25rem;
-                color: white;
-                overflow: hidden;
-                flex-shrink: 0;
-            }
-            
-            .logo-image {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
-            
-            .logo-info {
-                flex: 1;
-                min-width: 0;
-            }
-            
-            .logo-title {
-                font-size: 0.875rem;
-                font-weight: bold;
-                margin: 0;
-                color: var(--text-primary);
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-            
-            .logo-badge {
-                font-size: 0.625rem;
-                opacity: 0.7;
-                color: var(--text-secondary);
-            }
-            
-            .sidebar-collapse-btn {
-                width: 28px;
-                height: 28px;
-                border-radius: 6px;
-                background: var(--bg-hover);
-                border: 1px solid var(--border-color);
-                color: var(--text-secondary);
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                transition: all 0.2s;
-            }
-            
-            .sidebar-collapse-btn:hover {
-                background: var(--accent-primary);
-                color: white;
-                transform: scale(1.05);
-            }
-            
-            .sidebar-nav {
-                flex: 1;
-                overflow-y: auto;
-                padding: 1rem 0;
-            }
-            
-            .nav-group {
-                margin-bottom: 1.5rem;
-            }
-            
-            .nav-group-title {
-                font-size: 0.7rem;
-                font-weight: 700;
-                text-transform: uppercase;
-                letter-spacing: 0.1em;
-                padding: 0.5rem 1.5rem;
-                color: var(--text-muted);
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-            }
-            
-            .group-icon {
-                font-size: 0.875rem;
-            }
-            
-            .nav-item {
-                position: relative;
-                display: flex;
-                align-items: center;
-                gap: 0.75rem;
-                padding: 0.75rem 1.5rem;
-                margin: 0.25rem 0;
-                width: 100%;
-                background: transparent;
-                border: none;
-                color: var(--text-secondary);
-                cursor: pointer;
-                transition: all 0.2s;
-                text-align: left;
-                font-size: 0.875rem;
-            }
-            
-            .nav-item:hover {
-                background: var(--bg-hover);
-                color: var(--text-primary);
-                padding-left: 1.75rem;
-            }
-            
-            .nav-item.active {
-                background: linear-gradient(90deg, var(--accent-primary) 0%, transparent 100%);
-                color: white;
-            }
-            
-            .nav-icon {
-                font-size: 1.25rem;
-                min-width: 1.5rem;
-                transition: transform 0.2s;
-            }
-            
-            .nav-item:hover .nav-icon {
-                transform: scale(1.1);
-            }
-            
-            .nav-indicator {
-                position: absolute;
-                left: 0;
-                top: 50%;
-                transform: translateY(-50%);
-                width: 3px;
-                height: 60%;
-                background: var(--accent-primary);
-                border-radius: 0 3px 3px 0;
-            }
-            
-            .nav-badge {
-                margin-left: auto;
-                font-size: 0.75rem;
-                opacity: 0.6;
-            }
-            
-            .sidebar-footer {
-                margin-top: auto;
-                padding: 1rem;
-                border-top: 1px solid var(--border-color);
-                display: flex;
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-            
-            .footer-btn {
-                display: flex;
-                align-items: center;
-                gap: 0.75rem;
-                padding: 0.625rem 1rem;
-                border-radius: 8px;
-                background: transparent;
-                border: none;
-                font-size: 0.75rem;
-                font-weight: 600;
-                cursor: pointer;
-                transition: all 0.2s;
-                color: var(--text-secondary);
-                position: relative;
-            }
-            
-            .footer-btn:hover {
-                background: var(--bg-hover);
-                color: var(--text-primary);
-                transform: translateX(4px);
-            }
-            
-            .footer-icon {
-                font-size: 1.125rem;
-            }
-            
-            .shortcut-hint {
-                margin-left: auto;
-                font-size: 0.625rem;
-                opacity: 0.5;
-                font-family: monospace;
-            }
-            
-            .logout-btn:hover {
-                background: var(--danger);
-                color: white;
-            }
-            
-            .hidden {
-                display: none;
-            }
-            
-            .justify-center {
-                justify-content: center;
-            }
-        </style>
-    `;
-    
-    return menuHTML;
-}
-
-// ==========================================
-// 🚀 FUNÇÃO PRINCIPAL DE CARREGAMENTO
-// ==========================================
-function carregarMenuModerno() {
+function carregarMenu() {
     const paginaAtual = window.location.pathname.split("/").pop() || "dashboard.html";
-    
-    // Recupera permissões
+
+    // --- 1. RECUPERA O ESTADO GLOBAL DO NAVEGADOR ---
     if (!window.funcionalidadesEquipe) {
         const cacheFeatures = sessionStorage.getItem('bjj_features');
         if (cacheFeatures) {
             window.funcionalidadesEquipe = JSON.parse(cacheFeatures);
         }
     }
+
+    // Tenta pegar os dados visuais salvos na sessão
+    const cacheNome = sessionStorage.getItem('bjj_equipe_nome') || 'SUA EQUIPE';
+    const cacheLogoUrl = sessionStorage.getItem('bjj_equipe_logo');
     
-    // Mapeia permissões
+    let cacheLogoHTML = cacheNome.charAt(0).toUpperCase();
+    let cacheLogoBg = "";
+    if (cacheLogoUrl && cacheLogoUrl !== "null" && cacheLogoUrl !== "") {
+        cacheLogoHTML = `<img src="${cacheLogoUrl}" class="w-full h-full object-cover" alt="Logo">`;
+        cacheLogoBg = "background: transparent;";
+    }
+
+    // --- 2. LÓGICA DE ESTILOS ---
+    const classDesktop = (pagina, isBloqueado = false) => {
+        if (isBloqueado) {
+            return "w-full text-left flex items-center justify-between px-4 py-3 text-[13px] font-semibold text-slate-600 border-l-4 border-transparent cursor-not-allowed opacity-60 bg-slate-900/30";
+        }
+        return paginaAtual === pagina 
+            ? "w-full text-left flex items-center justify-between px-4 py-3 text-[13px] font-black text-white bg-gradient-to-r from-cyan-500/10 to-transparent border-l-4 border-cyan-500 transition-all group cursor-pointer" 
+            : "w-full text-left flex items-center justify-between px-4 py-3 text-[13px] font-semibold text-slate-400 border-l-4 border-transparent hover:border-slate-700 hover:text-white hover:bg-slate-800/50 transition-all group cursor-pointer";
+    };
+
+    const classMobile = (pagina, isBloqueado = false) => {
+        if (isBloqueado) {
+            return "shrink-0 w-[4.5rem] flex flex-col items-center justify-center h-full text-slate-600 relative snap-center cursor-not-allowed opacity-50";
+        }
+        return paginaAtual === pagina 
+            ? "shrink-0 w-[4.5rem] flex flex-col items-center justify-center h-full text-cyan-400 relative snap-center cursor-pointer transition-all scale-110" 
+            : "shrink-0 w-[4.5rem] flex flex-col items-center justify-center h-full text-slate-500 hover:text-slate-300 transition-colors snap-center cursor-pointer";
+    };
+
+    const indicadorMobile = (pagina) => {
+        return paginaAtual === pagina ? `<div class="absolute top-0 w-8 h-1 bg-cyan-500 rounded-b-full shadow-[0_0_10px_rgba(6,182,212,0.8)]"></div>` : "";
+    };
+
+    // --- 3. MOTOR DE PERMISSÕES BLINDADO ---
     const hasAccess = (palavraChave) => {
-        if (!window.funcionalidadesEquipe) return true;
+        if (!window.funcionalidadesEquipe) return true; // Fallback se não carregou
         return window.funcionalidadesEquipe.some(f => 
             f.includes('✓') && f.toLowerCase().includes(palavraChave.toLowerCase())
         );
     };
+
+    const blockIcon = `<span class="text-[10px]">🔒</span>`;
     
-    const permissoes = {
-        Financeiro: true, // 🔓 Desbloqueado
-        Vitrine: hasAccess('Vitrine'),
-        Certificados: hasAccess('Certificados'),
-        Turmas: hasAccess('Turmas'),
-        extra: hasAccess('Ilimitados') || hasAccess('Portal')
+    // Mapeamento Inteligente
+    const canFin = true; // 🔓 DESBLOQUEADO PARA TODOS OS PLANOS
+    const canLoja = hasAccess('Vitrine'); 
+    const canCert = hasAccess('Certificados'); 
+    const canTurmas = hasAccess('Turmas'); 
+    
+    // GESTÃO EXTRA E CURRÍCULO: Se não tiver "Alunos Ilimitados" ou "Portal", é o Plano Básico, então bloqueia!
+    const canExtra = hasAccess('Ilimitados') || hasAccess('Portal'); 
+
+    const clickAcao = (url, hasAcc) => {
+        return hasAcc ? `window.location.href='${url}'` : `mostrarAvisoUpgrade()`;
     };
-    
-    // Gera menu
-    const menuHTML = criarMenuModerno(paginaAtual, permissoes);
-    
-    // Insere no DOM
+
+    // --- 4. HTML DO MENU DESKTOP ---
+    const menuDesktop = `
+        <aside class="hidden md:flex w-56 bg-slate-900 text-white flex-col h-full shadow-[5px_0_15px_rgba(0,0,0,0.3)] shrink-0 z-20 border-r border-slate-800">
+            <div class="p-5 text-center border-b border-slate-800 flex flex-col items-center justify-center bg-slate-950/30">
+                <div id="container-logo" class="w-14 h-14 mb-3 rounded-2xl bg-gradient-to-tr from-slate-800 to-slate-700 flex items-center justify-center shadow-lg text-slate-300 font-black text-xl overflow-hidden ring-1 ring-slate-700" style="${cacheLogoBg}">
+                    ${cacheLogoHTML}
+                </div>
+                <h1 class="text-xs font-black tracking-wider text-white uppercase truncate w-full px-2" id="nome-equipe">${cacheNome}</h1>
+                <p class="text-[8px] text-cyan-500 font-black uppercase tracking-[0.2em] mt-1.5 bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/20">BJJ Manager</p>
+            </div>
+            
+            <nav class="flex-1 py-4 space-y-0.5 overflow-y-auto custom-scroll flex flex-col">
+                <button onclick="${clickAcao('dashboard.html', true)}" class="${classDesktop('dashboard.html', false)}">
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'dashboard.html' ? 'drop-shadow-md' : 'opacity-70'}">📊</span> Visão Geral</div>
+                </button>
+                
+                <button onclick="${clickAcao('financeiro.html', canFin)}" class="${classDesktop('financeiro.html', !canFin)}">
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'financeiro.html' ? 'drop-shadow-md' : 'opacity-70'}">💰</span> Financeiro</div>
+                    ${!canFin ? blockIcon : ''}
+                </button>
+                
+                <button onclick="${clickAcao('alunos.html', true)}" class="${classDesktop('alunos.html', false)}">
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'alunos.html' ? 'drop-shadow-md' : 'opacity-70'}">🥋</span> Alunos</div>
+                </button>
+                
+                <button onclick="${clickAcao('turmas.html', canTurmas)}" class="${classDesktop('turmas.html', !canTurmas)}">
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'turmas.html' ? 'drop-shadow-md' : 'opacity-70'}">🗓️</span> Turmas</div>
+                    ${!canTurmas ? blockIcon : ''}
+                </button>
+                
+                <button onclick="${clickAcao('loja.html', canLoja)}" class="${classDesktop('loja.html', !canLoja)}">
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'loja.html' ? 'drop-shadow-md' : 'opacity-70'}">🛒</span> Vitrine Virtual</div>
+                    ${!canLoja ? blockIcon : ''}
+                </button>
+                
+                <div class="px-4 pt-4 pb-1">
+                    <p class="text-[8px] font-black text-slate-500/80 uppercase tracking-widest">Acadêmico</p>
+                </div>
+                
+                <button onclick="${clickAcao('certificados.html', canCert)}" class="${classDesktop('certificados.html', !canCert)}">
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'certificados.html' ? 'drop-shadow-md' : 'opacity-70'}">📜</span> Certificados</div>
+                    ${!canCert ? blockIcon : ''}
+                </button>
+                
+                <button onclick="${clickAcao('curriculo.html', canExtra)}" class="${classDesktop('curriculo.html', !canExtra)}">
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'curriculo.html' ? 'drop-shadow-md' : 'opacity-70'}">📄</span> Currículo</div>
+                    ${!canExtra ? blockIcon : ''}
+                </button>
+                
+                <div class="px-4 pt-4 pb-1">
+                    <p class="text-[8px] font-black text-slate-500/80 uppercase tracking-widest">Gestão Extra</p>
+                </div>
+                
+                <button onclick="${clickAcao('competicoes.html', canExtra)}" class="${classDesktop('competicoes.html', !canExtra)}">
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'competicoes.html' ? 'drop-shadow-md' : 'opacity-70'}">🏆</span> Competições</div>
+                    ${!canExtra ? blockIcon : ''}
+                </button>
+                
+                <button onclick="${clickAcao('federacoes.html', canExtra)}" class="${classDesktop('federacoes.html', !canExtra)}">
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'federacoes.html' ? 'drop-shadow-md' : 'opacity-70'}">🪪</span> Federações</div>
+                    ${!canExtra ? blockIcon : ''}
+                </button>
+                
+                <button onclick="${clickAcao('historico.html', canExtra)}" class="${classDesktop('historico.html', !canExtra)}">
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'historico.html' ? 'drop-shadow-md' : 'opacity-70'}">🎓</span> Graduações</div>
+                    ${!canExtra ? blockIcon : ''}
+                </button>
+            </nav>
+            
+            <div class="p-4 border-t border-slate-800 bg-slate-900/80 backdrop-blur-sm z-30 flex flex-col gap-3">
+                
+                <button onclick="toggleDarkMode()" class="w-full flex items-center justify-center text-slate-500 hover:text-slate-300 transition-colors text-[10px] font-bold uppercase tracking-widest py-1" title="Alternar Modo Escuro">
+                    <span class="mr-2 text-sm leading-none opacity-70">🌗</span> Tema
+                </button>
+
+                <button onclick="${clickAcao('suporte.html', true)}" class="w-full flex items-center justify-center text-slate-500 hover:text-indigo-400 transition-colors text-[9px] font-bold uppercase tracking-widest ${paginaAtual === 'suporte.html' ? 'text-indigo-400' : ''}">
+                    <span class="mr-2 text-sm opacity-70">🎧</span> Ajuda
+                </button>
+                
+                <button onclick="sairDoSistema()" class="w-full px-4 py-2 bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white border border-rose-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center shadow-sm">
+                    <span class="mr-2 text-sm leading-none opacity-70">🚪</span> Sair
+                </button>
+            </div>
+        </aside>
+    `;
+
+    // --- 5. HTML DO MENU MOBILE ---
+    const menuMobile = `
+        <nav class="md:hidden fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-xl border-t border-slate-800 flex overflow-x-auto hide-scrollbar flex-nowrap items-center h-[76px] z-40 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.5)] snap-x scroll-smooth">
+            <button onclick="${clickAcao('dashboard.html', true)}" class="${classMobile('dashboard.html', false)}">
+                ${indicadorMobile('dashboard.html')}
+                <span class="text-2xl mb-1 ${paginaAtual === 'dashboard.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">📊</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Visão</span>
+            </button>
+            
+            <button onclick="${clickAcao('financeiro.html', canFin)}" class="${classMobile('financeiro.html', !canFin)} relative">
+                ${indicadorMobile('financeiro.html')}
+                ${!canFin ? `<div class="absolute top-1 right-2 text-[10px]">🔒</div>` : ''}
+                <span class="text-2xl mb-1 ${paginaAtual === 'financeiro.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">💰</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Caixa</span>
+            </button>
+            
+            <button onclick="${clickAcao('alunos.html', true)}" class="${classMobile('alunos.html', false)}">
+                ${indicadorMobile('alunos.html')}
+                <span class="text-2xl mb-1 ${paginaAtual === 'alunos.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">🥋</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Alunos</span>
+            </button>
+            
+            <button onclick="${clickAcao('turmas.html', canTurmas)}" class="${classMobile('turmas.html', !canTurmas)} relative">
+                ${indicadorMobile('turmas.html')}
+                ${!canTurmas ? `<div class="absolute top-1 right-2 text-[10px]">🔒</div>` : ''}
+                <span class="text-2xl mb-1 ${paginaAtual === 'turmas.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">🗓️</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Turmas</span>
+            </button>
+            
+            <button onclick="${clickAcao('loja.html', canLoja)}" class="${classMobile('loja.html', !canLoja)} relative">
+                ${indicadorMobile('loja.html')}
+                ${!canLoja ? `<div class="absolute top-1 right-2 text-[10px]">🔒</div>` : ''}
+                <span class="text-2xl mb-1 ${paginaAtual === 'loja.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">🛒</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Loja</span>
+            </button>
+            
+            <button onclick="${clickAcao('certificados.html', canCert)}" class="${classMobile('certificados.html', !canCert)} relative">
+                ${indicadorMobile('certificados.html')}
+                ${!canCert ? `<div class="absolute top-1 right-2 text-[10px]">🔒</div>` : ''}
+                <span class="text-2xl mb-1 ${paginaAtual === 'certificados.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">📜</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Certif.</span>
+            </button>
+            
+            <button onclick="${clickAcao('curriculo.html', canExtra)}" class="${classMobile('curriculo.html', !canExtra)} relative">
+                ${indicadorMobile('curriculo.html')}
+                ${!canExtra ? `<div class="absolute top-1 right-2 text-[10px]">🔒</div>` : ''}
+                <span class="text-2xl mb-1 ${paginaAtual === 'curriculo.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">📄</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Currí.</span>
+            </button>
+            
+            <button onclick="${clickAcao('competicoes.html', canExtra)}" class="${classMobile('competicoes.html', !canExtra)} relative">
+                ${indicadorMobile('competicoes.html')}
+                ${!canExtra ? `<div class="absolute top-1 right-2 text-[10px]">🔒</div>` : ''}
+                <span class="text-2xl mb-1 ${paginaAtual === 'competicoes.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">🏆</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Comp.</span>
+            </button>
+            
+            <button onclick="${clickAcao('federacoes.html', canExtra)}" class="${classMobile('federacoes.html', !canExtra)} relative">
+                ${indicadorMobile('federacoes.html')}
+                ${!canExtra ? `<div class="absolute top-1 right-2 text-[10px]">🔒</div>` : ''}
+                <span class="text-2xl mb-1 ${paginaAtual === 'federacoes.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">🪪</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Fed.</span>
+            </button>
+            
+            <button onclick="${clickAcao('historico.html', canExtra)}" class="${classMobile('historico.html', !canExtra)} relative">
+                ${indicadorMobile('historico.html')}
+                ${!canExtra ? `<div class="absolute top-1 right-2 text-[10px]">🔒</div>` : ''}
+                <span class="text-2xl mb-1 ${paginaAtual === 'historico.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">🎓</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Grad.</span>
+            </button>
+
+            <button onclick="toggleDarkMode()" class="shrink-0 w-[4rem] flex flex-col items-center justify-center h-full text-slate-500 hover:text-slate-300 transition-colors snap-center cursor-pointer">
+                <span class="text-[20px] mb-1 opacity-60 transition-all">🌗</span>
+                <span class="text-[7.5px] font-bold uppercase tracking-wide">Tema</span>
+            </button>
+
+            <button onclick="${clickAcao('suporte.html', true)}" class="shrink-0 w-[4rem] flex flex-col items-center justify-center h-full text-slate-500 hover:text-indigo-400 transition-colors snap-center">
+                ${indicadorMobile('suporte.html')}
+                <span class="text-xl mb-1 ${paginaAtual === 'suporte.html' ? 'drop-shadow-[0_0_8px_rgba(99,102,241,0.8)] text-indigo-400' : 'opacity-60'}">🎧</span>
+                <span class="text-[7.5px] font-bold uppercase tracking-wide">Ajuda</span>
+            </button>
+            
+            <button onclick="sairDoSistema()" class="shrink-0 w-[4.5rem] flex flex-col items-center justify-center h-full text-rose-500 hover:text-rose-400 transition-colors snap-center">
+                <span class="text-2xl mb-1 opacity-80">🚪</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Sair</span>
+            </button>
+        </nav>
+    `;
+
+    // Renderização
     const containerPrincipal = document.getElementById('interface-sistema');
     if (containerPrincipal) {
-        const oldMenu = containerPrincipal.querySelector('.modern-sidebar');
-        if (oldMenu) oldMenu.remove();
-        containerPrincipal.insertAdjacentHTML('afterbegin', menuHTML);
+        const oldMenu = document.querySelector('aside');
+        if(oldMenu) oldMenu.remove();
+        containerPrincipal.insertAdjacentHTML('afterbegin', menuDesktop);
     }
-    
-    // Adiciona padding ao conteúdo principal
-    const mainContent = document.querySelector('main') || document.querySelector('.main-content');
-    if (mainContent) {
-        mainContent.style.marginLeft = '280px';
-        mainContent.style.transition = 'margin-left 0.3s';
-        
-        // Observa mudanças no estado do sidebar
-        const observer = new MutationObserver(() => {
-            const sidebar = document.querySelector('.modern-sidebar');
-            if (sidebar?.classList.contains('collapsed')) {
-                mainContent.style.marginLeft = '80px';
-            } else {
-                mainContent.style.marginLeft = window.innerWidth <= 768 ? '0' : '280px';
-            }
-        });
-        
-        const sidebar = document.querySelector('.modern-sidebar');
-        if (sidebar) observer.observe(sidebar, { attributes: true, attributeFilter: ['class'] });
-        
-        // Responsivo
-        window.addEventListener('resize', () => {
-            if (window.innerWidth <= 768) {
-                mainContent.style.marginLeft = '0';
-            } else {
-                const sidebar = document.querySelector('.modern-sidebar');
-                if (sidebar?.classList.contains('collapsed')) {
-                    mainContent.style.marginLeft = '80px';
-                } else {
-                    mainContent.style.marginLeft = '280px';
-                }
-            }
-        });
-    }
-    
-    // Configura botão de collapse
-    const collapseBtn = document.querySelector('.sidebar-collapse-btn');
-    if (collapseBtn) {
-        collapseBtn.onclick = () => {
-            const sidebar = document.querySelector('.modern-sidebar');
-            sidebar.classList.toggle('collapsed');
-            localStorage.setItem('sidebar-collapsed', sidebar.classList.contains('collapsed'));
-            
-            if (sidebar.classList.contains('collapsed')) {
-                document.querySelectorAll('.modern-sidebar .nav-text, .modern-sidebar .logo-info, .modern-sidebar .footer-text, .modern-sidebar .group-text, .modern-sidebar .shortcut-hint').forEach(el => {
-                    el.classList.add('hidden');
-                });
-                document.querySelectorAll('.modern-sidebar .nav-item, .modern-sidebar .footer-btn').forEach(btn => {
-                    btn.classList.add('justify-center');
-                });
-            } else {
-                document.querySelectorAll('.modern-sidebar .nav-text, .modern-sidebar .logo-info, .modern-sidebar .footer-text, .modern-sidebar .group-text, .modern-sidebar .shortcut-hint').forEach(el => {
-                    el.classList.remove('hidden');
-                });
-                document.querySelectorAll('.modern-sidebar .nav-item, .modern-sidebar .footer-btn').forEach(btn => {
-                    btn.classList.remove('justify-center');
-                });
-            }
-        };
-    }
+
+    const oldMobile = document.querySelector('nav.md\\:hidden');
+    if(oldMobile) oldMobile.remove();
+    document.body.insertAdjacentHTML('beforeend', menuMobile);
 }
 
-// ==========================================
-// 🔧 INICIALIZAÇÃO GLOBAL
-// ==========================================
-// Injeta estilos globais
-injectGlobalStyles();
-
-// Inicializa tema
-temaManager.init();
-
-// Inicializa menu responsivo
-menuResponsivo.init();
-
-// Inicializa notificações
-const sistemaNotificacoes = new SistemaNotificacoes();
-
-// Função de fallback para upgrade
+// Alerta Padrão de Bloqueio
 window.mostrarAvisoUpgrade = function() {
-    if (typeof showToast === 'function') {
-        showToast("🔒 Recurso Bloqueado! Faça o Upgrade do seu plano para liberar esta funcionalidade.", "info");
+    if(typeof showToast === 'function') {
+        showToast("O seu plano atual não possui este recurso. Aceda a Visão Geral para Upgrade.", "info");
     } else {
         alert("🔒 Recurso Bloqueado! Faça o Upgrade do seu plano para liberar esta funcionalidade.");
     }
 };
 
-// Função para atualizar menu baseado nas permissões
+// Quando o Dashboard termina de ler o banco, ele chama isto para injetar e salvar as regras:
 window.atualizarMenuSeguro = function(funcionalidadesDoPlano) {
     window.funcionalidadesEquipe = funcionalidadesDoPlano;
+    // Salva no navegador para o menu funcionar nas outras páginas sem Firebase
     sessionStorage.setItem('bjj_features', JSON.stringify(funcionalidadesDoPlano));
-    carregarMenuModerno();
+    carregarMenu(); 
 };
 
-// Inicializa menu
-carregarMenuModerno();
+// Render Inicial
+carregarMenu();// ==========================================
+// 🌙 MOTOR GLOBAL DE MODO ESCURO
+// ==========================================
+const injetarModoEscuro = () => {
+    // 1. Cria a folha de estilos mágica que reescreve as cores do Tailwind
+    if (!document.getElementById('bjj-dark-mode-styles')) {
+        const style = document.createElement('style');
+        style.id = 'bjj-dark-mode-styles';
+        style.innerHTML = `
+            /* Quando a tag HTML tiver a classe 'dark', estas regras entram em ação e esmagam as cores claras */
+            
+            /* Fundos da Página */
+            html.dark body, html.dark main, html.dark #interface-sistema { background-color: #020617 !important; }
+            html.dark .bg-[#F4F7F8], html.dark .bg-[#F8FAFC] { background-color: #020617 !important; }
+            
+            /* Caixas e Cards (bg-white vira escuro) */
+            html.dark .bg-white, html.dark .card-premium { background-color: #0f172a !important; border-color: #1e293b !important; }
+            html.dark .bg-slate-50, html.dark .bg-slate-100 { background-color: #1e293b !important; border-color: #334155 !important; }
+            
+            /* Textos (escuro vira claro) */
+            html.dark .text-slate-900, html.dark .text-slate-800, html.dark .text-slate-700 { color: #f8fafc !important; }
+            html.dark .text-slate-600, html.dark .text-slate-500 { color: #94a3b8 !important; }
+            
+            /* Bordas */
+            html.dark .border-slate-200, html.dark .border-slate-100 { border-color: #1e293b !important; }
+            
+            /* Inputs e Selects */
+            html.dark input, html.dark select, html.dark textarea { 
+                background-color: #1e293b !important; 
+                color: #f8fafc !important; 
+                border-color: #334155 !important; 
+            }
+            html.dark input::placeholder, html.dark textarea::placeholder { color: #475569 !important; }
+        `;
+        document.head.appendChild(style);
+    }
 
-// Exporta tema manager globalmente
-window.temaManager = temaManager;
+    // 2. Verifica a memória do navegador para saber se ele já escolheu o tema escuro antes
+    if (localStorage.getItem('bjj-theme') === 'dark') {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+};
+
+// Executa a injeção logo que o arquivo carrega
+injetarModoEscuro();
+
+// 3. Função que o botão vai chamar para ligar/desligar
+window.toggleDarkMode = function() {
+    const htmlTag = document.documentElement;
+    if (htmlTag.classList.contains('dark')) {
+        htmlTag.classList.remove('dark');
+        localStorage.setItem('bjj-theme', 'light');
+    } else {
+        htmlTag.classList.add('dark');
+        localStorage.setItem('bjj-theme', 'dark');
+    }
+};
+
+// ==========================================
+// 🎨 ESTILO DA BARRA DE ROLAGEM GLOBALMENTE
+// ==========================================
+if (!document.getElementById('bjj-menu-styles')) {
+    const style = document.createElement('style');
+    style.id = 'bjj-menu-styles';
+    style.innerHTML = `
+        /* Estilização elegante da barra de rolagem do menu lateral */
+        .custom-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background-color: #334155; /* slate-700 */
+            border-radius: 10px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background-color: #475569; /* slate-600 */
+        }
+        /* Suporte para Firefox */
+        .custom-scroll {
+            scrollbar-width: thin;
+            scrollbar-color: #334155 transparent;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// ==========================================
+// 📱 CONSTRUTOR DO MENU
+// ==========================================
+function carregarMenu() {
+    const paginaAtual = window.location.pathname.split("/").pop() || "dashboard.html";
+
+    // --- 1. RECUPERA O ESTADO GLOBAL DO NAVEGADOR ---
+    if (!window.funcionalidadesEquipe) {
+        const cacheFeatures = sessionStorage.getItem('bjj_features');
+        if (cacheFeatures) {
+            window.funcionalidadesEquipe = JSON.parse(cacheFeatures);
+        }
+    }
+
+    // Tenta pegar os dados visuais salvos na sessão
+    const cacheNome = sessionStorage.getItem('bjj_equipe_nome') || 'SUA EQUIPE';
+    const cacheLogoUrl = sessionStorage.getItem('bjj_equipe_logo');
+    
+    let cacheLogoHTML = cacheNome.charAt(0).toUpperCase();
+    let cacheLogoBg = "";
+    if (cacheLogoUrl && cacheLogoUrl !== "null" && cacheLogoUrl !== "") {
+        cacheLogoHTML = `<img src="${cacheLogoUrl}" class="w-full h-full object-cover" alt="Logo">`;
+        cacheLogoBg = "background: transparent;";
+    }
+
+    // --- 2. LÓGICA DE ESTILOS ---
+    const classDesktop = (pagina, isBloqueado = false) => {
+        if (isBloqueado) {
+            return "w-full text-left flex items-center justify-between px-4 py-3 text-[13px] font-semibold text-slate-600 border-l-4 border-transparent cursor-not-allowed opacity-60 bg-slate-900/30";
+        }
+        return paginaAtual === pagina 
+            ? "w-full text-left flex items-center justify-between px-4 py-3 text-[13px] font-black text-white bg-gradient-to-r from-cyan-500/10 to-transparent border-l-4 border-cyan-500 transition-all group cursor-pointer" 
+            : "w-full text-left flex items-center justify-between px-4 py-3 text-[13px] font-semibold text-slate-400 border-l-4 border-transparent hover:border-slate-700 hover:text-white hover:bg-slate-800/50 transition-all group cursor-pointer";
+    };
+
+    const classMobile = (pagina, isBloqueado = false) => {
+        if (isBloqueado) {
+            return "shrink-0 w-[4.5rem] flex flex-col items-center justify-center h-full text-slate-600 relative snap-center cursor-not-allowed opacity-50";
+        }
+        return paginaAtual === pagina 
+            ? "shrink-0 w-[4.5rem] flex flex-col items-center justify-center h-full text-cyan-400 relative snap-center cursor-pointer transition-all scale-110" 
+            : "shrink-0 w-[4.5rem] flex flex-col items-center justify-center h-full text-slate-500 hover:text-slate-300 transition-colors snap-center cursor-pointer";
+    };
+
+    const indicadorMobile = (pagina) => {
+        return paginaAtual === pagina ? `<div class="absolute top-0 w-8 h-1 bg-cyan-500 rounded-b-full shadow-[0_0_10px_rgba(6,182,212,0.8)]"></div>` : "";
+    };
+
+    // --- 3. MOTOR DE PERMISSÕES BLINDADO ---
+    const hasAccess = (palavraChave) => {
+        if (!window.funcionalidadesEquipe) return true; // Fallback se não carregou
+        return window.funcionalidadesEquipe.some(f => 
+            f.includes('✓') && f.toLowerCase().includes(palavraChave.toLowerCase())
+        );
+    };
+
+    const blockIcon = `<span class="text-[10px]">🔒</span>`;
+    
+    // Mapeamento Inteligente
+    const canFin = true; // 🔓 DESBLOQUEADO PARA TODOS OS PLANOS
+    const canLoja = hasAccess('Vitrine'); 
+    const canCert = hasAccess('Certificados'); 
+    const canTurmas = hasAccess('Turmas'); 
+    
+    // GESTÃO EXTRA E CURRÍCULO: Se não tiver "Alunos Ilimitados" ou "Portal", é o Plano Básico, então bloqueia!
+    const canExtra = hasAccess('Ilimitados') || hasAccess('Portal'); 
+
+    const clickAcao = (url, hasAcc) => {
+        return hasAcc ? `window.location.href='${url}'` : `mostrarAvisoUpgrade()`;
+    };
+
+    // --- 4. HTML DO MENU DESKTOP ---
+    const menuDesktop = `
+        <aside class="hidden md:flex w-56 bg-slate-900 text-white flex-col h-full shadow-[5px_0_15px_rgba(0,0,0,0.3)] shrink-0 z-20 border-r border-slate-800">
+            <div class="p-5 text-center border-b border-slate-800 flex flex-col items-center justify-center bg-slate-950/30">
+                <div id="container-logo" class="w-14 h-14 mb-3 rounded-2xl bg-gradient-to-tr from-slate-800 to-slate-700 flex items-center justify-center shadow-lg text-slate-300 font-black text-xl overflow-hidden ring-1 ring-slate-700" style="${cacheLogoBg}">
+                    ${cacheLogoHTML}
+                </div>
+                <h1 class="text-xs font-black tracking-wider text-white uppercase truncate w-full px-2" id="nome-equipe">${cacheNome}</h1>
+                <p class="text-[8px] text-cyan-500 font-black uppercase tracking-[0.2em] mt-1.5 bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/20">BJJ Manager</p>
+            </div>
+            
+            <nav class="flex-1 py-4 space-y-0.5 overflow-y-auto custom-scroll flex flex-col">
+                <button onclick="${clickAcao('dashboard.html', true)}" class="${classDesktop('dashboard.html', false)}">
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'dashboard.html' ? 'drop-shadow-md' : 'opacity-70'}">📊</span> Visão Geral</div>
+                </button>
+                
+                <button onclick="${clickAcao('financeiro.html', canFin)}" class="${classDesktop('financeiro.html', !canFin)}">
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'financeiro.html' ? 'drop-shadow-md' : 'opacity-70'}">💰</span> Financeiro</div>
+                    ${!canFin ? blockIcon : ''}
+                </button>
+                
+                <button onclick="${clickAcao('alunos.html', true)}" class="${classDesktop('alunos.html', false)}">
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'alunos.html' ? 'drop-shadow-md' : 'opacity-70'}">🥋</span> Alunos</div>
+                </button>
+                
+                <button onclick="${clickAcao('turmas.html', canTurmas)}" class="${classDesktop('turmas.html', !canTurmas)}">
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'turmas.html' ? 'drop-shadow-md' : 'opacity-70'}">🗓️</span> Turmas</div>
+                    ${!canTurmas ? blockIcon : ''}
+                </button>
+                
+                <button onclick="${clickAcao('loja.html', canLoja)}" class="${classDesktop('loja.html', !canLoja)}">
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'loja.html' ? 'drop-shadow-md' : 'opacity-70'}">🛒</span> Vitrine Virtual</div>
+                    ${!canLoja ? blockIcon : ''}
+                </button>
+                
+                <div class="px-4 pt-4 pb-1">
+                    <p class="text-[8px] font-black text-slate-500/80 uppercase tracking-widest">Acadêmico</p>
+                </div>
+                
+                <button onclick="${clickAcao('certificados.html', canCert)}" class="${classDesktop('certificados.html', !canCert)}">
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'certificados.html' ? 'drop-shadow-md' : 'opacity-70'}">📜</span> Certificados</div>
+                    ${!canCert ? blockIcon : ''}
+                </button>
+                
+                <button onclick="${clickAcao('curriculo.html', canExtra)}" class="${classDesktop('curriculo.html', !canExtra)}">
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'curriculo.html' ? 'drop-shadow-md' : 'opacity-70'}">📄</span> Currículo</div>
+                    ${!canExtra ? blockIcon : ''}
+                </button>
+                
+                <div class="px-4 pt-4 pb-1">
+                    <p class="text-[8px] font-black text-slate-500/80 uppercase tracking-widest">Gestão Extra</p>
+                </div>
+                
+                <button onclick="${clickAcao('competicoes.html', canExtra)}" class="${classDesktop('competicoes.html', !canExtra)}">
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'competicoes.html' ? 'drop-shadow-md' : 'opacity-70'}">🏆</span> Competições</div>
+                    ${!canExtra ? blockIcon : ''}
+                </button>
+                
+                <button onclick="${clickAcao('federacoes.html', canExtra)}" class="${classDesktop('federacoes.html', !canExtra)}">
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'federacoes.html' ? 'drop-shadow-md' : 'opacity-70'}">🪪</span> Federações</div>
+                    ${!canExtra ? blockIcon : ''}
+                </button>
+                
+                <button onclick="${clickAcao('historico.html', canExtra)}" class="${classDesktop('historico.html', !canExtra)}">
+                    <div class="flex items-center"><span class="mr-3 text-base group-hover:scale-110 transition-transform ${paginaAtual === 'historico.html' ? 'drop-shadow-md' : 'opacity-70'}">🎓</span> Graduações</div>
+                    ${!canExtra ? blockIcon : ''}
+                </button>
+            </nav>
+            
+            <div class="p-4 border-t border-slate-800 bg-slate-900/80 backdrop-blur-sm z-30 flex flex-col gap-3">
+                
+                <button onclick="toggleDarkMode()" class="w-full flex items-center justify-center text-slate-500 hover:text-slate-300 transition-colors text-[10px] font-bold uppercase tracking-widest py-1" title="Alternar Modo Escuro">
+                    <span class="mr-2 text-sm leading-none opacity-70">🌗</span> Tema
+                </button>
+
+                <button onclick="${clickAcao('suporte.html', true)}" class="w-full flex items-center justify-center text-slate-500 hover:text-indigo-400 transition-colors text-[9px] font-bold uppercase tracking-widest ${paginaAtual === 'suporte.html' ? 'text-indigo-400' : ''}">
+                    <span class="mr-2 text-sm opacity-70">🎧</span> Ajuda
+                </button>
+                
+                <button onclick="sairDoSistema()" class="w-full px-4 py-2 bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white border border-rose-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center shadow-sm">
+                    <span class="mr-2 text-sm leading-none opacity-70">🚪</span> Sair
+                </button>
+            </div>
+        </aside>
+    `;
+
+    // --- 5. HTML DO MENU MOBILE ---
+    const menuMobile = `
+        <nav class="md:hidden fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-xl border-t border-slate-800 flex overflow-x-auto hide-scrollbar flex-nowrap items-center h-[76px] z-40 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.5)] snap-x scroll-smooth">
+            <button onclick="${clickAcao('dashboard.html', true)}" class="${classMobile('dashboard.html', false)}">
+                ${indicadorMobile('dashboard.html')}
+                <span class="text-2xl mb-1 ${paginaAtual === 'dashboard.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">📊</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Visão</span>
+            </button>
+            
+            <button onclick="${clickAcao('financeiro.html', canFin)}" class="${classMobile('financeiro.html', !canFin)} relative">
+                ${indicadorMobile('financeiro.html')}
+                ${!canFin ? `<div class="absolute top-1 right-2 text-[10px]">🔒</div>` : ''}
+                <span class="text-2xl mb-1 ${paginaAtual === 'financeiro.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">💰</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Caixa</span>
+            </button>
+            
+            <button onclick="${clickAcao('alunos.html', true)}" class="${classMobile('alunos.html', false)}">
+                ${indicadorMobile('alunos.html')}
+                <span class="text-2xl mb-1 ${paginaAtual === 'alunos.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">🥋</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Alunos</span>
+            </button>
+            
+            <button onclick="${clickAcao('turmas.html', canTurmas)}" class="${classMobile('turmas.html', !canTurmas)} relative">
+                ${indicadorMobile('turmas.html')}
+                ${!canTurmas ? `<div class="absolute top-1 right-2 text-[10px]">🔒</div>` : ''}
+                <span class="text-2xl mb-1 ${paginaAtual === 'turmas.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">🗓️</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Turmas</span>
+            </button>
+            
+            <button onclick="${clickAcao('loja.html', canLoja)}" class="${classMobile('loja.html', !canLoja)} relative">
+                ${indicadorMobile('loja.html')}
+                ${!canLoja ? `<div class="absolute top-1 right-2 text-[10px]">🔒</div>` : ''}
+                <span class="text-2xl mb-1 ${paginaAtual === 'loja.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">🛒</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Loja</span>
+            </button>
+            
+            <button onclick="${clickAcao('certificados.html', canCert)}" class="${classMobile('certificados.html', !canCert)} relative">
+                ${indicadorMobile('certificados.html')}
+                ${!canCert ? `<div class="absolute top-1 right-2 text-[10px]">🔒</div>` : ''}
+                <span class="text-2xl mb-1 ${paginaAtual === 'certificados.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">📜</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Certif.</span>
+            </button>
+            
+            <button onclick="${clickAcao('curriculo.html', canExtra)}" class="${classMobile('curriculo.html', !canExtra)} relative">
+                ${indicadorMobile('curriculo.html')}
+                ${!canExtra ? `<div class="absolute top-1 right-2 text-[10px]">🔒</div>` : ''}
+                <span class="text-2xl mb-1 ${paginaAtual === 'curriculo.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">📄</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Currí.</span>
+            </button>
+            
+            <button onclick="${clickAcao('competicoes.html', canExtra)}" class="${classMobile('competicoes.html', !canExtra)} relative">
+                ${indicadorMobile('competicoes.html')}
+                ${!canExtra ? `<div class="absolute top-1 right-2 text-[10px]">🔒</div>` : ''}
+                <span class="text-2xl mb-1 ${paginaAtual === 'competicoes.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">🏆</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Comp.</span>
+            </button>
+            
+            <button onclick="${clickAcao('federacoes.html', canExtra)}" class="${classMobile('federacoes.html', !canExtra)} relative">
+                ${indicadorMobile('federacoes.html')}
+                ${!canExtra ? `<div class="absolute top-1 right-2 text-[10px]">🔒</div>` : ''}
+                <span class="text-2xl mb-1 ${paginaAtual === 'federacoes.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">🪪</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Fed.</span>
+            </button>
+            
+            <button onclick="${clickAcao('historico.html', canExtra)}" class="${classMobile('historico.html', !canExtra)} relative">
+                ${indicadorMobile('historico.html')}
+                ${!canExtra ? `<div class="absolute top-1 right-2 text-[10px]">🔒</div>` : ''}
+                <span class="text-2xl mb-1 ${paginaAtual === 'historico.html' ? 'drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'opacity-60'}">🎓</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Grad.</span>
+            </button>
+
+            <button onclick="toggleDarkMode()" class="shrink-0 w-[4rem] flex flex-col items-center justify-center h-full text-slate-500 hover:text-slate-300 transition-colors snap-center cursor-pointer">
+                <span class="text-[20px] mb-1 opacity-60 transition-all">🌗</span>
+                <span class="text-[7.5px] font-bold uppercase tracking-wide">Tema</span>
+            </button>
+
+            <button onclick="${clickAcao('suporte.html', true)}" class="shrink-0 w-[4rem] flex flex-col items-center justify-center h-full text-slate-500 hover:text-indigo-400 transition-colors snap-center">
+                ${indicadorMobile('suporte.html')}
+                <span class="text-xl mb-1 ${paginaAtual === 'suporte.html' ? 'drop-shadow-[0_0_8px_rgba(99,102,241,0.8)] text-indigo-400' : 'opacity-60'}">🎧</span>
+                <span class="text-[7.5px] font-bold uppercase tracking-wide">Ajuda</span>
+            </button>
+            
+            <button onclick="sairDoSistema()" class="shrink-0 w-[4.5rem] flex flex-col items-center justify-center h-full text-rose-500 hover:text-rose-400 transition-colors snap-center">
+                <span class="text-2xl mb-1 opacity-80">🚪</span>
+                <span class="text-[8px] font-bold uppercase tracking-wide">Sair</span>
+            </button>
+        </nav>
+    `;
+
+    // Renderização
+    const containerPrincipal = document.getElementById('interface-sistema');
+    if (containerPrincipal) {
+        const oldMenu = document.querySelector('aside');
+        if(oldMenu) oldMenu.remove();
+        containerPrincipal.insertAdjacentHTML('afterbegin', menuDesktop);
+    }
+
+    const oldMobile = document.querySelector('nav.md\\:hidden');
+    if(oldMobile) oldMobile.remove();
+    document.body.insertAdjacentHTML('beforeend', menuMobile);
+}
+
+// Alerta Padrão de Bloqueio
+window.mostrarAvisoUpgrade = function() {
+    if(typeof showToast === 'function') {
+        showToast("O seu plano atual não possui este recurso. Aceda a Visão Geral para Upgrade.", "info");
+    } else {
+        alert("🔒 Recurso Bloqueado! Faça o Upgrade do seu plano para liberar esta funcionalidade.");
+    }
+};
+
+// Quando o Dashboard termina de ler o banco, ele chama isto para injetar e salvar as regras:
+window.atualizarMenuSeguro = function(funcionalidadesDoPlano) {
+    window.funcionalidadesEquipe = funcionalidadesDoPlano;
+    // Salva no navegador para o menu funcionar nas outras páginas sem Firebase
+    sessionStorage.setItem('bjj_features', JSON.stringify(funcionalidadesDoPlano));
+    carregarMenu(); 
+};
+
+// Render Inicial
+carregarMenu();

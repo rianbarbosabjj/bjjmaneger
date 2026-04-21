@@ -288,6 +288,64 @@ window.atualizarMenuSeguro = function(funcionalidadesDoPlano) {
     sessionStorage.setItem('bjj_features', JSON.stringify(funcionalidadesDoPlano));
     carregarMenu(); 
 };
+// ==========================================
+// 🌙 MOTOR GLOBAL DE MODO ESCURO
+// ==========================================
+const injetarModoEscuro = () => {
+    // 1. Cria a folha de estilos mágica que reescreve as cores do Tailwind
+    if (!document.getElementById('bjj-dark-mode-styles')) {
+        const style = document.createElement('style');
+        style.id = 'bjj-dark-mode-styles';
+        style.innerHTML = `
+            /* Quando a tag HTML tiver a classe 'dark', estas regras entram em ação e esmagam as cores claras */
+            
+            /* Fundos da Página */
+            html.dark body, html.dark main, html.dark #interface-sistema { background-color: #020617 !important; }
+            html.dark .bg-[#F4F7F8], html.dark .bg-[#F8FAFC] { background-color: #020617 !important; }
+            
+            /* Caixas e Cards (bg-white vira escuro) */
+            html.dark .bg-white, html.dark .card-premium { background-color: #0f172a !important; border-color: #1e293b !important; }
+            html.dark .bg-slate-50, html.dark .bg-slate-100 { background-color: #1e293b !important; border-color: #334155 !important; }
+            
+            /* Textos (escuro vira claro) */
+            html.dark .text-slate-900, html.dark .text-slate-800, html.dark .text-slate-700 { color: #f8fafc !important; }
+            html.dark .text-slate-600, html.dark .text-slate-500 { color: #94a3b8 !important; }
+            
+            /* Bordas */
+            html.dark .border-slate-200, html.dark .border-slate-100 { border-color: #1e293b !important; }
+            
+            /* Inputs e Selects */
+            html.dark input, html.dark select, html.dark textarea { 
+                background-color: #1e293b !important; 
+                color: #f8fafc !important; 
+                border-color: #334155 !important; 
+            }
+            html.dark input::placeholder, html.dark textarea::placeholder { color: #475569 !important; }
+        `;
+        document.head.appendChild(style);
+    }
 
+    // 2. Verifica a memória do navegador para saber se ele já escolheu o tema escuro antes
+    if (localStorage.getItem('bjj-theme') === 'dark') {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+};
+
+// Executa a injeção logo que o menu carrega
+injetarModoEscuro();
+
+// 3. Função que o botão vai chamar para ligar/desligar
+window.toggleDarkMode = function() {
+    const htmlTag = document.documentElement;
+    if (htmlTag.classList.contains('dark')) {
+        htmlTag.classList.remove('dark');
+        localStorage.setItem('bjj-theme', 'light');
+    } else {
+        htmlTag.classList.add('dark');
+        localStorage.setItem('bjj-theme', 'dark');
+    }
+};
 // Render Inicial
 carregarMenu();

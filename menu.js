@@ -122,7 +122,7 @@ function carregarMenu() {
         const clickAcao = (url, hasAcc) => { return hasAcc ? `window.location.href='${url}'` : `mostrarAvisoUpgrade()`; };
 
         // Ícones SVG minimalistas para Suporte e Tema
-        const svgAjuda = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 sm:w-5 sm:h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" /></svg>`;
+        const svgSuporte = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 sm:w-5 sm:h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75v1.5c0 1.657 1.343 3 3 3h1.5a.75.75 0 00.75-.75v-4.5a.75.75 0 00-.75-.75h-1.5a6 6 0 1112 0h-1.5a.75.75 0 00-.75.75v4.5a.75.75 0 00.75.75h1.5c1.657 0 3-1.343 3-3v-1.5c0-5.385-4.365-9.75-9.75-9.75z" /><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 15v3.375c0 1.243-1.007 2.25-2.25 2.25h-2.25c-1.243 0-2.25-1.007-2.25-2.25v-1.5" /></svg>`;
         const svgTema = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 sm:w-5 sm:h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>`;
 
         // --- 3. HTML DO MENU DESKTOP ---
@@ -185,7 +185,7 @@ function carregarMenu() {
                 
                 <div class="p-4 border-t border-slate-800 bg-slate-900/80 backdrop-blur-sm z-30 flex flex-col gap-2">
                     <button onclick="${clickAcao('suporte.html', true)}" class="w-full flex items-center justify-center text-slate-500 hover:text-indigo-400 transition-colors text-[9px] font-bold uppercase tracking-widest py-1.5 group ${paginaAtual === 'suporte.html' ? 'text-indigo-400' : ''}">
-                        <span class="mr-2 opacity-70 group-hover:opacity-100 transition-opacity flex items-center justify-center">${svgAjuda}</span> Ajuda
+                        <span class="mr-2 opacity-70 group-hover:opacity-100 transition-opacity flex items-center justify-center">${svgSuporte}</span> Suporte
                     </button>
                     <button onclick="toggleDarkMode()" class="w-full flex items-center justify-center text-slate-500 hover:text-slate-300 transition-colors text-[10px] font-bold uppercase tracking-widest py-1.5 group" title="Alternar Modo Escuro">
                         <span class="mr-2 opacity-70 group-hover:opacity-100 transition-opacity flex items-center justify-center">${svgTema}</span> Tema
@@ -261,8 +261,8 @@ function carregarMenu() {
 
                 <button onclick="${clickAcao('suporte.html', true)}" class="shrink-0 w-[4rem] flex flex-col items-center justify-center h-full text-slate-500 hover:text-indigo-400 transition-colors snap-center group">
                     ${indicadorMobile('suporte.html')}
-                    <span class="mb-1 flex items-center justify-center w-6 h-6 opacity-60 group-hover:opacity-100 ${paginaAtual === 'suporte.html' ? 'drop-shadow-[0_0_8px_rgba(99,102,241,0.8)] text-indigo-400 opacity-100' : ''}">${svgAjuda}</span>
-                    <span class="text-[7.5px] font-bold uppercase tracking-wide">Ajuda</span>
+                    <span class="mb-1 flex items-center justify-center w-6 h-6 opacity-60 group-hover:opacity-100 ${paginaAtual === 'suporte.html' ? 'drop-shadow-[0_0_8px_rgba(99,102,241,0.8)] text-indigo-400 opacity-100' : ''}">${svgSuporte}</span>
+                    <span class="text-[7.5px] font-bold uppercase tracking-wide">Suporte</span>
                 </button>
 
                 <button onclick="toggleDarkMode()" class="shrink-0 w-[4rem] flex flex-col items-center justify-center h-full text-slate-500 hover:text-slate-300 transition-colors snap-center cursor-pointer group">

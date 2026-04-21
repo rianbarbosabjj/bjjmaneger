@@ -9,7 +9,7 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -55,6 +55,74 @@
             #area-recibo, #area-recibo * { visibility: visible; }
             #area-recibo { position: absolute; left: 0; top: 0; width: 100%; display: block !important; }
             #modal-paywall { display: none !important; }
+        }
+
+        /* Estilos modernos para os gráficos */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            min-height: 350px;
+            transition: all 0.3s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .chart-container {
+                min-height: 280px;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .chart-container {
+                min-height: 250px;
+            }
+        }
+        
+        .chart-wrapper {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .chart-wrapper:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+        }
+        
+        .chart-title {
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #64748B;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .chart-title::before {
+            content: '';
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(135deg, #06B6D4, #3B82F6);
+            border-radius: 2px;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .chart-animate {
+            animation: fadeInUp 0.6s ease-out;
         }
     </style>
 </head>
@@ -174,7 +242,7 @@
                                             <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-center">Status</th>
                                             <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-right">Valor Total</th>
                                             <th class="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-center">Pago Em</th>
-                                        </tr>
+                                        <tr>
                                     </thead>
                                     <tbody id="tabela-mensalidades" class="divide-y divide-slate-50 text-sm">
                                     </tbody>
@@ -409,9 +477,23 @@
                                 <h3 class="text-3xl font-black text-white mt-2" id="dash-saldo">R$ 0,00</h3>
                             </div>
                          </div>
-                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[400px]">
-                            <div class="bg-white p-6 card-premium flex flex-col items-center justify-center relative"><canvas id="chartBalancoMes"></canvas></div>
-                            <div class="bg-white p-6 card-premium flex flex-col items-center justify-center relative"><canvas id="chartOrigemMes"></canvas></div>
+                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="chart-wrapper">
+                                <div class="chart-title">
+                                    <span>Balanço do Mês</span>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="chartBalancoMes"></canvas>
+                                </div>
+                            </div>
+                            <div class="chart-wrapper">
+                                <div class="chart-title">
+                                    <span>Origem das Receitas</span>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="chartOrigemMes"></canvas>
+                                </div>
+                            </div>
                          </div>
                     </div>
 
@@ -459,9 +541,23 @@
                                 <h3 class="text-2xl md:text-3xl font-black text-slate-800 mt-2" id="ano-saldo">R$ 0,00</h3>
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[400px]">
-                            <div class="bg-white p-4 card-premium flex flex-col items-center justify-center relative"><canvas id="chartEvolucaoAno"></canvas></div>
-                            <div class="bg-white p-4 card-premium flex flex-col items-center justify-center relative"><canvas id="chartAcumuladoAno"></canvas></div>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="chart-wrapper">
+                                <div class="chart-title">
+                                    <span>Evolução Mensal</span>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="chartEvolucaoAno"></canvas>
+                                </div>
+                            </div>
+                            <div class="chart-wrapper">
+                                <div class="chart-title">
+                                    <span>Crescimento do Caixa</span>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="chartAcumuladoAno"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -1764,6 +1860,7 @@
                 document.getElementById('dash-saldo').className = saldo >= 0 ? "text-3xl font-black text-emerald-400 mt-2" : "text-3xl font-black text-rose-400 mt-2";
             }
 
+            // Gráfico de Balanço do Mês - Modernizado
             if(chartBalancoMes) chartBalancoMes.destroy();
             const ctxBal = document.getElementById('chartBalancoMes');
             if (ctxBal) {
@@ -1771,22 +1868,157 @@
                     type: 'bar',
                     data: {
                         labels: ['Entradas', 'Saídas'],
-                        datasets: [{ label: 'Valores (R$)', data: [tEntradas, tDesp], backgroundColor: ['#10B981', '#F43F5E'], borderRadius: 8 }]
+                        datasets: [{
+                            label: 'Valores (R$)',
+                            data: [tEntradas, tDesp],
+                            backgroundColor: ['rgba(16, 185, 129, 0.8)', 'rgba(244, 63, 94, 0.8)'],
+                            borderColor: ['rgb(16, 185, 129)', 'rgb(244, 63, 94)'],
+                            borderWidth: 2,
+                            borderRadius: 8,
+                            barPercentage: 0.6,
+                            categoryPercentage: 0.8
+                        }]
                     },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: 'Balanço do Mês' } } }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                                titleColor: '#f8fafc',
+                                bodyColor: '#cbd5e1',
+                                padding: 12,
+                                cornerRadius: 8,
+                                displayColors: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        return `R$ ${context.raw.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(203, 213, 225, 0.3)',
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return 'R$ ' + value.toLocaleString('pt-BR');
+                                    },
+                                    font: {
+                                        size: 11,
+                                        weight: 'bold'
+                                    }
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    font: {
+                                        size: 12,
+                                        weight: 'bold'
+                                    }
+                                }
+                            }
+                        },
+                        layout: {
+                            padding: {
+                                left: 10,
+                                right: 10,
+                                top: 20,
+                                bottom: 10
+                            }
+                        }
+                    }
                 });
             }
 
+            // Gráfico de Origem das Receitas - Modernizado
             if(chartOrigemMes) chartOrigemMes.destroy();
             const ctxOri = document.getElementById('chartOrigemMes');
             if(ctxOri) {
                 if(tMens === 0 && tExt === 0) {
-                    chartOrigemMes = new Chart(ctxOri.getContext('2d'), { type: 'pie', data: { labels: ['Sem Dados'], datasets: [{ data: [1], backgroundColor: ['#E2E8F0'] }] }, options: { plugins: { title: { display: true, text: 'Origem das Receitas' } } } });
+                    chartOrigemMes = new Chart(ctxOri.getContext('2d'), { 
+                        type: 'doughnut', 
+                        data: { 
+                            labels: ['Sem Dados'], 
+                            datasets: [{ 
+                                data: [1], 
+                                backgroundColor: ['#E2E8F0'],
+                                borderWidth: 0
+                            }] 
+                        }, 
+                        options: { 
+                            responsive: true, 
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        font: {
+                                            size: 11,
+                                            weight: 'bold'
+                                        }
+                                    }
+                                }
+                            }
+                        } 
+                    });
                 } else {
                     chartOrigemMes = new Chart(ctxOri.getContext('2d'), {
-                        type: 'pie',
-                        data: { labels: ['Mensalidades', 'Extras'], datasets: [{ data: [tMens, tExt], backgroundColor: ['#06B6D4', '#F59E0B'], borderWidth: 0 }] },
-                        options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Origem das Receitas' } } }
+                        type: 'doughnut',
+                        data: { 
+                            labels: ['Mensalidades', 'Extras'], 
+                            datasets: [{ 
+                                data: [tMens, tExt], 
+                                backgroundColor: ['rgba(6, 182, 212, 0.8)', 'rgba(245, 158, 11, 0.8)'],
+                                borderColor: ['rgb(6, 182, 212)', 'rgb(245, 158, 11)'],
+                                borderWidth: 2,
+                                hoverOffset: 15
+                            }] 
+                        },
+                        options: { 
+                            responsive: true, 
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        font: {
+                                            size: 11,
+                                            weight: 'bold'
+                                        },
+                                        padding: 15
+                                    }
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                                    titleColor: '#f8fafc',
+                                    bodyColor: '#cbd5e1',
+                                    padding: 12,
+                                    cornerRadius: 8,
+                                    callbacks: {
+                                        label: function(context) {
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = ((context.raw / total) * 100).toFixed(1);
+                                            return `${context.label}: R$ ${context.raw.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${percentage}%)`;
+                                        }
+                                    }
+                                }
+                            },
+                            cutout: '60%',
+                            layout: {
+                                padding: 20
+                            }
+                        }
                     });
                 }
             }
@@ -1819,6 +2051,7 @@
             if(document.getElementById('ano-saidas')) document.getElementById('ano-saidas').innerText = `R$ ${floatToStr(totalDespAno)}`;
             if(document.getElementById('ano-saldo')) document.getElementById('ano-saldo').innerText = `R$ ${floatToStr(saldoAcumulado)}`;
 
+            // Gráfico de Evolução Mensal - Modernizado
             if(chartEvolucaoAno) chartEvolucaoAno.destroy();
             const ctxEvo = document.getElementById('chartEvolucaoAno');
             if(ctxEvo) {
@@ -1827,14 +2060,95 @@
                     data: {
                         labels: labelsBr,
                         datasets: [
-                            { label: 'Entradas', data: recAnual, backgroundColor: '#10B981', borderRadius: 4 },
-                            { label: 'Saídas', data: despAnual, backgroundColor: '#F43F5E', borderRadius: 4 }
+                            { 
+                                label: 'Entradas', 
+                                data: recAnual, 
+                                backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                                borderColor: 'rgb(16, 185, 129)',
+                                borderWidth: 2,
+                                borderRadius: 6,
+                                barPercentage: 0.7
+                            },
+                            { 
+                                label: 'Saídas', 
+                                data: despAnual, 
+                                backgroundColor: 'rgba(244, 63, 94, 0.7)',
+                                borderColor: 'rgb(244, 63, 94)',
+                                borderWidth: 2,
+                                borderRadius: 6,
+                                barPercentage: 0.7
+                            }
                         ]
                     },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Evolução Mensal' } } }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    font: {
+                                        size: 11,
+                                        weight: 'bold'
+                                    },
+                                    usePointStyle: true,
+                                    pointStyle: 'circle'
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                                titleColor: '#f8fafc',
+                                bodyColor: '#cbd5e1',
+                                padding: 12,
+                                cornerRadius: 8,
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.dataset.label}: R$ ${context.raw.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(203, 213, 225, 0.3)',
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return 'R$ ' + value.toLocaleString('pt-BR');
+                                    },
+                                    font: {
+                                        size: 10
+                                    }
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    font: {
+                                        size: 10,
+                                        weight: 'bold'
+                                    }
+                                }
+                            }
+                        },
+                        layout: {
+                            padding: {
+                                left: 10,
+                                right: 10,
+                                top: 20,
+                                bottom: 10
+                            }
+                        }
+                    }
                 });
             }
 
+            // Gráfico de Crescimento do Caixa - Modernizado
             if(chartAcumuladoAno) chartAcumuladoAno.destroy();
             const ctxAcum = document.getElementById('chartAcumuladoAno');
             if(ctxAcum) {
@@ -1842,9 +2156,86 @@
                     type: 'line',
                     data: {
                         labels: labelsBr,
-                        datasets: [{ label: 'Saldo Acumulado (R$)', data: acumulado, borderColor: '#06B6D4', backgroundColor: 'rgba(6, 182, 212, 0.2)', fill: true, tension: 0.3 }]
+                        datasets: [{ 
+                            label: 'Saldo Acumulado (R$)', 
+                            data: acumulado, 
+                            borderColor: 'rgb(6, 182, 212)',
+                            backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.3,
+                            pointBackgroundColor: 'rgb(6, 182, 212)',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }]
                     },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Crescimento do Caixa' } } }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    font: {
+                                        size: 11,
+                                        weight: 'bold'
+                                    },
+                                    usePointStyle: true
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                                titleColor: '#f8fafc',
+                                bodyColor: '#cbd5e1',
+                                padding: 12,
+                                cornerRadius: 8,
+                                callbacks: {
+                                    label: function(context) {
+                                        const value = context.raw;
+                                        const color = value >= 0 ? '#10b981' : '#ef4444';
+                                        return `Saldo: R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                grid: {
+                                    color: 'rgba(203, 213, 225, 0.3)',
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return 'R$ ' + value.toLocaleString('pt-BR');
+                                    },
+                                    font: {
+                                        size: 10
+                                    }
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    font: {
+                                        size: 10,
+                                        weight: 'bold'
+                                    }
+                                }
+                            }
+                        },
+                        layout: {
+                            padding: {
+                                left: 10,
+                                right: 10,
+                                top: 20,
+                                bottom: 10
+                            }
+                        }
+                    }
                 });
             }
         }

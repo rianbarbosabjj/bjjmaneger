@@ -121,6 +121,10 @@ function carregarMenu() {
 
         const clickAcao = (url, hasAcc) => { return hasAcc ? `window.location.href='${url}'` : `mostrarAvisoUpgrade()`; };
 
+        // Ícones SVG minimalistas para Suporte e Tema
+        const svgAjuda = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 sm:w-5 sm:h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" /></svg>`;
+        const svgTema = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 sm:w-5 sm:h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>`;
+
         // --- 3. HTML DO MENU DESKTOP ---
         const menuDesktop = `
             <aside class="hidden md:flex w-56 bg-slate-900 text-white flex-col h-full shadow-[5px_0_15px_rgba(0,0,0,0.3)] shrink-0 z-20 border-r border-slate-800">
@@ -180,11 +184,11 @@ function carregarMenu() {
                 </nav>
                 
                 <div class="p-4 border-t border-slate-800 bg-slate-900/80 backdrop-blur-sm z-30 flex flex-col gap-2">
-                    <button onclick="toggleDarkMode()" class="w-full flex items-center justify-center text-slate-500 hover:text-slate-300 transition-colors text-[10px] font-bold uppercase tracking-widest py-1.5" title="Alternar Modo Escuro">
-                        <span class="mr-2 text-sm leading-none opacity-70">🌗</span> Tema
+                    <button onclick="${clickAcao('suporte.html', true)}" class="w-full flex items-center justify-center text-slate-500 hover:text-indigo-400 transition-colors text-[9px] font-bold uppercase tracking-widest py-1.5 group ${paginaAtual === 'suporte.html' ? 'text-indigo-400' : ''}">
+                        <span class="mr-2 opacity-70 group-hover:opacity-100 transition-opacity flex items-center justify-center">${svgAjuda}</span> Ajuda
                     </button>
-                    <button onclick="${clickAcao('suporte.html', true)}" class="w-full flex items-center justify-center text-slate-500 hover:text-indigo-400 transition-colors text-[9px] font-bold uppercase tracking-widest py-1.5 ${paginaAtual === 'suporte.html' ? 'text-indigo-400' : ''}">
-                        <span class="mr-2 text-sm opacity-70">🎧</span> Ajuda
+                    <button onclick="toggleDarkMode()" class="w-full flex items-center justify-center text-slate-500 hover:text-slate-300 transition-colors text-[10px] font-bold uppercase tracking-widest py-1.5 group" title="Alternar Modo Escuro">
+                        <span class="mr-2 opacity-70 group-hover:opacity-100 transition-opacity flex items-center justify-center">${svgTema}</span> Tema
                     </button>
                     <button onclick="sairDoSistema()" class="w-full px-4 py-2 mt-1 bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white border border-rose-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center shadow-sm">
                         <span class="mr-2 text-sm leading-none opacity-70">🚪</span> Sair
@@ -255,15 +259,15 @@ function carregarMenu() {
                     <span class="text-[8px] font-bold uppercase tracking-wide">Grad.</span>
                 </button>
 
-                <button onclick="toggleDarkMode()" class="shrink-0 w-[4rem] flex flex-col items-center justify-center h-full text-slate-500 hover:text-slate-300 transition-colors snap-center cursor-pointer">
-                    <span class="text-[20px] mb-1 opacity-60 transition-all">🌗</span>
-                    <span class="text-[7.5px] font-bold uppercase tracking-wide">Tema</span>
+                <button onclick="${clickAcao('suporte.html', true)}" class="shrink-0 w-[4rem] flex flex-col items-center justify-center h-full text-slate-500 hover:text-indigo-400 transition-colors snap-center group">
+                    ${indicadorMobile('suporte.html')}
+                    <span class="mb-1 flex items-center justify-center w-6 h-6 opacity-60 group-hover:opacity-100 ${paginaAtual === 'suporte.html' ? 'drop-shadow-[0_0_8px_rgba(99,102,241,0.8)] text-indigo-400 opacity-100' : ''}">${svgAjuda}</span>
+                    <span class="text-[7.5px] font-bold uppercase tracking-wide">Ajuda</span>
                 </button>
 
-                <button onclick="${clickAcao('suporte.html', true)}" class="shrink-0 w-[4rem] flex flex-col items-center justify-center h-full text-slate-500 hover:text-indigo-400 transition-colors snap-center">
-                    ${indicadorMobile('suporte.html')}
-                    <span class="text-xl mb-1 ${paginaAtual === 'suporte.html' ? 'drop-shadow-[0_0_8px_rgba(99,102,241,0.8)] text-indigo-400' : 'opacity-60'}">🎧</span>
-                    <span class="text-[7.5px] font-bold uppercase tracking-wide">Ajuda</span>
+                <button onclick="toggleDarkMode()" class="shrink-0 w-[4rem] flex flex-col items-center justify-center h-full text-slate-500 hover:text-slate-300 transition-colors snap-center cursor-pointer group">
+                    <span class="mb-1 opacity-60 transition-all flex items-center justify-center w-6 h-6 group-hover:opacity-100">${svgTema}</span>
+                    <span class="text-[7.5px] font-bold uppercase tracking-wide">Tema</span>
                 </button>
                 
                 <button onclick="sairDoSistema()" class="shrink-0 w-[4.5rem] flex flex-col items-center justify-center h-full text-rose-500 hover:text-rose-400 transition-colors snap-center">

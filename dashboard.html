@@ -60,7 +60,7 @@
                     🔒
                 </div>
                 <h3 class="font-black text-slate-800 text-xl uppercase tracking-tight mb-2">Recurso Premium</h3>
-                <p class="text-sm text-slate-500 font-medium leading-relaxed mb-6">
+                <p class="text-sm text-slate-500 font-medium leading-relaxed mb-6" id="paywall-texto">
                     A função <span id="paywall-recurso-nome" class="font-black text-amber-600">--</span> é exclusiva para planos superiores. Faça o upgrade da sua licença para desbloquear esta e outras ferramentas.
                 </p>
                 <div class="flex gap-3">
@@ -403,7 +403,7 @@
         
         let uid = null;        
         let dadosEquipe = null; 
-        let configPlanosCache = null; // Guardará o nome de cada plano
+        let configPlanosCache = null; 
         let nomeEquipeAtual = "";
         let logoEquipeAnterior = ""; 
         
@@ -411,7 +411,6 @@
         let valAtraso = 100.0;
         let pagRapidoDados = null; 
         
-        // VARIÁVEIS GLOBAIS PARA MENSAGENS
         let mensagensCache = [];
         let mensagemEditandoId = null;
 
@@ -434,8 +433,8 @@
         // 🔒 MOTOR DE PERMISSÕES E PAYWALL
         // ==========================================
         const HIERARQUIA_PLANOS = {
-            'TESTE': 1, 'BASICO': 1, 'BLACK_BELT': 1,
-            'INTERMEDIARIO': 2, 'MASTER': 2,
+            'TESTE': 1, 'BASICO': 1, 'BÁSICO': 1, 'BLACK_BELT': 1,
+            'INTERMEDIARIO': 2, 'INTERMEDIÁRIO': 2, 'MASTER': 2,
             'PREMIUM': 3, 'ELITE': 3,
             'ULTIMATE': 4
         };
@@ -464,12 +463,16 @@
             return true; 
         };
 
-        window.abrirPaywall = function(nomeRecurso) {
-            const elNome = document.getElementById('paywall-recurso-nome');
-            if(elNome) elNome.innerText = nomeRecurso;
-            
+        window.abrirPaywall = function(nomeRecurso, msgCustomizada = null) {
             const modal = document.getElementById('modal-paywall');
             const content = document.getElementById('modal-paywall-content');
+            const textoEl = document.getElementById('paywall-texto');
+            
+            if (msgCustomizada) {
+                if (textoEl) textoEl.innerHTML = msgCustomizada;
+            } else {
+                if (textoEl) textoEl.innerHTML = `A função <span class="font-black text-amber-600">${nomeRecurso}</span> é exclusiva para planos superiores. Faça o upgrade da sua licença para desbloquear esta e outras ferramentas.`;
+            }
             
             if(modal && content) {
                 modal.classList.remove('hidden');
@@ -496,26 +499,6 @@
                 }, 300);
             }
         };
-
-        // ==========================================
-        // 🔒 PROTEÇÃO DE ROTAS (ANTI-BURLA)
-        // ==========================================
-        function protegerPaginaRestrita(recursoNomeEsperado) {
-            const isImpersonating = sessionStorage.getItem('admin_impersonate') !== null;
-            if (isImpersonating || (dadosEquipe && (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true"))) {
-                return; // Tem passe livre
-            }
-
-            if (!window.funcionalidadesEquipe) return;
-
-            // Se as features da equipe não incluírem a funcionalidade, recusa e volta ao dashboard
-            const temAcesso = window.funcionalidadesEquipe.some(f => f.includes('✓') && f.includes(recursoNomeEsperado));
-            
-            if (!temAcesso) {
-                alert(`🔒 Acesso Restrito. O seu plano atual não inclui a funcionalidade: ${recursoNomeEsperado}`);
-                window.location.href = "dashboard.html";
-            }
-        }
 
         // ==========================================
 
@@ -786,6 +769,22 @@
         };
 
         window.switchConfigTab = function(tab) {
+            // 🛑 BLOQUEIO DA ABA DE CONVITES PARA PLANOS BÁSICOS
+            if (tab === 'convites') {
+                const isImpersonating = sessionStorage.getItem('admin_impersonate') !== null;
+                const isIsento = dadosEquipe && (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true");
+                
+                if (!isImpersonating && !isIsento) {
+                    const statusAtual = (dadosEquipe && dadosEquipe.status_plano) ? dadosEquipe.status_plano : 'TESTE';
+                    const planosBasicos = ['TESTE', 'BASICO', 'BÁSICO'];
+                    
+                    if (planosBasicos.includes(statusAtual.toUpperCase())) {
+                        window.abrirPaywall('', "A funcionalidade de <b>Envio de Convites Digitais</b> (onde o aluno se cadastra sozinho pelo celular) é exclusiva para planos superiores. Faça o upgrade da sua licença para poupar tempo na gestão!");
+                        return; // Impede a abertura da aba
+                    }
+                }
+            }
+
             ['dados', 'colabs', 'convites'].forEach(t => {
                 document.getElementById('tab-' + t).classList.add('hidden');
                 document.getElementById('tab-' + t).classList.remove('flex', 'flex-col');

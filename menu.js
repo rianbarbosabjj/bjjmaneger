@@ -1,43 +1,24 @@
 // ==========================================
-// 🌙 MOTOR GLOBAL DE MODO ESCURO
+// 🌙 SISTEMA DE MODO ESCURO NATIVO (TAILWIND)
 // ==========================================
-const injetarModoEscuro = () => {
-    if (!document.getElementById('bjj-dark-mode-styles')) {
-        const style = document.createElement('style');
-        style.id = 'bjj-dark-mode-styles';
-        style.innerHTML = `
-            html.dark body, html.dark main, html.dark #interface-sistema { background-color: #020617 !important; }
-            html.dark .bg-[#F4F7F8], html.dark .bg-[#F8FAFC] { background-color: #020617 !important; }
-            html.dark .bg-white, html.dark .card-premium { background-color: #0f172a !important; border-color: #1e293b !important; }
-            html.dark .bg-slate-50, html.dark .bg-slate-100 { background-color: #1e293b !important; border-color: #334155 !important; }
-            html.dark .text-slate-900, html.dark .text-slate-800, html.dark .text-slate-700 { color: #f8fafc !important; }
-            html.dark .text-slate-600, html.dark .text-slate-500 { color: #94a3b8 !important; }
-            html.dark .border-slate-200, html.dark .border-slate-100 { border-color: #1e293b !important; }
-            html.dark input, html.dark select, html.dark textarea { 
-                background-color: #1e293b !important; 
-                color: #f8fafc !important; 
-                border-color: #334155 !important; 
-            }
-            html.dark input::placeholder, html.dark textarea::placeholder { color: #475569 !important; }
-        `;
-        document.head.appendChild(style);
-    }
 
-    if (localStorage.getItem('bjj-theme') === 'dark') {
-        document.documentElement.classList.add('dark');
-    } else {
-        document.documentElement.classList.remove('dark');
-    }
-};
+// 1. Carrega o tema imediatamente para evitar piscar tela branca
+if (localStorage.getItem('bjj-theme') === 'dark') {
+    document.documentElement.classList.add('dark');
+} else {
+    document.documentElement.classList.remove('dark');
+}
 
-injetarModoEscuro();
-
+// 2. Função de clique para alternar o tema
 window.toggleDarkMode = function() {
     const htmlTag = document.documentElement;
+    
     if (htmlTag.classList.contains('dark')) {
+        // Desligar Modo Escuro
         htmlTag.classList.remove('dark');
         localStorage.setItem('bjj-theme', 'light');
     } else {
+        // Ligar Modo Escuro
         htmlTag.classList.add('dark');
         localStorage.setItem('bjj-theme', 'dark');
     }

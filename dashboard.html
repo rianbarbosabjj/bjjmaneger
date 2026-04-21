@@ -59,7 +59,7 @@
                 <div class="w-20 h-20 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 shadow-inner">
                     🔒
                 </div>
-                <h3 class="font-black text-slate-800 text-xl uppercase tracking-tight mb-2">Recurso Premium</h3>
+                <h3 class="font-black text-slate-800 text-xl uppercase tracking-tight mb-2">Recurso indisponível para seu plano</h3>
                 <p class="text-sm text-slate-500 font-medium leading-relaxed mb-6" id="paywall-texto">
                     A função <span id="paywall-recurso-nome" class="font-black text-amber-600">--</span> é exclusiva para planos superiores. Faça o upgrade da sua licença para desbloquear esta e outras ferramentas.
                 </p>
@@ -779,7 +779,7 @@
                     const planosBasicos = ['TESTE', 'BASICO', 'BÁSICO'];
                     
                     if (planosBasicos.includes(statusAtual.toUpperCase())) {
-                        window.abrirPaywall('', "A funcionalidade de <b>Envio de Convites Digitais</b> (onde o aluno se cadastra sozinho pelo celular) é exclusiva para planos superiores. Faça o upgrade da sua licença para poupar tempo na gestão!");
+                        window.abrirPaywall('', "A funcionalidade de <b>Envio de Convites Digitais</b> (onde novos alunos(as) podem realizar a auto-matrícula) é um recurso exclusivo dos planos superiores. Faça o upgrade. de plano para poupar tempo na gestão!");
                         return; // Impede a abertura da aba
                     }
                 }

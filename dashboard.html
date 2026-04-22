@@ -1549,16 +1549,26 @@
                     endereco_uf: document.getElementById('config-uf').value.trim().toUpperCase()
                 };
                 
-                if (arquivoLogo) {
-                    if (logoEquipeAnterior) {
-                        try {
-                            const refLogoAntiga = ref(storage, logoEquipeAnterior);
-                            await deleteObject(refLogoAntiga);
-                            console.log("Logo antiga apagada do Storage.");
-                        } catch (errorDelete) {
-                            console.log("Aviso: Não foi possível apagar a logo antiga (pode já ter sido apagada ou URL externa).");
-                        }
-                    }
+                    if (arquivoLogo) {
+    // Se já existe uma logo antiga salva no banco
+                    if (dadosEquipe.url_logo) { 
+                    try {
+            // Criamos uma referência a partir da URL antiga
+                     const refLogoAntiga = ref(storage, dadosEquipe.url_logo);
+            // Deletamos o arquivo físico no Firebase Storage
+                    await deleteObject(refLogoAntiga);
+                    console.log("Arquivo antigo removido com sucesso.");
+                } catch (error) {
+            // Caso o arquivo não exista mais ou dê erro, apenas ignoramos para não travar o upload do novo
+                    console.warn("Não foi possível apagar o arquivo antigo:", error);
+                }
+            }
+
+            // Prossiga com o upload do novo arquivo normalmente...
+                    const caminhoRef = ref(storage, `equipes_logos/${uid}/${arquivoLogo.name}`);
+                    await uploadBytes(caminhoRef, arquivoLogo);
+                    updates.url_logo = await getDownloadURL(caminhoRef);
+            }
 
                     const timestamp = new Date().getTime();
                     const caminhoRef = ref(storage, `equipes_logos/${uid}_${timestamp}_${arquivoLogo.name}`);

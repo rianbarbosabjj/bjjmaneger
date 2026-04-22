@@ -492,20 +492,20 @@
                 cupom: codigoCupomParaEnviar
             });
 
-            // 3. Recebe o link do Asaas do Backend e redireciona
+            // 3. Recebe o link do Asaas e redireciona OU mostra o erro real
             if (resultado.data.success) {
                 showToast("Redirecionando para o Checkout Seguro...", "success");
                 setTimeout(() => {
-                    window.open(resultado.data.url, '_blank');
-                    btn.innerHTML = originalTxt;
-                    btn.disabled = false;
-                }, 1500);
+                    window.location.href = resultado.data.url; // Evita bloqueio de popup
+                }, 1000);
             } else {
-                throw new Error(resultado.data.error);
+                showToast("Erro do Banco: " + resultado.data.error, "error");
+                btn.innerHTML = originalTxt;
+                btn.disabled = false;
             }
         } catch (error) {
             console.error(error);
-            showToast("Erro ao gerar link de pagamento.", "error");
+            showToast("Erro no Servidor: " + error.message, "error");
             btn.innerHTML = originalTxt;
             btn.disabled = false;
         }

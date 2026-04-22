@@ -321,9 +321,9 @@
                             <span id="p2-preco-antigo" class="text-sm text-slate-500 line-through font-bold"></span>
                         </div>
                         <div class="flex items-end gap-1">
-                            <span class="text-sm text-cyan-400 font-bold mb-1">R$</span>
+                            <span id="p2-moeda" class="text-sm text-cyan-400 font-bold mb-1">R$</span>
                             <span id="p2-preco" class="text-4xl font-black text-white leading-none">⏳</span>
-                            <span class="text-slate-500 text-sm font-bold mb-1">/ mês</span>
+                            <span id="p2-periodo" class="text-slate-500 text-sm font-bold mb-1">/ mês</span>
                         </div>
                         <span id="p2-trial-text" class="text-[10px] text-cyan-400 mt-3 uppercase tracking-widest font-bold hidden bg-cyan-500/10 border border-cyan-500/20 px-2 py-1 rounded w-max"></span>
                     </div>
@@ -346,9 +346,9 @@
                             <span id="p3-preco-antigo" class="text-sm text-slate-500 line-through font-bold"></span>
                         </div>
                         <div class="flex items-end gap-1">
-                            <span class="text-sm text-purple-400 font-bold mb-1">R$</span>
+                            <span id="p3-moeda" class="text-sm text-purple-400 font-bold mb-1">R$</span>
                             <span id="p3-preco" class="text-4xl font-black text-white leading-none">⏳</span>
-                            <span class="text-slate-400 text-sm font-bold mb-1">/ mês</span>
+                            <span id="p3-periodo" class="text-slate-400 text-sm font-bold mb-1">/ mês</span>
                         </div>
                         <span id="p3-trial-text" class="text-[10px] text-purple-400 mt-3 uppercase tracking-widest font-bold hidden bg-purple-500/10 border border-purple-500/20 px-2 py-1 rounded w-max"></span>
                     </div>
@@ -368,9 +368,9 @@
                             <span id="p4-preco-antigo" class="text-sm text-slate-500 line-through font-bold"></span>
                         </div>
                         <div class="flex items-end gap-1">
-                            <span class="text-sm text-amber-500 font-bold mb-1">R$</span>
+                            <span id="p4-moeda" class="text-sm text-amber-500 font-bold mb-1">R$</span>
                             <span id="p4-preco" class="text-4xl font-black text-white leading-none">⏳</span>
-                            <span class="text-slate-500 text-sm font-bold mb-1">/ mês</span>
+                            <span id="p4-periodo" class="text-slate-500 text-sm font-bold mb-1">/ mês</span>
                         </div>
                         <span id="p4-trial-text" class="text-[10px] text-amber-500 mt-3 uppercase tracking-widest font-bold hidden bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded w-max"></span>
                     </div>
@@ -516,7 +516,8 @@
                     if(planos.p2) {
                         document.getElementById('p2-nome').innerText = planos.p2.nome;
                         document.getElementById('p2-desc').innerText = planos.p2.desc;
-                        formatarPrecoPublico(planos.p2.preco, null, 'p2-preco', null);
+                        // Agora passamos os IDs corretos!
+                        formatarPrecoPublico(planos.p2.preco, 'p2-moeda', 'p2-preco', 'p2-periodo');
                         mostrarBadgeTrial('p2-trial-text', planos.p2.trial_dias);
 
                         if(planos.p2.preco_original > planos.p2.preco) {
@@ -535,7 +536,8 @@
                     if(planos.p3) {
                         document.getElementById('p3-nome').innerText = planos.p3.nome;
                         document.getElementById('p3-desc').innerText = planos.p3.desc;
-                        formatarPrecoPublico(planos.p3.preco, null, 'p3-preco', null);
+                        // Agora passamos os IDs corretos!
+                        formatarPrecoPublico(planos.p3.preco, 'p3-moeda', 'p3-preco', 'p3-periodo');
                         mostrarBadgeTrial('p3-trial-text', planos.p3.trial_dias);
 
                         if(planos.p3.preco_original > planos.p3.preco) {
@@ -554,7 +556,8 @@
                     if(planos.p4) {
                         document.getElementById('p4-nome').innerHTML = `${planos.p4.nome} <span class="text-[9px] bg-amber-500/20 text-amber-500 px-2 py-1 rounded ml-2 uppercase align-middle">Automação</span>`;
                         document.getElementById('p4-desc').innerText = planos.p4.desc;
-                        formatarPrecoPublico(planos.p4.preco, null, 'p4-preco', null);
+                        // Agora passamos os IDs corretos!
+                        formatarPrecoPublico(planos.p4.preco, 'p4-moeda', 'p4-preco', 'p4-periodo');
                         mostrarBadgeTrial('p4-trial-text', planos.p4.trial_dias);
 
                         if(planos.p4.preco_original > planos.p4.preco) {

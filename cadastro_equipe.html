@@ -371,7 +371,7 @@
 
 
         // --- LÓGICA DE SUBMISSÃO E INTEGRAÇÃO FIREBASE COM PLANO SELECIONADO ---
-        document.getElementById('form-cadastro').addEventListener('submit', async (e) => {
+document.getElementById('form-cadastro').addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const nomeEquipe = document.getElementById('cad-equipe').value.trim();
@@ -399,7 +399,7 @@
 
             const cupomDigitado = document.getElementById('cad-cupom').value.trim().toUpperCase();
             if (cupomDigitado && !cupomValidado) {
-                return showToast("Por favor, clique em 'VALIDAR' para confirmar o seu cupom promocional antes de continuar.", "info");
+                return showToast("Clique em 'VALIDAR' para confirmar o seu cupom antes de continuar.", "info");
             }
 
             const btn = document.getElementById('btn-cadastrar');
@@ -411,7 +411,7 @@
             try {
                 // 1. Lê o plano da URL e puxa os dias de Trial do Super Admin
                 const urlParams = new URLSearchParams(window.location.search);
-                const planoSelecionado = urlParams.get('plano') || 'p1'; // Se não vier na URL, assume p1
+                const planoSelecionado = urlParams.get('plano') || 'p1';
 
                 let trialDias = 7; 
                 let valorPlanoSelecionado = 0;
@@ -421,24 +421,20 @@
                     if(snapPlanos.exists()) {
                         const config = snapPlanos.data();
                         if(config[planoSelecionado]) {
-                            trialDias = parseInt(config[planoSelecionado].trial_dias);
-                            if(isNaN(trialDias)) trialDias = 0;
+                            trialDias = parseInt(config[planoSelecionado].trial_dias) || 7;
                             valorPlanoSelecionado = parseFloat(config[planoSelecionado].preco) || 0;
                         }
                     }
-                } catch(e) {
-                    console.error("Erro ao puxar configuração do plano. Usando padrão.", e);
-                }
+                } catch(e) { console.error("Erro ao puxar trial.", e); }
 
-                // 2. Calcula a data de expiração (Hoje + Dias de Trial)
                 const dataExpiracao = new Date();
                 dataExpiracao.setDate(dataExpiracao.getDate() + trialDias);
 
-                // 3. Cria utilizador no Firebase Auth
+                // 2. Cria utilizador no Firebase Auth
                 const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
                 const user = userCredential.user;
 
-                // 4. Faz Upload da Logo (se existir)
+                // 3. Upload da Logo
                 let urlLogo = "";
                 if (arquivoLogo) {
                     const caminhoRef = ref(storage, `equipes_logos/${user.uid}_${arquivoLogo.name}`);
@@ -446,7 +442,7 @@
                     urlLogo = await getDownloadURL(caminhoRef);
                 }
 
-                // 5. Salva TODOS os dados da equipe no Firestore (COM VENCIMENTO!)
+                // 4. Salva dados no Firestore
                 await setDoc(doc(db, "equipes", user.uid), {
                     nome_equipe: nomeEquipe.toUpperCase(),
                     responsavel_nome: nomeResp,
@@ -465,33 +461,54 @@
                     status_plano: 'TESTE', 
                     plano_escolhido: planoSelecionado,
                     valor_plano: valorPlanoSelecionado, 
-                    data_pagamento_plano: dataExpiracao.toISOString(), // A MÁGICA ACONTECE AQUI!
+                    data_pagamento_plano: dataExpiracao.toISOString(),
                     desconto_plano: 0,
                     isento: false,
                     cupom_usado: cupomValidado 
                 });
 
-                // 6. Envia e-mail de verificação de segurança
+                // 5. Envia e-mail de verificação
                 await sendEmailVerification(user);
                 await signOut(auth);
 
-                showToast("Conta criada! Verifique a sua caixa de e-mail para validar o acesso.", "success");
+                // 6. MENSAGEM DE SUCESSO REFORÇADA (CONTRA SPAM)
+                showToast("Sucesso! Verifique seu e-mail (incluindo o SPAM).", "success");
                 
-                // 7. Redireciona para o Login após o sucesso
-                setTimeout(() => {
-                    window.location.href = "login.html";
-                }, 3500);
+                // Substitui o formulário por um aviso visual impossível de ignorar
+                document.getElementById('form-cadastro').innerHTML = `
+                    <div class="py-10 px-4 text-center space-y-6 animate-in fade-in zoom-in duration-500">
+                        <div class="w-20 h-20 bg-emerald-500/20 text-emerald-500 rounded-full flex items-center justify-center text-4xl mx-auto shadow-lg shadow-emerald-500/10">
+                            ✅
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-black text-white uppercase tracking-tight">Cadastro Concluído!</h3>
+                            <p class="text-slate-300 font-medium mt-2">Enviamos um link de ativação para:</p>
+                            <p class="text-cyan-400 font-bold text-lg">${email}</p>
+                        </div>
+
+                        <div class="bg-amber-500/10 border border-amber-500/30 p-5 rounded-2xl space-y-3">
+                            <h4 class="text-amber-500 font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2">
+                                ⚠️ Atenção Mestre
+                            </h4>
+                            <p class="text-amber-200/80 text-xs leading-relaxed">
+                                O e-mail de ativação costuma cair na pasta de <strong>SPAM ou LIXO ELETRÔNICO</strong>. Verifique estas pastas agora mesmo para liberar o seu acesso.
+                            </p>
+                        </div>
+
+                        <div class="pt-6">
+                            <a href="login.html" class="inline-block w-full bg-slate-800 hover:bg-slate-700 text-white font-black py-4 rounded-xl uppercase tracking-widest text-xs transition-all border border-slate-700">
+                                Ir para a tela de Login
+                            </a>
+                        </div>
+                    </div>
+                `;
 
             } catch (error) {
                 console.error("Erro no cadastro:", error);
-                
                 let msgErro = "Ocorreu um erro ao criar a conta.";
-                if (error.code === 'auth/email-already-in-use') msgErro = "Este e-mail já está cadastrado no sistema!";
-                else if (error.code === 'auth/weak-password') msgErro = "A senha é muito fraca. Use pelo menos 6 caracteres.";
-                else if (error.code === 'auth/invalid-email') msgErro = "O formato do e-mail é inválido.";
-                
+                if (error.code === 'auth/email-already-in-use') msgErro = "Este e-mail já está cadastrado!";
+                else if (error.code === 'auth/weak-password') msgErro = "Senha muito fraca!";
                 showToast(msgErro, "error");
-                
                 btn.innerHTML = btnOriginal;
                 btn.disabled = false;
                 btn.classList.remove('opacity-70', 'cursor-not-allowed');

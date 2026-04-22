@@ -600,7 +600,7 @@
                     nomePlano: planoEscolhido,
                     valor: valorFinalACobrar,
                     email: auth.currentUser.email,
-                    nome: dadosEquipe.nome_equipe || dadosEquipe.nome || "Assinante BJJ Manager",
+                    nome: dadosEquipe.responsavel_nome || dadosEquipe.nome_equipe || "Assinante BJJ Manager",
                     cpfCnpj: documentoValido, 
                     cep: dadosEquipe.endereco_cep || dadosEquipe.cep || "",
                     endereco: dadosEquipe.endereco_rua || dadosEquipe.endereco || "",

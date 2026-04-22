@@ -32,8 +32,10 @@
         <div class="flex-1 flex flex-col overflow-hidden">
             <div class="p-6 border-b border-slate-800 flex flex-col items-center justify-center shrink-0">
                 <img src="logo_bjj_maneger.png" alt="Logo" class="h-16 w-auto mb-3 filter drop-shadow-[0_0_8px_rgba(244,63,94,0.5)]">
-                <h1 class="text-xs font-black tracking-widest uppercase text-white">SaaS Master</h1>
-                <p class="text-[9px] text-rose-500 font-bold uppercase tracking-widest mt-1">Sala de Comando</p>
+                <div class="flex items-center gap-2">
+                    <h1 class="text-xs font-black tracking-widest uppercase text-white">SaaS Master</h1>
+                </div>
+                <div id="badge-ambiente-desktop" class="mt-2"></div>
             </div>
             <nav class="p-4 space-y-2 flex-1 overflow-y-auto custom-scroll">
                 <button onclick="mudarAbaMaster('academias')" id="menu-academias" class="w-full flex items-center gap-3 px-4 py-3 bg-rose-500/10 text-rose-500 rounded-xl font-bold text-xs uppercase tracking-widest border border-rose-500/20 transition-all">
@@ -72,7 +74,10 @@
         <header class="md:hidden bg-slate-900 border-b border-slate-800 p-4 flex justify-between items-center sticky top-0 z-30">
             <div class="flex items-center gap-2">
                 <span class="text-xl">👑</span>
-                <h1 class="text-xs font-black tracking-widest uppercase text-white">SaaS Master</h1>
+                <div class="flex flex-col">
+                    <h1 class="text-xs font-black tracking-widest uppercase text-white">SaaS Master</h1>
+                    <div id="badge-ambiente-mobile" class="mt-1"></div>
+                </div>
             </div>
             <button onclick="sairDoMaster()" class="text-xs font-bold text-rose-500 uppercase tracking-widest">Sair</button>
         </header>
@@ -137,7 +142,7 @@
                                 <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Equipe / Cadastro</th>
                                 <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Saúde (Uso)</th>
                                 <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Último Acesso</th>
-                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Assinatura</th>
+                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Assinatura & Vencimento</th>
                                 <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Status Asaas</th>
                                 <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Ações</th>
                             </tr>
@@ -666,7 +671,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, collection, getDocs, updateDoc, deleteDoc, query, where, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, getDocs, updateDoc, deleteDoc, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
 
         const firebaseConfig = {
@@ -682,6 +687,33 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         const functions = getFunctions(app);
+
+        // ==========================================
+        // 🚦 CONTROLE DE AMBIENTE (VISUAL)
+        // ==========================================
+        // ATENÇÃO: Alinhe isso com o MODO_PRODUCAO do seu backend (index.js)
+        const AMBIENTE_PRODUCAO = true; 
+
+        function atualizarIndicadorAmbiente() {
+            const badgeDesktop = document.getElementById('badge-ambiente-desktop');
+            const badgeMobile = document.getElementById('badge-ambiente-mobile');
+            
+            let htmlConteudo = "";
+            let cssClass = "";
+
+            if (AMBIENTE_PRODUCAO) {
+                htmlConteudo = `<span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span> PRODUÇÃO`;
+                cssClass = "px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.15)] flex items-center gap-2 cursor-default";
+            } else {
+                htmlConteudo = `<span class="text-sm leading-none">⚠️</span> SANDBOX`;
+                cssClass = "px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest bg-amber-500/10 text-amber-400 border border-amber-500/50 shadow-[0_0_20px_rgba(245,158,11,0.2)] animate-pulse flex items-center gap-1.5 cursor-default";
+            }
+
+            if (badgeDesktop) { badgeDesktop.innerHTML = htmlConteudo; badgeDesktop.className = cssClass; }
+            if (badgeMobile) { badgeMobile.innerHTML = htmlConteudo; badgeMobile.className = cssClass; }
+        }
+
+        atualizarIndicadorAmbiente();
 
         let masterUid = null;
         let equipesCache = [];
@@ -1083,9 +1115,11 @@
         window.carregarImperio = async function() {
             document.getElementById('tabela-equipes').innerHTML = '<tr><td colspan="6" class="text-center p-8 text-slate-500 italic text-xs">Carregando império...</td></tr>';
             try {
+                // Carrega Equipes
                 const snapEquipes = await getDocs(collection(db, "equipes"));
                 equipesCache = snapEquipes.docs.map(d => ({ id: d.id, ...d.data() }));
 
+                // Carrega TODOS os alunos de uma vez (para contar ativos)
                 const snapAlunos = await getDocs(collection(db, "alunos"));
                 const todosAlunos = snapAlunos.docs.map(d => d.data());
                 
@@ -1129,6 +1163,7 @@
             );
 
             filtradas.forEach(eq => {
+                // Duração do Cadastro
                 let diasDeVidaStr = "Data não registrada";
                 if (eq.data_cadastro) {
                     const diff = new Date() - new Date(eq.data_cadastro);
@@ -1138,11 +1173,13 @@
                     }
                 }
                 
+                // Saúde / Engajamento
                 let saudeHTML = "";
                 if(eq.total_alunos > 10) saudeHTML = `<span class="text-emerald-400 font-bold text-xs">💪 Saudável (${eq.total_alunos})</span>`;
                 else if(eq.total_alunos > 0) saudeHTML = `<span class="text-cyan-400 font-bold text-xs">🌱 Ativa (${eq.total_alunos})</span>`;
                 else saudeHTML = `<span class="text-rose-500 font-black text-xs status-blink">⚠️ Risco Churn (0)</span>`;
 
+                // Último Acesso
                 let dataAcessoBadge = `<span class="text-slate-500 font-bold text-[9px] uppercase tracking-widest">Sem Registo</span>`;
                 if (eq.ultimo_acesso || eq.data_cadastro) {
                     const lastLogin = new Date(eq.ultimo_acesso || eq.data_cadastro);
@@ -1157,21 +1194,57 @@
                     }
                 }
 
+                // Status do Plano
                 const isIsento = (eq.isento === true || String(eq.isento) === "true");
-                
-                let planoBadge = "";
                 const st = eq.status_plano || "TESTE";
-                if(st === 'TESTE') planoBadge = `<span class="px-2 py-1 rounded bg-slate-500/20 text-slate-400 text-[9px] font-black uppercase border border-slate-500/30">TESTE</span>`;
-                else if(st === 'BASICO' || st === 'BLACK_BELT') planoBadge = `<span class="px-2 py-1 rounded bg-slate-500/20 text-slate-400 text-[9px] font-black uppercase border border-slate-500/30">BÁSICO</span>`;
-                else if(st === 'INTERMEDIARIO' || st === 'MASTER') planoBadge = `<span class="px-2 py-1 rounded bg-cyan-500/20 text-cyan-400 text-[9px] font-black uppercase border border-cyan-500/30">INTERMEDIÁRIO</span>`;
-                else if(st === 'PREMIUM') planoBadge = `<span class="px-2 py-1 rounded bg-purple-500/20 text-purple-400 text-[9px] font-black uppercase border border-purple-500/30">PREMIUM</span>`;
-                else if(st === 'ULTIMATE' || st === 'ELITE') planoBadge = `<span class="px-2 py-1 rounded bg-amber-500/20 text-amber-400 text-[9px] font-black uppercase border border-amber-500/30">ULTIMATE</span>`;
-                else if(st === 'BLOQUEADO') planoBadge = `<span class="px-2 py-1 rounded bg-rose-500/20 text-rose-500 text-[9px] font-black uppercase border border-rose-500/30">BLOQUEADO</span>`;
-                else planoBadge = `<span class="px-2 py-1 rounded bg-slate-700 text-slate-300 text-[9px] font-black uppercase border border-slate-600">${st}</span>`;
+                
+                let nomePlanoVisual = st;
+                let corPlano = "slate";
+                
+                if(st === 'TESTE') { nomePlanoVisual = 'TESTE'; corPlano = 'slate'; }
+                else if(st === 'BASICO' || st === 'BÁSICO') { nomePlanoVisual = 'BÁSICO'; corPlano = 'slate'; }
+                else if(st === 'INTERMEDIARIO' || st === 'INTERMEDIÁRIO') { nomePlanoVisual = 'INTERMEDIÁRIO'; corPlano = 'cyan'; }
+                else if(st === 'PREMIUM') { nomePlanoVisual = 'PREMIUM'; corPlano = 'purple'; }
+                else if(st === 'ULTIMATE') { nomePlanoVisual = 'ULTIMATE'; corPlano = 'amber'; }
+                else if(st === 'BLOQUEADO') { nomePlanoVisual = 'BLOQUEADO'; corPlano = 'rose'; }
 
+                let planoBadge = `<span class="px-2 py-1 rounded bg-${corPlano}-500/20 text-${corPlano}-400 text-[9px] font-black uppercase border border-${corPlano}-500/30">${nomePlanoVisual}</span>`;
                 if(isIsento) planoBadge += ` <span class="px-2 py-1 rounded bg-indigo-500/20 text-indigo-400 text-[9px] font-black uppercase border border-indigo-500/30 ml-1" title="Equipe Isenta">ISENTO</span>`;
 
-                // 🚀 NOVO: Indicador Visual de Automação do SaaS (Webhook Preparado)
+                // 🛑 LÓGICA INTELIGENTE DE VENCIMENTO
+                let txtVencimento = "";
+                if (eq.data_pagamento_plano && !isIsento && st !== 'BLOQUEADO') {
+                    const agora = new Date();
+                    const expiraEm = new Date(eq.data_pagamento_plano);
+                    
+                    // Zera as horas para comparar apenas os dias
+                    agora.setHours(0,0,0,0);
+                    expiraEm.setHours(0,0,0,0);
+                    
+                    const diffMs = expiraEm - agora;
+                    const diffDias = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+                    if (st === 'TESTE') {
+                        if (diffDias > 0) {
+                            txtVencimento = `<p class="text-[9px] text-amber-500 font-bold mt-1 tracking-widest uppercase">Expira em ${diffDias}d</p>`;
+                        } else if (diffDias === 0) {
+                            txtVencimento = `<p class="text-[9px] text-amber-500 font-black mt-1 tracking-widest uppercase animate-pulse">Expira HOJE</p>`;
+                        } else {
+                            txtVencimento = `<p class="text-[9px] text-rose-500 font-black mt-1 tracking-widest uppercase status-blink border border-rose-500/30 px-1 py-0.5 rounded max-w-max mx-auto mt-1">TESTE VENCIDO</p>`;
+                        }
+                    } else {
+                        // Plano Pago
+                        if (diffDias > 0) {
+                            txtVencimento = `<p class="text-[9px] text-slate-400 font-bold mt-1 tracking-widest uppercase">Vence em ${diffDias}d</p>`;
+                        } else if (diffDias === 0) {
+                            txtVencimento = `<p class="text-[9px] text-emerald-400 font-black mt-1 tracking-widest uppercase">Vence HOJE</p>`;
+                        } else {
+                            txtVencimento = `<p class="text-[9px] text-rose-500 font-black mt-1 tracking-widest uppercase status-blink border border-rose-500/30 px-1 py-0.5 rounded max-w-max mx-auto mt-1">Fatura Atrasada</p>`;
+                        }
+                    }
+                }
+
+                // Automação Asaas (SaaS)
                 let asaasSaaSBadge = "";
                 if (!isIsento && st !== 'TESTE') {
                     if (eq.asaas_customer_id) {
@@ -1181,6 +1254,7 @@
                     }
                 }
 
+                // Financeiro da Equipe (Subconta)
                 let asaasBadge = `<span class="text-slate-500 font-bold text-[10px] flex items-center justify-center gap-1">⚪ Sem Asaas</span>`;
                 if(eq.status_asaas === 'ATIVO') asaasBadge = `<span class="text-emerald-400 font-bold text-[10px] flex items-center justify-center gap-1">🟢 Conectado</span>`;
                 else if(eq.status_asaas === 'PENDENTE') asaasBadge = `<span class="text-amber-400 font-bold text-[10px] flex items-center justify-center gap-1">🟡 Pendente</span>`;
@@ -1203,10 +1277,11 @@
                     <td class="px-6 py-4 text-center">${dataAcessoBadge}</td>
                     <td class="px-6 py-4 text-center">
                         ${planoBadge}
+                        ${txtVencimento}
                         ${asaasSaaSBadge}
                     </td>
                     <td class="px-6 py-4 text-center">${asaasBadge}</td>
-                    <td class="px-6 py-4 flex gap-2 justify-center">
+                    <td class="px-6 py-4 flex gap-2 justify-center items-center">
                         <button onclick="abrirModalEditarEquipe('${eq.id}')" class="bg-slate-800 p-2 rounded hover:bg-slate-700" title="Configurar Licença">⚙️</button>
                         <button onclick="acessarComoEquipe('${eq.id}')" class="bg-cyan-600 p-2 rounded hover:bg-cyan-500" title="Acessar como Professor">👁️</button>
                         <a href="https://wa.me/55${eq.telefone ? eq.telefone.replace(/\D/g,'') : ''}" target="_blank" class="bg-emerald-600 p-2 rounded hover:bg-emerald-500" title="Chamar no WhatsApp">💬</a>
@@ -1281,10 +1356,10 @@
                 tr.className = "border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors";
                 
                 let planoBadge = "";
-                if(eq.status_plano === 'BASICO' || eq.status_plano === 'BLACK_BELT') planoBadge = `<span class="text-slate-400 font-bold">BÁSICO</span>`;
-                else if(eq.status_plano === 'INTERMEDIARIO' || eq.status_plano === 'MASTER') planoBadge = `<span class="text-cyan-400 font-bold">INTERMEDIÁRIO</span>`;
+                if(eq.status_plano === 'BASICO' || eq.status_plano === 'BÁSICO') planoBadge = `<span class="text-slate-400 font-bold">BÁSICO</span>`;
+                else if(eq.status_plano === 'INTERMEDIARIO' || eq.status_plano === 'INTERMEDIÁRIO') planoBadge = `<span class="text-cyan-400 font-bold">INTERMEDIÁRIO</span>`;
                 else if(eq.status_plano === 'PREMIUM') planoBadge = `<span class="text-purple-400 font-bold">PREMIUM</span>`;
-                else if(eq.status_plano === 'ULTIMATE' || eq.status_plano === 'ELITE') planoBadge = `<span class="text-amber-400 font-bold">ULTIMATE</span>`;
+                else if(eq.status_plano === 'ULTIMATE') planoBadge = `<span class="text-amber-400 font-bold">ULTIMATE</span>`;
                 else if(eq.status_plano === 'BLOQUEADO') planoBadge = `<span class="text-rose-500 font-bold">BLOQUEADO</span>`;
                 if(isIsento) planoBadge += ` <span class="text-indigo-400 font-black text-[9px]">(ISENTO)</span>`;
 
@@ -1485,11 +1560,8 @@
             document.getElementById('edit-nome-equipe').innerText = (eq.nome_equipe || "Sem Nome").toUpperCase();
             
             let st = eq.status_plano || "TESTE";
-            if (st === 'BLACK_BELT') st = 'BASICO';
-            if (st === 'MASTER') st = 'INTERMEDIARIO';
-            if (st === 'ELITE') st = 'ULTIMATE'; 
-            
             document.getElementById('edit-status-plano').value = st;
+            
             document.getElementById('edit-valor-plano').value = eq.valor_plano !== undefined ? eq.valor_plano : 49.90;
             document.getElementById('edit-desconto').value = eq.desconto_plano || 0;
             document.getElementById('edit-isento').checked = (eq.isento === true || String(eq.isento) === "true");

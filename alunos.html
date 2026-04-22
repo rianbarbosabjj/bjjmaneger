@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -1390,7 +1390,26 @@
                 let fotoUrlFinal = null;
                 if (ficheiroFotoSelecionado) {
                     btnSalvar.innerHTML = "📷 ENVIANDO FOTO...";
-                    const fotoPath = `fotos_carteirinha/${teamId}/${docRefId}.jpg`;
+                    
+                    // ==============================================
+                    // 🗑️ BLOCO DE LIMPEZA DE FOTO ANTIGA DO STORAGE
+                    // ==============================================
+                    if (id) {
+                        const alunoAntigo = todosAlunosCache.find(a => a.id === id);
+                        if (alunoAntigo && alunoAntigo.foto_url) {
+                            try {
+                                const refFotoAntiga = ref(storage, alunoAntigo.foto_url);
+                                await deleteObject(refFotoAntiga);
+                                console.log("Foto antiga apagada do Storage.");
+                            } catch (err) {
+                                console.log("Aviso: Foto antiga não encontrada ou já apagada.");
+                            }
+                        }
+                    }
+
+                    // UPLOAD DA NOVA FOTO (com timestamp para evitar cache)
+                    const timestamp = new Date().getTime();
+                    const fotoPath = `fotos_carteirinha/${teamId}/${docRefId}_${timestamp}.jpg`;
                     const storageRef = ref(storage, fotoPath);
                     await uploadBytes(storageRef, ficheiroFotoSelecionado);
                     fotoUrlFinal = await getDownloadURL(storageRef);
@@ -1779,15 +1798,22 @@
 
         window.fecharModal = () => document.getElementById('modal-aluno').classList.replace('flex', 'hidden');
         
+        // ==============================================
+        // 🗑️ ATUALIZAÇÃO DA FUNÇÃO EXCLUIR ALUNO
+        // Agora ela procura a URL real da foto no banco e deleta corretamente
+        // ==============================================
         window.excluirAluno = async (id) => { 
             if(confirm("Deseja excluir este atleta da sua equipe? Esta ação apagará também a foto do sistema.")) { 
                 try {
-                    const fotoPath = `fotos_carteirinha/${teamId}/${id}.jpg`;
-                    const fotoRef = ref(storage, fotoPath);
-                    try {
-                        await deleteObject(fotoRef);
-                    } catch(err) {
-                        console.log("Foto não encontrada ou já apagada.");
+                    const alunoParaApagar = todosAlunosCache.find(a => a.id === id);
+                    if (alunoParaApagar && alunoParaApagar.foto_url) {
+                        try {
+                            const fotoRef = ref(storage, alunoParaApagar.foto_url);
+                            await deleteObject(fotoRef);
+                            console.log("Foto do aluno apagada do Storage com sucesso.");
+                        } catch(err) {
+                            console.log("Aviso: Foto não encontrada ou já apagada do Storage.");
+                        }
                     }
                     
                     await deleteDoc(doc(db, "alunos", id)); 

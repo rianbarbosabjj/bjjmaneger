@@ -62,6 +62,17 @@
             </nav>
         </div>
         <div class="p-4 border-t border-slate-800 shrink-0">
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center mb-3">
+                <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-2">Ambiente do Sistema</p>
+                <button onclick="alternarAmbienteSistema()" id="btn-switch-ambiente" class="w-full flex items-center justify-between p-2 rounded-lg bg-slate-900 border border-slate-700 transition-colors">
+                    <span id="lbl-switch-sandbox" class="text-[10px] font-black uppercase text-amber-500">Sandbox</span>
+                    <div class="relative w-8 h-4 bg-slate-700 rounded-full shadow-inner transition-colors" id="track-switch">
+                        <div id="thumb-switch" class="absolute left-1 top-0.5 w-3 h-3 bg-amber-500 rounded-full transition-transform"></div>
+                    </div>
+                    <span id="lbl-switch-prod" class="text-[10px] font-black uppercase text-slate-600">Produção</span>
+                </button>
+            </div>
+
             <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center">
                 <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Logado como CEO</p>
                 <p id="master-email" class="text-[10px] font-black text-white truncate mb-3 uppercase tracking-tighter">carregando...</p>
@@ -689,31 +700,89 @@
         const functions = getFunctions(app);
 
         // ==========================================
-        // 🚦 CONTROLE DE AMBIENTE (VISUAL)
+        // 🚦 CONTROLE DE AMBIENTE DINÂMICO (FIRESTORE)
         // ==========================================
-        // ATENÇÃO: Alinhe isso com o MODO_PRODUCAO do seu backend (index.js)
-        const AMBIENTE_PRODUCAO = true; 
+        let isModoProducao = false;
 
-        function atualizarIndicadorAmbiente() {
+        async function carregarAmbienteAtual() {
+            try {
+                const docRef = doc(db, "sistema", "config_ambiente");
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    isModoProducao = docSnap.data().modo_producao === true;
+                } else {
+                    await setDoc(docRef, { modo_producao: false });
+                    isModoProducao = false;
+                }
+                atualizarVisualDoSwitch();
+            } catch (error) {
+                console.error("Erro ao ler ambiente:", error);
+            }
+        }
+
+        window.alternarAmbienteSistema = async function() {
+            const btn = document.getElementById('btn-switch-ambiente');
+            btn.classList.add('opacity-50', 'cursor-wait');
+            
+            const novoModo = !isModoProducao;
+            
+            if (novoModo === true) {
+                if (!confirm("⚠️ ATENÇÃO EXTREMA!\n\nVocê está prestes a mudar o sistema inteiro para PRODUÇÃO.\nO Asaas passará a cobrar dinheiro REAL de todas as academias e alunos.\n\nTem certeza absoluta?")) {
+                    btn.classList.remove('opacity-50', 'cursor-wait');
+                    return;
+                }
+            }
+
+            try {
+                await updateDoc(doc(db, "sistema", "config_ambiente"), {
+                    modo_producao: novoModo
+                });
+                
+                isModoProducao = novoModo;
+                atualizarVisualDoSwitch();
+                
+                showToast(`Sistema alterado para ${novoModo ? 'PRODUÇÃO' : 'SANDBOX'}!`, "success");
+            } catch (error) {
+                console.error(error);
+                showToast("Erro ao mudar ambiente.", "error");
+            } finally {
+                btn.classList.remove('opacity-50', 'cursor-wait');
+            }
+        }
+
+        function atualizarVisualDoSwitch() {
+            const thumb = document.getElementById('thumb-switch');
+            const lblSandbox = document.getElementById('lbl-switch-sandbox');
+            const lblProd = document.getElementById('lbl-switch-prod');
+            
             const badgeDesktop = document.getElementById('badge-ambiente-desktop');
             const badgeMobile = document.getElementById('badge-ambiente-mobile');
             
             let htmlConteudo = "";
             let cssClass = "";
 
-            if (AMBIENTE_PRODUCAO) {
+            if (isModoProducao) {
+                thumb.classList.replace('translate-x-0', 'translate-x-4');
+                thumb.classList.replace('bg-amber-500', 'bg-emerald-500');
+                lblSandbox.classList.replace('text-amber-500', 'text-slate-600');
+                lblProd.classList.replace('text-slate-600', 'text-emerald-500');
+                
                 htmlConteudo = `<span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span> PRODUÇÃO`;
-                cssClass = "px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.15)] flex items-center gap-2 cursor-default";
+                cssClass = "px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.15)] flex items-center gap-2 cursor-default mt-2 w-max";
             } else {
+                thumb.classList.replace('translate-x-4', 'translate-x-0');
+                thumb.classList.replace('bg-emerald-500', 'bg-amber-500');
+                lblProd.classList.replace('text-emerald-500', 'text-slate-600');
+                lblSandbox.classList.replace('text-slate-600', 'text-amber-500');
+                
                 htmlConteudo = `<span class="text-sm leading-none">⚠️</span> SANDBOX`;
-                cssClass = "px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest bg-amber-500/10 text-amber-400 border border-amber-500/50 shadow-[0_0_20px_rgba(245,158,11,0.2)] animate-pulse flex items-center gap-1.5 cursor-default";
+                cssClass = "px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest bg-amber-500/10 text-amber-400 border border-amber-500/50 shadow-[0_0_20px_rgba(245,158,11,0.2)] animate-pulse flex items-center gap-1.5 cursor-default mt-2 w-max";
             }
 
             if (badgeDesktop) { badgeDesktop.innerHTML = htmlConteudo; badgeDesktop.className = cssClass; }
             if (badgeMobile) { badgeMobile.innerHTML = htmlConteudo; badgeMobile.className = cssClass; }
         }
-
-        atualizarIndicadorAmbiente();
 
         let masterUid = null;
         let equipesCache = [];
@@ -747,8 +816,10 @@
                 if (superSnap.exists()) {
                     masterUid = user.uid;
                     document.getElementById('master-email').innerText = user.email;
-                    carregarImperio();
+                    
+                    carregarAmbienteAtual(); 
                     carregarAvisoGlobal();
+                    carregarImperio();
                 } else {
                     signOut(auth).then(() => window.location.href = "index.html");
                 }
@@ -1115,11 +1186,9 @@
         window.carregarImperio = async function() {
             document.getElementById('tabela-equipes').innerHTML = '<tr><td colspan="6" class="text-center p-8 text-slate-500 italic text-xs">Carregando império...</td></tr>';
             try {
-                // Carrega Equipes
                 const snapEquipes = await getDocs(collection(db, "equipes"));
                 equipesCache = snapEquipes.docs.map(d => ({ id: d.id, ...d.data() }));
 
-                // Carrega TODOS os alunos de uma vez (para contar ativos)
                 const snapAlunos = await getDocs(collection(db, "alunos"));
                 const todosAlunos = snapAlunos.docs.map(d => d.data());
                 
@@ -1163,7 +1232,6 @@
             );
 
             filtradas.forEach(eq => {
-                // Duração do Cadastro
                 let diasDeVidaStr = "Data não registrada";
                 if (eq.data_cadastro) {
                     const diff = new Date() - new Date(eq.data_cadastro);
@@ -1173,13 +1241,11 @@
                     }
                 }
                 
-                // Saúde / Engajamento
                 let saudeHTML = "";
                 if(eq.total_alunos > 10) saudeHTML = `<span class="text-emerald-400 font-bold text-xs">💪 Saudável (${eq.total_alunos})</span>`;
                 else if(eq.total_alunos > 0) saudeHTML = `<span class="text-cyan-400 font-bold text-xs">🌱 Ativa (${eq.total_alunos})</span>`;
                 else saudeHTML = `<span class="text-rose-500 font-black text-xs status-blink">⚠️ Risco Churn (0)</span>`;
 
-                // Último Acesso
                 let dataAcessoBadge = `<span class="text-slate-500 font-bold text-[9px] uppercase tracking-widest">Sem Registo</span>`;
                 if (eq.ultimo_acesso || eq.data_cadastro) {
                     const lastLogin = new Date(eq.ultimo_acesso || eq.data_cadastro);
@@ -1194,7 +1260,6 @@
                     }
                 }
 
-                // Status do Plano
                 const isIsento = (eq.isento === true || String(eq.isento) === "true");
                 const st = eq.status_plano || "TESTE";
                 
@@ -1217,7 +1282,6 @@
                     const agora = new Date();
                     const expiraEm = new Date(eq.data_pagamento_plano);
                     
-                    // Zera as horas para comparar apenas os dias
                     agora.setHours(0,0,0,0);
                     expiraEm.setHours(0,0,0,0);
                     
@@ -1244,7 +1308,6 @@
                     }
                 }
 
-                // Automação Asaas (SaaS)
                 let asaasSaaSBadge = "";
                 if (!isIsento && st !== 'TESTE') {
                     if (eq.asaas_customer_id) {
@@ -1254,7 +1317,6 @@
                     }
                 }
 
-                // Financeiro da Equipe (Subconta)
                 let asaasBadge = `<span class="text-slate-500 font-bold text-[10px] flex items-center justify-center gap-1">⚪ Sem Asaas</span>`;
                 if(eq.status_asaas === 'ATIVO') asaasBadge = `<span class="text-emerald-400 font-bold text-[10px] flex items-center justify-center gap-1">🟢 Conectado</span>`;
                 else if(eq.status_asaas === 'PENDENTE') asaasBadge = `<span class="text-amber-400 font-bold text-[10px] flex items-center justify-center gap-1">🟡 Pendente</span>`;

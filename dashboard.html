@@ -102,7 +102,7 @@
                             </button>
 
                             <button id="btn-config-equipe" onclick="abrirModalConfig()" class="hidden bg-slate-700 hover:bg-slate-800 text-white font-bold py-2.5 px-3 md:px-4 rounded-xl shadow-md transition-all flex items-center text-xs md:text-sm">
-                                <span class="mr-1 md:mr-2">⚙️</span> <span class="hidden sm:inline">Configurar Equipe</span>
+                                <span class="mr-1 md:mr-2">📋</span> <span class="hidden sm:inline">Dados da Equipe</span>
                             </button>
                             
                             <a href="cadastro.html" class="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2.5 px-3 md:px-4 rounded-xl shadow-md transition-all flex items-center text-xs md:text-sm">
@@ -124,8 +124,8 @@
                                 <div class="bg-slate-50 border border-slate-100 rounded-2xl p-6 flex flex-col h-full hover:-translate-y-1 transition-transform">
                                     <div class="w-12 h-12 bg-slate-800 text-white rounded-xl flex items-center justify-center text-xl font-black mb-4 shadow-md">1</div>
                                     <h3 class="font-black text-slate-800 uppercase tracking-widest text-xs mb-2">Configure sua Equipe</h3>
-                                    <p class="text-xs text-slate-500 leading-relaxed mb-6 flex-1">Adicione a sua logo oficial, configure os valores padrão da mensalidade e convide os seus professores (co-administradores).</p>
-                                    <button onclick="abrirModalConfig()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-widest transition-colors">⚙️ Configurações</button>
+                                    <p class="text-xs text-slate-500 leading-relaxed mb-6 flex-1">Preencha os dados da equipe, adicione a sua logo oficial e convide os seus professores.</p>
+                                    <button onclick="abrirModalConfig()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-widest transition-colors">📋 Dados da Equipe</button>
                                 </div>
                                 
                                 <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-6 flex flex-col h-full hover:-translate-y-1 transition-transform">
@@ -283,29 +283,90 @@
     </div>
     
     <div id="modal-config-equipe" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-opacity">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
             <div class="bg-slate-800 p-4 text-white font-black uppercase tracking-widest text-sm flex justify-between items-center shrink-0">
-                <span>⚙️ Configurar Equipe</span>
+                <span>📋 Dados da Equipe</span>
                 <button onclick="fecharModalConfig()" class="text-slate-400 hover:text-white text-xl leading-none">&times;</button>
             </div>
             
-            <div class="flex border-b border-slate-200 shrink-0 overflow-x-auto hide-scrollbar">
-                <button id="tab-btn-dados" onclick="switchConfigTab('dados')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-cyan-600 border-b-2 border-cyan-500 transition-colors whitespace-nowrap">Dados</button>
+            <div class="flex border-b border-slate-200 shrink-0 overflow-x-auto hide-scrollbar bg-slate-50">
+                <button id="tab-btn-dados" onclick="switchConfigTab('dados')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-cyan-600 border-b-2 border-cyan-500 transition-colors whitespace-nowrap">Configurações & Endereço</button>
                 <button id="tab-btn-colabs" onclick="switchConfigTab('colabs')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors whitespace-nowrap">Equipe Técnica</button>
                 <button id="tab-btn-convites" onclick="switchConfigTab('convites')" class="flex-1 py-3 px-2 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors whitespace-nowrap">Convites</button>
             </div>
 
-            <div id="tab-dados" class="p-6 flex-1 overflow-y-auto space-y-4">
-                <div>
-                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome da Equipe</label>
-                    <input type="text" id="config-nome-equipe" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700 uppercase">
-                </div>
+            <div id="tab-dados" class="p-6 flex-1 overflow-y-auto space-y-6">
                 
-                <div>
-                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Alterar Logo (Opcional)</label>
-                    <input type="file" id="config-logo" accept="image/png, image/jpeg" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-cyan-50 file:text-cyan-600 hover:file:bg-cyan-100 transition-all cursor-pointer">
-                    <p class="text-[9px] text-slate-400 mt-1">Formatos: JPG ou PNG. Máximo: 2MB.</p>
+                <div class="space-y-4">
+                    <h4 class="text-[10px] font-black text-cyan-600 uppercase tracking-widest border-b border-slate-200 pb-2">Identificação Visual</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome da Equipe</label>
+                            <input type="text" id="config-nome-equipe" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700 uppercase">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Alterar Logo (Opcional)</label>
+                            <input type="file" id="config-logo" accept="image/png, image/jpeg" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-cyan-50 file:text-cyan-600 hover:file:bg-cyan-100 transition-all cursor-pointer">
+                        </div>
+                    </div>
                 </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-[10px] font-black text-cyan-600 uppercase tracking-widest border-b border-slate-200 pb-2">Responsável Legal</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="sm:col-span-2">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome Completo *</label>
+                            <input type="text" id="config-resp-nome" placeholder="Seu nome" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CPF ou CNPJ *</label>
+                            <input type="text" id="config-resp-doc" maxlength="18" oninput="mascaraDoc(this)" placeholder="000.000.000-00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">WhatsApp *</label>
+                            <input type="text" id="config-tel" maxlength="15" oninput="mascaraTelefone(this)" placeholder="(00) 00000-0000" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-[10px] font-black text-cyan-600 uppercase tracking-widest border-b border-slate-200 pb-2">Sede / Endereço</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="sm:col-span-1">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CEP</label>
+                            <input type="text" id="config-cep" maxlength="9" oninput="mascaraCEP(this)" onblur="buscarCEP(this.value)" placeholder="00000-000" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Rua / Avenida</label>
+                            <input type="text" id="config-rua" placeholder="Logradouro" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <div class="sm:col-span-1">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Número</label>
+                            <input type="text" id="config-num" placeholder="Nº" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Complemento</label>
+                            <input type="text" id="config-comp" placeholder="Sala, Andar..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="sm:col-span-1">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Bairro</label>
+                            <input type="text" id="config-bairro" placeholder="Bairro" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                        </div>
+                        <div class="sm:col-span-1">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Cidade</label>
+                            <input type="text" id="config-cidade" placeholder="Cidade" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                        </div>
+                        <div class="sm:col-span-1">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">UF</label>
+                            <input type="text" id="config-uf" placeholder="Ex: RJ" maxlength="2" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700 uppercase">
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <div id="tab-colabs" class="hidden p-6 flex-1 overflow-y-auto flex-col space-y-4">
@@ -501,6 +562,37 @@
         };
 
         // ==========================================
+        // MÁSCARAS DE INPUT
+        // ==========================================
+        window.mascaraDoc = (i) => {
+            let v = i.value.replace(/\D/g, "");
+            if (v.length <= 11) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+            else v = v.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
+            i.value = v;
+        };
+        window.mascaraTelefone = (i) => {
+            let v = i.value.replace(/\D/g, "");
+            v = v.replace(/^(\d{2})(\d)/g, "($1) $2");
+            v = v.replace(/(\d)(\d{4})$/, "$1-$2");
+            i.value = v;
+        };
+        window.mascaraCEP = (i) => {
+            let v = i.value.replace(/\D/g, "");
+            v = v.replace(/^(\d{5})(\d)/, "$1-$2");
+            i.value = v;
+        };
+        window.buscarCEP = async (cep) => {
+            const cleanCep = cep.replace(/\D/g, "");
+            if (cleanCep.length !== 8) return;
+            const r = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`).then(res => res.json());
+            if (!r.erro) {
+                document.getElementById('config-rua').value = r.logradouro || "";
+                document.getElementById('config-bairro').value = r.bairro || "";
+                document.getElementById('config-cidade').value = r.localidade || "";
+                document.getElementById('config-uf').value = r.uf || "";
+            }
+        };
+
 
         async function verificarAvisoGlobal() {
             try {
@@ -833,8 +925,23 @@
             const modal = document.getElementById('modal-config-equipe');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
-            document.getElementById('config-nome-equipe').value = nomeEquipeAtual;
+            
+            // Puxa e popula todos os dados que temos no Firestore
+            document.getElementById('config-nome-equipe').value = dadosEquipe.nome_equipe || dadosEquipe.nome || "";
             document.getElementById('config-logo').value = ""; 
+            
+            document.getElementById('config-resp-nome').value = dadosEquipe.responsavel_nome || "";
+            document.getElementById('config-resp-doc').value = dadosEquipe.responsavel_documento || dadosEquipe.cpf_cnpj || dadosEquipe.cpf || "";
+            document.getElementById('config-tel').value = dadosEquipe.telefone || "";
+            
+            document.getElementById('config-cep').value = dadosEquipe.endereco_cep || dadosEquipe.cep || "";
+            document.getElementById('config-rua').value = dadosEquipe.endereco_rua || dadosEquipe.endereco || "";
+            document.getElementById('config-num').value = dadosEquipe.endereco_num || dadosEquipe.numero || "";
+            document.getElementById('config-comp').value = dadosEquipe.endereco_comp || "";
+            document.getElementById('config-bairro').value = dadosEquipe.endereco_bairro || dadosEquipe.bairro || "";
+            document.getElementById('config-cidade').value = dadosEquipe.endereco_cidade || "";
+            document.getElementById('config-uf').value = dadosEquipe.endereco_uf || "";
+
             switchConfigTab('dados'); 
         };
 
@@ -1425,7 +1532,24 @@
             btn.disabled = true; btn.innerHTML = "Processando...";
 
             try {
-                let updates = { nome_equipe: novoNome };
+                let updates = { 
+                    nome_equipe: novoNome.toUpperCase(),
+                    responsavel_nome: document.getElementById('config-resp-nome').value.trim(),
+                    responsavel_documento: document.getElementById('config-resp-doc').value.trim(),
+                    cpf_cnpj: document.getElementById('config-resp-doc').value.trim(), 
+                    telefone: document.getElementById('config-tel').value.trim(),
+                    endereco_cep: document.getElementById('config-cep').value.trim(),
+                    cep: document.getElementById('config-cep').value.trim(), 
+                    endereco_rua: document.getElementById('config-rua').value.trim(),
+                    endereco: document.getElementById('config-rua').value.trim(), 
+                    endereco_num: document.getElementById('config-num').value.trim(),
+                    numero: document.getElementById('config-num').value.trim(), 
+                    endereco_comp: document.getElementById('config-comp').value.trim(),
+                    endereco_bairro: document.getElementById('config-bairro').value.trim(),
+                    bairro: document.getElementById('config-bairro').value.trim(), 
+                    endereco_cidade: document.getElementById('config-cidade').value.trim(),
+                    endereco_uf: document.getElementById('config-uf').value.trim().toUpperCase()
+                };
                 
                 if (arquivoLogo) {
                     if (logoEquipeAnterior) {
@@ -1445,6 +1569,8 @@
                 }
                 
                 await updateDoc(doc(db, "equipes", uid), updates);
+                dadosEquipe = { ...dadosEquipe, ...updates };
+
                 showToast("Equipe atualizada!", "success");
                 setTimeout(() => window.location.reload(), 1500);
             } catch (error) {

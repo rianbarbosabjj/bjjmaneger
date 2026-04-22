@@ -3,160 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Planos e Assinatura | BJJ Manager</title>
+    <title>Planos e Assinaturas | BJJ Manager</title>
     
     <link rel="icon" type="image/png" href="logo_bjj_maneger.png">
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
+        
+        .card-premium {
+            background: white;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.02), 0 4px 6px -4px rgba(0, 0, 0, 0.02);
+            border-radius: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .card-premium:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+        }
+        
         .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="flex flex-col h-[100dvh] overflow-hidden text-slate-800 bg-[#F8FAFC]">
-    
+<body class="flex flex-col min-h-[100dvh] overflow-x-hidden text-slate-800">
+
     <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
-    
-    <div class="w-full bg-slate-900 p-3 text-center relative z-50 shrink-0 shadow-md flex items-center justify-center h-16">
-        <a class='absolute left-4 top-1/2 -translate-y-1/2 transition-opacity hover:opacity-80 flex items-center gap-2 text-white text-xs font-bold bg-slate-800 px-3 py-2 rounded-lg border border-slate-700 shadow-sm' href='dashboard.html'>
-            <span>←</span> Voltar
+
+    <div class="w-full bg-slate-900 text-white p-6 flex items-center justify-between shadow-md relative z-10 shrink-0">
+        <div class="flex items-center gap-3">
+            <span class="text-3xl">🥋</span>
+            <div>
+                <h1 class="text-xl font-black tracking-tight leading-tight">BJJ MANAGER</h1>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Evolua sua equipe</p>
+            </div>
+        </div>
+        <a href="dashboard.html" class="text-xs font-bold text-slate-300 hover:text-white transition-colors bg-slate-800 px-4 py-2 rounded-xl border border-slate-700">
+            Voltar ao Painel
         </a>
-        <img src="logo_bjj_maneger.png" class="h-8 md:h-10 filter drop-shadow-lg" alt="BJJ Manager">
     </div>
-    
-    <main class="flex-1 overflow-y-auto p-4 md:p-8 hide-scrollbar">
-        <div class="max-w-[90rem] mx-auto space-y-8 pb-12">
+
+    <main class="flex-1 overflow-y-auto p-4 md:p-8 pb-20">
+        <div class="max-w-6xl mx-auto">
             
-            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
-                <div class="flex items-center gap-4">
-                    <div id="status-icon" class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-3xl shadow-inner shrink-0">⏳</div>
-                    <div>
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Status da sua Licença</p>
-                        <h2 id="nome-equipe" class="text-xl font-black text-slate-800 tracking-tight uppercase">Carregando...</h2>
-                        <p id="plano-vencimento" class="text-sm text-slate-500 font-medium">A analisar o seu plano...</p>
-                    </div>
-                </div>
-                <div class="shrink-0 text-center md:text-right flex flex-col items-center md:items-end">
-                    <span id="status-badge" class="px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest bg-slate-200 text-slate-500">A CARREGAR</span>
-                    <p id="nome-plano-atual" class="hidden text-[10px] text-slate-500 font-black mt-2 uppercase tracking-widest"></p>
-                    <p id="msg-isento" class="hidden text-[9px] text-indigo-500 font-black mt-1 uppercase tracking-widest">Equipe Isenta de Cobrança</p>
-                </div>
+            <div class="text-center max-w-2xl mx-auto mb-10 md:mb-16 mt-4 md:mt-8">
+                <h2 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight mb-4">Escolha o plano ideal para o seu tatame.</h2>
+                <p class="text-slate-500 font-medium md:text-lg">Assinatura mensal sem fidelidade. Cancele quando quiser. Desbloqueie todas as ferramentas de gestão, cobrança e marketing do sistema.</p>
             </div>
 
-            <div class="text-center mt-4 mb-4">
-                <h2 class="text-2xl md:text-3xl font-black text-slate-800 uppercase tracking-tight mb-2">Escolha o seu plano</h2>
-                <p class="text-slate-500 font-medium text-sm">Upgrade imediato para o seu tatame digital.</p>
-            </div>
-
-            <div class="max-w-md mx-auto mb-8 relative">
-                <div id="caixa-input-cupom" class="flex items-center gap-2 p-2 bg-white rounded-2xl border border-slate-300 shadow-sm focus-within:border-cyan-500 focus-within:ring-2 focus-within:ring-cyan-500/20 transition-all">
-                    <span class="pl-3 text-xl">🎟️</span>
-                    <input type="text" id="input-cupom" placeholder="Tem um cupom de parceiro?" class="flex-1 bg-transparent border-none p-2 text-sm font-black text-slate-700 uppercase outline-none placeholder:font-medium placeholder:normal-case">
-                    <button onclick="validarCupom()" id="btn-aplicar-cupom" class="bg-slate-900 hover:bg-slate-800 text-white font-black py-2.5 px-5 rounded-xl text-[10px] uppercase tracking-widest transition-colors shrink-0">Aplicar</button>
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
                 
-                <div id="msg-cupom" class="hidden mt-3 text-center"></div>
+                <div class="card-premium p-8 flex flex-col relative overflow-hidden">
+                    <div class="mb-8">
+                        <span class="inline-block px-3 py-1 bg-slate-100 text-slate-600 font-black text-[10px] uppercase tracking-widest rounded-lg mb-4 border border-slate-200">Equipes Iniciais</span>
+                        <h3 class="text-2xl font-black text-slate-800 mb-2">Básico</h3>
+                        <div class="flex items-end gap-1 mb-2">
+                            <span class="text-sm font-bold text-slate-400 mb-1">R$</span>
+                            <span class="text-4xl font-black text-slate-900 tracking-tighter">49,90</span>
+                            <span class="text-sm font-bold text-slate-400 mb-1">/mês</span>
+                        </div>
+                        <p class="text-xs text-slate-500 font-medium">Ideal para quem está a começar e precisa organizar a casa.</p>
+                    </div>
+                    
+                    <div class="flex-1 space-y-4 mb-8">
+                        <div class="flex items-start gap-3"><span class="text-emerald-500">✓</span><span class="text-sm font-bold text-slate-700">Até 50 alunos ativos</span></div>
+                        <div class="flex items-start gap-3"><span class="text-emerald-500">✓</span><span class="text-sm font-bold text-slate-700">Gestão de Mensalidades</span></div>
+                        <div class="flex items-start gap-3"><span class="text-emerald-500">✓</span><span class="text-sm font-bold text-slate-700">Carteirinha Digital Bísica</span></div>
+                        <div class="flex items-start gap-3"><span class="text-slate-300">✗</span><span class="text-sm font-medium text-slate-400 line-through">Cobrança PIX/Cartão Automática</span></div>
+                        <div class="flex items-start gap-3"><span class="text-slate-300">✗</span><span class="text-sm font-medium text-slate-400 line-through">Envio de Convites (Auto Cadastro)</span></div>
+                    </div>
+                    
+                    <button onclick="assinarPlano('BASICO', 49.90, this)" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-black py-4 rounded-xl text-xs uppercase tracking-widest transition-all shadow-md mt-auto">
+                        Assinar Básico
+                    </button>
+                </div>
+
+                <div class="card-premium p-8 flex flex-col relative overflow-hidden border-2 border-cyan-500 transform md:-translate-y-4 shadow-xl shadow-cyan-500/10">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-cyan-500"></div>
+                    <div class="absolute top-4 right-4 bg-cyan-500 text-white text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded shadow-sm">Mais Escolhido</div>
+                    
+                    <div class="mb-8">
+                        <span class="inline-block px-3 py-1 bg-cyan-50 text-cyan-600 font-black text-[10px] uppercase tracking-widest rounded-lg mb-4 border border-cyan-100">Equipes em Crescimento</span>
+                        <h3 class="text-2xl font-black text-slate-800 mb-2">Intermediário</h3>
+                        <div class="flex items-end gap-1 mb-2">
+                            <span class="text-sm font-bold text-slate-400 mb-1">R$</span>
+                            <span class="text-4xl font-black text-slate-900 tracking-tighter">99,90</span>
+                            <span class="text-sm font-bold text-slate-400 mb-1">/mês</span>
+                        </div>
+                        <p class="text-xs text-slate-500 font-medium">A automação que você precisa para focar apenas no tatame.</p>
+                    </div>
+                    
+                    <div class="flex-1 space-y-4 mb-8">
+                        <div class="flex items-start gap-3"><span class="text-emerald-500">✓</span><span class="text-sm font-bold text-slate-700">Até 150 alunos ativos</span></div>
+                        <div class="flex items-start gap-3"><span class="text-emerald-500">✓</span><span class="text-sm font-black text-cyan-700">Cobrança PIX/Cartão Automática</span></div>
+                        <div class="flex items-start gap-3"><span class="text-emerald-500">✓</span><span class="text-sm font-black text-cyan-700">Baixa automática de faturas</span></div>
+                        <div class="flex items-start gap-3"><span class="text-emerald-500">✓</span><span class="text-sm font-bold text-slate-700">Portal do Aluno (Frequência)</span></div>
+                        <div class="flex items-start gap-3"><span class="text-emerald-500">✓</span><span class="text-sm font-bold text-slate-700">Envio de Convites (Auto Cadastro)</span></div>
+                    </div>
+                    
+                    <button onclick="assinarPlano('INTERMEDIARIO', 99.90, this)" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 rounded-xl text-xs uppercase tracking-widest transition-all shadow-lg shadow-cyan-500/30 mt-auto">
+                        Assinar Intermediário
+                    </button>
+                </div>
+
+                <div class="card-premium p-8 flex flex-col relative overflow-hidden bg-slate-900 text-white border-slate-800">
+                    <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl font-black pointer-events-none"></div>
+                    
+                    <div class="mb-8 relative z-10">
+                        <span class="inline-block px-3 py-1 bg-amber-500/20 text-amber-400 font-black text-[10px] uppercase tracking-widest rounded-lg mb-4 border border-amber-500/30">Líderes de Mercado</span>
+                        <h3 class="text-2xl font-black text-white mb-2">Premium</h3>
+                        <div class="flex items-end gap-1 mb-2">
+                            <span class="text-sm font-bold text-slate-400 mb-1">R$</span>
+                            <span class="text-4xl font-black text-white tracking-tighter">149,90</span>
+                            <span class="text-sm font-bold text-slate-400 mb-1">/mês</span>
+                        </div>
+                        <p class="text-xs text-slate-400 font-medium">Potência máxima sem nenhum limite para a sua rede.</p>
+                    </div>
+                    
+                    <div class="flex-1 space-y-4 mb-8 relative z-10">
+                        <div class="flex items-start gap-3"><span class="text-amber-500">✓</span><span class="text-sm font-black text-white">Alunos Ilimitados</span></div>
+                        <div class="flex items-start gap-3"><span class="text-emerald-400">✓</span><span class="text-sm font-bold text-slate-200">Todas as automações financeiras</span></div>
+                        <div class="flex items-start gap-3"><span class="text-emerald-400">✓</span><span class="text-sm font-bold text-slate-200">Relatórios avançados (LGPD/Saúde)</span></div>
+                        <div class="flex items-start gap-3"><span class="text-emerald-400">✓</span><span class="text-sm font-bold text-slate-200">Gestão de Turmas e Presenças</span></div>
+                        <div class="flex items-start gap-3"><span class="text-amber-500">✓</span><span class="text-sm font-black text-white">Suporte Prioritário VIP</span></div>
+                    </div>
+                    
+                    <button onclick="assinarPlano('PREMIUM', 149.90, this)" class="w-full bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-900 font-black py-4 rounded-xl text-xs uppercase tracking-widest transition-all shadow-lg shadow-amber-500/20 mt-auto relative z-10">
+                        Assinar Premium
+                    </button>
+                </div>
+
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-8 items-start">
-                
-                <div class="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm flex flex-col relative opacity-90 h-full">
-                    <h3 id="plano1-nome" class="text-xl font-black text-slate-800 mb-2">Carregando...</h3>
-                    <p id="plano1-desc" class="text-xs text-slate-500 mb-6 min-h-[40px]">...</p>
-                    
-                    <div class="mb-6 border-b border-slate-100 pb-6 flex flex-col h-[70px] justify-end">
-                        <div>
-                            <span class="text-sm text-slate-800 font-bold mb-1">R$</span>
-                            <span id="plano1-preco" class="text-4xl font-black text-slate-800">0,00</span>
-                            <span class="text-slate-400 text-sm font-bold"> / mês</span>
-                        </div>
-                    </div>
-                    
-                    <ul id="plano1-features" class="space-y-4 mb-8 flex-1 text-[13px] text-slate-600"></ul>
-                    
-                    <button disabled class="w-full bg-slate-50 text-slate-400 font-black py-4 rounded-xl text-[10px] uppercase border border-slate-200 cursor-not-allowed mt-auto">
-                        Plano Base
-                    </button>
-                </div>
 
-                <div class="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm flex flex-col relative h-full">
-                    <h3 id="plano2-nome" class="text-xl font-black text-cyan-500 mb-2">Carregando...</h3>
-                    <p id="plano2-desc" class="text-xs text-slate-500 mb-6 min-h-[40px]">...</p>
-                    
-                    <div class="mb-6 flex flex-col border-b border-slate-100 pb-6 h-[80px] justify-end relative">
-                        <div id="plano2-preco-antigo-container" class="hidden absolute top-[-10px]">
-                            <span id="plano2-preco-antigo" class="text-sm text-slate-400 line-through font-bold"></span>
-                        </div>
-                        <div class="flex items-end gap-1">
-                            <span class="text-sm text-cyan-500 font-bold mb-1">R$</span>
-                            <span id="plano2-preco" class="text-4xl font-black text-slate-800 leading-none">--,--</span>
-                            <span class="text-slate-400 text-sm font-bold mb-1">/ mês</span>
-                        </div>
-                        <p id="plano2-aviso-duracao" class="text-[10px] text-cyan-500 font-bold uppercase tracking-widest mt-1 hidden"></p>
-                    </div>
-                    
-                    <ul id="plano2-features" class="space-y-4 mb-8 flex-1 text-[13px] text-slate-600"></ul>
-                    
-                    <button id="btn-plano2" onclick="iniciarCheckout('BLACK_BELT')" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-black py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-all shadow-md mt-auto">
-                        Assinar Agora
-                    </button>
-                </div>
-
-                <div class="bg-gradient-to-b from-slate-800 to-slate-900 rounded-3xl p-8 border-2 border-purple-500 flex flex-col relative shadow-[0_0_30px_rgba(168,85,247,0.15)] transform xl:scale-105 z-10 h-full">
-                    <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-purple-500 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Mais Escolhido</div>
-                    <h3 id="plano3-nome" class="text-xl font-black text-purple-400 mb-2 mt-2">Carregando...</h3>
-                    <p id="plano3-desc" class="text-xs text-slate-300 mb-6 min-h-[40px]">...</p>
-                    
-                    <div class="mb-6 flex flex-col border-b border-slate-700 pb-6 h-[80px] justify-end relative">
-                        <div id="plano3-preco-antigo-container" class="hidden absolute top-[-10px]">
-                            <span id="plano3-preco-antigo" class="text-sm text-slate-500 line-through font-bold"></span>
-                        </div>
-                        <div class="flex items-end gap-1">
-                            <span class="text-sm text-purple-400 font-bold mb-1">R$</span>
-                            <span id="plano3-preco" class="text-4xl font-black text-white leading-none">--,--</span>
-                            <span class="text-slate-500 text-sm font-bold mb-1">/ mês</span>
-                        </div>
-                        <p id="plano3-aviso-duracao" class="text-[10px] text-purple-400 font-bold uppercase tracking-widest mt-1 hidden"></p>
-                    </div>
-                    
-                    <ul id="plano3-features" class="space-y-4 mb-8 flex-1 text-[13px] text-slate-200"></ul>
-                    
-                    <button id="btn-plano3" onclick="iniciarCheckout('MASTER')" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-black py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-all shadow-lg transform hover:-translate-y-0.5 mt-auto">
-                        Assinar Agora
-                    </button>
-                </div>
-
-                <div class="bg-white rounded-3xl p-8 border border-slate-200 flex flex-col relative shadow-sm opacity-95 h-full">
-                    <h3 id="plano4-nome" class="text-xl font-black text-amber-500 mb-2">Carregando...</h3>
-                    <p id="plano4-desc" class="text-xs text-slate-500 mb-6 min-h-[40px]">...</p>
-                    
-                    <div class="mb-6 flex flex-col border-b border-slate-100 pb-6 h-[80px] justify-end relative">
-                        <div id="plano4-preco-antigo-container" class="hidden absolute top-[-10px]">
-                            <span id="plano4-preco-antigo" class="text-sm text-slate-400 line-through font-bold"></span>
-                        </div>
-                        <div class="flex items-end gap-1">
-                            <span class="text-sm text-amber-500 font-bold mb-1">R$</span>
-                            <span id="plano4-preco" class="text-4xl font-black text-slate-800 leading-none">--,--</span>
-                            <span class="text-slate-400 text-sm font-bold mb-1">/ mês</span>
-                        </div>
-                        <p id="plano4-aviso-duracao" class="text-[10px] text-amber-500 font-bold uppercase tracking-widest mt-1 hidden"></p>
-                    </div>
-                    
-                    <ul id="plano4-features" class="space-y-4 mb-8 flex-1 text-[13px] text-slate-600"></ul>
-                    
-                    <button id="btn-plano4" onclick="iniciarCheckout('ELITE')" class="w-full bg-amber-500 hover:bg-amber-400 text-white font-black py-4 rounded-xl text-center text-xs uppercase tracking-widest transition-all shadow-lg transform hover:-translate-y-0.5 mt-auto">
-                        Assinar Agora
-                    </button>
-                </div>
-
+            <div class="mt-12 text-center">
+                <p class="text-xs text-slate-400 font-bold flex items-center justify-center gap-2">
+                    🔒 Pagamento processado de forma 100% segura. Suporte via WhatsApp.
+                </p>
             </div>
         </div>
     </main>
 
-<script type="module">
+    <div id="modal-loading" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden items-center justify-center z-[200] p-4 transition-opacity">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl flex flex-col items-center max-w-sm text-center">
+            <div class="w-16 h-16 border-4 border-slate-100 border-t-cyan-500 rounded-full animate-spin mb-6"></div>
+            <h3 class="font-black text-slate-800 text-lg mb-2">Gerando sua assinatura...</h3>
+            <p class="text-sm text-slate-500 font-medium">Você será redirecionado para a tela de pagamento em instantes.</p>
+        </div>
+    </div>
+
+    <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
@@ -166,354 +168,80 @@
             messagingSenderId: "415548255893",
             appId: "1:415548255893:web:61186696fe097be870759c"
         };
-
+        
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-
-        let equipeId = null;
-        let equipePlanoAtual = null;
-        let dadosEquipe = null;
-        let cupomAtivo = null;
-        let linksAsaas = {}; 
+        const functions = getFunctions(app);
+        
+        let uid = null;
+        let userData = null;
+        let equipeNome = "";
 
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             const bgColor = type === 'success' ? 'bg-emerald-500' : 'bg-rose-500';
-            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transition-all font-bold text-sm z-[9999]`;
-            toast.innerText = message;
+            const icon = type === 'success' ? '✅' : '🚨';
+            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transition-all duration-300 font-bold text-sm z-50 flex items-center gap-3`;
+            toast.innerHTML = `<span class="text-xl">${icon}</span> <span class="flex-1">${message}</span>`;
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 4500);
         }
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                equipeId = user.uid;
-                const mestreDoc = await getDoc(doc(db, "equipes", user.uid));
-                if (mestreDoc.exists()) {
-                    dadosEquipe = mestreDoc.data();
-                    equipePlanoAtual = (dadosEquipe.status_plano || 'TESTE').toUpperCase();
-                    atualizarStatusCabecalho();
-                    
-                    if(dadosEquipe.cupom_usado && !cupomAtivo) {
-                        document.getElementById('input-cupom').value = dadosEquipe.cupom_usado;
-                        await window.validarCupom(true);
+                uid = user.uid;
+                userData = user;
+                try {
+                    const docMestre = await getDoc(doc(db, "equipes", uid));
+                    if (docMestre.exists()) {
+                        equipeNome = docMestre.data().nome_equipe || docMestre.data().nome || "Sua Equipe";
                     } else {
-                        construirTelaDePlanos();
+                        // Co-admins não podem assinar planos
+                        showToast("Apenas o Mestre Administrador pode gerenciar assinaturas.", "error");
+                        setTimeout(() => window.location.href = "dashboard.html", 3000);
                     }
-                } else {
-                    window.location.href = "dashboard.html";
-                    return;
+                } catch (e) {
+                    console.error(e);
                 }
             } else {
-                window.location.href = "login.html";
+                window.location.href = "index.html";
             }
         });
 
-        window.validarCupom = async function(isAutoLoad = false) {
-            const input = document.getElementById('input-cupom');
-            const codigo = input.value.trim().toUpperCase();
-            if(!codigo) return;
+        window.assinarPlano = async function(nomePlano, valorPlano, btnElement) {
+            if (!uid) return showToast("Sessão expirada. Faça login novamente.", "error");
 
-            const btn = document.getElementById('btn-aplicar-cupom');
-            btn.innerHTML = "⏳...";
-            btn.disabled = true;
+            // Exibe modal de carregamento
+            document.getElementById('modal-loading').classList.remove('hidden');
+            document.getElementById('modal-loading').classList.add('flex');
 
             try {
-                const docSnap = await getDoc(doc(db, "cupons", codigo));
+                // Chama a função do Firebase que criamos no index.js
+                const assinarFuncao = httpsCallable(functions, 'gerarAssinaturaSistema');
                 
-                if(docSnap.exists()) {
-                    const cupom = docSnap.data();
-                    
-                    if(cupom.limite_uso > 0 && (cupom.vezes_usado || 0) >= cupom.limite_uso) {
-                        if(!isAutoLoad) showToast("Este cupom já atingiu o limite máximo de utilizações.", "error");
-                        cupomAtivo = null;
-                        input.value = '';
-                    } else {
-                        cupomAtivo = { codigo: codigo, ...cupom };
-                        if(!isAutoLoad) showToast(`Cupom ${codigo} ativado com sucesso!`, "success");
-                        
-                        input.disabled = true;
-                        document.getElementById('caixa-input-cupom').classList.add('opacity-50');
-                        btn.classList.add('hidden');
-                        
-                        const msgDiv = document.getElementById('msg-cupom');
-                        let txtDuracao = cupom.duracao === 'PRIMEIRA_MENSALIDADE' ? 'apenas na 1ª mensalidade' : 'em todas as mensalidades';
-                        msgDiv.innerHTML = `<div class="inline-flex items-center gap-2 bg-emerald-100 border border-emerald-200 text-emerald-800 px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-widest shadow-sm">
-                            ✅ ${cupom.desconto_perc}% de desconto ${txtDuracao}
-                            <button onclick="removerCupom()" class="ml-2 text-emerald-600 hover:text-rose-600 text-sm" title="Remover Cupom">✖</button>
-                        </div>`;
-                        msgDiv.classList.remove('hidden');
-                    }
+                const resultado = await assinarFuncao({
+                    equipeId: uid,
+                    nomePlano: nomePlano,
+                    valor: valorPlano,
+                    email: userData.email,
+                    nome: equipeNome
+                });
+
+                if (resultado.data.success && resultado.data.url) {
+                    // Redireciona o mestre para o link de pagamento do Asaas
+                    window.location.href = resultado.data.url;
                 } else {
-                    if(!isAutoLoad) showToast("Cupom inválido ou não encontrado.", "error");
-                    cupomAtivo = null;
-                    input.value = '';
-                }
-                construirTelaDePlanos();
-            } catch(e) {
-                console.error(e);
-                if(!isAutoLoad) showToast("Erro ao validar cupom. Tente novamente.", "error");
-            } finally {
-                btn.innerHTML = "Aplicar";
-                btn.disabled = false;
-            }
-        }
-
-        window.removerCupom = function() {
-            cupomAtivo = null;
-            const input = document.getElementById('input-cupom');
-            input.value = '';
-            input.disabled = false;
-            document.getElementById('caixa-input-cupom').classList.remove('opacity-50');
-            document.getElementById('btn-aplicar-cupom').classList.remove('hidden');
-            document.getElementById('msg-cupom').classList.add('hidden');
-            showToast("Cupom removido.", "info");
-            construirTelaDePlanos();
-        }
-
-        function renderizarListaFuncionalidades(containerId, featuresStr, corCheck, corTexto) {
-            const container = document.getElementById(containerId);
-            if(!container) return;
-            container.innerHTML = '';
-            if(!featuresStr) return;
-            
-            const linhas = featuresStr.split('\n');
-            linhas.forEach(linha => {
-                if(!linha.trim()) return;
-                
-                const li = document.createElement('li');
-                li.className = "flex items-start gap-3";
-                
-                if (linha.startsWith('✓')) {
-                    const txt = linha.replace('✓', '').trim();
-                    li.innerHTML = `<span class="text-${corCheck}-500 font-black mt-0.5">✓</span> <span class="text-${corTexto} font-medium">${txt}</span>`;
-                    container.appendChild(li);
-                } else if (linha.startsWith('❌')) {
-                    const txt = linha.replace('❌', '').trim();
-                    if (txt.includes('Cadastro até 10 alunos')) return; 
-                    li.innerHTML = `<span class="text-slate-400 font-bold mt-0.5">❌</span> <span class="text-slate-400 line-through opacity-70">${txt}</span>`;
-                    container.appendChild(li);
-                }
-            });
-        }
-
-        function formatarMoeda(valor) {
-            return parseFloat(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        }
-
-        function atualizarStatusCabecalho() {
-            document.getElementById('nome-equipe').innerText = (dadosEquipe.nome_equipe || dadosEquipe.nome || "Sua Equipe").toUpperCase();
-            const badge = document.getElementById('status-badge');
-            const icon = document.getElementById('status-icon');
-            const txtVencimento = document.getElementById('plano-vencimento');
-            const txtPlanoAtual = document.getElementById('nome-plano-atual');
-            const isento = (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true");
-
-            if (isento) {
-                document.getElementById('msg-isento').classList.remove('hidden');
-            }
-
-            if (txtPlanoAtual) {
-                let nomePlanoFormatado = equipePlanoAtual.replace('_', ' ');
-                if (equipePlanoAtual === 'TESTE' || equipePlanoAtual === 'BASICO') {
-                    nomePlanoFormatado = 'PLANO BASE';
-                } else {
-                    nomePlanoFormatado = `PLANO ${nomePlanoFormatado}`;
-                }
-                txtPlanoAtual.innerText = nomePlanoFormatado;
-                txtPlanoAtual.classList.remove('hidden');
-            }
-
-            if (equipePlanoAtual === 'TESTE') {
-                badge.innerText = "PERÍODO DE TESTE";
-                badge.className = "px-4 py-1.5 rounded-full text-[10px] font-black uppercase bg-amber-500 text-white shadow-lg";
-                icon.innerText = "⏳";
-                txtVencimento.innerText = "Aproveite o seu teste grátis.";
-            } 
-            else if (equipePlanoAtual === 'BLOQUEADO' || equipePlanoAtual === 'INATIVO') {
-                badge.innerText = "ACESSO SUSPENSO";
-                badge.className = "px-4 py-1.5 rounded-full text-[10px] font-black uppercase bg-rose-600 text-white shadow-lg";
-                icon.innerText = "🔒";
-                txtVencimento.innerText = "Sua assinatura expirou. Regularize para continuar.";
-            }
-            else {
-                badge.innerText = "ASSINATURA ATIVA";
-                badge.className = "px-4 py-1.5 rounded-full text-[10px] font-black uppercase bg-emerald-500 text-white shadow-lg";
-                icon.innerText = "✅";
-                txtVencimento.innerText = "O seu acesso está garantido. Oss!";
-            }
-        }
-
-        async function construirTelaDePlanos() {
-            try {
-                const docSnap = await getDoc(doc(db, "sistema", "config_planos"));
-                if (docSnap.exists()) {
-                    const planos = docSnap.data();
-                    const isento = (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true");
-                    const descontoEquipe = dadosEquipe.desconto_plano ? parseFloat(dadosEquipe.desconto_plano) : 0;
-
-                    const descCupomPerc = cupomAtivo ? parseFloat(cupomAtivo.desconto_perc) : 0;
-                    const descCupomApenas1oMes = cupomAtivo && cupomAtivo.duracao === 'PRIMEIRA_MENSALIDADE';
-
-                    if(planos.p1) {
-                        document.getElementById('plano1-nome').innerText = planos.p1.nome;
-                        document.getElementById('plano1-desc').innerText = planos.p1.desc;
-                        renderizarListaFuncionalidades('plano1-features', planos.p1.features, 'emerald', 'slate-600');
-                    }
-
-                    // Tenta capturar o link de pagamento independente se ele foi salvo como link_asaas, url_asaas ou link
-                    if(planos.p2) linksAsaas['BLACK_BELT'] = planos.p2.link_asaas || planos.p2.url_asaas || planos.p2.link || null;
-                    if(planos.p3) linksAsaas['MASTER'] = planos.p3.link_asaas || planos.p3.url_asaas || planos.p3.link || null;
-                    if(planos.p4) linksAsaas['ELITE'] = planos.p4.link_asaas || planos.p4.url_asaas || planos.p4.link || null;
-
-                    function preencherCardPreco(planId, configPlano, colorTheme) {
-                        if(!configPlano) return;
-                        
-                        document.getElementById(`plano${planId}-nome`).innerHTML = configPlano.nome.replace('Automação', `<span class="text-[9px] bg-amber-500/20 text-amber-500 px-2 py-1 rounded ml-2 uppercase align-middle">Automação</span>`);
-                        document.getElementById(`plano${planId}-desc`).innerText = configPlano.desc;
-                        
-                        const pBase = parseFloat(configPlano.preco) || 0;
-                        const pOrig = parseFloat(configPlano.preco_original) || 0;
-                        
-                        const pTxtFinal = document.getElementById(`plano${planId}-preco`);
-                        const pTxtAviso = document.getElementById(`plano${planId}-aviso-duracao`);
-                        const pContainerAntigo = document.getElementById(`plano${planId}-preco-antigo-container`);
-                        const pTxtAntigo = document.getElementById(`plano${planId}-preco-antigo`);
-                        
-                        if(pTxtAviso) pTxtAviso.classList.add('hidden');
-
-                        if (isento) {
-                            pContainerAntigo.classList.remove('hidden');
-                            pTxtAntigo.innerText = `De R$ ${formatarMoeda(pBase)}`;
-                            pTxtFinal.innerText = "0,00";
-                        } else if (descCupomPerc > 0) {
-                            pContainerAntigo.classList.remove('hidden');
-                            pTxtAntigo.innerText = `R$ ${formatarMoeda(pBase)}`;
-                            pTxtFinal.innerText = formatarMoeda(pBase * (1 - (descCupomPerc/100)));
-                            
-                            if(descCupomApenas1oMes && pTxtAviso) {
-                                pTxtAviso.innerText = `Depois R$ ${formatarMoeda(pBase)}/mês`;
-                                pTxtAviso.classList.remove('hidden');
-                            }
-                        } else if (descontoEquipe > 0) {
-                            pContainerAntigo.classList.remove('hidden');
-                            pTxtAntigo.innerText = `R$ ${formatarMoeda(pBase)}`;
-                            pTxtFinal.innerText = formatarMoeda(pBase * (1 - (descontoEquipe/100)));
-                        } else {
-                            if (pOrig > pBase) {
-                                pContainerAntigo.classList.remove('hidden');
-                                pTxtAntigo.innerText = `De R$ ${formatarMoeda(pOrig)}`;
-                            } else {
-                                pContainerAntigo.classList.add('hidden');
-                            }
-                            pTxtFinal.innerText = formatarMoeda(pBase);
-                        }
-                        
-                        let textColor = 'slate-600';
-                        if(planId === 3) textColor = 'slate-200'; 
-                        renderizarListaFuncionalidades(`plano${planId}-features`, configPlano.features, colorTheme, textColor);
-                    }
-
-                    preencherCardPreco(2, planos.p2, 'cyan');
-                    preencherCardPreco(3, planos.p3, 'purple');
-                    preencherCardPreco(4, planos.p4, 'amber');
-
-                    const bloquearBotao = (btnId, themeClass) => {
-                        const btn = document.getElementById(btnId);
-                        if(btn) {
-                            btn.disabled = true;
-                            btn.innerHTML = "✓ SEU PLANO ATUAL";
-                            btn.className = `w-full font-black py-4 rounded-xl text-xs cursor-not-allowed border mt-auto ${themeClass}`;
-                        }
-                    };
-
-                    if (equipePlanoAtual === 'BLACK_BELT') {
-                        bloquearBotao('btn-plano2', 'bg-slate-200 text-slate-400 border-slate-300');
-                    } else if (equipePlanoAtual === 'MASTER') {
-                        bloquearBotao('btn-plano3', 'bg-slate-800 text-slate-500 border-slate-700 shadow-none');
-                    } else if (equipePlanoAtual === 'ELITE') {
-                        bloquearBotao('btn-plano4', 'bg-slate-200 text-slate-400 border-slate-300');
-                    }
+                    document.getElementById('modal-loading').classList.replace('flex', 'hidden');
+                    showToast("Erro do banco: " + (resultado.data.error || "Tente novamente mais tarde."), "error");
                 }
             } catch (error) {
-                console.error("Erro:", error);
+                document.getElementById('modal-loading').classList.replace('flex', 'hidden');
+                console.error(error);
+                showToast("Erro de comunicação com o servidor.", "error");
             }
-        }
-
-    window.iniciarCheckout = async function(planoEscolhido) {
-        const isento = (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true");
-        if(isento) {
-            return showToast("Sua conta é isenta. O acesso já deveria estar ativo. Fale com o suporte.", "info");
-        }
-
-        // Pega o ID do botão correto
-        let btnId = '';
-        if(planoEscolhido === 'ELITE') btnId = 'btn-plano4';
-        else if(planoEscolhido === 'MASTER') btnId = 'btn-plano3';
-        else if(planoEscolhido === 'BLACK_BELT') btnId = 'btn-plano2';
-    
-        const btn = document.getElementById(btnId);
-        if(!btn) return;
-
-        const originalTxt = btn.innerHTML;
-        btn.innerHTML = "⏳ GERANDO COBRANÇA...";
-        btn.disabled = true;
-
-        try {
-        // 1. Busca os valores do plano e aplica o cupom (se houver)
-        const docSnap = await getDoc(doc(db, "sistema", "config_planos"));
-        let valorParaCobrar = 0;
-        
-        if (docSnap.exists()) {
-            const planos = docSnap.data();
-            if(planoEscolhido === 'ELITE' && planos.p4) valorParaCobrar = parseFloat(planos.p4.preco);
-            else if(planoEscolhido === 'MASTER' && planos.p3) valorParaCobrar = parseFloat(planos.p3.preco);
-            else if(planoEscolhido === 'BLACK_BELT' && planos.p2) valorParaCobrar = parseFloat(planos.p2.preco);
-        }
-
-        let valorFinalACobrar = valorParaCobrar;
-        let codigoCupomParaEnviar = null;
-
-        if(cupomAtivo && cupomAtivo.desconto_perc !== undefined) {
-            valorFinalACobrar = valorParaCobrar * (1 - (cupomAtivo.desconto_perc / 100));
-            codigoCupomParaEnviar = cupomAtivo.codigo;
-        } else if (dadosEquipe.desconto_plano) {
-            valorFinalACobrar = valorParaCobrar * (1 - (parseFloat(dadosEquipe.desconto_plano) / 100));
-        }
-
-        // 2. CHAMA A CLOUD FUNCTION DO FIREBASE (Igual ao financeiro.html)
-        const gerarAssinatura = httpsCallable(functions, 'gerarAssinaturaSistema');
-        
-        const resultado = await gerarAssinatura({
-            equipeId: equipeId,
-            nomePlano: planoEscolhido,
-            valor: valorFinalACobrar,
-            email: auth.currentUser.email,
-            nomeProprietario: dadosEquipe.nome_equipe || "Assinante BJJ Manager",
-            cpfCnpj: dadosEquipe.cpf_cnpj || dadosEquipe.cpf || "", // Se tiver salvo
-            cupom: codigoCupomParaEnviar
-        });
-
-        // 3. Recebe o link do Asaas do Backend e redireciona
-        if (resultado.data.success) {
-            showToast("Redirecionando para o Checkout Seguro...", "success");
-            setTimeout(() => {
-                window.open(resultado.data.url, '_blank');
-                btn.innerHTML = originalTxt;
-                btn.disabled = false;
-            }, 1500);
-        } else {
-            throw new Error(resultado.data.error);
-        }
-    } catch (error) {
-        console.error(error);
-        showToast("Erro ao gerar link de pagamento.", "error");
-        btn.innerHTML = originalTxt;
-        btn.disabled = false;
-    }
-}
+        };
     </script>
 </body>
 </html>

@@ -495,9 +495,9 @@
         // 🔒 MOTOR DE PERMISSÕES E PAYWALL
         // ==========================================
         const HIERARQUIA_PLANOS = {
-            'TESTE': 1, 'BASICO': 1, 'BÁSICO': 1, 'BLACK_BELT': 1,
-            'INTERMEDIARIO': 2, 'INTERMEDIÁRIO': 2, 'MASTER': 2,
-            'PREMIUM': 3, 'ELITE': 3,
+            'TESTE': 1, 'BASICO': 1, 'BÁSICO': 1,
+            'INTERMEDIARIO': 2, 'INTERMEDIÁRIO': 2,
+            'PREMIUM': 3,
             'ULTIMATE': 4
         };
 
@@ -862,7 +862,6 @@
         };
 
         window.switchConfigTab = function(tab) {
-            // 🛑 BLOQUEIO DA ABA DE CONVITES PARA PLANOS BÁSICOS
             if (tab === 'convites') {
                 const isImpersonating = sessionStorage.getItem('admin_impersonate') !== null;
                 const isIsento = dadosEquipe && (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true");
@@ -927,7 +926,6 @@
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             
-            // Puxa e popula todos os dados que temos no Firestore
             document.getElementById('config-nome-equipe').value = dadosEquipe.nome_equipe || dadosEquipe.nome || "";
             document.getElementById('config-logo').value = ""; 
             
@@ -1078,11 +1076,29 @@
 
                     if (dadosEquipe) {
                         
-                        // BLOQUEIO GERAL (CHURN)
-                        if (dadosEquipe.status_plano === 'BLOQUEADO' && !isImpersonating) {
+                        // 🛑 BLOQUEIO GERAL (INADIMPLÊNCIA OU FIM DO TRIAL)
+                        const dataExpiracao = new Date(dadosEquipe.data_pagamento_plano || 0);
+                        const agora = new Date();
+                        const isTrialVencido = (dadosEquipe.status_plano === 'TESTE') && (agora > dataExpiracao);
+                        const isIsento = (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true");
+
+                        if ((dadosEquipe.status_plano === 'BLOQUEADO' || isTrialVencido) && !isImpersonating && !isIsento) {
                             document.getElementById('interface-sistema').classList.add('hidden');
-                            document.getElementById('tela-bloqueio').classList.remove('hidden');
-                            document.getElementById('tela-bloqueio').classList.add('flex');
+                            
+                            const telaBloqueio = document.getElementById('tela-bloqueio');
+                            
+                            if (isTrialVencido) {
+                                telaBloqueio.querySelector('h2').innerText = "Período de Teste Terminou";
+                                telaBloqueio.querySelector('p').innerText = "O seu acesso gratuito expirou. Para continuar a utilizar a plataforma e não perder os dados da sua equipa, escolha um plano definitivo.";
+                                
+                                const btnAcao = telaBloqueio.querySelector('a');
+                                btnAcao.href = "planos.html";
+                                btnAcao.innerHTML = "<span>⚡</span> Ver Planos e Assinar";
+                                btnAcao.className = "w-full bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 rounded-xl transition-all flex items-center justify-center gap-2 uppercase tracking-widest text-xs shadow-lg shadow-cyan-500/30 mb-4";
+                            }
+                            
+                            telaBloqueio.classList.remove('hidden');
+                            telaBloqueio.classList.add('flex');
                             return; 
                         }
 
@@ -1095,10 +1111,10 @@
                         const statusAt = (dadosEquipe.status_plano || 'TESTE').toUpperCase();
                         let idDoPlano = dadosEquipe.plano_escolhido || 'p1';
 
-                        if (statusAt === 'BASICO' || statusAt === 'BLACK_BELT') idDoPlano = 'p1';
-                        else if (statusAt === 'INTERMEDIARIO' || statusAt === 'MASTER') idDoPlano = 'p2';
+                        if (statusAt === 'BASICO' || statusAt === 'BÁSICO') idDoPlano = 'p1';
+                        else if (statusAt === 'INTERMEDIARIO' || statusAt === 'INTERMEDIÁRIO') idDoPlano = 'p2';
                         else if (statusAt === 'PREMIUM') idDoPlano = 'p3';
-                        else if (statusAt === 'ULTIMATE' || statusAt === 'ELITE') idDoPlano = 'p4';
+                        else if (statusAt === 'ULTIMATE') idDoPlano = 'p4';
 
                         let nomeRealDoPlano = statusAt; 
 

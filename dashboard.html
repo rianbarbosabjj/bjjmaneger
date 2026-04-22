@@ -314,13 +314,14 @@
                 <div class="space-y-4">
                     <h4 class="text-[10px] font-black text-cyan-600 uppercase tracking-widest border-b border-slate-200 pb-2">Responsável Legal</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="sm:col-span-2">
-                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome Completo *</label>
-                            <input type="text" id="config-resp-nome" placeholder="Seu nome" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                        <div class="sm:col-span-2 relative group">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Nome Completo (Responsável) 🔒</label>
+                            <input type="text" id="config-resp-nome" disabled title="Para alterar, contate o suporte" class="w-full p-3 bg-slate-100 border border-slate-200 rounded-xl outline-none font-bold text-slate-500 cursor-not-allowed">
+                            <p class="text-[9px] text-amber-500 font-bold mt-1">Para transferir a titularidade, contate o suporte via WhatsApp.</p>
                         </div>
-                        <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CPF ou CNPJ *</label>
-                            <input type="text" id="config-resp-doc" maxlength="18" oninput="mascaraDoc(this)" placeholder="000.000.000-00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                        <div class="relative group">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CPF ou CNPJ 🔒</label>
+                            <input type="text" id="config-resp-doc" disabled title="Para alterar, contate o suporte" class="w-full p-3 bg-slate-100 border border-slate-200 rounded-xl outline-none font-bold text-slate-500 cursor-not-allowed">
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">WhatsApp *</label>
@@ -1534,9 +1535,6 @@
             try {
                 let updates = { 
                     nome_equipe: novoNome.toUpperCase(),
-                    responsavel_nome: document.getElementById('config-resp-nome').value.trim(),
-                    responsavel_documento: document.getElementById('config-resp-doc').value.trim(),
-                    cpf_cnpj: document.getElementById('config-resp-doc').value.trim(), 
                     telefone: document.getElementById('config-tel').value.trim(),
                     endereco_cep: document.getElementById('config-cep').value.trim(),
                     cep: document.getElementById('config-cep').value.trim(), 

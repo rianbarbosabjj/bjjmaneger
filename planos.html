@@ -153,10 +153,52 @@
         </div>
     </main>
 
-    <script type="module">
+    <div id="modal-faturamento" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden items-center justify-center z-[250] p-4 transition-opacity">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col">
+            <div class="bg-slate-800 p-4 text-white font-black uppercase tracking-widest text-sm flex items-center justify-between">
+                <span>📋 Dados de Faturamento</span>
+                <button onclick="fecharModalFaturamento()" class="text-slate-400 hover:text-white text-xl leading-none">&times;</button>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-xs text-slate-500 font-medium mb-2">Para gerar a sua assinatura, o Banco Central exige que o seu cadastro tenha um CPF/CNPJ e um endereço válido.</p>
+                
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CPF ou CNPJ *</label>
+                    <input type="text" id="fat-cpf" placeholder="000.000.000-00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="col-span-2">
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CEP *</label>
+                        <input type="text" id="fat-cep" placeholder="00000-000" onblur="buscarCEPFaturamento(this.value)" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Endereço *</label>
+                        <input type="text" id="fat-endereco" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Número *</label>
+                        <input type="text" id="fat-numero" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Bairro *</label>
+                        <input type="text" id="fat-bairro" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 bg-slate-50 border-t border-slate-200 flex gap-3">
+                <button onclick="fecharModalFaturamento()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold py-3 rounded-xl transition-all text-xs uppercase tracking-widest">Cancelar</button>
+                <button onclick="salvarFaturamentoEContinuar()" id="btn-salvar-fat" class="flex-1 bg-cyan-500 hover:bg-cyan-600 text-white font-black py-3 rounded-xl shadow-md transition-all uppercase tracking-widest text-xs">
+                    Salvar e Assinar
+                </button>
+            </div>
+        </div>
+    </div>
+
+<script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
 
         const firebaseConfig = {
@@ -177,6 +219,7 @@
         let equipePlanoAtual = null;
         let dadosEquipe = null;
         let cupomAtivo = null;
+        let planoPendenteParaCheckout = null;
 
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
@@ -438,78 +481,151 @@
             }
         }
 
-    window.iniciarCheckout = async function(planoEscolhido) {
-        const isento = (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true");
-        if(isento) {
-            return showToast("Sua conta é isenta. O acesso já deveria estar ativo. Fale com o suporte.", "info");
+        // ==========================================
+        // FLUXO DE PAGAMENTO COM VERIFICAÇÃO DE CPF
+        // ==========================================
+
+        window.fecharModalFaturamento = function() {
+            document.getElementById('modal-faturamento').classList.add('hidden');
+            document.getElementById('modal-faturamento').classList.remove('flex');
+            planoPendenteParaCheckout = null;
         }
 
-        // Pega o ID do botão correto
-        let btnId = '';
-        if(planoEscolhido === 'ELITE') btnId = 'btn-plano4';
-        else if(planoEscolhido === 'MASTER') btnId = 'btn-plano3';
-        else if(planoEscolhido === 'BLACK_BELT') btnId = 'btn-plano2';
-    
-        const btn = document.getElementById(btnId);
-        if(!btn) return;
+        window.buscarCEPFaturamento = async function(cep) {
+            const cleanCep = cep.replace(/\D/g, "");
+            if (cleanCep.length !== 8) return;
+            try {
+                const r = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`).then(res => res.json());
+                if (!r.erro) {
+                    document.getElementById('fat-endereco').value = r.logradouro || "";
+                    document.getElementById('fat-bairro').value = r.bairro || "";
+                    document.getElementById('fat-numero').focus();
+                }
+            } catch(e) {}
+        }
 
-        const originalTxt = btn.innerHTML;
-        btn.innerHTML = "⏳ GERANDO COBRANÇA...";
-        btn.disabled = true;
+        window.salvarFaturamentoEContinuar = async function() {
+            const cpf = document.getElementById('fat-cpf').value.trim();
+            const cep = document.getElementById('fat-cep').value.trim();
+            const endereco = document.getElementById('fat-endereco').value.trim();
+            const numero = document.getElementById('fat-numero').value.trim();
+            const bairro = document.getElementById('fat-bairro').value.trim();
 
-        try {
-            // 1. Busca os valores do plano e aplica o cupom (se houver)
-            const docSnap = await getDoc(doc(db, "sistema", "config_planos"));
-            let valorParaCobrar = 0;
-            
-            if (docSnap.exists()) {
-                const planos = docSnap.data();
-                if(planoEscolhido === 'ELITE' && planos.p4) valorParaCobrar = parseFloat(planos.p4.preco);
-                else if(planoEscolhido === 'MASTER' && planos.p3) valorParaCobrar = parseFloat(planos.p3.preco);
-                else if(planoEscolhido === 'BLACK_BELT' && planos.p2) valorParaCobrar = parseFloat(planos.p2.preco);
+            if(!cpf || !cep || !endereco || !numero || !bairro) {
+                return showToast("Preencha todos os campos obrigatórios.", "error");
             }
 
-            let valorFinalACobrar = valorParaCobrar;
-            let codigoCupomParaEnviar = null;
+            const btn = document.getElementById('btn-salvar-fat');
+            btn.innerHTML = "Salvando...";
+            btn.disabled = true;
 
-            if(cupomAtivo && cupomAtivo.desconto_perc !== undefined) {
-                valorFinalACobrar = valorParaCobrar * (1 - (cupomAtivo.desconto_perc / 100));
-                codigoCupomParaEnviar = cupomAtivo.codigo;
-            } else if (dadosEquipe.desconto_plano) {
-                valorFinalACobrar = valorParaCobrar * (1 - (parseFloat(dadosEquipe.desconto_plano) / 100));
+            try {
+                const updates = { 
+                    cpf_cnpj: cpf, 
+                    cep: cep, 
+                    endereco: endereco, 
+                    numero: numero, 
+                    bairro: bairro 
+                };
+                await updateDoc(doc(db, "equipes", equipeId), updates);
+                
+                // Atualiza cache local
+                dadosEquipe = { ...dadosEquipe, ...updates };
+                
+                fecharModalFaturamento();
+                if(planoPendenteParaCheckout) {
+                    processarCheckoutAsaas(planoPendenteParaCheckout);
+                }
+            } catch(e) {
+                showToast("Erro ao salvar dados de faturamento.", "error");
+                btn.innerHTML = "Salvar e Assinar";
+                btn.disabled = false;
+            }
+        }
+
+        window.iniciarCheckout = async function(planoEscolhido) {
+            const isento = (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true");
+            if(isento) return showToast("Sua conta é isenta. O acesso já deveria estar ativo. Fale com o suporte.", "info");
+
+            // VERIFICAÇÃO DE DADOS DE FATURAMENTO ANTES DE CHAMAR O BANCO
+            if (!dadosEquipe.cpf_cnpj && !dadosEquipe.cpf) {
+                planoPendenteParaCheckout = planoEscolhido;
+                document.getElementById('modal-faturamento').classList.remove('hidden');
+                document.getElementById('modal-faturamento').classList.add('flex');
+                return; // Interrompe e espera o modal ser preenchido
             }
 
-            // 2. CHAMA A CLOUD FUNCTION DO FIREBASE
-            const gerarAssinatura = httpsCallable(functions, 'gerarAssinaturaSistema');
-            
-            const resultado = await gerarAssinatura({
-                equipeId: equipeId,
-                nomePlano: planoEscolhido,
-                valor: valorFinalACobrar,
-                email: auth.currentUser.email,
-                nome: dadosEquipe.nome_equipe || "Assinante BJJ Manager",
-                cpfCnpj: dadosEquipe.cpf_cnpj || dadosEquipe.cpf || "", // Se tiver salvo
-                cupom: codigoCupomParaEnviar
-            });
+            processarCheckoutAsaas(planoEscolhido);
+        }
 
-            // 3. Recebe o link do Asaas e redireciona OU mostra o erro real
-            if (resultado.data.success) {
-                showToast("Redirecionando para o Checkout Seguro...", "success");
-                setTimeout(() => {
-                    window.location.href = resultado.data.url; // Evita bloqueio de popup
-                }, 1000);
-            } else {
-                showToast("Erro do Banco: " + resultado.data.error, "error");
+        window.processarCheckoutAsaas = async function(planoEscolhido) {
+            let btnId = '';
+            if(planoEscolhido === 'ELITE') btnId = 'btn-plano4';
+            else if(planoEscolhido === 'MASTER') btnId = 'btn-plano3';
+            else if(planoEscolhido === 'BLACK_BELT') btnId = 'btn-plano2';
+        
+            const btn = document.getElementById(btnId);
+            if(!btn) return;
+
+            const originalTxt = btn.innerHTML;
+            btn.innerHTML = "⏳ GERANDO COBRANÇA...";
+            btn.disabled = true;
+
+            try {
+                const docSnap = await getDoc(doc(db, "sistema", "config_planos"));
+                let valorParaCobrar = 0;
+                
+                if (docSnap.exists()) {
+                    const planos = docSnap.data();
+                    if(planoEscolhido === 'ELITE' && planos.p4) valorParaCobrar = parseFloat(planos.p4.preco);
+                    else if(planoEscolhido === 'MASTER' && planos.p3) valorParaCobrar = parseFloat(planos.p3.preco);
+                    else if(planoEscolhido === 'BLACK_BELT' && planos.p2) valorParaCobrar = parseFloat(planos.p2.preco);
+                }
+
+                let valorFinalACobrar = valorParaCobrar;
+                let codigoCupomParaEnviar = null;
+
+                if(cupomAtivo && cupomAtivo.desconto_perc !== undefined) {
+                    valorFinalACobrar = valorParaCobrar * (1 - (cupomAtivo.desconto_perc / 100));
+                    codigoCupomParaEnviar = cupomAtivo.codigo;
+                } else if (dadosEquipe.desconto_plano) {
+                    valorFinalACobrar = valorParaCobrar * (1 - (parseFloat(dadosEquipe.desconto_plano) / 100));
+                }
+
+                const gerarAssinatura = httpsCallable(functions, 'gerarAssinaturaSistema');
+                
+                const resultado = await gerarAssinatura({
+                    equipeId: equipeId,
+                    nomePlano: planoEscolhido,
+                    valor: valorFinalACobrar,
+                    email: auth.currentUser.email,
+                    nome: dadosEquipe.nome_equipe || "Assinante BJJ Manager",
+                    cpfCnpj: dadosEquipe.cpf_cnpj || dadosEquipe.cpf || "", 
+                    cep: dadosEquipe.cep || "",
+                    endereco: dadosEquipe.endereco || "",
+                    numero: dadosEquipe.numero || "",
+                    bairro: dadosEquipe.bairro || "",
+                    cupom: codigoCupomParaEnviar
+                });
+
+                if (resultado.data.success) {
+                    showToast("Redirecionando para o Checkout Seguro...", "success");
+                    setTimeout(() => {
+                        window.location.href = resultado.data.url; 
+                    }, 1000);
+                } else {
+                    showToast("Erro do Banco: " + resultado.data.error, "error");
+                    btn.innerHTML = originalTxt;
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                console.error(error);
+                showToast("Erro no Servidor: " + error.message, "error");
                 btn.innerHTML = originalTxt;
                 btn.disabled = false;
             }
-        } catch (error) {
-            console.error(error);
-            showToast("Erro no Servidor: " + error.message, "error");
-            btn.innerHTML = originalTxt;
-            btn.disabled = false;
         }
-    }
+
     </script>
 </body>
 </html>

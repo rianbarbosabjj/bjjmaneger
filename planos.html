@@ -153,10 +153,52 @@
         </div>
     </main>
 
+    <div id="modal-faturamento" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden items-center justify-center z-[250] p-4 transition-opacity">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col">
+            <div class="bg-slate-800 p-4 text-white font-black uppercase tracking-widest text-sm flex items-center justify-between">
+                <span>📋 Dados de Faturamento</span>
+                <button onclick="fecharModalFaturamento()" class="text-slate-400 hover:text-white text-xl leading-none">&times;</button>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-xs text-slate-500 font-medium mb-2">Para gerar a sua assinatura, o Banco Central exige que o seu cadastro tenha um CPF/CNPJ e um endereço válido.</p>
+                
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CPF ou CNPJ *</label>
+                    <input type="text" id="fat-cpf" placeholder="000.000.000-00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="col-span-2">
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">CEP *</label>
+                        <input type="text" id="fat-cep" placeholder="00000-000" onblur="buscarCEPFaturamento(this.value)" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Endereço *</label>
+                        <input type="text" id="fat-endereco" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Número *</label>
+                        <input type="text" id="fat-numero" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-1">Bairro *</label>
+                        <input type="text" id="fat-bairro" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 font-bold text-slate-700">
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 bg-slate-50 border-t border-slate-200 flex gap-3">
+                <button onclick="fecharModalFaturamento()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold py-3 rounded-xl transition-all text-xs uppercase tracking-widest">Cancelar</button>
+                <button onclick="salvarFaturamentoEContinuar()" id="btn-salvar-fat" class="flex-1 bg-cyan-500 hover:bg-cyan-600 text-white font-black py-3 rounded-xl shadow-md transition-all uppercase tracking-widest text-xs">
+                    Salvar e Assinar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
 
         const firebaseConfig = {
@@ -177,6 +219,7 @@
         let equipePlanoAtual = null;
         let dadosEquipe = null;
         let cupomAtivo = null;
+        let planoPendenteParaCheckout = null;
 
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
@@ -438,11 +481,83 @@
             }
         }
 
+        // ==========================================
+        // FLUXO DE PAGAMENTO COM MODAL DE FATURAMENTO (RESTAURADO)
+        // ==========================================
+
+        window.fecharModalFaturamento = function() {
+            document.getElementById('modal-faturamento').classList.add('hidden');
+            document.getElementById('modal-faturamento').classList.remove('flex');
+            planoPendenteParaCheckout = null;
+        }
+
+        window.buscarCEPFaturamento = async function(cep) {
+            const cleanCep = cep.replace(/\D/g, "");
+            if (cleanCep.length !== 8) return;
+            try {
+                const r = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`).then(res => res.json());
+                if (!r.erro) {
+                    document.getElementById('fat-endereco').value = r.logradouro || "";
+                    document.getElementById('fat-bairro').value = r.bairro || "";
+                    document.getElementById('fat-numero').focus();
+                }
+            } catch(e) {}
+        }
+
+        window.salvarFaturamentoEContinuar = async function() {
+            const cpf = document.getElementById('fat-cpf').value.trim();
+            const cep = document.getElementById('fat-cep').value.trim();
+            const endereco = document.getElementById('fat-endereco').value.trim();
+            const numero = document.getElementById('fat-numero').value.trim();
+            const bairro = document.getElementById('fat-bairro').value.trim();
+
+            if(!cpf || !cep || !endereco || !numero || !bairro) {
+                return showToast("Preencha todos os campos obrigatórios.", "error");
+            }
+
+            const btn = document.getElementById('btn-salvar-fat');
+            btn.innerHTML = "Salvando...";
+            btn.disabled = true;
+
+            try {
+                const updates = { 
+                    cpf_cnpj: cpf, 
+                    cep: cep, 
+                    endereco: endereco, 
+                    numero: numero, 
+                    bairro: bairro 
+                };
+                await updateDoc(doc(db, "equipes", equipeId), updates);
+                
+                dadosEquipe = { ...dadosEquipe, ...updates };
+                
+                fecharModalFaturamento();
+                if(planoPendenteParaCheckout) {
+                    processarCheckoutAsaas(planoPendenteParaCheckout);
+                }
+            } catch(e) {
+                showToast("Erro ao salvar dados de faturamento.", "error");
+                btn.innerHTML = "Salvar e Assinar";
+                btn.disabled = false;
+            }
+        }
+
         window.iniciarCheckout = async function(planoEscolhido) {
             const isento = (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true");
             if(isento) return showToast("Sua conta é isenta. O acesso já deveria estar ativo. Fale com o suporte.", "info");
 
-            // Pega o ID do botão correto
+            const documentoValido = dadosEquipe.responsavel_documento || dadosEquipe.cpf_cnpj || dadosEquipe.cpf || "";
+            if (!documentoValido || documentoValido.length < 11) {
+                planoPendenteParaCheckout = planoEscolhido;
+                document.getElementById('modal-faturamento').classList.remove('hidden');
+                document.getElementById('modal-faturamento').classList.add('flex');
+                return; 
+            }
+
+            processarCheckoutAsaas(planoEscolhido);
+        }
+
+        window.processarCheckoutAsaas = async function(planoEscolhido) {
             let btnId = '';
             if(planoEscolhido === 'ELITE') btnId = 'btn-plano4';
             else if(planoEscolhido === 'MASTER') btnId = 'btn-plano3';
@@ -476,21 +591,21 @@
                     valorFinalACobrar = valorParaCobrar * (1 - (parseFloat(dadosEquipe.desconto_plano) / 100));
                 }
 
-                // CHAMA A CLOUD FUNCTION DO FIREBASE
                 const gerarAssinatura = httpsCallable(functions, 'gerarAssinaturaSistema');
                 
-                // PUXANDO DIRETO DO CADASTRO (dadosEquipe)
+                const documentoValido = dadosEquipe.responsavel_documento || dadosEquipe.cpf_cnpj || dadosEquipe.cpf || "";
+
                 const resultado = await gerarAssinatura({
                     equipeId: equipeId,
                     nomePlano: planoEscolhido,
                     valor: valorFinalACobrar,
                     email: auth.currentUser.email,
                     nome: dadosEquipe.nome_equipe || dadosEquipe.nome || "Assinante BJJ Manager",
-                    cpfCnpj: dadosEquipe.cpf_cnpj || dadosEquipe.cpf || "", 
-                    cep: dadosEquipe.cep || "",
-                    endereco: dadosEquipe.endereco || "",
-                    numero: dadosEquipe.numero || "",
-                    bairro: dadosEquipe.bairro || "",
+                    cpfCnpj: documentoValido, 
+                    cep: dadosEquipe.endereco_cep || dadosEquipe.cep || "",
+                    endereco: dadosEquipe.endereco_rua || dadosEquipe.endereco || "",
+                    numero: dadosEquipe.endereco_num || dadosEquipe.numero || "",
+                    bairro: dadosEquipe.endereco_bairro || dadosEquipe.bairro || "",
                     cupom: codigoCupomParaEnviar
                 });
 
@@ -500,12 +615,7 @@
                         window.location.href = resultado.data.url; 
                     }, 1000);
                 } else {
-                    // Se o Asaas reclamar que falta documento, avisamos de forma clara
-                    let erroBancario = resultado.data.error;
-                    if(erroBancario && (erroBancario.toLowerCase().includes('cpf') || erroBancario.toLowerCase().includes('cnpj'))) {
-                        erroBancario = "CPF/CNPJ ausente ou inválido. Preencha em 'Configurar Equipe' no Dashboard antes de assinar.";
-                    }
-                    showToast("Aviso: " + (erroBancario || "Erro na geração"), "error");
+                    showToast("Aviso: " + (resultado.data.error || "Erro na geração"), "error");
                     btn.innerHTML = originalTxt;
                     btn.disabled = false;
                 }

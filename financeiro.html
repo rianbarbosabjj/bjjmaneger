@@ -1894,6 +1894,169 @@
         window.onload = () => {
             mudarAba('tab-mensalidades');
         };
+        window.gerarPDFRelatorio = async function() {
+            const mesIni = document.getElementById('rel-mes-ini').value;
+            const anoIni = document.getElementById('rel-ano-ini').value;
+            const mesFim = document.getElementById('rel-mes-fim').value;
+            const anoFim = document.getElementById('rel-ano-fim').value;
+            
+            const btn = document.getElementById('btn-gerar-relatorio');
+            const origTxt = btn.innerHTML;
+            btn.innerHTML = "⏳ Gerando..."; btn.disabled = true;
+
+            try {
+                // Filtra os dados no Firebase baseados no período
+                const q = query(collection(db, "financeiro"), where("equipe_id", "==", uid));
+                const snap = await getDocs(q);
+                
+                let relatorioDados = [];
+                let totalEntradas = 0;
+                let totalSaidas = 0;
+
+                const inicioStr = `${anoIni}-${mesIni}`;
+                const fimStr = `${anoFim}-${mesFim}`;
+
+                snap.forEach(doc => {
+                    const f = doc.data();
+                    if (!f.mes_ano) return;
+                    
+                    // Verifica se está dentro do período
+                    if (f.mes_ano >= inicioStr && f.mes_ano <= fimStr) {
+                        if (f.tipo === 'MENSALIDADE' && f.status === 'PAGO') {
+                            relatorioDados.push(f);
+                            totalEntradas += f.valor;
+                        } else if (f.tipo === 'RECEITA') {
+                            relatorioDados.push(f);
+                            totalEntradas += f.valor;
+                        } else if (f.tipo === 'DESPESA') {
+                            relatorioDados.push(f);
+                            totalSaidas += f.valor;
+                        }
+                    }
+                });
+
+                // Ordena por data (mais recentes primeiro)
+                relatorioDados.sort((a, b) => {
+                    const dataA = a.data_pagamento || a.data || a.data_criacao || "";
+                    const dataB = b.data_pagamento || b.data || b.data_criacao || "";
+                    return new Date(dataB) - new Date(dataA);
+                });
+
+                const saldoPeriodo = totalEntradas - totalSaidas;
+
+                // Monta o visual do PDF
+                let logoHtml = "";
+                if (equipeLogoGlobal) {
+                    logoHtml = `<img src="${equipeLogoGlobal}" style="max-height: 80px; max-width: 200px; object-fit: contain;">`;
+                } else {
+                    logoHtml = `<h2 style="font-size: 24px; font-weight: 900; color: #1E293B; margin: 0;">${equipeNomeGlobal}</h2>`;
+                }
+
+                let tabelaHtml = `
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 12px; font-family: Arial, sans-serif;">
+                        <thead>
+                            <tr style="background-color: #0F172A; color: white;">
+                                <th style="padding: 10px; text-align: left; border: 1px solid #334155;">Data</th>
+                                <th style="padding: 10px; text-align: left; border: 1px solid #334155;">Descrição</th>
+                                <th style="padding: 10px; text-align: center; border: 1px solid #334155;">Tipo</th>
+                                <th style="padding: 10px; text-align: right; border: 1px solid #334155;">Valor (R$)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                if (relatorioDados.length === 0) {
+                    tabelaHtml += `<tr><td colspan="4" style="padding: 15px; text-align: center; color: #64748B;">Nenhum registro encontrado neste período.</td></tr>`;
+                } else {
+                    relatorioDados.forEach(item => {
+                        const isEntrada = item.tipo === 'RECEITA' || item.tipo === 'MENSALIDADE';
+                        const dataTxt = item.data_pagamento || item.data || item.mes_ano || '--';
+                        let descTxt = item.descricao || 'Registro sem descrição';
+                        if (item.tipo === 'MENSALIDADE') {
+                            const alunoObj = alunosCache.find(a => a.id === item.aluno_id);
+                            if (alunoObj) descTxt = `Mensalidade - ${alunoObj.nome}`;
+                        }
+
+                        tabelaHtml += `
+                            <tr>
+                                <td style="padding: 8px 10px; border: 1px solid #E2E8F0; color: #475569;">${new Date(dataTxt).toLocaleDateString('pt-BR')}</td>
+                                <td style="padding: 8px 10px; border: 1px solid #E2E8F0; color: #1E293B; font-weight: bold;">${descTxt}</td>
+                                <td style="padding: 8px 10px; border: 1px solid #E2E8F0; text-align: center; color: #64748B; font-size: 10px;">${item.tipo}</td>
+                                <td style="padding: 8px 10px; border: 1px solid #E2E8F0; text-align: right; color: ${isEntrada ? '#10B981' : '#F43F5E'}; font-weight: bold;">
+                                    ${isEntrada ? '+' : '-'} ${item.valor.toFixed(2).replace('.', ',')}
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+
+                tabelaHtml += `</tbody></table>`;
+
+                const corSaldo = saldoPeriodo >= 0 ? '#10B981' : '#F43F5E';
+
+                const htmlFinal = `
+                    <div style="font-family: Arial, sans-serif; padding: 30px; color: #1E293B; width: 100%; box-sizing: border-box; background: white;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #0F172A; padding-bottom: 20px;">
+                            <div>
+                                ${logoHtml}
+                                <p style="margin: 5px 0 0 0; font-size: 12px; color: #64748B; text-transform: uppercase;">Relatório Financeiro Analítico</p>
+                            </div>
+                            <div style="text-align: right;">
+                                <h1 style="margin: 0; font-size: 24px; font-weight: 900; color: #0F172A; text-transform: uppercase;">BALANÇO</h1>
+                                <p style="margin: 5px 0 0 0; font-size: 12px; font-weight: bold; color: #64748B;">Período: ${mesIni}/${anoIni} a ${mesFim}/${anoFim}</p>
+                                <p style="margin: 2px 0 0 0; font-size: 10px; color: #94A3B8;">Gerado em: ${new Date().toLocaleString('pt-BR')}</p>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; margin-top: 20px; gap: 15px;">
+                            <div style="flex: 1; background: #F8FAFC; padding: 15px; border-radius: 8px; border-left: 4px solid #10B981;">
+                                <p style="margin: 0; font-size: 10px; text-transform: uppercase; color: #64748B; font-weight: bold;">Total Receitas</p>
+                                <h3 style="margin: 5px 0 0 0; font-size: 20px; color: #10B981;">R$ ${totalEntradas.toFixed(2).replace('.', ',')}</h3>
+                            </div>
+                            <div style="flex: 1; background: #F8FAFC; padding: 15px; border-radius: 8px; border-left: 4px solid #F43F5E;">
+                                <p style="margin: 0; font-size: 10px; text-transform: uppercase; color: #64748B; font-weight: bold;">Total Despesas</p>
+                                <h3 style="margin: 5px 0 0 0; font-size: 20px; color: #F43F5E;">R$ ${totalSaidas.toFixed(2).replace('.', ',')}</h3>
+                            </div>
+                            <div style="flex: 1; background: #0F172A; padding: 15px; border-radius: 8px;">
+                                <p style="margin: 0; font-size: 10px; text-transform: uppercase; color: #94A3B8; font-weight: bold;">Saldo do Período</p>
+                                <h3 style="margin: 5px 0 0 0; font-size: 20px; color: ${corSaldo};">R$ ${saldoPeriodo.toFixed(2).replace('.', ',')}</h3>
+                            </div>
+                        </div>
+
+                        ${tabelaHtml}
+                        
+                        <div style="margin-top: 40px; text-align: center; font-size: 10px; color: #94A3B8; border-top: 1px solid #E2E8F0; padding-top: 10px;">
+                            Documento gerado automaticamente pelo sistema BJJ Manager.<br>
+                            Este relatório é para controle interno e não possui valor fiscal.
+                        </div>
+                    </div>
+                `;
+
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = htmlFinal;
+
+                const opt = {
+                    margin: 10,
+                    filename: `Relatorio_Financeiro_${equipeNomeGlobal.replace(/\s+/g, '_')}_${anoIni}${mesIni}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true, logging: false },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+
+                html2pdf().set(opt).from(tempDiv).save().then(() => {
+                    fecharModalRelatorio();
+                    showToast("Relatório gerado com sucesso!", "success");
+                    registrarLogAuditoria("GEROU_RELATORIO", `Gerou relatório financeiro em PDF (${mesIni}/${anoIni} a ${mesFim}/${anoFim})`);
+                });
+
+            } catch (error) {
+                console.error(error);
+                showToast("Erro ao gerar o relatório.", "error");
+            } finally {
+                btn.innerHTML = origTxt; 
+                btn.disabled = false;
+            }
+        };
 
     </script>
 </body>

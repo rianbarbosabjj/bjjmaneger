@@ -901,7 +901,11 @@
                         const docMestre = await getDoc(doc(db, "equipes", uid));
                         if (!docMestre.exists()) {
                             const colabSnap = await getDoc(doc(db, "colaboradores", uid));
-                            if(colabSnap.exists()) uid = colabSnap.data().equipe_id; 
+                            if(colabSnap.exists()) {
+                                uid = colabSnap.data().equipe_id; 
+                                const lblCargo = document.getElementById('lbl-cargo');
+                                if(lblCargo) lblCargo.innerText = "Co-Administrador";
+                            }
                         }
                     }
                     
@@ -977,6 +981,7 @@
                     document.getElementById('asaas-repassar-taxa').checked = equipeDados.asaas_repassar_taxa === true;
                     document.getElementById('asaas-valor-taxa').value = equipeDados.asaas_valor_taxa ? floatToStr(equipeDados.asaas_valor_taxa) : "1,99";
                     window.toggleTaxaInput();
+                    preencherFormularioAutomacao(equipeDados.automacao_cobranca || {});
 
                     if(equipeDados.status_asaas === 'ATIVO') {
                         document.getElementById('asaas-ativo-panel').classList.remove('hidden');
@@ -1011,7 +1016,10 @@
                 await updateDoc(doc(db, "equipes", uid), { valor_prazo: p, valor_atraso: a, chave_pix: pix });
                 equipeBaseConfig.prazo = p; equipeBaseConfig.atraso = a; equipeBaseConfig.chave_pix = pix;
                 showToast("Configuração salva com sucesso!", "success");
+                
+                // 🕵️‍♂️ LOG DE AUDITORIA
                 registrarLogAuditoria("CONFIG_PRECOS", `Alterou as mensalidades base: Prazo (R$ ${p}), Atraso (R$ ${a}). Chave PIX: ${pix}`);
+
                 renderizarTabelas(); 
             } catch (e) { showToast("Erro ao salvar config.", "error"); } 
             finally { btn.innerHTML = origHTML; btn.disabled = false; }
@@ -1022,10 +1030,22 @@
             const valorTaxa = strToFloat(document.getElementById('asaas-valor-taxa').value);
             
             try {
-                await updateDoc(doc(db, "equipes", uid), { asaas_repassar_taxa: repassarTaxa, asaas_valor_taxa: valorTaxa });
-                if (equipeDados) { equipeDados.asaas_repassar_taxa = repassarTaxa; equipeDados.asaas_valor_taxa = valorTaxa; }
+                await updateDoc(doc(db, "equipes", uid), {
+                    asaas_repassar_taxa: repassarTaxa,
+                    asaas_valor_taxa: valorTaxa
+                });
+                
+                if (equipeDados) {
+                    equipeDados.asaas_repassar_taxa = repassarTaxa;
+                    equipeDados.asaas_valor_taxa = valorTaxa;
+                }
+
+                // 🕵️‍♂️ LOG DE AUDITORIA
                 registrarLogAuditoria("CONFIG_TAXAS_ASAAS", `Repasse de Taxas: ${repassarTaxa ? 'Ativado' : 'Desativado'} - Valor (R$ ${valorTaxa})`);
-            } catch(e) { console.error("Erro ao salvar regras de repasse de taxas.", e); }
+
+            } catch(e) {
+                console.error("Erro ao salvar regras de repasse de taxas.", e);
+            }
         }
 
         window.salvarConfigPagamento = async function() {
@@ -1037,11 +1057,23 @@
             btn.innerHTML = "⏳ Salvando..."; btn.disabled = true;
 
             try {
-                await updateDoc(doc(db, "equipes", uid), { asaas_aceita_boleto: aceitaBoleto, asaas_aceita_cartao: aceitaCartao });
-                equipeDados.asaas_aceita_boleto = aceitaBoleto; equipeDados.asaas_aceita_cartao = aceitaCartao;
+                await updateDoc(doc(db, "equipes", uid), {
+                    asaas_aceita_boleto: aceitaBoleto,
+                    asaas_aceita_cartao: aceitaCartao
+                });
+                
+                equipeDados.asaas_aceita_boleto = aceitaBoleto;
+                equipeDados.asaas_aceita_cartao = aceitaCartao;
+                
+                // 🕵️‍♂️ LOG DE AUDITORIA
                 registrarLogAuditoria("CONFIG_PAGAMENTO_ASAAS", `Boleto: ${aceitaBoleto ? 'Sim':'Não'} | Cartão: ${aceitaCartao ? 'Sim':'Não'}`);
+
                 showToast("Preferências de pagamento atualizadas com sucesso!", "success");
-            } catch(e) { showToast("Erro ao salvar preferências.", "error"); } finally { btn.innerHTML = origTxt; btn.disabled = false; }
+            } catch(e) {
+                showToast("Erro ao salvar preferências.", "error");
+            } finally {
+                btn.innerHTML = origTxt; btn.disabled = false;
+            }
         }
 
         window.carregarSaldoAsaas = async function() {
@@ -1057,19 +1089,30 @@
                 
                 if(res.data.success) {
                     document.getElementById('asaas-saldo-display').innerText = `R$ ${floatToStr(res.data.balance)}`;
+                    
                     const previsto = document.getElementById('asaas-saldo-previsto');
                     if(previsto) {
                         const aCompensar = res.data.estimatedBalance - res.data.balance;
-                        previsto.innerText = `R$ ${floatToStr(aCompensar > 0 ? aCompensar : 0)}`;
+                        previsto.innerText = `A compensar: R$ ${floatToStr(aCompensar > 0 ? aCompensar : 0)}`;
                     }
-                } else { showToast("Erro ao buscar saldo no banco.", "error"); }
-            } catch(e) { showToast("Erro de conexão com o banco.", "error"); } finally { btn.innerHTML = origTxt; btn.disabled = false; }
+                } else {
+                    showToast("Erro ao buscar saldo no banco.", "error");
+                }
+            } catch(e) {
+                showToast("Erro de conexão com o banco.", "error");
+            } finally {
+                btn.innerHTML = origTxt; btn.disabled = false;
+            }
         }
 
         window.preencherSaldoTotal = function() {
             const textoSaldo = document.getElementById('asaas-saldo-display').innerText;
-            if (textoSaldo === "---" || textoSaldo === "R$ 0,00") return showToast("Sem saldo disponível para saque.", "info");
-            document.getElementById('saque-valor').value = textoSaldo.replace('R$', '').trim();
+            if (textoSaldo === "---" || textoSaldo === "R$ 0,00") {
+                showToast("Sem saldo disponível para saque.", "info");
+                return;
+            }
+            const valorLimpo = textoSaldo.replace('R$', '').trim();
+            document.getElementById('saque-valor').value = valorLimpo;
         }
 
         window.solicitarSaque = async function() {
@@ -1079,6 +1122,7 @@
             
             if(valorNum <= 0) return showToast("Digite um valor válido para saque.", "error");
             if(!chave) return showToast("Digite sua chave PIX de destino.", "error");
+            
             if(!confirm(`Confirma a transferência PIX de R$ ${floatToStr(valorNum)} para a chave: ${chave}?`)) return;
 
             const btn = document.getElementById('btn-sacar-asaas');
@@ -1087,60 +1131,123 @@
 
             try {
                 const fazerSaque = httpsCallable(functions, 'solicitarSaqueAsaas');
-                const res = await fazerSaque({ apiKey: equipeDados.asaas_api_key, valor: valorNum, chavePix: chave, tipoChave: tipo });
+                const res = await fazerSaque({
+                    apiKey: equipeDados.asaas_api_key,
+                    valor: valorNum,
+                    chavePix: chave,
+                    tipoChave: tipo
+                });
 
                 if(res.data.success) {
                     showToast("Saque solicitado com sucesso! Em breve estará na sua conta.", "success");
                     document.getElementById('saque-valor').value = "";
-                    await updateDoc(doc(db, "equipes", uid), { pix_saque_chave: chave, pix_saque_tipo: tipo });
-                    await addDoc(collection(db, "saques"), { equipe_id: uid, valor: valorNum, chave_pix: chave, tipo_chave: tipo, data: new Date().toISOString(), status: 'SOLICITADO' });
-                    carregarHistoricoSaques();
+                    
+                    await updateDoc(doc(db, "equipes", uid), {
+                        pix_saque_chave: chave,
+                        pix_saque_tipo: tipo
+                    });
+
+                    // 🕵️‍♂️ LOG DE AUDITORIA
                     registrarLogAuditoria("SAQUE_ASAAS", `Saque Asaas de R$ ${valorNum} solicitado via PIX: ${chave}`);
+
                     carregarSaldoAsaas(); 
-                } else { showToast("Erro do Banco: " + res.data.error, "error"); }
-            } catch(e) { showToast("Falha na comunicação com o banco.", "error"); } finally { btn.innerHTML = origTxt; btn.disabled = false; }
+                } else {
+                    showToast("Erro do Banco: " + res.data.error, "error");
+                }
+            } catch(e) {
+                showToast("Falha na comunicação com o banco.", "error");
+            } finally {
+                btn.innerHTML = origTxt; btn.disabled = false;
+            }
         }
 
         window.buscarCEPAsaas = async (cep) => {
             const cleanCep = cep.replace(/\D/g, "");
             if (cleanCep.length !== 8) return;
-            document.getElementById('asaas-end').value = "Buscando..."; document.getElementById('asaas-bairro').value = "Buscando...";
+            
+            document.getElementById('asaas-end').value = "Buscando...";
+            document.getElementById('asaas-bairro').value = "Buscando...";
+
             try {
                 const r = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`).then(res => res.json());
-                if (!r.erro) { document.getElementById('asaas-end').value = r.logradouro || ""; document.getElementById('asaas-bairro').value = r.bairro || ""; document.getElementById('asaas-num').focus(); } 
-                else { document.getElementById('asaas-end').value = ""; document.getElementById('asaas-bairro').value = ""; showToast("CEP não encontrado.", "error"); }
-            } catch(e) { document.getElementById('asaas-end').value = ""; document.getElementById('asaas-bairro').value = ""; showToast("Erro ao buscar CEP.", "error"); }
+                if (!r.erro) {
+                    document.getElementById('asaas-end').value = r.logradouro || "";
+                    document.getElementById('asaas-bairro').value = r.bairro || "";
+                    document.getElementById('asaas-num').focus();
+                } else {
+                    document.getElementById('asaas-end').value = "";
+                    document.getElementById('asaas-bairro').value = "";
+                    showToast("CEP não encontrado.", "error");
+                }
+            } catch(e) {
+                document.getElementById('asaas-end').value = "";
+                document.getElementById('asaas-bairro').value = "";
+                showToast("Erro ao buscar CEP.", "error");
+            }
         };
 
         window.criarSubcontaAsaas = async function() {
-            const nome = document.getElementById('asaas-nome').value.trim(); const cpfCnpj = document.getElementById('asaas-cpf').value.trim(); const dataNascimento = document.getElementById('asaas-nascimento').value;
-            const email = document.getElementById('asaas-email').value.trim(); const celular = document.getElementById('asaas-celular').value.trim(); const cep = document.getElementById('asaas-cep').value.trim();
-            const endereco = document.getElementById('asaas-end').value.trim(); const numero = document.getElementById('asaas-num').value.trim(); const bairro = document.getElementById('asaas-bairro').value.trim(); const renda = document.getElementById('asaas-renda').value.trim();
+            const nome = document.getElementById('asaas-nome').value.trim();
+            const cpfCnpj = document.getElementById('asaas-cpf').value.trim();
+            const dataNascimento = document.getElementById('asaas-nascimento').value;
+            const email = document.getElementById('asaas-email').value.trim();
+            const celular = document.getElementById('asaas-celular').value.trim();
+            const cep = document.getElementById('asaas-cep').value.trim();
+            const endereco = document.getElementById('asaas-end').value.trim();
+            const numero = document.getElementById('asaas-num').value.trim();
+            const bairro = document.getElementById('asaas-bairro').value.trim();
+            const renda = document.getElementById('asaas-renda').value.trim();
 
-            if(!nome || !cpfCnpj || !email || !celular || !cep || !endereco || !numero || !bairro || !renda) return showToast("Preencha todos os campos obrigatórios!", "error");
-            if (cpfCnpj.length === 11 && !dataNascimento) return showToast("A Data de Nascimento é obrigatória para CPF.", "error");
+            if(!nome || !cpfCnpj || !email || !celular || !cep || !endereco || !numero || !bairro || !renda) {
+                return showToast("Preencha todos os campos obrigatórios!", "error");
+            }
+            
+            if (cpfCnpj.length === 11 && !dataNascimento) {
+                return showToast("A Data de Nascimento é obrigatória para CPF.", "error");
+            }
 
-            const btn = document.getElementById('btn-ativar-asaas-form'); const origTxt = btn.innerHTML;
+            const btn = document.getElementById('btn-ativar-asaas-form');
+            const origTxt = btn.innerHTML;
             btn.innerHTML = "⏳ Criando sua conta no banco..."; btn.disabled = true;
 
             try {
                 const criarSubconta = httpsCallable(functions, 'criarSubcontaAsaas');
-                const res = await criarSubconta({ equipeId: uid, nome, cpfCnpj, dataNascimento, email, celular, cep, endereco, numero, bairro, renda });
+                const res = await criarSubconta({
+                    equipeId: uid, nome, cpfCnpj, dataNascimento, email, celular, cep, endereco, numero, bairro, renda
+                });
+
                 if(res.data.success) {
                     showToast("Conta Asaas ativada com sucesso!", "success");
                     equipeDados.status_asaas = "ATIVO";
+                    
+                    // 🕵️‍♂️ LOG DE AUDITORIA
                     registrarLogAuditoria("CONTA_ASAAS_CRIADA", `Cadastro Asaas criado para ${nome} (${cpfCnpj})`);
+
                     carregarInfoEquipe({email: document.getElementById('email-logado') ? document.getElementById('email-logado').innerText : ''});
-                } else { showToast("Erro Asaas: " + res.data.error, "error"); }
-            } catch(e) { showToast("Falha de connection ao criar conta.", "error"); } finally { btn.innerHTML = origTxt; btn.disabled = false; }
+                } else {
+                    showToast("Erro Asaas: " + res.data.error, "error");
+                }
+            } catch(e) {
+                showToast("Falha de connection ao criar conta.", "error");
+            } finally {
+                btn.innerHTML = origTxt; btn.disabled = false;
+            }
         }
 
         window.gerarFaturas = async function() {
-            const btn = document.getElementById('btn-gerar-faturas'); if(!btn) return;
-            const originalTxt = btn.innerHTML; btn.innerHTML = "<span class='mr-2 text-base'>⏳</span> Gerando..."; btn.disabled = true;
+            const btn = document.getElementById('btn-gerar-faturas');
+            if(!btn) return;
+            const originalTxt = btn.innerHTML;
+            btn.innerHTML = "<span class='mr-2 text-base'>⏳</span> Gerando...";
+            btn.disabled = true;
 
-            const mes = document.getElementById('filtro-mes').value; const ano = document.getElementById('filtro-ano').value; const mesAnoFiltro = `${ano}-${mes}`;
-            let geradas = 0; const filaAsaas = []; const chavePixAtual = document.getElementById('config-pix').value.trim();
+            const mes = document.getElementById('filtro-mes').value;
+            const ano = document.getElementById('filtro-ano').value;
+            const mesAnoFiltro = `${ano}-${mes}`;
+            let geradas = 0;
+            const filaAsaas = []; 
+            
+            const chavePixAtual = document.getElementById('config-pix').value.trim();
 
             try {
                 for (const aluno of alunosCache) {
@@ -1151,46 +1258,80 @@
                         const valor = equipeBaseConfig.prazo * (1 - bolsa/100);
 
                         const faturaData = { 
-                            equipe_id: uid, aluno_id: aluno.id, tipo: 'MENSALIDADE', status: status, valor: valor, mes_ano: mesAnoFiltro, 
-                            descricao: `Mensalidade - ${aluno.nome}`, data_criacao: new Date().toISOString() 
+                            equipe_id: uid, 
+                            aluno_id: aluno.id, 
+                            tipo: 'MENSALIDADE', 
+                            status: status, 
+                            valor: valor, 
+                            mes_ano: mesAnoFiltro, 
+                            descricao: `Mensalidade - ${aluno.nome}`, 
+                            data_criacao: new Date().toISOString() 
                         };
 
                         const temAsaas = equipeDados && equipeDados.status_asaas === 'ATIVO' && verificarAcesso('asaas', true);
-                        if (!temAsaas && status !== 'ISENTO') faturaData.chave_pix_manual = chavePixAtual;
+
+                        if (!temAsaas && status !== 'ISENTO') {
+                            faturaData.chave_pix_manual = chavePixAtual;
+                        }
 
                         await addDoc(collection(db, "financeiro"), faturaData);
                         geradas++;
 
                         if (temAsaas && status !== 'ISENTO') {
+                            
                             let valorCobrarAsaas = valor;
-                            if (equipeDados.asaas_repassar_taxa && equipeDados.asaas_valor_taxa > 0) valorCobrarAsaas += parseFloat(equipeDados.asaas_valor_taxa);
+                            if (equipeDados.asaas_repassar_taxa && equipeDados.asaas_valor_taxa > 0) {
+                                valorCobrarAsaas += parseFloat(equipeDados.asaas_valor_taxa);
+                            }
+
                             filaAsaas.push({
-                                alunoId: aluno.id, valor: valorCobrarAsaas, mesAno: mesAnoFiltro, descricao: `Mensalidade Jiu-Jitsu - Ref: ${mesAnoFiltro}`,
-                                aceitaBoleto: equipeDados.asaas_aceita_boleto === true, aceitaCartao: equipeDados.asaas_aceita_cartao === true
+                                alunoId: aluno.id,
+                                valor: valorCobrarAsaas,
+                                mesAno: mesAnoFiltro,
+                                descricao: `Mensalidade Jiu-Jitsu - Ref: ${mesAnoFiltro}`,
+                                aceitaBoleto: equipeDados.asaas_aceita_boleto === true,
+                                aceitaCartao: equipeDados.asaas_aceita_cartao === true
                             });
                         }
                     }
                 }
                 
                 if (geradas > 0) {
+                    // 🕵️‍♂️ LOG DE AUDITORIA
                     registrarLogAuditoria("GEROU_FATURAS", `Gerou ${geradas} faturas para o mês ${mesAnoFiltro}`);
+
                     if (filaAsaas.length > 0) {
                         showToast(`Gerando ${filaAsaas.length} links de cobrança. Por favor, aguarde...`, "info");
                         const gerarCobranca = httpsCallable(functions, 'gerarCobrancaAsaas');
                         let count = 0;
                         for (const cob of filaAsaas) {
-                            try { count++; btn.innerHTML = `<span class='mr-2 text-base'>⏳</span> Gerando Links (${count}/${filaAsaas.length})...`; await gerarCobranca(cob); } catch (err) {}
+                            try {
+                                count++;
+                                btn.innerHTML = `<span class='mr-2 text-base'>⏳</span> Gerando Links (${count}/${filaAsaas.length})...`;
+                                await gerarCobranca(cob);
+                            } catch (err) { 
+                                console.error(`Erro ao gerar link Asaas para ${cob.alunoId}`, err); 
+                            }
                         }
                     }
+
                     showToast(`Faturas geradas com sucesso para ${mes}/${ano}!`, "success");
                     await carregarDados(); 
-                } else { showToast("Todas as faturas dos alunos ativos neste mês já estavam geradas.", "info"); }
-            } catch (e) { showToast("Erro ao gerar faturas.", "error"); console.error(e); } 
-            finally { btn.innerHTML = originalTxt; btn.disabled = false; }
+                } else {
+                    showToast("Todas as faturas dos alunos ativos neste mês já estavam geradas.", "info");
+                }
+            } catch (e) { 
+                showToast("Erro ao gerar faturas.", "error"); console.error(e); 
+            } 
+            finally { 
+                btn.innerHTML = originalTxt; btn.disabled = false; 
+            }
         }
 
         window.carregarDados = async function() {
-            const mes = document.getElementById('filtro-mes').value; const ano = document.getElementById('filtro-ano').value; const mesAnoFiltro = `${ano}-${mes}`; 
+            const mes = document.getElementById('filtro-mes').value;
+            const ano = document.getElementById('filtro-ano').value;
+            const mesAnoFiltro = `${ano}-${mes}`; 
 
             const qAlunos = query(collection(db, "alunos"), where("equipe_id", "==", uid), where("status", "==", "ATIVO"));
             const snapAlunos = await getDocs(qAlunos);
@@ -1204,26 +1345,44 @@
             const snapFinAno = await getDocs(qFinAno);
             financeiroAnoCache = snapFinAno.docs.map(d => ({ id: d.id, ...d.data() })).filter(f => f.mes_ano && f.mes_ano.startsWith(ano));
 
-            renderizarTabelas(); atualizarDashboardMes(); atualizarAnaliseAnual(); fecharModalAcoes();
+            renderizarTabelas();
+            atualizarDashboardMes();
+            atualizarAnaliseAnual();
+            fecharModalAcoes();
         }
 
         window.filtrarMensalidades = function() { renderizarTabelas(); }
 
         function renderizarTabelas() {
-            const mes = document.getElementById('filtro-mes').value; const ano = document.getElementById('filtro-ano').value;
+            const mes = document.getElementById('filtro-mes').value;
+            const ano = document.getElementById('filtro-ano').value;
             const termo = document.getElementById('input-busca-mens') ? document.getElementById('input-busca-mens').value.toLowerCase() : "";
             
-            const contMens = document.getElementById('tabela-mensalidades'); const contFluxo = document.getElementById('tabela-fluxo');
-            if(contMens) contMens.innerHTML = ''; if(contFluxo) contFluxo.innerHTML = '';
+            const contMens = document.getElementById('tabela-mensalidades');
+            const contFluxo = document.getElementById('tabela-fluxo');
+            if(contMens) contMens.innerHTML = ''; 
+            if(contFluxo) contFluxo.innerHTML = '';
 
             let rPagos = 0; let rPendentes = 0;
+
             const faturasMes = financeiroMesCache.filter(f => f.tipo === 'MENSALIDADE');
 
             if (faturasMes.length === 0) {
-                if(contMens) contMens.innerHTML = `<tr><td colspan="6" class="p-0"><div class="flex flex-col items-center justify-center py-16 text-center w-full"><span class="text-5xl mb-4 opacity-50">📋</span><h3 class="text-lg font-black text-slate-700 dark:text-slate-300 mb-2">Nenhuma fatura gerada para este mês</h3><p class="text-xs text-slate-500 max-w-md">O sistema ainda não criou as cobranças de ${mes}/${ano}. Clique no botão <b class="text-indigo-500">"⚡ Gerar Faturas"</b> lá em cima para listar todos os seus alunos ativos automaticamente.</p></div></td></tr>`;
+                if(contMens) contMens.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="p-0">
+                            <div class="flex flex-col items-center justify-center py-16 text-center w-full">
+                                <span class="text-5xl mb-4 opacity-50">📋</span>
+                                <h3 class="text-lg font-black text-slate-700 mb-2">Nenhuma fatura gerada para este mês</h3>
+                                <p class="text-xs text-slate-500 max-w-md">O sistema ainda não criou as cobranças de ${mes}/${ano}. Clique no botão <b class="text-indigo-500">"⚡ Gerar Faturas"</b> lá em cima para listar todos os seus alunos ativos automaticamente.</p>
+                            </div>
+                        </td>
+                    </tr>`;
             } else {
                 faturasMes.sort((a,b) => {
-                    const alA = alunosCache.find(x => x.id === a.aluno_id)?.nome || ""; const alB = alunosCache.find(x => x.id === b.aluno_id)?.nome || ""; return alA.localeCompare(alB);
+                    const alA = alunosCache.find(x => x.id === a.aluno_id)?.nome || "";
+                    const alB = alunosCache.find(x => x.id === b.aluno_id)?.nome || "";
+                    return alA.localeCompare(alB);
                 }).forEach(f => {
                     let status = f.status || 'PAGO'; 
                     const aluno = alunosCache.find(a => a.id === f.aluno_id);
@@ -1478,434 +1637,154 @@
             window.open(`https://api.whatsapp.com/send?phone=55${numero}&text=${encodeURIComponent(msg)}`, '_blank');
         }
 
-        window.gerarReciboPDF = async function() {
-            if(!alunoSelecionadoMens || alunoSelecionadoMens._calc.status !== 'PAGO') return showToast("Registre o pagamento primeiro para gerar o recibo.", "error");
-            
-            const pagData = alunoSelecionadoMens._calc.reg; const alunoData = alunoSelecionadoMens; const valorExtenso = numeroParaExtenso(pagData.valor);
-            const dataPagto = pagData.data_pagamento ? new Date(pagData.data_pagamento + 'T12:00:00').toLocaleDateString('pt-BR') : '--/--/----';
-            const pMesAno = pagData.mes_ano.split('-'); const mesRef = `${pMesAno[1]}/${pMesAno[0]}`;
+        function parseDiasAutomacao(valor) {
+            return String(valor || '')
+                .split(',')
+                .map(v => parseInt(v.trim(), 10))
+                .filter(v => !isNaN(v) && v >= 0);
+        }
 
-            const btnPainel = document.getElementById('btn-recibo-lateral'); let btnOriginalTxt = "📄 Baixar PDF";
-            if (btnPainel) { btnOriginalTxt = btnPainel.innerHTML; btnPainel.innerHTML = "<span class='mr-1'>⏳</span> Processando..."; btnPainel.disabled = true; }
-
-            const getBase64Image = (url) => {
-                return new Promise((resolve) => {
-                    const img = new Image(); img.crossOrigin = "Anonymous"; const cacheBuster = url.includes('?') ? '&' : '?'; img.src = url + cacheBuster + new Date().getTime();
-                    img.onload = () => { try { const canvas = document.createElement('canvas'); canvas.width = img.width; canvas.height = img.height; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0); resolve(canvas.toDataURL('image/png')); } catch (err) { resolve(null); } };
-                    img.onerror = () => { resolve(null); };
-                });
+        function obterConfigAutomacaoFormulario() {
+            return {
+                enabled: document.getElementById('auto-enabled')?.checked === true,
+                reminderDaysBefore: parseDiasAutomacao(document.getElementById('auto-before')?.value || '2'),
+                overdueReminderDays: parseDiasAutomacao(document.getElementById('auto-after')?.value || '1,3,7'),
+                autoResendDays: parseDiasAutomacao(document.getElementById('auto-resend')?.value || '3'),
+                blockAfterOverdueDays: parseInt(document.getElementById('auto-block-days')?.value || '0', 10) || 0,
+                channels: {
+                    whatsapp: document.getElementById('auto-channel-whatsapp')?.checked === true,
+                    email: document.getElementById('auto-channel-email')?.checked === true,
+                    inApp: document.getElementById('auto-channel-app')?.checked === true
+                },
+                templates: {
+                    beforeDue: document.getElementById('auto-template-before')?.value?.trim() || 'Oss, {nome}! Sua mensalidade de {mesRef} vence em {dias} dia(s). Valor: R$ {valor}. {pagamento}'
+                }
             };
-
-            let logoFinal = ""; if (equipeLogoGlobal) logoFinal = await getBase64Image(equipeLogoGlobal);
-            let logoHtml = "";
-            if (logoFinal) logoHtml = `<img src="${logoFinal}" style="height: 70px; max-width: 250px; object-fit: contain; margin: 0 auto 10px auto; display: block;">`;
-            else logoHtml = `<div style="height: 70px; width: 70px; background-color: #0F172A; color: #FFFFFF; border-radius: 50%; text-align: center; line-height: 70px; font-size: 32px; font-weight: bold; margin: 0 auto 10px auto; font-family: Arial, sans-serif;">${equipeNomeGlobal.charAt(0).toUpperCase()}</div>`;
-
-            let formaPrint = pagData.forma_pagamento || 'Dinheiro';
-            if(formaPrint === 'CREDIT_CARD') formaPrint = 'Cartão de Crédito'; if(formaPrint === 'PIX_ASAAS') formaPrint = 'PIX (Sistema)';
-
-            const htmlFinal = `
-                <div style="font-family: Arial, sans-serif; padding: 25px; color: #1E293B; width: 100%; box-sizing: border-box;">
-                    <div style="text-align: center; border-bottom: 2px solid #1E293B; padding-bottom: 15px; margin-bottom: 20px;">
-                        ${logoHtml}
-                        <h1 style="margin: 0; font-size: 22px; font-weight: 900; color: #1E293B;">RECIBO DE PAGAMENTO</h1>
-                        <p style="margin: 5px 0 0 0; font-size: 12px; font-weight: bold; color: #64748B; letter-spacing: 2px;">${equipeNomeGlobal.toUpperCase()}</p>
-                    </div>
-                    <div style="font-size: 15px; line-height: 1.8; color: #334155; text-align: justify;">
-                        Recebi de <b>${alunoData.nome.toUpperCase()}</b> a importância de <b>R$ ${floatToStr(pagData.valor)}</b> (<b>${valorExtenso}</b>), paga via <b>${formaPrint}</b>, referente à mensalidade das aulas de <b>Jiu-Jitsu</b>, correspondente ao mês de <b>${mesRef}</b>.<br><br>
-                        Por ser verdade, firmo o presente recibo para os devidos fins.
-                    </div>
-                    <div style="margin-top: 25px; text-align: right; font-weight: bold; color: #1E293B; font-size: 14px;">Data do Pagamento: ${dataPagto}</div>
-                    <div style="margin-top: 35px; border-top: 1px solid #1E293B; width: 250px; margin-left: auto; margin-right: auto; text-align: center;">
-                        <p style="font-size: 12px; margin-top:5px; font-weight: bold; color: #1E293B;">Assinatura do Responsável</p><p style="font-size: 10px; color: #64748B; margin: 2px 0 0 0;">${equipeNomeGlobal}</p>
-                    </div>
-                    <div style="position: absolute; bottom: 15px; right: 25px; font-size: 8px; color: #94A3B8; text-align: right;">Código: ${pagData.id.toUpperCase()}</div>
-                </div>
-            `;
-
-            const tempDiv = document.createElement('div'); tempDiv.innerHTML = htmlFinal;
-            const opt = { margin: 5, filename: `Recibo_${alunoData.nome.replace(/\s+/g, '_')}_${mesRef.replace('/','-')}.pdf`, image: { type: 'jpeg', quality: 1.0 }, html2canvas: { scale: 2, useCORS: true, logging: false }, jsPDF: { unit: 'mm', format: 'a5', orientation: 'landscape' } };
-
-            html2pdf().set(opt).from(tempDiv).save().then(() => { if (btnPainel) { btnPainel.innerHTML = btnOriginalTxt; btnPainel.disabled = false; } }).catch(err => { showToast("Erro ao gerar PDF.", "error"); if (btnPainel) { btnPainel.innerHTML = btnOriginalTxt; btnPainel.disabled = false; } });
         }
 
-        // ==========================================
-        // 📊 LÓGICA ATUALIZADA DOS GRÁFICOS (DARK MODE & GRADIENTES)
-        // ==========================================
-        window.atualizarDashboardMes = function() {
-            let tMens = 0, tExt = 0, tDesp = 0;
-            financeiroMesCache.forEach(f => {
-                if(f.tipo === 'MENSALIDADE' && (f.status === 'PAGO' || !f.status)) tMens += f.valor;
-                else if(f.tipo === 'RECEITA') tExt += f.valor;
-                else if(f.tipo === 'DESPESA') tDesp += f.valor;
-            });
-            const tEntradas = tMens + tExt;
-            const saldo = tEntradas - tDesp;
+        function preencherFormularioAutomacao(cfg = {}) {
+            if(document.getElementById('auto-enabled')) document.getElementById('auto-enabled').checked = cfg.enabled === true;
+            if(document.getElementById('auto-before')) document.getElementById('auto-before').value = (cfg.reminderDaysBefore || [2]).join(',');
+            if(document.getElementById('auto-after')) document.getElementById('auto-after').value = (cfg.overdueReminderDays || [1,3,7]).join(',');
+            if(document.getElementById('auto-resend')) document.getElementById('auto-resend').value = (cfg.autoResendDays || [3]).join(',');
+            if(document.getElementById('auto-block-days')) document.getElementById('auto-block-days').value = cfg.blockAfterOverdueDays || 0;
+            if(document.getElementById('auto-channel-whatsapp')) document.getElementById('auto-channel-whatsapp').checked = cfg.channels?.whatsapp !== false;
+            if(document.getElementById('auto-channel-email')) document.getElementById('auto-channel-email').checked = cfg.channels?.email === true;
+            if(document.getElementById('auto-channel-app')) document.getElementById('auto-channel-app').checked = cfg.channels?.inApp !== false;
+            if(document.getElementById('auto-template-before')) document.getElementById('auto-template-before').value = cfg.templates?.beforeDue || 'Oss, {nome}! Sua mensalidade de {mesRef} vence em {dias} dia(s). Valor: R$ {valor}. {pagamento}';
+        }
 
-            if(document.getElementById('dash-entradas')) document.getElementById('dash-entradas').innerText = `R$ ${floatToStr(tEntradas)}`;
-            if(document.getElementById('dash-saidas')) document.getElementById('dash-saidas').innerText = `R$ ${floatToStr(tDesp)}`;
-            if(document.getElementById('dash-saldo')) {
-                document.getElementById('dash-saldo').innerText = `R$ ${floatToStr(saldo)}`;
-                document.getElementById('dash-saldo').className = saldo >= 0 ? "text-3xl font-black text-emerald-400 mt-2" : "text-3xl font-black text-rose-400 mt-2";
-            }
-
-            // Variáveis de Tema (Dark Mode)
-            const isDark = document.documentElement.classList.contains('dark');
-            const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(203, 213, 225, 0.3)';
-            const textColor = isDark ? '#94a3b8' : '#64748b';
-            const tooltipBg = isDark ? 'rgba(15, 23, 42, 0.9)' : 'rgba(255, 255, 255, 0.9)';
-            const tooltipText = isDark ? '#f8fafc' : '#1e293b';
-            const tooltipBody = isDark ? '#cbd5e1' : '#475569';
-
-            if(chartBalancoMes) chartBalancoMes.destroy();
-            const ctxBal = document.getElementById('chartBalancoMes');
-            if (ctxBal) {
-                const ctxBalCtx = ctxBal.getContext('2d');
-                
-                let gradVerde = ctxBalCtx.createLinearGradient(0, 0, 0, 400);
-                gradVerde.addColorStop(0, 'rgba(16, 185, 129, 0.9)');
-                gradVerde.addColorStop(1, 'rgba(16, 185, 129, 0.2)');
-
-                let gradVermelho = ctxBalCtx.createLinearGradient(0, 0, 0, 400);
-                gradVermelho.addColorStop(0, 'rgba(244, 63, 94, 0.9)');
-                gradVermelho.addColorStop(1, 'rgba(244, 63, 94, 0.2)');
-
-                chartBalancoMes = new Chart(ctxBalCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Entradas', 'Saídas'],
-                        datasets: [{
-                            data: [tEntradas, tDesp],
-                            backgroundColor: [gradVerde, gradVermelho],
-                            borderColor: 'transparent',
-                            borderRadius: 12,
-                            barPercentage: 0.6,
-                            categoryPercentage: 0.8
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                backgroundColor: tooltipBg, titleColor: tooltipText, bodyColor: tooltipBody,
-                                padding: 12, cornerRadius: 8, displayColors: false,
-                                callbacks: { label: (ctx) => `R$ ${ctx.raw.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` }
-                            }
-                        },
-                        scales: {
-                            y: { beginAtZero: true, grid: { color: gridColor, drawBorder: false }, ticks: { color: textColor, font: { size: 11, weight: 'bold' } } },
-                            x: { grid: { display: false }, ticks: { color: textColor, font: { size: 12, weight: 'bold' } } }
-                        },
-                        layout: { padding: { left: 10, right: 10, top: 20, bottom: 10 } }
+        window.salvarAutomacaoCobranca = async function() {
+            const payload = obterConfigAutomacaoFormulario();
+            try {
+                let salvou = false;
+                try {
+                    const salvar = httpsCallable(functions, 'salvarConfigAutomacaoCobranca');
+                    const res = await salvar(payload);
+                    if (res.data?.ok) {
+                        equipeDados.automacao_cobranca = res.data.config;
+                        salvou = true;
                     }
-                });
-            }
-
-            if(chartOrigemMes) chartOrigemMes.destroy();
-            const ctxOri = document.getElementById('chartOrigemMes');
-            if(ctxOri) {
-                const ctxOriCtx = ctxOri.getContext('2d');
-                if(tMens === 0 && tExt === 0) {
-                    chartOrigemMes = new Chart(ctxOriCtx, { 
-                        type: 'doughnut', 
-                        data: { labels: ['Sem Dados'], datasets: [{ data: [1], backgroundColor: [isDark ? '#334155' : '#E2E8F0'], borderWidth: 0 }] }, 
-                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } 
-                    });
+                } catch (callableError) {
+                    console.warn('Fallback para Firestore direto:', callableError);
+                }
+                if (!salvou) {
+                    await updateDoc(doc(db, 'equipes', uid), { automacao_cobranca: payload });
+                    equipeDados.automacao_cobranca = payload;
+                    salvou = true;
+                }
+                if (salvou) {
+                    showToast('Automação salva com sucesso!', 'success');
+                    registrarLogAuditoria('AUTOMACAO_COBRANCA_CONFIG', 'Atualizou as regras da automação de cobrança.');
                 } else {
-                    let gradCyan = ctxOriCtx.createLinearGradient(0, 0, 0, 400);
-                    gradCyan.addColorStop(0, '#06b6d4'); gradCyan.addColorStop(1, '#0891b2');
-
-                    let gradAmber = ctxOriCtx.createLinearGradient(0, 0, 0, 400);
-                    gradAmber.addColorStop(0, '#f59e0b'); gradAmber.addColorStop(1, '#d97706');
-
-                    chartOrigemMes = new Chart(ctxOriCtx, {
-                        type: 'doughnut',
-                        data: { 
-                            labels: ['Mensalidades', 'Extras'], 
-                            datasets: [{ 
-                                data: [tMens, tExt], 
-                                backgroundColor: [gradCyan, gradAmber],
-                                borderColor: isDark ? '#1e293b' : '#ffffff',
-                                borderWidth: 3,
-                                hoverOffset: 10
-                            }] 
-                        },
-                        options: { 
-                            responsive: true, maintainAspectRatio: false,
-                            plugins: {
-                                legend: { position: 'bottom', labels: { color: textColor, font: { size: 11, weight: 'bold' }, padding: 15 } },
-                                tooltip: {
-                                    backgroundColor: tooltipBg, titleColor: tooltipText, bodyColor: tooltipBody, padding: 12, cornerRadius: 8,
-                                    callbacks: { label: (ctx) => { const tot = ctx.dataset.data.reduce((a,b)=>a+b,0); return `${ctx.label}: R$ ${ctx.raw.toLocaleString('pt-BR', {minimumFractionDigits: 2})} (${((ctx.raw/tot)*100).toFixed(1)}%)`; } }
-                                }
-                            },
-                            cutout: '65%', layout: { padding: 20 }
-                        }
-                    });
+                    showToast('Não foi possível salvar a automação.', 'error');
                 }
+            } catch (e) {
+                console.error(e);
+                showToast('Erro ao salvar a automação.', 'error');
             }
         }
 
-        window.atualizarAnaliseAnual = function() {
-            let meses = ["01","02","03","04","05","06","07","08","09","10","11","12"];
-            let labelsBr = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
-            let recAnual = Array(12).fill(0); let despAnual = Array(12).fill(0); let acumulado = Array(12).fill(0);
-            let totalRecAno = 0; let totalDespAno = 0;
-
-            const anoFiltro = document.getElementById('filtro-ano').value;
-
-            financeiroAnoCache.forEach(f => {
-                if(!f.mes_ano) return;
-                const mIdx = meses.indexOf(f.mes_ano.split('-')[1]);
-                if(mIdx === -1) return;
-
-                if(f.tipo === 'DESPESA') { despAnual[mIdx] += f.valor; totalDespAno += f.valor; }
-                else if(f.tipo === 'RECEITA' || (f.tipo === 'MENSALIDADE' && (f.status === 'PAGO' || !f.status))) { 
-                    recAnual[mIdx] += f.valor; totalRecAno += f.valor; 
-                }
-            });
-
-            let saldoAcumulado = 0;
-            for(let i=0; i<12; i++) {
-                saldoAcumulado += (recAnual[i] - despAnual[i]);
-                acumulado[i] = saldoAcumulado;
-            }
-
-            if(document.getElementById('ano-entradas')) document.getElementById('ano-entradas').innerText = `R$ ${floatToStr(totalRecAno)}`;
-            if(document.getElementById('ano-saidas')) document.getElementById('ano-saidas').innerText = `R$ ${floatToStr(totalDespAno)}`;
-            if(document.getElementById('ano-saldo')) document.getElementById('ano-saldo').innerText = `R$ ${floatToStr(saldoAcumulado)}`;
-
-            // Variáveis de Tema
-            const isDark = document.documentElement.classList.contains('dark');
-            const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(203, 213, 225, 0.3)';
-            const textColor = isDark ? '#94a3b8' : '#64748b';
-            const tooltipBg = isDark ? 'rgba(15, 23, 42, 0.9)' : 'rgba(255, 255, 255, 0.9)';
-            const tooltipText = isDark ? '#f8fafc' : '#1e293b';
-            const tooltipBody = isDark ? '#cbd5e1' : '#475569';
-
-            // Gráfico de Evolução Mensal - Modernizado
-            if(chartEvolucaoAno) chartEvolucaoAno.destroy();
-            const ctxEvo = document.getElementById('chartEvolucaoAno');
-            if(ctxEvo) {
-                const ctxEvoCtx = ctxEvo.getContext('2d');
-
-                let gradVerde = ctxEvoCtx.createLinearGradient(0, 0, 0, 400);
-                gradVerde.addColorStop(0, 'rgba(16, 185, 129, 0.9)'); gradVerde.addColorStop(1, 'rgba(16, 185, 129, 0.2)');
-
-                let gradVermelho = ctxEvoCtx.createLinearGradient(0, 0, 0, 400);
-                gradVermelho.addColorStop(0, 'rgba(244, 63, 94, 0.9)'); gradVermelho.addColorStop(1, 'rgba(244, 63, 94, 0.2)');
-
-                chartEvolucaoAno = new Chart(ctxEvoCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: labelsBr,
-                        datasets: [
-                            { label: 'Entradas', data: recAnual, backgroundColor: gradVerde, borderColor: 'transparent', borderRadius: 6, barPercentage: 0.7 },
-                            { label: 'Saídas', data: despAnual, backgroundColor: gradVermelho, borderColor: 'transparent', borderRadius: 6, barPercentage: 0.7 }
-                        ]
-                    },
-                    options: {
-                        responsive: true, maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'top', labels: { color: textColor, font: { size: 11, weight: 'bold' }, usePointStyle: true, pointStyle: 'circle' } },
-                            tooltip: { backgroundColor: tooltipBg, titleColor: tooltipText, bodyColor: tooltipBody, padding: 12, cornerRadius: 8, callbacks: { label: (ctx) => `${ctx.dataset.label}: R$ ${ctx.raw.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` } }
-                        },
-                        scales: {
-                            y: { beginAtZero: true, grid: { color: gridColor, drawBorder: false }, ticks: { color: textColor, font: { size: 10 } } },
-                            x: { grid: { display: false }, ticks: { color: textColor, font: { size: 10, weight: 'bold' } } }
-                        },
-                        layout: { padding: { left: 10, right: 10, top: 20, bottom: 10 } }
-                    }
-                });
-            }
-
-            // Gráfico de Crescimento do Caixa - Modernizado
-            if(chartAcumuladoAno) chartAcumuladoAno.destroy();
-            const ctxAcum = document.getElementById('chartAcumuladoAno');
-            if(ctxAcum) {
-                const ctxAcumCtx = ctxAcum.getContext('2d');
-
-                let gradLinha = ctxAcumCtx.createLinearGradient(0, 0, 0, 400);
-                gradLinha.addColorStop(0, 'rgba(6, 182, 212, 0.5)');
-                gradLinha.addColorStop(1, 'rgba(6, 182, 212, 0.0)');
-
-                chartAcumuladoAno = new Chart(ctxAcumCtx, {
-                    type: 'line',
-                    data: {
-                        labels: labelsBr,
-                        datasets: [{ 
-                            label: 'Saldo Acumulado (R$)', data: acumulado, 
-                            borderColor: '#06b6d4', backgroundColor: gradLinha, borderWidth: 3, fill: true, tension: 0.4,
-                            pointBackgroundColor: '#06b6d4', pointBorderColor: isDark ? '#1e293b' : '#ffffff', pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6
-                        }]
-                    },
-                    options: {
-                        responsive: true, maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'top', labels: { color: textColor, font: { size: 11, weight: 'bold' }, usePointStyle: true } },
-                            tooltip: { backgroundColor: tooltipBg, titleColor: tooltipText, bodyColor: tooltipBody, padding: 12, cornerRadius: 8, callbacks: { label: (ctx) => `Saldo: R$ ${ctx.raw.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` } }
-                        },
-                        scales: {
-                            y: { grid: { color: gridColor, drawBorder: false }, ticks: { color: textColor, font: { size: 10 } } },
-                            x: { grid: { display: false }, ticks: { color: textColor, font: { size: 10, weight: 'bold' } } }
-                        },
-                        layout: { padding: { left: 10, right: 10, top: 20, bottom: 10 } }
-                    }
-                });
-            }
-        }
-        
-        // 🔭 Observer para atualizar os gráficos IMEDIATAMENTE ao clicar no botão "Tema Escuro"
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.attributeName === 'class') {
-                    if(!document.getElementById('tab-dash').classList.contains('hidden')) window.atualizarDashboardMes();
-                    if(!document.getElementById('tab-anual').classList.contains('hidden')) window.atualizarAnaliseAnual();
-                }
-            });
-        });
-        observer.observe(document.documentElement, { attributes: true });
-
-        window.mudarAba = function(id) {
-            document.querySelectorAll('.aba-content').forEach(a => { a.classList.add('hidden'); a.classList.remove('flex'); });
-            document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex');
-            
-            document.querySelectorAll('.aba-item').forEach(b => {
-                b.classList.remove('tab-active', 'text-slate-800');
-                if(b.id !== 'btn-tab-config-asaas') b.classList.add('text-slate-400');
-            });
-            
-            const abaClicada = document.getElementById('btn-' + id);
-            if(abaClicada) { abaClicada.classList.add('tab-active'); abaClicada.classList.remove('text-slate-400'); }
-        }
-
-        window.abrirModalRelatorio = () => document.getElementById('modal-relatorio').classList.replace('hidden', 'flex');
-        window.fecharModalRelatorio = () => document.getElementById('modal-relatorio').classList.replace('flex', 'hidden');
-
-        window.abrirModalDespesa = () => {
-            document.getElementById('desp-desc').value = ""; document.getElementById('desp-fonte').value = "";
-            document.getElementById('desp-valor').value = ""; document.getElementById('desp-data').valueAsDate = new Date();
-            document.getElementById('modal-despesa').classList.replace('hidden', 'flex');
-        }
-        window.fecharModalDespesa = () => document.getElementById('modal-despesa').classList.replace('flex', 'hidden');
-
-        window.abrirModalReceita = () => {
-            document.getElementById('rec-categoria').value = "Doação"; document.getElementById('rec-desc').value = "";
-            document.getElementById('rec-fonte').value = ""; document.getElementById('rec-valor').value = "";
-            document.getElementById('rec-data').valueAsDate = new Date();
-            document.getElementById('modal-receita').classList.replace('hidden', 'flex');
-        }
-        window.fecharModalReceita = () => document.getElementById('modal-receita').classList.replace('flex', 'hidden');
-
-        window.salvarDespesa = async function() {
-            const desc = document.getElementById('desp-desc').value; const valorNum = strToFloat(document.getElementById('desp-valor').value);
-            const data = document.getElementById('desp-data').value; const fonte = document.getElementById('desp-fonte').value;
-            const mesAnoFiltro = `${document.getElementById('filtro-ano').value}-${document.getElementById('filtro-mes').value}`;
-
-            if(!desc || valorNum <= 0 || !data) return showToast("Preencha a descrição, um valor válido e a data!", "error");
-
-            const btn = document.getElementById('btn-salvar-despesa'); const origTxt = btn.innerText;
-            btn.innerText = "Processando..."; btn.disabled = true;
-
+        window.executarAutomacaoAgora = async function() {
             try {
-                await addDoc(collection(db, "financeiro"), { equipe_id: uid, tipo: 'DESPESA', descricao: desc, valor: valorNum, data: data, fonte: fonte, mes_ano: mesAnoFiltro });
-                fecharModalDespesa(); carregarDados(); showToast("Despesa salva com sucesso!", "success");
-                registrarLogAuditoria("NOVA_DESPESA", `Registrou despesa de R$ ${valorNum} (${desc})`);
-            } catch (e) { showToast("Erro ao salvar despesa.", "error"); } finally { btn.innerText = origTxt; btn.disabled = false; }
-        }
-
-        window.salvarReceita = async function() {
-            const cat = document.getElementById('rec-categoria').value; const desc = document.getElementById('rec-desc').value;
-            const valorNum = strToFloat(document.getElementById('rec-valor').value); const data = document.getElementById('rec-data').value;
-            const fonte = document.getElementById('rec-fonte').value; const mesAnoFiltro = `${document.getElementById('filtro-ano').value}-${document.getElementById('filtro-mes').value}`;
-
-            if(!cat || valorNum <= 0 || !data) return showToast("Categoria, valor e data são obrigatórios!", "error");
-
-            const btn = document.getElementById('btn-salvar-receita'); const origTxt = btn.innerText;
-            btn.innerText = "Processando..."; btn.disabled = true;
-
-            try {
-                await addDoc(collection(db, "financeiro"), { equipe_id: uid, tipo: 'RECEITA', descricao: `${cat}${desc ? ' - '+desc : ''}`, valor: valorNum, data: data, fonte: fonte, mes_ano: mesAnoFiltro });
-                fecharModalReceita(); carregarDados(); showToast("Receita salva com sucesso!", "success");
-                registrarLogAuditoria("NOVA_RECEITA", `Registrou receita extra de R$ ${valorNum} (${cat})`);
-            } catch (e) { showToast("Erro ao salvar receita.", "error"); } finally { btn.innerText = origTxt; btn.disabled = false; }
-        }
-
-        window.excluirLancamento = async function(id) {
-            if(!confirm("Deseja apagar este registo financeiro?")) return;
-            try { 
-                await deleteDoc(doc(db, "financeiro", id)); 
-                carregarDados(); showToast("Registo apagado com sucesso.", "success");
-                registrarLogAuditoria("EXCLUIU_LANCAMENTO", `Excluiu um lançamento financeiro extra (Despesa/Receita).`);
-            } catch (e) { showToast("Erro ao apagar.", "error"); }
-        }
-
-        window.carregarHistoricoSaques = async function() {
-            const cont = document.getElementById('tabela-historico-saques');
-            if(!cont) return;
-            cont.innerHTML = '<tr><td colspan="4" class="text-center py-8 text-slate-400 text-xs font-bold">⏳ Carregando histórico...</td></tr>';
-
-            try {
-                const q = query(collection(db, "saques"), where("equipe_id", "==", uid));
-                const snap = await getDocs(q);
-                const saques = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-
-                if(saques.length === 0) {
-                    cont.innerHTML = '<tr><td colspan="4" class="text-center py-8 text-slate-400 text-xs font-bold">Nenhum saque realizado ainda.</td></tr>';
-                    return;
-                }
-
-                saques.sort((a,b) => new Date(b.data) - new Date(a.data));
-                cont.innerHTML = '';
-
-                saques.forEach(s => {
-                    const dataObj = new Date(s.data);
-                    const dataFormatada = dataObj.toLocaleDateString('pt-BR') + ' às ' + dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
-                    
-                    let corStatus = 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/40 dark:text-amber-400 dark:border-amber-800';
-                    if(s.status === 'CONCLUÍDO') corStatus = 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-400 dark:border-emerald-800';
-                    if(s.status === 'FALHOU' || s.status === 'CANCELADO') corStatus = 'bg-rose-100 text-rose-700 border-rose-200 dark:bg-rose-900/40 dark:text-rose-400 dark:border-rose-800';
-                    
-                    const txtStatus = s.status || 'SOLICITADO';
-
-                    cont.innerHTML += `
-                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-50 dark:border-slate-800/50">
-                            <td class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400">${dataFormatada}</td>
-                            <td class="px-6 py-4 text-right text-sm font-black text-slate-700 dark:text-slate-300">R$ ${floatToStr(s.valor)}</td>
-                            <td class="px-6 py-4 text-center">
-                                <div class="text-xs font-bold text-slate-600 dark:text-slate-300">${s.chave_pix}</div>
-                                <div class="text-[9px] text-slate-400 uppercase tracking-widest">${s.tipo_chave}</div>
-                            </td>
-                            <td class="px-6 py-4 text-center">
-                                <span class="text-[9px] font-black px-2.5 py-1 rounded-md border ${corStatus} uppercase tracking-widest">${txtStatus}</span>
-                            </td>
-                        </tr>
-                    `;
-                });
-            } catch(e) {
-                console.error("Erro ao carregar saques:", e);
-                cont.innerHTML = '<tr><td colspan="4" class="text-center py-8 text-rose-500 text-xs font-bold">Erro ao carregar histórico.</td></tr>';
+                const executar = httpsCallable(functions, 'executarAutomacaoEquipe');
+                const res = await executar({ equipeId: uid });
+                const total = res.data?.result?.processed || 0;
+                showToast(`Automação executada. ${total} cobrança(s) analisada(s).`, 'success');
+            } catch (e) {
+                console.error(e);
+                showToast('Erro ao rodar a automação agora.', 'error');
             }
         }
 
-        // Inicialização garantida
-        window.onload = () => {
-            mudarAba('tab-mensalidades');
-        };
+        window.testarMensagemAutomacao = function() {
+            if(!document.getElementById('auto-template-before')) return;
+            const texto = document.getElementById('auto-template-before').value
+                .replaceAll('{nome}', 'João')
+                .replaceAll('{mesRef}', '04/2026')
+                .replaceAll('{dias}', '2')
+                .replaceAll('{valor}', '120,00')
+                .replaceAll('{pagamento}', 'Pague aqui: https://exemplo.com/cobranca');
+            navigator.clipboard.writeText(texto);
+            showToast('Mensagem de teste copiada para a área de transferência!', 'success');
+        }
+
+        function montarMensagemCobranca(aluno, calcData) {
+            const link = calcData?.reg?.link_pagamento;
+            const chavePix = calcData?.reg?.chave_pix_manual || equipeBaseConfig.chave_pix;
+            const pagamento = link ? `Pague aqui: ${link}` : (chavePix ? `Chave PIX: ${chavePix}` : 'Fale com a equipe para regularizar.');
+            const dias = calcData?.status === 'ATRASADO' ? '0' : '2';
+            const template = equipeDados?.automacao_cobranca?.templates?.beforeDue || document.getElementById('auto-template-before')?.value || 'Oss, {nome}! Sua mensalidade de {mesRef} vence em {dias} dia(s). Valor: R$ {valor}. {pagamento}';
+            return template
+                .replaceAll('{nome}', aluno?.nome || 'Aluno')
+                .replaceAll('{mesRef}', calcData?.reg?.mes_ano ? calcData.reg.mes_ano.split('-').reverse().join('/') : 'este mês')
+                .replaceAll('{dias}', dias)
+                .replaceAll('{valor}', floatToStr(calcData?.valor || 0))
+                .replaceAll('{pagamento}', pagamento);
+        }
+
+        window.copiarMensagemCobranca = function() {
+            if (!alunoSelecionadoMens) return;
+            const texto = montarMensagemCobranca(alunoSelecionadoMens, alunoSelecionadoMens._calc);
+            navigator.clipboard.writeText(texto);
+            showToast('Mensagem de cobrança copiada!', 'success');
+        }
+
+        window.reenviarCobrancaManual = async function() {
+            if (!alunoSelecionadoMens) return;
+            const calc = alunoSelecionadoMens._calc;
+            if (!calc?.reg?.link_pagamento && equipeDados && equipeDados.status_asaas === 'ATIVO' && verificarAcesso('asaas', true)) {
+                await gerarLinkAsaasAdmin();
+            }
+            const texto = montarMensagemCobranca(alunoSelecionadoMens, alunoSelecionadoMens._calc);
+            const telefone = (alunoSelecionadoMens.telefone || alunoSelecionadoMens.celular || '').replace(/\D/g, '');
+            if (telefone) {
+                const url = `https://wa.me/55${telefone}?text=${encodeURIComponent(texto)}`;
+                window.open(url, '_blank');
+                return;
+            }
+            navigator.clipboard.writeText(texto);
+            showToast('Aluno sem telefone. A mensagem foi copiada.', 'success');
+        }
+
+        // ==========================================
+        // 📊 GERAÇÃO DO RELATÓRIO EM PDF (LUCRO REAL)
+        // ==========================================
         window.gerarPDFRelatorio = async function() {
             const mesIni = document.getElementById('rel-mes-ini').value;
             const anoIni = document.getElementById('rel-ano-ini').value;
             const mesFim = document.getElementById('rel-mes-fim').value;
             const anoFim = document.getElementById('rel-ano-fim').value;
             
+            const valIni = parseInt(anoIni)*12 + parseInt(mesIni);
+            const valFim = parseInt(anoFim)*12 + parseInt(mesFim);
+            if(valIni > valFim) return showToast("O mês inicial não pode ser maior que o final!", "error");
+
             const btn = document.getElementById('btn-gerar-relatorio');
             const origTxt = btn.innerHTML;
             btn.innerHTML = "⏳ Gerando..."; btn.disabled = true;
 
             try {
-                // Filtra os dados no Firebase baseados no período
                 const q = query(collection(db, "financeiro"), where("equipe_id", "==", uid));
                 const snap = await getDocs(q);
                 
@@ -1920,19 +1799,18 @@
                     const f = doc.data();
                     if (!f.mes_ano) return;
                     
-                    // Verifica se está dentro do período
-                    if (f.mes_ano >= inicioStr && f.mes_ano <= fimStr) {
+                    const p = f.mes_ano.split('-'); 
+                    const valReg = parseInt(p[0])*12 + parseInt(p[1]);
+                    
+                    if (valReg >= valIni && valReg <= valFim) {
                         if (!relatorioMensal[f.mes_ano]) {
                             relatorioMensal[f.mes_ano] = { entradas: 0, saidas: 0 };
                         }
 
-                        // Soma entradas (Mensalidades pagas + Receitas avulsas)
                         if ((f.tipo === 'MENSALIDADE' && (f.status === 'PAGO' || !f.status)) || f.tipo === 'RECEITA') {
                             relatorioMensal[f.mes_ano].entradas += f.valor;
                             totalEntradasGeral += f.valor;
-                        } 
-                        // Soma saídas (Despesas)
-                        else if (f.tipo === 'DESPESA') {
+                        } else if (f.tipo === 'DESPESA') {
                             relatorioMensal[f.mes_ano].saidas += f.valor;
                             totalSaidasGeral += f.valor;
                         }
@@ -1940,8 +1818,6 @@
                 });
 
                 const lucroGeral = totalEntradasGeral - totalSaidasGeral;
-
-                // Ordena os meses em ordem cronológica
                 const chavesOrdenadas = Object.keys(relatorioMensal).sort();
 
                 let linhasTabela = "";
@@ -1966,19 +1842,10 @@
                     });
                 }
 
-                // Carrega a logo para o PDF (CORS fix)
                 const getBase64Image = (url) => {
                     return new Promise((resolve) => {
-                        const img = new Image(); img.crossOrigin = "Anonymous"; 
-                        img.src = url + (url.includes('?') ? '&' : '?') + new Date().getTime();
-                        img.onload = () => { 
-                            try { 
-                                const canvas = document.createElement('canvas'); 
-                                canvas.width = img.width; canvas.height = img.height; 
-                                const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0); 
-                                resolve(canvas.toDataURL('image/png')); 
-                            } catch (err) { resolve(null); } 
-                        };
+                        const img = new Image(); img.crossOrigin = "Anonymous"; const cacheBuster = url.includes('?') ? '&' : '?'; img.src = url + cacheBuster + new Date().getTime();
+                        img.onload = () => { try { const canvas = document.createElement('canvas'); canvas.width = img.width; canvas.height = img.height; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0); resolve(canvas.toDataURL('image/png')); } catch (err) { resolve(null); } };
                         img.onerror = () => { resolve(null); };
                     });
                 };
@@ -1986,11 +1853,13 @@
                 let logoFinal = ""; 
                 if (equipeLogoGlobal) logoFinal = await getBase64Image(equipeLogoGlobal);
                 
-                let logoHtml = logoFinal 
-                    ? `<img src="${logoFinal}" style="max-height: 80px; max-width: 250px; object-fit: contain; margin: 0 auto 15px auto; display: block;">`
-                    : `<h1 style="font-size: 28px; font-weight: 900; margin: 0 0 15px 0; color: #0f172a;">BJJ MANAGER</h1>`;
+                let logoHtml = "";
+                if (logoFinal) {
+                    logoHtml = `<img src="${logoFinal}" style="max-height: 80px; max-width: 250px; object-fit: contain; margin: 0 auto 15px auto; display: block;">`;
+                } else {
+                    logoHtml = `<h1 style="font-size: 28px; font-weight: 900; margin: 0 0 15px 0; color: #0f172a;">BJJ MANAGER</h1>`;
+                }
 
-                // Monta o layout HTML do PDF
                 const htmlFinal = `
                     <div style="font-family: Arial, sans-serif; padding: 40px; color: #1e293b; background: white; box-sizing: border-box; width: 100%;">
                         <div style="text-align: center; margin-bottom: 30px;">
@@ -2053,6 +1922,12 @@
                 btn.disabled = false;
             }
         };
+
+        // Inicialização garantida
+        window.onload = () => {
+            mudarAba('tab-mensalidades');
+        };
+
     </script>
 </body>
-</html> 
+</html>

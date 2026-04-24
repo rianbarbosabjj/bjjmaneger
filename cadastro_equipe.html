@@ -62,8 +62,8 @@
             <div class="absolute -bottom-10 -right-10 text-[150px] opacity-10 leading-none">🥋</div>
             
             <div class="text-center">
-                <a href="index.html" class="inline-flex items-center justify-center p-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-[2rem] shadow-2xl mb-8 transition-all hover:scale-105 hover:bg-white/20">
-                    <img src="logo_bjj_maneger.png" alt="BJJ Manager Logo" class="h-24 md:h-32 lg:h-36 w-auto mx-auto filter drop-shadow-lg">
+                <a href="index.html" class="inline-flex items-center justify-center p-6 md:p-8 bg-slate-900/80 backdrop-blur-md border border-slate-700/50 rounded-[2rem] shadow-2xl mb-8 transition-all hover:scale-105 hover:bg-slate-900/90 min-w-[140px] min-h-[140px]">
+                    <img src="logo_bjj_maneger.png" alt="BJJ Manager Logo" class="h-24 md:h-32 lg:h-36 w-auto mx-auto filter drop-shadow-[0_0_15px_rgba(255,255,255,0.15)]">
                 </a>
                 
                 <h2 class="text-3xl lg:text-4xl font-black mb-4 leading-tight">A sua academia de nível mundial.</h2>
@@ -176,6 +176,7 @@
                                 </select>
                             </div>
                         </div>
+
                     </div>
 
                     <div class="space-y-4 pt-2">
@@ -299,6 +300,7 @@
             v = v.replace(/^(\d{5})(\d)/, "$1-$2");
             i.value = v;
         };
+        
         window.buscarCEP = async (cep) => {
             const cleanCep = cep.replace(/\D/g, "");
             if (cleanCep.length !== 8) return;

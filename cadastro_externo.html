@@ -3,13 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Matrícula Digital | BJJ Manager</title>
+    <title>Nova Matrícula | BJJ Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
+        
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
     </style>
 </head>
 <body class="flex flex-col h-[100dvh] overflow-hidden text-slate-800 bg-[#F8FAFC]">
@@ -17,18 +23,21 @@
     <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
     <div class="w-full bg-slate-900 p-3 text-center relative z-50 shrink-0 shadow-md flex items-center justify-center h-14">
-        <a href="https://maneger.bjjdigital.com.br" target="_blank" class="absolute left-4 top-1.5 transition-opacity hover:opacity-80" title="Conheça a BJJ Systems">
-            <img src="logo_bjj_maneger.png" alt="BJJ Systems" class="h-10 w-auto object-contain">
+        <a href="dashboard.html" class="absolute left-4 top-1.5 transition-opacity hover:opacity-80 flex items-center text-slate-400 hover:text-white text-xs font-bold uppercase tracking-widest h-10">
+            <span class="mr-2 text-lg leading-none">«</span> Voltar
         </a>
-        <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest hidden sm:inline-block">Autoatendimento</span>
+        <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest hidden sm:inline-block">Modo Receção / Autoatendimento</span>
     </div>
 
     <main class="flex-1 overflow-y-auto p-4 md:p-8 pb-10 hide-scrollbar" id="interface-sistema">
-        <div class="max-w-3xl mx-auto">
+        
+        <div class="max-w-3xl mx-auto" id="container-principal">
             
             <div class="flex justify-center mb-8 mt-4 min-h-[5rem]">
-                <img id="logo-equipe" src="" alt="Logo da Equipe" class="h-20 md:h-28 w-auto object-contain drop-shadow-sm hidden">
-                <div id="fallback-logo" class="w-24 h-24 rounded-full bg-slate-800 text-white flex items-center justify-center text-4xl font-black hidden shadow-md"></div>
+                <div class="bg-slate-900/80 backdrop-blur-md p-6 md:p-8 rounded-[2rem] shadow-2xl border border-slate-700/50 flex items-center justify-center min-w-[140px] min-h-[140px]">
+                    <img id="logo-equipe" src="" alt="Logo da Equipe" class="h-24 md:h-32 w-auto object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.15)] hidden">
+                    <div id="fallback-logo" class="w-24 h-24 rounded-full bg-slate-800 border-2 border-slate-600 text-white flex items-center justify-center text-5xl font-black hidden shadow-inner"></div>
+                </div>
             </div>
 
             <div class="mb-8 text-center" id="cabecalho-form">
@@ -401,8 +410,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signOut, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
         const firebaseConfig = {
@@ -419,12 +428,11 @@
         const db = getFirestore(app);
         const storage = getStorage(app);
 
-        const paramsUrl = new URLSearchParams(window.location.search);
-        const tipoAcesso = paramsUrl.get('tipo'); 
-        const equipeId = paramsUrl.get('equipe');
-
+        let uid = null;
+        let quantidadeAlunosAtual = 0;
         let ficheiroFotoSelecionado = null;
 
+        // --- SISTEMA DE TOASTS ---
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -440,17 +448,7 @@
             }, 4500);
         }
 
-        window.toggleSenha = function(inputId, btnElement) {
-            const input = document.getElementById(inputId);
-            if (input.type === "password") {
-                input.type = "text";
-                btnElement.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>`;
-            } else {
-                input.type = "password";
-                btnElement.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>`;
-            }
-        }
-
+        // --- MÁSCARAS ---
         window.mascaraCPF = (i) => {
             let v = i.value.replace(/\D/g, "");
             v = v.replace(/(\d{3})(\d)/, "$1.$2");
@@ -469,7 +467,6 @@
             v = v.replace(/^(\d{5})(\d)/, "$1-$2");
             i.value = v;
         };
-        
         window.buscarCEP = async (cep) => {
             const cleanCep = cep.replace(/\D/g, "");
             if (cleanCep.length !== 8) return;
@@ -477,69 +474,65 @@
             if (!r.erro) {
                 document.getElementById('cad-end').value = r.logradouro || "";
                 document.getElementById('cad-bairro').value = r.bairro || "";
-                document.getElementById('cad-cidade').value = r.localidade || "";
-                document.getElementById('cad-uf').value = r.uf || "";
                 document.getElementById('cad-num').focus();
             }
         };
 
-        window.buscarCEPProf = async (cep) => {
-            const cleanCep = cep.replace(/\D/g, "");
-            if (cleanCep.length !== 8) return;
-            const r = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`).then(res => res.json());
-            if (!r.erro) {
-                document.getElementById('prof-end').value = r.logradouro || "";
-                document.getElementById('prof-bairro').value = r.bairro || "";
-                document.getElementById('prof-cidade').value = r.localidade || "";
-                document.getElementById('prof-uf').value = r.uf || "";
-                document.getElementById('prof-num').focus();
-            }
-        };
-
-        async function inicializarCadastro() {
-            if(!equipeId) {
-                document.getElementById('cabecalho-form').innerHTML = `<h2 class="text-rose-500 font-black text-2xl">Link Inválido</h2><p class="text-slate-500 mt-2">Peça um novo link de convite ao administrador da equipe.</p>`;
-                return;
-            }
-
-            try {
-                const docEquipe = await getDoc(doc(db, "equipes", equipeId));
-                if (docEquipe.exists()) {
-                    const dadosEquipe = docEquipe.data();
-                    
-                    document.getElementById('cabecalho-form').innerHTML = `
-                        <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">${tipoAcesso === 'prof' ? 'Acesso ao Sistema' : 'Ficha de Matrícula'}</h2>
-                        <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Equipe: <b class="text-slate-800 uppercase">${dadosEquipe.nome_equipe}</b></p>
-                    `;
-
-                    if(dadosEquipe.url_logo) {
-                        const imgEl = document.getElementById('logo-equipe');
-                        imgEl.src = dadosEquipe.url_logo;
-                        imgEl.classList.remove('hidden');
-                    } else {
-                        const fallEl = document.getElementById('fallback-logo');
-                        fallEl.innerText = dadosEquipe.nome_equipe ? dadosEquipe.nome_equipe.charAt(0).toUpperCase() : 'E';
-                        fallEl.classList.remove('hidden');
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // Checa se está no Modo Suporte (Super Admin)
+                const equipeImpersonada = sessionStorage.getItem('admin_impersonate');
+                if (equipeImpersonada) {
+                    uid = equipeImpersonada;
+                } else {
+                    uid = user.uid;
+                    // Verifica se é Co-Administrador para salvar no ID da Equipe correta
+                    const colabSnap = await getDoc(doc(db, "colaboradores", uid));
+                    if(colabSnap.exists()) {
+                        uid = colabSnap.data().equipe_id;
                     }
-                } else {
-                    document.getElementById('cabecalho-form').innerHTML = `<h2 class="text-rose-500 font-black text-2xl">Equipe Não Encontrada</h2>`;
-                    return;
                 }
+                
+                // --- CARREGA A LOGO DA EQUIPE ---
+                try {
+                    const docEquipe = await getDoc(doc(db, "equipes", uid));
+                    if (docEquipe.exists()) {
+                        const dadosEquipe = docEquipe.data();
+                        if (dadosEquipe.url_logo) {
+                            const imgEl = document.getElementById('logo-equipe');
+                            imgEl.src = dadosEquipe.url_logo;
+                            imgEl.classList.remove('hidden');
+                        } else {
+                            const fallEl = document.getElementById('fallback-logo');
+                            fallEl.innerText = dadosEquipe.nome_equipe ? dadosEquipe.nome_equipe.charAt(0).toUpperCase() : 'E';
+                            fallEl.classList.remove('hidden');
+                        }
+                    }
+                } catch(e) { console.log("Erro ao carregar logo"); }
 
-                if(tipoAcesso === 'prof') {
-                    document.getElementById('form-prof').classList.remove('hidden');
-                } else {
-                    document.getElementById('form-aluno').classList.remove('hidden');
-                }
-
-            } catch (e) {
-                console.error("Erro no carregamento:", e);
-                document.getElementById('cabecalho-form').innerHTML = `<h2 class="text-rose-500 font-black text-xl">Erro de conexão</h2>`;
+                contarAlunos(); 
+                
+                // MOSTRAMOS O FORM DE ALUNO JÁ QUE ESTAMOS LOGADOS (MODO RECEPÇÃO)
+                document.getElementById('cabecalho-form').innerHTML = `
+                    <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Ficha de Matrícula</h2>
+                    <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Preencha os dados do aluno(a) abaixo.</p>
+                `;
+                document.getElementById('form-aluno').classList.remove('hidden');
+                
+            } else {
+                window.location.href = "index.html";
             }
+        });
+
+        async function contarAlunos() {
+            try {
+                const q = query(collection(db, "alunos"), where("equipe_id", "==", uid));
+                const snap = await getDocs(q);
+                quantidadeAlunosAtual = snap.size;
+            } catch(e) { console.log("Erro ao contar alunos."); }
         }
 
-        inicializarCadastro();
-
+        // PRÉ-VISUALIZAÇÃO DA FOTO NA TELA
         window.mostrarPreviewFoto = function(event) {
             const file = event.target.files[0];
             if (file) {
@@ -560,198 +553,94 @@
             const cpf = document.getElementById('cad-cpf').value.trim();
             const nasc = document.getElementById('cad-nasc').value;
             const tel = document.getElementById('cad-tel').value.trim();
-            const email = document.getElementById('cad-email').value.trim().toLowerCase();
-            const senhaPortal = document.getElementById('cad-senha-portal').value;
-            const senhaPortalConfirma = document.getElementById('cad-senha-portal-confirma').value;
             const concordo = document.getElementById('cad-lgpd-termos').checked;
 
-            if (!nome || !cpf || !nasc || !tel || !email || !senhaPortal || !senhaPortalConfirma) {
-                return showToast("Preencha todos os campos obrigatórios (*)", "error");
-            }
-            
-            if (senhaPortal.length < 6) {
-                return showToast("A senha do portal deve ter no mínimo 6 caracteres.", "error");
-            }
-
-            if (senhaPortal !== senhaPortalConfirma) {
-                document.getElementById('cad-senha-portal-confirma').classList.add('border-rose-500', 'focus:border-rose-500');
-                return showToast("As senhas não coincidem!", "error");
-            } else {
-                document.getElementById('cad-senha-portal-confirma').classList.remove('border-rose-500', 'focus:border-rose-500');
+            if (!nome || !cpf || !nasc || !tel) {
+                return showToast("Preencha Nome, CPF, Data de Nascimento e Telefone!", "error");
             }
 
             if (!concordo) {
-                return showToast("É obrigatório concordar com os termos no final.", "error");
+                return showToast("É obrigatório concordar com os termos no final do formulário.", "error");
             }
 
             const anoAtual = new Date().getFullYear();
-            const numeroAleatorio = Math.floor(Math.random() * 9000) + 1000;
-            const novaMatriculaStr = anoAtual.toString() + numeroAleatorio.toString();
+            const proximaMatriculaNum = quantidadeAlunosAtual + 1;
+            const novaMatriculaStr = anoAtual + proximaMatriculaNum.toString().padStart(4, '0');
 
             const btn = document.getElementById('btn-salvar');
+            const textoBotaoOrig = btn.innerHTML;
             btn.innerHTML = "<span class='mr-2 text-xl'>⏳</span> A SALVAR DADOS...";
             btn.disabled = true;
 
+            const dadosAluno = {
+                equipe_id: uid,
+                matricula: novaMatriculaStr,
+                nome: nome,
+                cpf: cpf,
+                data_nascimento: nasc,
+                faixa: document.getElementById('cad-faixa').value,
+                grau: document.getElementById('cad-grau').value,
+                peso: document.getElementById('cad-peso').value.trim(),
+                telefone: tel,
+                email: document.getElementById('cad-email').value.trim(),
+                endereco: document.getElementById('cad-end').value.trim(),
+                numero: document.getElementById('cad-num').value.trim(),
+                bairro: document.getElementById('cad-bairro').value.trim(),
+                cep: document.getElementById('cad-cep').value.trim(),
+                nome_responsavel: document.getElementById('cad-resp-nome').value.toUpperCase().trim(),
+                cpf_responsavel: document.getElementById('cad-resp-cpf').value.trim(),
+                status: "ATIVO",
+                bolsa_perc: 0,
+                dia_vencimento: 10,
+                lgpd_concordo: concordo,
+                lgpd_redes: document.getElementById('cad-lgpd-redes').checked,
+                lgpd_site: document.getElementById('cad-lgpd-site').checked,
+                lgpd_promo: document.getElementById('cad-lgpd-promo').checked,
+                lgpd_relatorios: document.getElementById('cad-lgpd-relatorio').checked,
+                foto_url: "", 
+                data_cadastro: new Date().toISOString()
+            };
+
             try {
-                // 1. Gera a ref (ID) do documento ANTES de o criar no banco
-                const novoAlunoRef = doc(collection(db, "alunos"));
-                const novoAlunoId = novoAlunoRef.id;
-
-                // 2. Faz o upload da foto se existir, usando o ID gerado
-                let urlDaFoto = "";
-                let fotoErro = false;
-
+                // 1. Guarda os dados no banco
+                const docRef = await addDoc(collection(db, "alunos"), dadosAluno);
+                
+                // 2. Se o atleta selecionou uma fotografia, envia para a Nuvem
                 if (ficheiroFotoSelecionado) {
-                    try {
-                        const fotoPath = `fotos_carteirinha/${equipeId}/${novoAlunoId}.jpg`;
-                        const storageRef = ref(storage, fotoPath);
-                        
-                        const metadata = { contentType: ficheiroFotoSelecionado.type || 'image/jpeg' };
-                        
-                        await uploadBytes(storageRef, ficheiroFotoSelecionado, metadata);
-                        urlDaFoto = await getDownloadURL(storageRef);
-                    } catch (imgError) {
-                        console.error("Erro no upload da imagem:", imgError);
-                        fotoErro = true;
-                    }
+                    btn.innerHTML = "<span class='mr-2 text-xl'>📷</span> A ENVIAR FOTO...";
+                    
+                    const fotoPath = `fotos_carteirinha/${uid}/${docRef.id}.jpg`;
+                    const storageRef = ref(storage, fotoPath);
+                    
+                    await uploadBytes(storageRef, ficheiroFotoSelecionado);
+                    const downloadUrl = await getDownloadURL(storageRef);
+                    
+                    await updateDoc(docRef, { foto_url: downloadUrl });
                 }
 
-                // 3. Prepara TODOS os dados do aluno num único bloco (CREATE)
-                const dadosAluno = {
-                    equipe_id: equipeId,
-                    matricula: novaMatriculaStr,
-                    nome: nome,
-                    cpf: cpf,
-                    data_nascimento: nasc,
-                    faixa: document.getElementById('cad-faixa').value,
-                    grau: document.getElementById('cad-grau').value,
-                    peso: document.getElementById('cad-peso').value.trim(),
-                    telefone: tel,
-                    email: email,
-                    senha_portal: senhaPortal,
-                    cep: document.getElementById('cad-cep').value.trim(),
-                    endereco: document.getElementById('cad-end').value.trim(),
-                    numero: document.getElementById('cad-num').value.trim(),
-                    complemento: document.getElementById('cad-comp').value.trim(),
-                    bairro: document.getElementById('cad-bairro').value.trim(),
-                    cidade: document.getElementById('cad-cidade').value.trim(),
-                    uf: document.getElementById('cad-uf').value,
-                    nome_responsavel: document.getElementById('cad-resp-nome').value.toUpperCase().trim(),
-                    cpf_responsavel: document.getElementById('cad-resp-cpf').value.trim(),
-                    status: "ATIVO",
-                    bolsa_perc: 0,
-                    dia_vencimento: 10,
-                    lgpd_concordo: concordo,
-                    lgpd_redes: document.getElementById('cad-lgpd-redes').checked,
-                    lgpd_site: document.getElementById('cad-lgpd-site').checked,
-                    lgpd_promo: document.getElementById('cad-lgpd-promo').checked,
-                    lgpd_relatorios: document.getElementById('cad-lgpd-relatorio').checked,
-                    foto_url: urlDaFoto, 
-                    data_cadastro: new Date().toISOString()
-                };
-
-                // 4. Salva a ficha completa de uma só vez
-                await setDoc(novoAlunoRef, dadosAluno);
-
-                document.getElementById('form-aluno').innerHTML = `
-                    <div class="bg-emerald-50 border border-emerald-200 p-10 rounded-3xl text-center shadow-lg mt-8 flex flex-col items-center">
-                        <span class="text-6xl mb-4 block">${fotoErro ? '⚠️' : '✅'}</span>
-                        <h2 class="text-2xl font-black ${fotoErro ? 'text-amber-600' : 'text-emerald-800'} uppercase">Matrícula Concluída!</h2>
-                        <p class="text-emerald-600 font-medium mt-2">Bem-vindo(a) à equipe, ${nome.split(' ')[0]}.</p>
-                        ${fotoErro ? '<p class="text-rose-500 font-bold mt-2 text-xs">Nota: Não foi possível salvar a foto. Verifique com o seu professor.</p>' : ''}
-                        
-                        <div class="mt-8 bg-white p-4 rounded-2xl border border-emerald-100 shadow-sm w-full max-w-sm">
-                            <p class="text-xs text-slate-500 font-bold uppercase tracking-widest mb-1">Acesse a sua Carteirinha em:</p>
-                            <a href="https://maneger.bjjdigital.com.br/portal_aluno.html" class="bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md mt-2 uppercase tracking-widest text-sm">
-                                <span>📲</span> Portal do Aluno
-                            </a>
+                showToast(`Matrícula de ${nome} concluída!`, "success");
+                
+                // Exibe a tela de sucesso
+                document.getElementById('container-principal').innerHTML = `
+                    <div class="bg-emerald-50 border border-emerald-200 p-10 rounded-3xl text-center mt-10 shadow-lg">
+                        <span class="text-6xl mb-4 block">✅</span>
+                        <h2 class="text-2xl font-black text-emerald-800 uppercase">Matrícula Concluída!</h2>
+                        <p class="text-emerald-600 font-medium mt-2">O atleta ${nome} foi adicionado à equipe.</p>
+                        <p class="text-xs text-emerald-500 font-bold mt-4 mb-8 text-lg">Matrícula Gerada: ${novaMatriculaStr}</p>
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                            <button onclick="window.location.reload()" class="px-6 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-black uppercase tracking-widest rounded-xl text-xs transition-colors shadow-sm">Nova Matrícula</button>
+                            <a href="dashboard.html" class="px-6 py-4 bg-slate-800 hover:bg-slate-700 text-white font-black uppercase tracking-widest rounded-xl text-xs transition-colors shadow-sm">Voltar ao Painel</a>
                         </div>
                     </div>
                 `;
 
             } catch (error) {
-                console.error("Erro geral:", error);
-                showToast("Erro ao salvar cadastro. Tente de novo.", "error");
-                btn.innerHTML = "<span class='mr-2'>✅</span> FINALIZAR MATRÍCULA";
+                console.error(error);
+                showToast("Ocorreu um erro ao salvar o cadastro.", "error");
+                btn.innerHTML = textoBotaoOrig;
                 btn.disabled = false;
             }
         }
-
-        window.salvarProfessor = async function() {
-            const nome = document.getElementById('prof-nome').value.toUpperCase().trim();
-            const cpf = document.getElementById('prof-cpf').value.trim();
-            const tel = document.getElementById('prof-tel').value.trim();
-            const email = document.getElementById('prof-email').value.trim().toLowerCase();
-            const senha = document.getElementById('prof-senha').value;
-            const senhaConfirma = document.getElementById('prof-senha-confirma').value;
-            const concordo = document.getElementById('prof-lgpd-termos').checked;
-            
-            if(!nome || !cpf || !tel || !email || !senha || !senhaConfirma) return showToast("Preencha todos os dados pessoais e de contato!", "error");
-            if(!email.includes('@')) return showToast("Digite um e-mail válido!", "error");
-            if(senha.length < 8) return showToast("A senha deve ter no mínimo 8 caracteres.", "error");
-            
-            if(senha !== senhaConfirma) {
-                document.getElementById('prof-senha-confirma').classList.add('border-rose-500', 'focus:border-rose-500');
-                return showToast("As senhas não coincidem!", "error");
-            } else {
-                document.getElementById('prof-senha-confirma').classList.remove('border-rose-500', 'focus:border-rose-500');
-            }
-
-            if(!concordo) return showToast("Você deve aceitar os termos de sigilo (LGPD).", "error");
-
-            const btn = document.getElementById('btn-salvar-prof');
-            btn.innerHTML = "<span class='mr-2 text-xl'>⏳</span> A REGISTRAR...";
-            btn.disabled = true;
-
-            try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
-                const uidProfessor = userCredential.user.uid;
-
-                await sendEmailVerification(userCredential.user);
-
-                await setDoc(doc(db, "colaboradores", uidProfessor), {
-                    nome: nome,
-                    cpf: cpf,
-                    telefone: tel,
-                    email: email,
-                    cep: document.getElementById('prof-cep').value.trim(),
-                    endereco: document.getElementById('prof-end').value.trim(),
-                    numero: document.getElementById('prof-num').value.trim(),
-                    complemento: document.getElementById('prof-comp').value.trim(),
-                    bairro: document.getElementById('prof-bairro').value.trim(),
-                    cidade: document.getElementById('prof-cidade').value.trim(),
-                    uf: document.getElementById('prof-uf').value,
-                    equipe_id: equipeId,
-                    lgpd_aceite: true,
-                    data_cadastro: new Date().toISOString()
-                });
-                
-                await signOut(auth);
-
-                document.getElementById('form-prof').innerHTML = `
-                    <div class="bg-indigo-50 border border-indigo-200 p-10 rounded-3xl text-center shadow-lg mt-8 flex flex-col items-center">
-                        <span class="text-6xl mb-4 block">🤝</span>
-                        <h2 class="text-2xl font-black text-indigo-800 uppercase">Acesso Criado!</h2>
-                        <p class="text-indigo-600 font-medium mt-2">Bem-vindo(a), ${nome.split(' ')[0]}. O seu acesso foi configurado com sucesso.</p>
-                        
-                        <div class="mt-8 bg-white p-4 rounded-2xl border border-indigo-100 shadow-sm w-full max-w-sm">
-                            <p class="text-xs text-slate-500 font-bold uppercase tracking-widest mb-1">Acesse o sistema em:</p>
-                            <a href="https://maneger.bjjdigital.com.br/login.html" class="bg-indigo-500 hover:bg-indigo-600 text-white font-black py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md mt-2 uppercase tracking-widest text-sm">
-                                <span>💻</span> Fazer Login
-                            </a>
-                        </div>
-                    </div>
-                `;
-            } catch (e) {
-                if (e.code === 'auth/email-already-in-use') {
-                    showToast("Este e-mail já está cadastrado no sistema.", "error");
-                } else {
-                    showToast("Erro ao criar acesso. Tente novamente.", "error");
-                }
-                btn.innerHTML = "<span class='mr-2'>🚀</span> CRIAR ACESSO";
-                btn.disabled = false;
-            }
-        };
     </script>
 </body>
 </html>

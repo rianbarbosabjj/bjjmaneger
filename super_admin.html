@@ -253,6 +253,22 @@
                     </table>
                 </div>
             </div>
+
+            <div class="bg-slate-900 border border-indigo-500/30 p-6 rounded-3xl shadow-xl mt-8">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-xl">🛠️</span>
+                    <h3 class="text-sm font-black text-white uppercase tracking-widest">Ferramenta de Resgate (Liberar Login)</h3>
+                </div>
+                <p class="text-xs text-slate-400 mb-4">Se um professor não recebeu o e-mail de confirmação, digite o e-mail dele abaixo para <b>forçar a liberação</b> do acesso sem necessidade de verificação externa.</p>
+                
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <input type="email" id="email-resgate" placeholder="E-mail do professor para liberar..." class="flex-1 bg-slate-950 border border-slate-800 text-white text-xs rounded-xl p-3 outline-none focus:border-indigo-500 transition-all">
+                    <button onclick="executarResgateAcesso()" id="btn-resgate" class="bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 px-6 rounded-xl text-[10px] uppercase tracking-widest transition-all shadow-lg">
+                        Liberar Acesso Agora
+                    </button>
+                </div>
+            </div>
+            
         </div>
 
         <div id="aba-faturamento" class="p-6 md:p-10 max-w-7xl mx-auto w-full space-y-8 hidden">
@@ -1186,9 +1202,11 @@
         window.carregarImperio = async function() {
             document.getElementById('tabela-equipes').innerHTML = '<tr><td colspan="6" class="text-center p-8 text-slate-500 italic text-xs">Carregando império...</td></tr>';
             try {
+                // Carrega Equipes
                 const snapEquipes = await getDocs(collection(db, "equipes"));
                 equipesCache = snapEquipes.docs.map(d => ({ id: d.id, ...d.data() }));
 
+                // Carrega TODOS os alunos de uma vez (para contar ativos)
                 const snapAlunos = await getDocs(collection(db, "alunos"));
                 const todosAlunos = snapAlunos.docs.map(d => d.data());
                 
@@ -1232,6 +1250,7 @@
             );
 
             filtradas.forEach(eq => {
+                // Duração do Cadastro
                 let diasDeVidaStr = "Data não registrada";
                 if (eq.data_cadastro) {
                     const diff = new Date() - new Date(eq.data_cadastro);
@@ -1241,11 +1260,13 @@
                     }
                 }
                 
+                // Saúde / Engajamento
                 let saudeHTML = "";
                 if(eq.total_alunos > 10) saudeHTML = `<span class="text-emerald-400 font-bold text-xs">💪 Saudável (${eq.total_alunos})</span>`;
                 else if(eq.total_alunos > 0) saudeHTML = `<span class="text-cyan-400 font-bold text-xs">🌱 Ativa (${eq.total_alunos})</span>`;
                 else saudeHTML = `<span class="text-rose-500 font-black text-xs status-blink">⚠️ Risco Churn (0)</span>`;
 
+                // Último Acesso
                 let dataAcessoBadge = `<span class="text-slate-500 font-bold text-[9px] uppercase tracking-widest">Sem Registo</span>`;
                 if (eq.ultimo_acesso || eq.data_cadastro) {
                     const lastLogin = new Date(eq.ultimo_acesso || eq.data_cadastro);
@@ -1260,6 +1281,7 @@
                     }
                 }
 
+                // Status do Plano
                 const isIsento = (eq.isento === true || String(eq.isento) === "true");
                 const st = eq.status_plano || "TESTE";
                 
@@ -1282,6 +1304,7 @@
                     const agora = new Date();
                     const expiraEm = new Date(eq.data_pagamento_plano);
                     
+                    // Zera as horas para comparar apenas os dias
                     agora.setHours(0,0,0,0);
                     expiraEm.setHours(0,0,0,0);
                     
@@ -1308,6 +1331,7 @@
                     }
                 }
 
+                // Automação Asaas (SaaS)
                 let asaasSaaSBadge = "";
                 if (!isIsento && st !== 'TESTE') {
                     if (eq.asaas_customer_id) {
@@ -1317,6 +1341,7 @@
                     }
                 }
 
+                // Financeiro da Equipe (Subconta)
                 let asaasBadge = `<span class="text-slate-500 font-bold text-[10px] flex items-center justify-center gap-1">⚪ Sem Asaas</span>`;
                 if(eq.status_asaas === 'ATIVO') asaasBadge = `<span class="text-emerald-400 font-bold text-[10px] flex items-center justify-center gap-1">🟢 Conectado</span>`;
                 else if(eq.status_asaas === 'PENDENTE') asaasBadge = `<span class="text-amber-400 font-bold text-[10px] flex items-center justify-center gap-1">🟡 Pendente</span>`;
@@ -1736,6 +1761,35 @@
             try { await deleteDoc(doc(db, "cupons", codigo)); showToast("Excluído.", "success"); carregarCupons(); } 
             catch(e) { showToast("Erro.", "error"); }
         }
+
+        // Função para executar o resgate de e-mail no Firebase Auth
+        window.executarResgateAcesso = async function() {
+            const email = document.getElementById('email-resgate').value.trim();
+            const btn = document.getElementById('btn-resgate');
+
+            if (!email) return showToast("Digite o e-mail para liberar.", "error");
+
+            btn.disabled = true;
+            const txtOriginal = btn.innerHTML;
+            btn.innerHTML = "⏳ Liberando...";
+
+            try {
+                const forcarVerificacao = httpsCallable(functions, 'forcarVerificacaoEmailAdmin');
+                const res = await forcarVerificacao({ email: email, uid: masterUid });
+
+                if (res.data.success) {
+                    showToast(res.data.message, "success");
+                    document.getElementById('email-resgate').value = "";
+                } else {
+                    showToast("Erro: " + res.data.error, "error");
+                }
+            } catch (e) {
+                showToast("Falha na comunicação com o servidor.", "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = txtOriginal;
+            }
+        };
     </script>
 </body>
 </html>

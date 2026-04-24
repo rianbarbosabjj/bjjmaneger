@@ -50,7 +50,7 @@
                 </div>
                 <div id="badge-ambiente-desktop" class="mt-2"></div>
             </div>
-            <nav class="p-4 space-y-2 flex-1 overflow-y-auto">
+            <nav class="p-4 space-y-2 flex-1 overflow-y-auto custom-scroll">
                 <button onclick="mudarAbaMaster('academias')" id="menu-academias" class="w-full flex items-center gap-3 px-4 py-3 bg-rose-500/10 text-rose-500 rounded-xl font-bold text-xs uppercase tracking-widest border border-rose-500/20 transition-all">
                     <span class="text-lg">🏢</span> Dashboard
                 </button>
@@ -651,6 +651,52 @@
         </div>
     </div>
 
+    <div id="modal-acesso-sistema" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-[70] p-4 transition-opacity">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col transform transition-transform">
+            <div class="bg-slate-950 p-5 flex justify-between items-center text-white border-b border-slate-800 shrink-0">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-cyan-500/20 text-cyan-400 rounded-lg flex items-center justify-center text-lg font-black">👁️</div>
+                    <h3 class="font-black text-sm tracking-widest uppercase">Acesso Suporte (Impersonar)</h3>
+                </div>
+                <button onclick="fecharModalAcessoSistema()" class="text-slate-500 hover:text-white text-2xl leading-none">&times;</button>
+            </div>
+            
+            <div class="p-6 space-y-6 flex-1 overflow-y-auto">
+                <div class="text-center mb-2">
+                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Acessar o sistema da academia:</p>
+                    <h4 id="acesso-nome-equipe" class="text-xl font-black text-white uppercase tracking-tight">Nome da Equipe</h4>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <button onclick="entrarComo('dashboard.html')" class="p-4 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-2xl flex flex-col items-center justify-center gap-3 transition-all group shadow-sm">
+                        <span class="text-2xl group-hover:scale-110 transition-transform">🏠</span>
+                        <span class="text-[9px] font-black text-slate-300 uppercase tracking-widest text-center">Painel<br>Geral</span>
+                    </button>
+                    <button onclick="entrarComo('financeiro.html')" class="p-4 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-2xl flex flex-col items-center justify-center gap-3 transition-all group shadow-sm">
+                        <span class="text-2xl group-hover:scale-110 transition-transform">💰</span>
+                        <span class="text-[9px] font-black text-slate-300 uppercase tracking-widest text-center">Controle<br>Financeiro</span>
+                    </button>
+                    <button onclick="entrarComo('turmas.html')" class="p-4 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-2xl flex flex-col items-center justify-center gap-3 transition-all group shadow-sm">
+                        <span class="text-2xl group-hover:scale-110 transition-transform">🥋</span>
+                        <span class="text-[9px] font-black text-slate-300 uppercase tracking-widest text-center">Turmas &<br>Presença</span>
+                    </button>
+                    <button onclick="entrarComo('cadastro.html')" class="p-4 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-2xl flex flex-col items-center justify-center gap-3 transition-all group shadow-sm">
+                        <span class="text-2xl group-hover:scale-110 transition-transform">👥</span>
+                        <span class="text-[9px] font-black text-slate-300 uppercase tracking-widest text-center">Cadastrar<br>Alunos</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-5 bg-slate-950 border-t border-slate-800 flex justify-between items-center gap-4 shrink-0">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">⚠️</span>
+                    <p class="text-[9px] text-amber-500 font-bold leading-tight">As alterações afetam o banco de dados real do cliente.</p>
+                </div>
+                <button onclick="fecharModalAcessoSistema()" class="px-6 py-2.5 rounded-xl font-bold text-slate-400 hover:bg-slate-800 transition-colors text-xs uppercase tracking-widest shrink-0">Fechar</button>
+            </div>
+        </div>
+    </div>
+
     <div id="modal-cupom" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-[60] p-4 transition-opacity">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col transform transition-transform">
             <div class="bg-slate-950 p-5 flex justify-between items-center text-white border-b border-slate-800">
@@ -819,6 +865,7 @@
         let chamadosCache = [];
         let auditoriaCache = [];
         let equipeEditandoId = null;
+        let equipeAcessoId = null; // Usado para a impersonação
         let totalAlunosGeral = 0;
         
         let chartMrrInstance = null;
@@ -1412,13 +1459,36 @@
                     <td class="px-6 py-4 text-center">${asaasBadge}</td>
                     <td class="px-6 py-4 flex gap-2 justify-center items-center">
                         <button onclick="abrirModalEditarEquipe('${eq.id}')" class="bg-slate-800 p-2 rounded hover:bg-slate-700" title="Configurar Licença">⚙️</button>
-                        <button onclick="acessarComoEquipe('${eq.id}')" class="bg-cyan-600 p-2 rounded hover:bg-cyan-500" title="Acessar como Professor">👁️</button>
+                        <button onclick="abrirModalAcessoSistema('${eq.id}')" class="bg-cyan-600 p-2 rounded hover:bg-cyan-500" title="Acessar Sistema Completo">👁️</button>
                         <a href="https://wa.me/55${eq.telefone ? eq.telefone.replace(/\D/g,'') : ''}" target="_blank" class="bg-emerald-600 p-2 rounded hover:bg-emerald-500" title="Chamar no WhatsApp">💬</a>
                         <button onclick="excluirEquipe('${eq.id}')" class="bg-rose-600 p-2 rounded hover:bg-rose-500" title="Excluir Equipe">🗑️</button>
                     </td>
                 `;
                 tabela.appendChild(tr);
             });
+        }
+
+        // ==========================================
+        // 🚪 ACESSO COMPLETO AO SISTEMA DA EQUIPE (IMPERSONATE)
+        // ==========================================
+        window.abrirModalAcessoSistema = function(id) {
+            const eq = equipesCache.find(e => e.id === id);
+            if(!eq) return;
+            equipeAcessoId = id;
+            document.getElementById('acesso-nome-equipe').innerText = (eq.nome_equipe || "Sem Nome").toUpperCase();
+            document.getElementById('modal-acesso-sistema').classList.replace('hidden', 'flex');
+        }
+
+        window.fecharModalAcessoSistema = function() {
+            document.getElementById('modal-acesso-sistema').classList.replace('flex', 'hidden');
+            equipeAcessoId = null;
+        }
+
+        window.entrarComo = function(pagina) {
+            if(!equipeAcessoId) return;
+            sessionStorage.setItem('admin_impersonate', equipeAcessoId);
+            window.open(pagina, '_blank');
+            fecharModalAcessoSistema();
         }
 
         // ==========================================
@@ -1574,11 +1644,6 @@
             if(abaID === 'academias') renderizarGraficos();
             if(abaID === 'suporte') carregarChamados(); 
             if(abaID === 'auditoria') carregarAuditoria();
-        }
-
-        window.acessarComoEquipe = function(id) {
-            sessionStorage.setItem('admin_impersonate', id);
-            window.location.href = "dashboard.html";
         }
 
         window.sairDoMaster = () => signOut(auth).then(() => window.location.href = "index.html");

@@ -27,8 +27,10 @@
         <div class="max-w-3xl mx-auto">
             
             <div class="flex justify-center mb-8 mt-4 min-h-[5rem]">
-                <img id="logo-equipe" src="" alt="Logo da Equipe" class="h-20 md:h-28 w-auto object-contain drop-shadow-sm hidden">
-                <div id="fallback-logo" class="w-24 h-24 rounded-full bg-slate-800 text-white flex items-center justify-center text-4xl font-black hidden shadow-md"></div>
+                <div class="bg-slate-900/80 backdrop-blur-md p-4 md:p-6 rounded-3xl shadow-lg border border-slate-700/50 flex items-center justify-center min-w-[120px]">
+                    <img id="logo-equipe" src="" alt="Logo da Equipe" class="h-20 md:h-24 w-auto object-contain drop-shadow-sm hidden">
+                    <div id="fallback-logo" class="w-20 h-20 rounded-full bg-slate-800 text-white flex items-center justify-center text-4xl font-black hidden shadow-md"></div>
+                </div>
             </div>
 
             <div class="mb-8 text-center" id="cabecalho-form">
@@ -401,7 +403,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signOut, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
@@ -424,6 +426,8 @@
         const equipeId = paramsUrl.get('equipe');
 
         let ficheiroFotoSelecionado = null;
+        let quantidadeAlunosAtual = 0;
+        let uid = null;
 
         window.showToast = function(message, type = 'error') {
             const container = document.getElementById('toast-container');
@@ -530,6 +534,10 @@
                     document.getElementById('form-prof').classList.remove('hidden');
                 } else {
                     document.getElementById('form-aluno').classList.remove('hidden');
+                    // Busca a quantidade atual de alunos da equipe para gerar a matrícula correta
+                    const q = query(collection(db, "alunos"), where("equipe_id", "==", equipeId));
+                    const snap = await getDocs(q);
+                    quantidadeAlunosAtual = snap.size;
                 }
 
             } catch (e) {
@@ -659,8 +667,8 @@
                         <h2 class="text-2xl font-black ${fotoErro ? 'text-amber-600' : 'text-emerald-800'} uppercase">Matrícula Concluída!</h2>
                         <p class="text-emerald-600 font-medium mt-2">Bem-vindo(a) à equipe, ${nome.split(' ')[0]}.</p>
                         ${fotoErro ? '<p class="text-rose-500 font-bold mt-2 text-xs">Nota: Não foi possível salvar a foto. Verifique com o seu professor.</p>' : ''}
-                        
-                        <div class="mt-8 bg-white p-4 rounded-2xl border border-emerald-100 shadow-sm w-full max-w-sm">
+
+                        <div class="mt-6 bg-white p-4 rounded-2xl border border-emerald-100 shadow-sm w-full max-w-sm">
                             <p class="text-xs text-slate-500 font-bold uppercase tracking-widest mb-1">Acesse a sua Carteirinha em:</p>
                             <a href="https://maneger.bjjdigital.com.br/portal_aluno.html" class="bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md mt-2 uppercase tracking-widest text-sm">
                                 <span>📲</span> Portal do Aluno
@@ -704,11 +712,14 @@
             btn.disabled = true;
 
             try {
+                // Tenta criar o usuário. O Firebase Auth loga automaticamente se der certo.
                 const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
                 const uidProfessor = userCredential.user.uid;
 
+                // Envia e-mail de verificação para o novo professor
                 await sendEmailVerification(userCredential.user);
 
+                // Grava no Firestore
                 await setDoc(doc(db, "colaboradores", uidProfessor), {
                     nome: nome,
                     cpf: cpf,
@@ -726,15 +737,26 @@
                     data_cadastro: new Date().toISOString()
                 });
                 
-                await signOut(auth);
+                // Desloga o recém-criado para evitar acesso indevido no mesmo browser
+                await auth.signOut();
 
+                // Exibe a tela de sucesso para o Professor
                 document.getElementById('form-prof').innerHTML = `
                     <div class="bg-indigo-50 border border-indigo-200 p-10 rounded-3xl text-center shadow-lg mt-8 flex flex-col items-center">
                         <span class="text-6xl mb-4 block">🤝</span>
                         <h2 class="text-2xl font-black text-indigo-800 uppercase">Acesso Criado!</h2>
                         <p class="text-indigo-600 font-medium mt-2">Bem-vindo(a), ${nome.split(' ')[0]}. O seu acesso foi configurado com sucesso.</p>
                         
-                        <div class="mt-8 bg-white p-4 rounded-2xl border border-indigo-100 shadow-sm w-full max-w-sm">
+                        <div class="bg-amber-500/10 border border-amber-500/30 p-5 rounded-2xl space-y-3 mt-6 max-w-sm">
+                            <h4 class="text-amber-600 font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2">
+                                ⚠️ Atenção
+                            </h4>
+                            <p class="text-amber-800 text-xs leading-relaxed font-medium">
+                                Verifique a sua caixa de entrada, incluindo a pasta de <strong>SPAM ou Lixo Eletrônico</strong>, para ativar o seu e-mail antes do primeiro acesso.
+                            </p>
+                        </div>
+
+                        <div class="mt-6 bg-white p-4 rounded-2xl border border-indigo-100 shadow-sm w-full max-w-sm">
                             <p class="text-xs text-slate-500 font-bold uppercase tracking-widest mb-1">Acesse o sistema em:</p>
                             <a href="https://maneger.bjjdigital.com.br/login.html" class="bg-indigo-500 hover:bg-indigo-600 text-white font-black py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md mt-2 uppercase tracking-widest text-sm">
                                 <span>💻</span> Fazer Login
@@ -747,6 +769,7 @@
                     showToast("Este e-mail já está cadastrado no sistema.", "error");
                 } else {
                     showToast("Erro ao criar acesso. Tente novamente.", "error");
+                    console.log(e);
                 }
                 btn.innerHTML = "<span class='mr-2'>🚀</span> CRIAR ACESSO";
                 btn.disabled = false;

@@ -1,168 +1,196 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="scroll-smooth">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Criar Conta | BJJ Manager</title>
-    
-    <link rel="icon" type="image/png" href="logo_bjj_maneger.png">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nova Matrícula | BJJ Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .bg-pattern { background-image: radial-gradient(#334155 1px, transparent 1px); background-size: 20px 20px; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
         
-        .form-scroll::-webkit-scrollbar { width: 6px; }
-        .form-scroll::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); border-radius: 10px; }
-        .form-scroll::-webkit-scrollbar-thumb { background: #06b6d4; border-radius: 10px; }
-
-        /* Animação Pulsar para o WhatsApp */
-        @keyframes pulse-whatsapp {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
-            70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
-        }
-        .btn-whatsapp {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background-color: #25D366;
-            color: white;
-            border-radius: 50px;
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            z-index: 1000;
-            transition: all 0.3s ease;
-            animation: pulse-whatsapp 2s infinite;
-        }
-        .btn-whatsapp:hover { background-color: #20ba5a; transform: scale(1.1); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
     </style>
 </head>
-<body class="bg-slate-900 min-h-screen flex items-center justify-center p-4 relative overflow-x-hidden selection:bg-cyan-500 selection:text-white py-8">
-
-    <div class="absolute inset-0 bg-pattern opacity-30"></div>
-    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-2xl h-64 bg-cyan-500/20 blur-[100px] rounded-full pointer-events-none"></div>
-
-    <a href="https://wa.me/5521981716074?text=Olá! Gostaria de tirar uma dúvida sobre o cadastro no BJJ Manager." target="_blank" class="btn-whatsapp">
-        <svg class="w-8 h-8 fill-current" viewBox="0 0 24 24">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-        </svg>
-    </a>
+<body class="flex flex-col h-[100dvh] overflow-hidden text-slate-800 bg-[#F8FAFC]">
 
     <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
-    <div class="bg-slate-800/80 backdrop-blur-xl border border-slate-700 w-full max-w-5xl rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative z-10 h-[95vh] md:h-[90vh] max-h-[850px]">
+    <div class="w-full bg-slate-900 p-3 text-center relative z-50 shrink-0 shadow-md flex items-center justify-center h-14">
+        <a href="dashboard.html" class="absolute left-4 top-1.5 transition-opacity hover:opacity-80 flex items-center text-slate-400 hover:text-white text-xs font-bold uppercase tracking-widest h-10">
+            <span class="mr-2 text-lg leading-none">«</span> Voltar
+        </a>
+        <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest hidden sm:inline-block">Modo Receção / Autoatendimento</span>
+    </div>
+
+    <main class="flex-1 overflow-y-auto p-4 md:p-8 pb-10 hide-scrollbar" id="interface-sistema">
         
-        <div class="w-full md:w-5/12 bg-gradient-to-br from-cyan-600 to-blue-700 p-8 md:p-12 flex flex-col justify-between text-white relative overflow-hidden shrink-0 hidden md:flex">
-            <div class="absolute -bottom-10 -right-10 text-[150px] opacity-10 leading-none">🥋</div>
+        <div class="max-w-3xl mx-auto" id="container-principal">
             
-            <div class="text-center">
-                <a href="index.html" class="inline-flex items-center justify-center p-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-[2rem] shadow-2xl mb-8 transition-all hover:scale-105 hover:bg-white/20">
-                    <img src="logo_bjj_maneger.png" alt="BJJ Manager Logo" class="h-24 md:h-32 lg:h-36 w-auto mx-auto filter drop-shadow-lg">
-                </a>
-                
-                <h2 class="text-3xl lg:text-4xl font-black mb-4 leading-tight">A sua academia de nível mundial.</h2>
-                <p class="text-cyan-100 text-sm leading-relaxed font-medium">Junte-se à revolução da gestão para equipes. Preencha os dados de sua equipe para configurar o seu painel.</p>
-            </div>
-            
-            <div class="mt-6">
-                <div class="flex items-center gap-3 text-sm font-bold text-cyan-100 mb-3">
-                    <span class="bg-white/20 p-1.5 rounded-full text-white text-xs">✅</span> Gestão de Alunos e Turmas
+            <div class="flex justify-center mb-8 mt-4 min-h-[5rem]">
+                <div class="bg-slate-900/80 backdrop-blur-md p-6 md:p-8 rounded-[2rem] shadow-2xl border border-slate-700/50 flex items-center justify-center min-w-[140px] min-h-[140px]">
+                    <img id="logo-equipe" src="" alt="Logo da Equipe" class="h-24 md:h-32 w-auto object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.15)] hidden">
+                    <div id="fallback-logo" class="w-24 h-24 rounded-full bg-slate-800 border-2 border-slate-600 text-white flex items-center justify-center text-5xl font-black hidden shadow-inner"></div>
                 </div>
-                <div class="flex items-center gap-3 text-sm font-bold text-cyan-100 mb-3">
-                    <span class="bg-white/20 p-1.5 rounded-full text-white text-xs">✅</span> Controlo Financeiro Blindado
-                </div>
-                <div class="flex items-center gap-3 text-sm font-bold text-cyan-100">
-                    <span class="bg-white/20 p-1.5 rounded-full text-white text-xs">✅</span> Diplomas Oficiais QR Code
-                </div>
-            </div>
-        </div>
-
-        <div class="w-full md:w-7/12 bg-slate-900 flex flex-col h-full overflow-hidden">
-            <div class="p-6 md:p-8 border-b border-slate-800 shrink-0">
-                <h3 class="text-2xl font-black text-white mb-1">Nova Equipe</h3>
-                <p class="text-slate-400 text-xs font-medium">Cadastro Oficial de Instituição e Responsável.</p>
             </div>
 
-            <div class="p-6 md:p-8 overflow-y-auto form-scroll flex-1">
-                <form id="form-cadastro" class="space-y-6">
+            <div class="mb-8 text-center" id="cabecalho-form">
+                <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Carregando formulário...</h2>
+                <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Aguarde um instante.</p>
+            </div>
+
+            <div id="form-aluno" class="space-y-6 hidden">
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
+                    <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
+                        <span class="text-xl">🥋</span>
+                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Dados Pessoais</h3>
+                    </div>
                     
-                    <div class="space-y-4">
-                        <h4 class="text-[10px] font-black text-cyan-500 uppercase tracking-widest border-b border-slate-800 pb-2">1. Dados da Instituição</h4>
-                        
-                        <div class="grid grid-cols-1 gap-4">
+                    <div class="flex flex-col items-center justify-center mb-8 pb-6 border-b border-slate-50">
+                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-3">Foto de Rosto (Fundo Branco)</label>
+                        <div class="relative w-32 h-32 rounded-full border-4 border-dashed border-slate-300 bg-slate-50 flex items-center justify-center overflow-hidden cursor-pointer hover:border-cyan-500 hover:bg-cyan-50 transition-all shadow-sm" onclick="document.getElementById('cad-foto').click()">
+                            <img id="preview-foto" src="" class="w-full h-full object-cover hidden">
+                            <div id="placeholder-foto" class="text-center text-slate-400">
+                                <span class="text-3xl">📷</span>
+                                <p class="text-[9px] font-bold mt-1 uppercase">Enviar Foto</p>
+                            </div>
+                        </div>
+                        <input type="file" id="cad-foto" accept="image/*" class="hidden" onchange="mostrarPreviewFoto(event)">
+                        <p class="text-[9px] text-slate-400 mt-2 font-medium">Sua foto da carteirinha oficial da equipe.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="md:col-span-2">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Nome Completo *</label>
+                            <input type="text" id="cad-nome" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all font-bold text-slate-700 uppercase" placeholder="Digite seu nome completo...">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">CPF *</label>
+                            <input type="text" id="cad-cpf" maxlength="14" oninput="mascaraCPF(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="000.000.000-00">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Data de Nascimento *</label>
+                            <input type="date" id="cad-nasc" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Faixa Atual</label>
+                            <select id="cad-faixa" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">
+                                <option value="Branca">Branca</option>
+                                <option value="Cinza e Branca">Cinza e Branca</option>
+                                <option value="Cinza">Cinza</option>
+                                <option value="Cinza e Preta">Cinza e Preta</option>
+                                <option value="Amarela e Branca">Amarela e Branca</option>
+                                <option value="Amarela">Amarela</option>
+                                <option value="Amarela e Preta">Amarela e Preta</option>
+                                <option value="Laranja e Branca">Laranja e Branca</option>
+                                <option value="Laranja">Laranja</option>
+                                <option value="Laranja e Preta">Laranja e Preta</option>
+                                <option value="Verde e Branca">Verde e Branca</option>
+                                <option value="Verde">Verde</option>
+                                <option value="Verde e Preta">Verde e Preta</option>
+                                <option value="Azul">Azul</option>
+                                <option value="Roxa">Roxa</option>
+                                <option value="Marrom">Marrom</option>
+                                <option value="Preta">Preta</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Nome da Equipe *</label>
-                                <input type="text" id="cad-equipe" required placeholder="Digite o nome de sua equipe" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all uppercase placeholder:text-slate-600">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Grau</label>
+                                <select id="cad-grau" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer">
+                                    <option value="Sem grau">Sem grau</option>
+                                    <option value="1º">1º</option>
+                                    <option value="2º">2º</option>
+                                    <option value="3º">3º</option>
+                                    <option value="4º">4º</option>
+                                </select>
                             </div>
                             <div>
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Logo da Equipe (Opcional)</label>
-                                <input type="file" id="cad-logo" accept="image/png, image/jpeg" class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-slate-400 file:mr-4 file:py-1.5 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-cyan-500/20 file:text-cyan-400 hover:file:bg-cyan-500/30 cursor-pointer transition-all">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Peso (Kg)</label>
+                                <input type="text" id="cad-peso" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="Ex: 80">
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="space-y-4 pt-2">
-                        <h4 class="text-[10px] font-black text-cyan-500 uppercase tracking-widest border-b border-slate-800 pb-2">2. Responsável Legal</h4>
-                        
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div class="sm:col-span-2">
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Nome Completo *</label>
-                                <input type="text" id="cad-nome-resp" required placeholder="Digite seu nome completo" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">CPF ou CNPJ *</label>
-                                <input type="text" id="cad-doc" required maxlength="18" oninput="mascaraDoc(this)" placeholder="000.000.000-00" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">WhatsApp *</label>
-                                <input type="tel" id="cad-tel" required maxlength="15" oninput="mascaraTelefone(this)" placeholder="(00) 00000-0000" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
-                            </div>
-                        </div>
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
+                    <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
+                        <span class="text-xl">📍</span>
+                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Contato e Acesso</h3>
                     </div>
-
-                    <div class="space-y-4 pt-2">
-                        <h4 class="text-[10px] font-black text-cyan-500 uppercase tracking-widest border-b border-slate-800 pb-2">3. Localização do Tatame</h4>
-                        
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div class="sm:col-span-1">
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">CEP</label>
-                                <input type="text" id="cad-cep" maxlength="9" onblur="buscarCEP(this.value)" oninput="mascaraCEP(this)" placeholder="00000-000" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
-                            </div>
-                            <div class="sm:col-span-2">
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Rua / Avenida</label>
-                                <input type="text" id="cad-rua" placeholder="Logradouro" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
-                            </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">WhatsApp / Telefone *</label>
+                            <input type="text" id="cad-tel" maxlength="15" oninput="mascaraTelefone(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="(00) 00000-0000">
                         </div>
-                        
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                            <div class="sm:col-span-1">
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Número</label>
-                                <input type="text" id="cad-num" placeholder="Nº" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
-                            </div>
-                            <div class="sm:col-span-3">
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Complemento</label>
-                                <input type="text" id="cad-comp" placeholder="Sala, Andar..." class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
-                            </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">E-mail de Acesso *</label>
+                            <input type="email" id="cad-email" required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="email@exemplo.com">
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div class="sm:col-span-1">
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Bairro</label>
-                                <input type="text" id="cad-bairro" placeholder="Bairro" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
+                        <div class="md:col-span-2 bg-cyan-50/50 p-4 sm:p-5 rounded-2xl border border-cyan-100 shadow-sm mb-2 mt-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="md:col-span-2">
+                                <p class="text-[10px] font-black text-cyan-600 uppercase tracking-widest border-b border-cyan-200 pb-2 mb-2">Credenciais do Portal do Aluno</p>
+                                <p class="text-[9px] sm:text-[10px] text-slate-500 font-medium mb-2">* Você usará o seu e-mail e esta senha para acessar a sua carteirinha digital no celular.</p>
                             </div>
-                            <div class="sm:col-span-1">
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Cidade</label>
-                                <input type="text" id="cad-cidade" placeholder="Cidade" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
+                            <div class="relative">
+                                <label class="block text-[10px] font-black text-cyan-600 uppercase mb-1.5">Criar Senha *</label>
+                                <input type="password" id="cad-senha-portal" required class="w-full p-3.5 bg-white border border-cyan-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-cyan-800 pr-12" placeholder="Mínimo 6 caracteres">
+                                <button type="button" onclick="toggleSenha('cad-senha-portal', this)" class="absolute bottom-3.5 right-4 text-cyan-600 hover:text-cyan-800 transition-colors outline-none focus:outline-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>
+                                </button>
                             </div>
-                            <div class="sm:col-span-1">
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">UF</label>
-                                <select id="cad-uf" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all cursor-pointer appearance-none">
+                            <div class="relative">
+                                <label class="block text-[10px] font-black text-cyan-600 uppercase mb-1.5">Confirmar Senha *</label>
+                                <input type="password" id="cad-senha-portal-confirma" required class="w-full p-3.5 bg-white border border-cyan-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-cyan-800" placeholder="Repita a senha">
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-2 border-t border-slate-100 pt-4 mt-2">
+                            <h4 class="text-xs font-black text-slate-700 mb-4 uppercase tracking-widest">Endereço</h4>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:col-span-2">
+                            <div class="col-span-1">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">CEP</label>
+                                <input type="text" id="cad-cep" maxlength="9" onblur="buscarCEP(this.value)" oninput="mascaraCEP(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="00000-000">
+                            </div>
+                            <div class="col-span-1 md:col-span-2">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Endereço Completo (Rua, Av.)</label>
+                                <input type="text" id="cad-end" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="Rua, Avenida...">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 md:col-span-2">
+                            <div class="col-span-1">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Número</label>
+                                <input type="text" id="cad-num" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700">
+                            </div>
+                            <div class="col-span-1 md:col-span-2">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Complemento</label>
+                                <input type="text" id="cad-comp" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="Apto, Sala...">
+                            </div>
+                            <div class="col-span-2 md:col-span-2">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Bairro</label>
+                                <input type="text" id="cad-bairro" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-3 md:col-span-2">
+                            <div class="col-span-2">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Cidade</label>
+                                <input type="text" id="cad-cidade" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700">
+                            </div>
+                            <div class="col-span-1">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">UF</label>
+                                <select id="cad-uf" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer appearance-none">
                                     <option value="" disabled selected>UF</option>
                                     <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option>
                                     <option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option>
@@ -176,67 +204,216 @@
                                 </select>
                             </div>
                         </div>
+
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
+                    <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
+                        <span class="text-xl">👪</span>
+                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Responsável Legal <span class="text-[10px] text-slate-400 normal-case">(Apenas para menores)</span></h3>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="md:col-span-2">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Nome do Responsável</label>
+                            <input type="text" id="cad-resp-nome" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700 uppercase" placeholder="Nome da mãe, pai ou tutor...">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">CPF do Responsável</label>
+                            <input type="text" id="cad-resp-cpf" maxlength="14" oninput="mascaraCPF(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="000.000.000-00">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-amber-50 rounded-3xl shadow-sm border border-amber-200 p-6 md:p-8 space-y-6">
+                    <div class="flex items-center gap-2 border-b border-amber-200/50 pb-4">
+                        <span class="text-xl">⚖️</span>
+                        <h3 class="font-black text-amber-900 uppercase tracking-widest text-sm">Autorização de Imagem</h3>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <p class="text-sm text-amber-900">De acordo com a Lei Geral de Proteção de Dados (LGPD). Autorizo a utilização de minhas imagens com a finalidade de:</p>
+                        
+                        <div class="space-y-4 bg-white p-6 rounded-xl border border-amber-100 shadow-sm">
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="cad-lgpd-redes" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500"> 
+                                <span>Redes sociais da Equipe</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="cad-lgpd-site" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500"> 
+                                <span>Site institucional</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="cad-lgpd-promo" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500"> 
+                                <span>Materiais promocionais</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="cad-lgpd-relatorio" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500"> 
+                                <span>Relatórios desportivos</span>
+                            </label>
+                        </div>
                     </div>
 
-                    <div class="space-y-4 pt-2">
-                        <h4 class="text-[10px] font-black text-cyan-500 uppercase tracking-widest border-b border-slate-800 pb-2">4. Credenciais de Acesso</h4>
-                        
-                        <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">E-mail *</label>
-                            <input type="email" id="cad-email" required placeholder="mestre@equipe.com" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600">
-                        </div>
+                    <div class="bg-white p-6 rounded-xl border border-amber-100 shadow-sm space-y-4 mt-6">
+                        <p class="text-sm text-slate-700">Declaro que li e concordo com os termos de matrícula. <span class="text-red-500 font-bold">*</span></p>
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" id="cad-lgpd-termos" class="w-6 h-6 rounded text-amber-600 border-slate-300 focus:ring-amber-500">
+                            <span class="text-sm font-black text-slate-800 uppercase tracking-widest">Concordo</span>
+                        </label>
+                    </div>
+                </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="pt-6 pb-8">
+                    <button onclick="salvarMatricula()" id="btn-salvar" class="w-full bg-[#10B981] hover:bg-emerald-600 text-white font-black py-5 rounded-2xl shadow-lg transition-transform transform hover:-translate-y-1 uppercase tracking-widest text-lg flex items-center justify-center">
+                        <span class="mr-2">✅</span> FINALIZAR MATRÍCULA
+                    </button>
+                </div>
+            </div>
+
+            <div id="form-prof" class="space-y-6 hidden">
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
+                    <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
+                        <span class="text-xl">👥</span>
+                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Registro de Co-Administrador(a)</h3>
+                    </div>
+                    
+                    <div class="space-y-5">
+                        <p class="text-sm text-slate-500 font-medium leading-relaxed">Crie o seu acesso e preencha os seus dados para entrar no sistema da equipe.</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="md:col-span-2">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Nome Completo *</label>
+                                <input type="text" id="prof-nome" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700 uppercase" placeholder="Digite seu nome...">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">CPF *</label>
+                                <input type="text" id="prof-cpf" maxlength="14" oninput="mascaraCPF(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700" placeholder="000.000.000-00">
+                            </div>
+
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">WhatsApp / Telefone *</label>
+                                <input type="text" id="prof-tel" maxlength="15" oninput="mascaraTelefone(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700" placeholder="(00) 00000-0000">
+                            </div>
+
+                            <div class="md:col-span-2 border-t border-slate-100 pt-4 mt-2">
+                                <h4 class="text-xs font-black text-slate-700 mb-2 uppercase tracking-widest">Endereço Residencial</h4>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:col-span-2">
+                                <div class="col-span-1">
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">CEP</label>
+                                    <input type="text" id="prof-cep" maxlength="9" onblur="buscarCEPProf(this.value)" oninput="mascaraCEP(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700" placeholder="00000-000">
+                                </div>
+                                <div class="col-span-1 md:col-span-2">
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Endereço Completo (Rua, Av.)</label>
+                                    <input type="text" id="prof-end" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700" placeholder="Rua, Avenida...">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 md:col-span-2">
+                                <div class="col-span-1">
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Número</label>
+                                    <input type="text" id="prof-num" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700">
+                                </div>
+                                <div class="col-span-1 md:col-span-2">
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Complemento</label>
+                                    <input type="text" id="prof-comp" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700" placeholder="Apto, Sala...">
+                                </div>
+                                <div class="col-span-2 md:col-span-2">
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Bairro</label>
+                                    <input type="text" id="prof-bairro" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-3 md:col-span-2">
+                                <div class="col-span-2">
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Cidade</label>
+                                    <input type="text" id="prof-cidade" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700">
+                                </div>
+                                <div class="col-span-1">
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">UF</label>
+                                    <select id="prof-uf" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-indigo-500 outline-none transition-all cursor-pointer appearance-none">
+                                        <option value="" disabled selected>UF</option>
+                                        <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option>
+                                        <option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option>
+                                        <option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option>
+                                        <option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option>
+                                        <option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option>
+                                        <option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option>
+                                        <option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option>
+                                        <option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
+                                        <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="md:col-span-2 border-t border-slate-100 pt-4 mt-2">
+                                <h4 class="text-xs font-black text-slate-700 mb-2 uppercase tracking-widest">Acesso ao Sistema</h4>
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">E-mail Profissional *</label>
+                                <input type="email" id="prof-email" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700" placeholder="email@exemplo.com">
+                            </div>
+
                             <div class="relative">
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Criar Senha *</label>
-                                <input type="password" id="cad-senha" required minlength="6" placeholder="Mínimo 6 caracteres" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-cyan-500 transition-all pr-12 placeholder:text-slate-600">
-                                <button type="button" onclick="toggleSenha('cad-senha', this)" class="absolute bottom-3.5 right-4 text-slate-400 hover:text-cyan-400 transition-colors">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Criar Senha *</label>
+                                <input type="password" id="prof-senha" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700 pr-12" placeholder="Mínimo 8 caracteres">
+                                <button type="button" onclick="toggleSenha('prof-senha', this)" class="absolute bottom-3.5 right-4 text-slate-400 hover:text-indigo-500 transition-colors outline-none focus:outline-none">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>
                                 </button>
                             </div>
-                            <div>
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Confirmar Senha *</label>
-                                <input type="password" id="cad-senha-confirma" required minlength="6" placeholder="Repita a senha" class="w-full p-3.5 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-rose-500 transition-all placeholder:text-slate-600">
+                            
+                            <div class="relative">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Confirmar Senha *</label>
+                                <input type="password" id="prof-senha-confirma" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700" placeholder="Repita a senha">
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="space-y-4 pt-2">
-                        <h4 class="text-[10px] font-black text-emerald-400 uppercase tracking-widest border-b border-slate-800 pb-2">5. Código Promocional (Opcional)</h4>
-                        <div class="relative flex items-center">
-                            <span class="absolute left-4 text-slate-500">🎟️</span>
-                            <input type="text" id="cad-cupom" placeholder="Insira o código de indicação" class="w-full p-3.5 pl-11 pr-24 bg-slate-800 border border-slate-700 rounded-xl text-white font-bold outline-none focus:border-emerald-500 transition-all uppercase placeholder:text-slate-600 placeholder:normal-case tracking-widest">
-                            <button type="button" onclick="validarCupomCadastro()" id="btn-validar-cupom" class="absolute right-2 bg-emerald-500 hover:bg-emerald-600 text-white font-black py-1.5 px-3 rounded-lg text-[9px] uppercase tracking-widest transition-colors">Validar</button>
-                        </div>
-                        <p id="msg-cupom-cadastro" class="text-[11px] font-bold mt-1 ml-1 hidden"></p>
+                <div class="bg-indigo-50 rounded-3xl shadow-sm border border-indigo-200 p-6 md:p-8 space-y-6">
+                    <div class="flex items-center gap-2 border-b border-indigo-200/50 pb-4">
+                        <span class="text-xl">🔐</span>
+                        <h3 class="font-black text-indigo-900 uppercase tracking-widest text-sm">Termos e Sigilo (LGPD)</h3>
+                    </div>
+                    
+                    <div class="space-y-4 text-sm text-indigo-900">
+                        <p>Como Co-Administrador(a), você terá acesso a dados pessoais e sensíveis dos alunos da equipe.</p>
+                        <ul class="list-disc pl-5 space-y-2 font-medium">
+                            <li>Comprometo-me a manter <b>absoluto sigilo</b> sobre todas as informações cadastradas no sistema.</li>
+                            <li>Utilizarei os dados única e exclusivamente para a gestão desportiva e administrativa da equipe.</li>
+                            <li>É expressamente proibido compartilhar, vender ou utilizar as imagens e contatos dos alunos para fins não autorizados.</li>
+                            <li>Estou ciente das responsabilidades legais e sanções estabelecidas pela Lei Geral de Proteção de Dados (Lei nº 13.853/2019).</li>
+                        </ul>
                     </div>
 
-                    <div class="flex items-start gap-3 mt-6 p-4 bg-slate-800/50 rounded-xl border border-slate-700">
-                        <input type="checkbox" id="cad-termos" required class="mt-1 w-4 h-4 rounded bg-slate-900 border-slate-600 text-cyan-500 focus:ring-cyan-500 focus:ring-offset-slate-900 cursor-pointer shrink-0">
-                        <label for="cad-termos" class="text-xs text-slate-400 leading-relaxed cursor-pointer">
-                            Declaro que li e concordo com os <a href="https://maneger.bjjdigital.com.br/termos.html" target="_blank" class="text-cyan-400 hover:underline font-bold">Termos de Uso</a> e <a href="https://maneger.bjjdigital.com.br/termos.html" target="_blank" class="text-cyan-400 hover:underline font-bold">Política de Privacidade</a>, autorizando o tratamento dos dados conforme a LGPD.
+                    <div class="bg-white p-6 rounded-xl border border-indigo-100 shadow-sm space-y-4 mt-6">
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" id="prof-lgpd-termos" class="w-6 h-6 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500">
+                            <span class="text-sm font-black text-slate-800 uppercase tracking-widest">Li e Aceito os Termos de Sigilo <span class="text-red-500">*</span></span>
                         </label>
                     </div>
+                </div>
 
-                    <button type="submit" id="btn-cadastrar" class="w-full mt-4 bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.3)] transition-all transform hover:-translate-y-0.5 uppercase tracking-widest text-xs flex items-center justify-center">
-                        Finalizar e Criar Conta
+                <div class="pt-6 pb-8">
+                    <button onclick="salvarProfessor()" id="btn-salvar-prof" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-black py-5 rounded-2xl shadow-lg transition-transform transform hover:-translate-y-1 uppercase tracking-widest text-lg flex items-center justify-center">
+                        <span class="mr-2">🚀</span> CRIAR ACESSO
                     </button>
-                    
-                    <div class="text-center pt-2 pb-6">
-                        <p class="text-sm text-slate-400">Já tem uma conta? <a href="login.html" class="text-cyan-400 hover:text-cyan-300 font-bold ml-1 transition-colors">Faça Login</a></p>
-                    </div>
-                </form>
+                </div>
             </div>
+
         </div>
-    </div>
+    </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
-        // Configuração do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAkIk25LZptKw_N_UJsDO418IwMZNZXBeI",
             authDomain: "bjj-maneger.firebaseapp.com",
@@ -251,7 +428,9 @@
         const db = getFirestore(app);
         const storage = getStorage(app);
 
-        let cupomValidado = null; 
+        let uid = null;
+        let quantidadeAlunosAtual = 0;
+        let ficheiroFotoSelecionado = null;
 
         // --- SISTEMA DE TOASTS ---
         window.showToast = function(message, type = 'error') {
@@ -269,23 +448,12 @@
             }, 4500);
         }
 
-        // --- OLHINHO DA SENHA ---
-        window.toggleSenha = function(inputId, btnElement) {
-            const input = document.getElementById(inputId);
-            if (input.type === "password") {
-                input.type = "text";
-                btnElement.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>`;
-            } else {
-                input.type = "password";
-                btnElement.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>`;
-            }
-        }
-
-        // --- MÁSCARAS E CEP ---
-        window.mascaraDoc = (i) => {
+        // --- MÁSCARAS ---
+        window.mascaraCPF = (i) => {
             let v = i.value.replace(/\D/g, "");
-            if (v.length <= 11) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
-            else v = v.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
+            v = v.replace(/(\d{3})(\d)/, "$1.$2");
+            v = v.replace(/(\d{3})(\d)/, "$1.$2");
+            v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
             i.value = v;
         };
         window.mascaraTelefone = (i) => {
@@ -304,216 +472,175 @@
             if (cleanCep.length !== 8) return;
             const r = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`).then(res => res.json());
             if (!r.erro) {
-                document.getElementById('cad-rua').value = r.logradouro || "";
+                document.getElementById('cad-end').value = r.logradouro || "";
                 document.getElementById('cad-bairro').value = r.bairro || "";
-                document.getElementById('cad-cidade').value = r.localidade || "";
-                document.getElementById('cad-uf').value = r.uf || "";
+                document.getElementById('cad-num').focus();
             }
         };
 
-        // --- VALIDAÇÃO DE CUPOM ---
-        window.validarCupomCadastro = async function() {
-            const input = document.getElementById('cad-cupom');
-            const msgTexto = document.getElementById('msg-cupom-cadastro');
-            const btn = document.getElementById('btn-validar-cupom');
-            
-            const codigo = input.value.trim().toUpperCase();
-            if(!codigo) return;
-
-            btn.innerHTML = "⏳";
-            btn.disabled = true;
-            msgTexto.classList.add('hidden');
-
-            try {
-                const docSnap = await getDoc(doc(db, "cupons", codigo));
-                
-                if(docSnap.exists()) {
-                    const cupom = docSnap.data();
-                    
-                    if(cupom.limite_uso > 0 && (cupom.vezes_usado || 0) >= cupom.limite_uso) {
-                        msgTexto.innerText = "Este cupom atingiu o limite de usos.";
-                        msgTexto.className = "text-[11px] font-bold mt-1 ml-1 text-rose-500 block";
-                        cupomValidado = null;
-                        input.classList.add('border-rose-500');
-                        input.classList.remove('border-emerald-500');
-                    } else {
-                        cupomValidado = codigo;
-                        let txtDuracao = cupom.duracao === 'PRIMEIRA_MENSALIDADE' ? 'na 1ª mensalidade' : 'recorrente';
-                        msgTexto.innerText = `✅ Válido! Você terá ${cupom.desconto_perc}% de desconto ${txtDuracao}.`;
-                        msgTexto.className = "text-[11px] font-bold mt-1 ml-1 text-emerald-400 block";
-                        
-                        input.classList.add('border-emerald-500');
-                        input.classList.remove('border-rose-500');
-                    }
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // Checa se está no Modo Suporte (Super Admin)
+                const equipeImpersonada = sessionStorage.getItem('admin_impersonate');
+                if (equipeImpersonada) {
+                    uid = equipeImpersonada;
                 } else {
-                    msgTexto.innerText = "Cupom inválido ou não existe.";
-                    msgTexto.className = "text-[11px] font-bold mt-1 ml-1 text-rose-500 block";
-                    cupomValidado = null;
-                    input.classList.add('border-rose-500');
-                    input.classList.remove('border-emerald-500');
+                    uid = user.uid;
+                    // Verifica se é Co-Administrador para salvar no ID da Equipe correta
+                    const colabSnap = await getDoc(doc(db, "colaboradores", uid));
+                    if(colabSnap.exists()) {
+                        uid = colabSnap.data().equipe_id;
+                    }
                 }
-            } catch(e) {
-                msgTexto.innerText = "Erro ao consultar banco. Tente novamente.";
-                msgTexto.className = "text-[11px] font-bold mt-1 ml-1 text-rose-500 block";
-            } finally {
-                btn.innerHTML = "Validar";
-                btn.disabled = false;
-            }
-        }
+                
+                // --- CARREGA A LOGO DA EQUIPE ---
+                try {
+                    const docEquipe = await getDoc(doc(db, "equipes", uid));
+                    if (docEquipe.exists()) {
+                        const dadosEquipe = docEquipe.data();
+                        if (dadosEquipe.url_logo) {
+                            const imgEl = document.getElementById('logo-equipe');
+                            imgEl.src = dadosEquipe.url_logo;
+                            imgEl.classList.remove('hidden');
+                        } else {
+                            const fallEl = document.getElementById('fallback-logo');
+                            fallEl.innerText = dadosEquipe.nome_equipe ? dadosEquipe.nome_equipe.charAt(0).toUpperCase() : 'E';
+                            fallEl.classList.remove('hidden');
+                        }
+                    }
+                } catch(e) { console.log("Erro ao carregar logo"); }
 
-        document.getElementById('cad-cupom').addEventListener('input', function(e) {
-            if(e.target.value.trim() === '') {
-                cupomValidado = null;
-                document.getElementById('msg-cupom-cadastro').classList.add('hidden');
-                e.target.classList.remove('border-emerald-500', 'border-rose-500');
+                contarAlunos(); 
+                
+                // MOSTRAMOS O FORM DE ALUNO JÁ QUE ESTAMOS LOGADOS (MODO RECEPÇÃO)
+                document.getElementById('cabecalho-form').innerHTML = `
+                    <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Ficha de Matrícula</h2>
+                    <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Preencha os dados do aluno(a) abaixo.</p>
+                `;
+                document.getElementById('form-aluno').classList.remove('hidden');
+                
+            } else {
+                window.location.href = "index.html";
             }
         });
 
+        async function contarAlunos() {
+            try {
+                const q = query(collection(db, "alunos"), where("equipe_id", "==", uid));
+                const snap = await getDocs(q);
+                quantidadeAlunosAtual = snap.size;
+            } catch(e) { console.log("Erro ao contar alunos."); }
+        }
 
-        // --- LÓGICA DE SUBMISSÃO E INTEGRAÇÃO FIREBASE COM PLANO SELECIONADO ---
-document.getElementById('form-cadastro').addEventListener('submit', async (e) => {
-            e.preventDefault();
+        // PRÉ-VISUALIZAÇÃO DA FOTO NA TELA
+        window.mostrarPreviewFoto = function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                ficheiroFotoSelecionado = file;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgPreview = document.getElementById('preview-foto');
+                    imgPreview.src = e.target.result;
+                    imgPreview.classList.remove('hidden');
+                    document.getElementById('placeholder-foto').classList.add('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
 
-            const nomeEquipe = document.getElementById('cad-equipe').value.trim();
-            const arquivoLogo = document.getElementById('cad-logo').files[0];
-            const nomeResp = document.getElementById('cad-nome-resp').value.trim();
-            const docCpfCnpj = document.getElementById('cad-doc').value.trim();
-            const telefone = document.getElementById('cad-tel').value.trim();
-            
-            const cep = document.getElementById('cad-cep').value.trim();
-            const rua = document.getElementById('cad-rua').value.trim();
-            const num = document.getElementById('cad-num').value.trim();
-            const comp = document.getElementById('cad-comp').value.trim();
-            const bairro = document.getElementById('cad-bairro').value.trim();
-            const cidade = document.getElementById('cad-cidade').value.trim();
-            const uf = document.getElementById('cad-uf').value;
+        window.salvarMatricula = async function() {
+            const nome = document.getElementById('cad-nome').value.toUpperCase().trim();
+            const cpf = document.getElementById('cad-cpf').value.trim();
+            const nasc = document.getElementById('cad-nasc').value;
+            const tel = document.getElementById('cad-tel').value.trim();
+            const concordo = document.getElementById('cad-lgpd-termos').checked;
 
-            const email = document.getElementById('cad-email').value.trim().toLowerCase();
-            const senha = document.getElementById('cad-senha').value;
-            const senhaConfirma = document.getElementById('cad-senha-confirma').value;
-
-            if (senha !== senhaConfirma) {
-                document.getElementById('cad-senha-confirma').classList.add('border-rose-500');
-                return showToast("As senhas não coincidem!", "error");
+            if (!nome || !cpf || !nasc || !tel) {
+                return showToast("Preencha Nome, CPF, Data de Nascimento e Telefone!", "error");
             }
 
-            const cupomDigitado = document.getElementById('cad-cupom').value.trim().toUpperCase();
-            if (cupomDigitado && !cupomValidado) {
-                return showToast("Clique em 'VALIDAR' para confirmar o seu cupom antes de continuar.", "info");
+            if (!concordo) {
+                return showToast("É obrigatório concordar com os termos no final do formulário.", "error");
             }
 
-            const btn = document.getElementById('btn-cadastrar');
-            const btnOriginal = btn.innerHTML;
-            btn.innerHTML = "<span class='mr-2 text-lg'>⏳</span> Construindo a sua base...";
+            const anoAtual = new Date().getFullYear();
+            const proximaMatriculaNum = quantidadeAlunosAtual + 1;
+            const novaMatriculaStr = anoAtual + proximaMatriculaNum.toString().padStart(4, '0');
+
+            const btn = document.getElementById('btn-salvar');
+            const textoBotaoOrig = btn.innerHTML;
+            btn.innerHTML = "<span class='mr-2 text-xl'>⏳</span> A SALVAR DADOS...";
             btn.disabled = true;
-            btn.classList.add('opacity-70', 'cursor-not-allowed');
+
+            const dadosAluno = {
+                equipe_id: uid,
+                matricula: novaMatriculaStr,
+                nome: nome,
+                cpf: cpf,
+                data_nascimento: nasc,
+                faixa: document.getElementById('cad-faixa').value,
+                grau: document.getElementById('cad-grau').value,
+                peso: document.getElementById('cad-peso').value.trim(),
+                telefone: tel,
+                email: document.getElementById('cad-email').value.trim(),
+                endereco: document.getElementById('cad-end').value.trim(),
+                numero: document.getElementById('cad-num').value.trim(),
+                bairro: document.getElementById('cad-bairro').value.trim(),
+                cep: document.getElementById('cad-cep').value.trim(),
+                nome_responsavel: document.getElementById('cad-resp-nome').value.toUpperCase().trim(),
+                cpf_responsavel: document.getElementById('cad-resp-cpf').value.trim(),
+                status: "ATIVO",
+                bolsa_perc: 0,
+                dia_vencimento: 10,
+                lgpd_concordo: concordo,
+                lgpd_redes: document.getElementById('cad-lgpd-redes').checked,
+                lgpd_site: document.getElementById('cad-lgpd-site').checked,
+                lgpd_promo: document.getElementById('cad-lgpd-promo').checked,
+                lgpd_relatorios: document.getElementById('cad-lgpd-relatorio').checked,
+                foto_url: "", 
+                data_cadastro: new Date().toISOString()
+            };
 
             try {
-                // 1. Lê o plano da URL e puxa os dias de Trial do Super Admin
-                const urlParams = new URLSearchParams(window.location.search);
-                const planoSelecionado = urlParams.get('plano') || 'p1';
-
-                let trialDias = 7; 
-                let valorPlanoSelecionado = 0;
-
-                try {
-                    const snapPlanos = await getDoc(doc(db, "sistema", "config_planos"));
-                    if(snapPlanos.exists()) {
-                        const config = snapPlanos.data();
-                        if(config[planoSelecionado]) {
-                            trialDias = parseInt(config[planoSelecionado].trial_dias) || 7;
-                            valorPlanoSelecionado = parseFloat(config[planoSelecionado].preco) || 0;
-                        }
-                    }
-                } catch(e) { console.error("Erro ao puxar trial.", e); }
-
-                const dataExpiracao = new Date();
-                dataExpiracao.setDate(dataExpiracao.getDate() + trialDias);
-
-                // 2. Cria utilizador no Firebase Auth
-                const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
-                const user = userCredential.user;
-
-                // 3. Upload da Logo
-                let urlLogo = "";
-                if (arquivoLogo) {
-                    const caminhoRef = ref(storage, `equipes_logos/${user.uid}_${arquivoLogo.name}`);
-                    await uploadBytes(caminhoRef, arquivoLogo);
-                    urlLogo = await getDownloadURL(caminhoRef);
+                // 1. Guarda os dados no banco
+                const docRef = await addDoc(collection(db, "alunos"), dadosAluno);
+                
+                // 2. Se o atleta selecionou uma fotografia, envia para a Nuvem
+                if (ficheiroFotoSelecionado) {
+                    btn.innerHTML = "<span class='mr-2 text-xl'>📷</span> A ENVIAR FOTO...";
+                    
+                    const fotoPath = `fotos_carteirinha/${uid}/${docRef.id}.jpg`;
+                    const storageRef = ref(storage, fotoPath);
+                    
+                    await uploadBytes(storageRef, ficheiroFotoSelecionado);
+                    const downloadUrl = await getDownloadURL(storageRef);
+                    
+                    await updateDoc(docRef, { foto_url: downloadUrl });
                 }
 
-                // 4. Salva dados no Firestore
-                await setDoc(doc(db, "equipes", user.uid), {
-                    nome_equipe: nomeEquipe.toUpperCase(),
-                    responsavel_nome: nomeResp,
-                    responsavel_documento: docCpfCnpj,
-                    telefone: telefone,
-                    endereco_cep: cep,
-                    endereco_rua: rua,
-                    endereco_num: num,
-                    endereco_comp: comp,
-                    endereco_bairro: bairro,
-                    endereco_cidade: cidade,
-                    endereco_uf: uf,
-                    email_responsavel: email,
-                    url_logo: urlLogo,
-                    data_cadastro: new Date().toISOString(),
-                    status_plano: 'TESTE', 
-                    plano_escolhido: planoSelecionado,
-                    valor_plano: valorPlanoSelecionado, 
-                    data_pagamento_plano: dataExpiracao.toISOString(),
-                    desconto_plano: 0,
-                    isento: false,
-                    cupom_usado: cupomValidado 
-                });
-
-                // 5. Envia e-mail de verificação
-                await sendEmailVerification(user);
-                await signOut(auth);
-
-                // 6. MENSAGEM DE SUCESSO REFORÇADA (CONTRA SPAM)
-                showToast("Sucesso! Verifique seu e-mail (incluindo o SPAM).", "success");
+                showToast(`Matrícula de ${nome} concluída!`, "success");
                 
-                // Substitui o formulário por um aviso visual impossível de ignorar
-                document.getElementById('form-cadastro').innerHTML = `
-                    <div class="py-10 px-4 text-center space-y-6 animate-in fade-in zoom-in duration-500">
-                        <div class="w-20 h-20 bg-emerald-500/20 text-emerald-500 rounded-full flex items-center justify-center text-4xl mx-auto shadow-lg shadow-emerald-500/10">
-                            ✅
-                        </div>
-                        <div>
-                            <h3 class="text-2xl font-black text-white uppercase tracking-tight">Cadastro Concluído!</h3>
-                            <p class="text-slate-300 font-medium mt-2">Enviamos um link de ativação para:</p>
-                            <p class="text-cyan-400 font-bold text-lg">${email}</p>
-                        </div>
-
-                        <div class="bg-amber-500/10 border border-amber-500/30 p-5 rounded-2xl space-y-3">
-                            <h4 class="text-amber-500 font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2">
-                                ⚠️ Atenção Mestre
-                            </h4>
-                            <p class="text-amber-200/80 text-xs leading-relaxed">
-                                O e-mail de ativação costuma cair na pasta de <strong>SPAM ou LIXO ELETRÔNICO</strong>. Verifique estas pastas agora mesmo para liberar o seu acesso.
-                            </p>
-                        </div>
-
-                        <div class="pt-6">
-                            <a href="login.html" class="inline-block w-full bg-slate-800 hover:bg-slate-700 text-white font-black py-4 rounded-xl uppercase tracking-widest text-xs transition-all border border-slate-700">
-                                Ir para a tela de Login
-                            </a>
+                // Exibe a tela de sucesso
+                document.getElementById('container-principal').innerHTML = `
+                    <div class="bg-emerald-50 border border-emerald-200 p-10 rounded-3xl text-center mt-10 shadow-lg">
+                        <span class="text-6xl mb-4 block">✅</span>
+                        <h2 class="text-2xl font-black text-emerald-800 uppercase">Matrícula Concluída!</h2>
+                        <p class="text-emerald-600 font-medium mt-2">O atleta ${nome} foi adicionado à equipe.</p>
+                        <p class="text-xs text-emerald-500 font-bold mt-4 mb-8 text-lg">Matrícula Gerada: ${novaMatriculaStr}</p>
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                            <button onclick="window.location.reload()" class="px-6 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-black uppercase tracking-widest rounded-xl text-xs transition-colors shadow-sm">Nova Matrícula</button>
+                            <a href="dashboard.html" class="px-6 py-4 bg-slate-800 hover:bg-slate-700 text-white font-black uppercase tracking-widest rounded-xl text-xs transition-colors shadow-sm">Voltar ao Painel</a>
                         </div>
                     </div>
                 `;
 
             } catch (error) {
-                console.error("Erro no cadastro:", error);
-                let msgErro = "Ocorreu um erro ao criar a conta.";
-                if (error.code === 'auth/email-already-in-use') msgErro = "Este e-mail já está cadastrado!";
-                else if (error.code === 'auth/weak-password') msgErro = "Senha muito fraca!";
-                showToast(msgErro, "error");
-                btn.innerHTML = btnOriginal;
+                console.error(error);
+                showToast("Ocorreu um erro ao salvar o cadastro.", "error");
+                btn.innerHTML = textoBotaoOrig;
                 btn.disabled = false;
-                btn.classList.remove('opacity-70', 'cursor-not-allowed');
             }
-        });
+        }
     </script>
 </body>
 </html>

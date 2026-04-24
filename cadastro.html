@@ -34,21 +34,22 @@
         <div class="max-w-3xl mx-auto" id="container-principal">
             
             <div class="flex justify-center mb-8 mt-4 min-h-[5rem]">
-                <img id="logo-equipe" src="" alt="Logo da Equipe" class="h-20 md:h-28 w-auto object-contain drop-shadow-sm hidden">
-                <div id="fallback-logo" class="w-24 h-24 rounded-full bg-slate-800 text-white flex items-center justify-center text-4xl font-black hidden shadow-md"></div>
+                <div class="bg-white/60 backdrop-blur-md p-4 md:p-6 rounded-3xl shadow-sm border border-white/50 flex items-center justify-center min-w-[120px]">
+                    <img id="logo-equipe" src="" alt="Logo da Equipe" class="h-20 md:h-24 w-auto object-contain drop-shadow-sm hidden">
+                    <div id="fallback-logo" class="w-20 h-20 rounded-full bg-slate-800 text-white flex items-center justify-center text-4xl font-black hidden shadow-md"></div>
+                </div>
             </div>
 
-            <div class="mb-8 text-center">
-                <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Ficha de Matrícula</h2>
-                <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Preencha os dados oficiais para ingresso na equipe.</p>
+            <div class="mb-8 text-center" id="cabecalho-form">
+                <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Carregando formulário...</h2>
+                <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Aguarde um instante.</p>
             </div>
 
-            <div class="space-y-6">
-                
+            <div id="form-aluno" class="space-y-6 hidden">
                 <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
                     <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
                         <span class="text-xl">🥋</span>
-                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Dados do Atleta</h3>
+                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Dados Pessoais</h3>
                     </div>
                     
                     <div class="flex flex-col items-center justify-center mb-8 pb-6 border-b border-slate-50">
@@ -61,13 +62,13 @@
                             </div>
                         </div>
                         <input type="file" id="cad-foto" accept="image/*" class="hidden" onchange="mostrarPreviewFoto(event)">
-                        <p class="text-[9px] text-slate-400 mt-2 font-medium">Esta foto será utilizada na carteirinha oficial da equipe.</p>
+                        <p class="text-[9px] text-slate-400 mt-2 font-medium">Sua foto da carteirinha oficial da equipe.</p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div class="md:col-span-2">
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Nome Completo *</label>
-                            <input type="text" id="cad-nome" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all font-bold text-slate-700 uppercase" placeholder="Digite o nome completo...">
+                            <input type="text" id="cad-nome" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all font-bold text-slate-700 uppercase" placeholder="Digite seu nome completo...">
                         </div>
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">CPF *</label>
@@ -121,7 +122,7 @@
                 <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
                     <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
                         <span class="text-xl">📍</span>
-                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Contato e Endereço</h3>
+                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Contato e Acesso</h3>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -130,36 +131,87 @@
                             <input type="text" id="cad-tel" maxlength="15" oninput="mascaraTelefone(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="(00) 00000-0000">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">E-mail</label>
-                            <input type="email" id="cad-email" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="email@exemplo.com">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">E-mail de Acesso *</label>
+                            <input type="email" id="cad-email" required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="email@exemplo.com">
                         </div>
-                        <div class="grid grid-cols-3 gap-3 md:col-span-2">
+
+                        <div class="md:col-span-2 bg-cyan-50/50 p-4 sm:p-5 rounded-2xl border border-cyan-100 shadow-sm mb-2 mt-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="md:col-span-2">
+                                <p class="text-[10px] font-black text-cyan-600 uppercase tracking-widest border-b border-cyan-200 pb-2 mb-2">Credenciais do Portal do Aluno</p>
+                                <p class="text-[9px] sm:text-[10px] text-slate-500 font-medium mb-2">* Você usará o seu e-mail e esta senha para acessar a sua carteirinha digital no celular.</p>
+                            </div>
+                            <div class="relative">
+                                <label class="block text-[10px] font-black text-cyan-600 uppercase mb-1.5">Criar Senha *</label>
+                                <input type="password" id="cad-senha-portal" required class="w-full p-3.5 bg-white border border-cyan-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-cyan-800 pr-12" placeholder="Mínimo 6 caracteres">
+                                <button type="button" onclick="toggleSenha('cad-senha-portal', this)" class="absolute bottom-3.5 right-4 text-cyan-600 hover:text-cyan-800 transition-colors outline-none focus:outline-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>
+                                </button>
+                            </div>
+                            <div class="relative">
+                                <label class="block text-[10px] font-black text-cyan-600 uppercase mb-1.5">Confirmar Senha *</label>
+                                <input type="password" id="cad-senha-portal-confirma" required class="w-full p-3.5 bg-white border border-cyan-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-cyan-800" placeholder="Repita a senha">
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-2 border-t border-slate-100 pt-4 mt-2">
+                            <h4 class="text-xs font-black text-slate-700 mb-4 uppercase tracking-widest">Endereço</h4>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:col-span-2">
                             <div class="col-span-1">
                                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">CEP</label>
                                 <input type="text" id="cad-cep" maxlength="9" onblur="buscarCEP(this.value)" oninput="mascaraCEP(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="00000-000">
                             </div>
-                            <div class="col-span-2">
-                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Endereço Completo</label>
+                            <div class="col-span-1 md:col-span-2">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Endereço Completo (Rua, Av.)</label>
                                 <input type="text" id="cad-end" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="Rua, Avenida...">
                             </div>
                         </div>
-                        <div class="grid grid-cols-3 gap-3 md:col-span-2">
+
+                        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 md:col-span-2">
                             <div class="col-span-1">
                                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Número</label>
                                 <input type="text" id="cad-num" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700">
                             </div>
-                            <div class="col-span-2">
+                            <div class="col-span-1 md:col-span-2">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Complemento</label>
+                                <input type="text" id="cad-comp" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700" placeholder="Apto, Sala...">
+                            </div>
+                            <div class="col-span-2 md:col-span-2">
                                 <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Bairro</label>
                                 <input type="text" id="cad-bairro" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700">
                             </div>
                         </div>
+
+                        <div class="grid grid-cols-3 gap-3 md:col-span-2">
+                            <div class="col-span-2">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Cidade</label>
+                                <input type="text" id="cad-cidade" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-cyan-500 transition-all font-bold text-slate-700">
+                            </div>
+                            <div class="col-span-1">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">UF</label>
+                                <select id="cad-uf" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-cyan-500 outline-none transition-all cursor-pointer appearance-none">
+                                    <option value="" disabled selected>UF</option>
+                                    <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option>
+                                    <option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option>
+                                    <option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option>
+                                    <option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option>
+                                    <option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option>
+                                    <option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option>
+                                    <option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option>
+                                    <option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
+                                    <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+                                </select>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
                 <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
                     <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
                         <span class="text-xl">👪</span>
-                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Responsável Legal <span class="text-[10px] text-slate-400 normal-case">(Apenas para menores de idade)</span></h3>
+                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Responsável Legal <span class="text-[10px] text-slate-400 normal-case">(Apenas para menores)</span></h3>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -177,66 +229,183 @@
                 <div class="bg-amber-50 rounded-3xl shadow-sm border border-amber-200 p-6 md:p-8 space-y-6">
                     <div class="flex items-center gap-2 border-b border-amber-200/50 pb-4">
                         <span class="text-xl">⚖️</span>
-                        <h3 class="font-black text-amber-900 uppercase tracking-widest text-sm">Autorização do uso da imagem</h3>
+                        <h3 class="font-black text-amber-900 uppercase tracking-widest text-sm">Autorização de Imagem</h3>
                     </div>
                     
                     <div class="space-y-4">
-                        <p class="text-sm text-amber-900">
-                            De acordo com a Lei de Garantia e Proteção de dados <a href="https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2019/lei/L13853.htm" target="_blank" class="text-cyan-600 underline font-bold hover:text-cyan-700">(Lei nº 13.853, de 2019)</a>. Assinale as opções a seguir.
-                        </p>
-                        
-                        <p class="text-sm font-bold text-amber-900">Autorizo a utilização de imagens deste aluno(a) com a finalidade de:</p>
+                        <p class="text-sm text-amber-900">De acordo com a Lei Geral de Proteção de Dados (LGPD). Autorizo a utilização de minhas imagens com a finalidade de:</p>
                         
                         <div class="space-y-4 bg-white p-6 rounded-xl border border-amber-100 shadow-sm">
                             <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
-                                <input type="checkbox" id="cad-lgpd-redes" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500 cursor-pointer"> 
-                                <span>Publicações em redes sociais oficiais da Equipe / Projeto</span>
+                                <input type="checkbox" id="cad-lgpd-redes" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500"> 
+                                <span>Redes sociais da Equipe</span>
                             </label>
                             <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
-                                <input type="checkbox" id="cad-lgpd-site" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500 cursor-pointer"> 
-                                <span>Divulgação em site institucional</span>
+                                <input type="checkbox" id="cad-lgpd-site" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500"> 
+                                <span>Site institucional</span>
                             </label>
                             <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
-                                <input type="checkbox" id="cad-lgpd-promo" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500 cursor-pointer"> 
-                                <span>Materiais informativos e promocionais</span>
+                                <input type="checkbox" id="cad-lgpd-promo" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500"> 
+                                <span>Materiais promocionais</span>
                             </label>
                             <label class="flex items-center space-x-3 text-sm text-slate-700 cursor-pointer">
-                                <input type="checkbox" id="cad-lgpd-relatorio" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500 cursor-pointer"> 
-                                <span>Relatórios e prestação de contas</span>
+                                <input type="checkbox" id="cad-lgpd-relatorio" class="w-5 h-5 rounded text-amber-600 border-slate-300 focus:ring-amber-500"> 
+                                <span>Relatórios desportivos</span>
                             </label>
                         </div>
                     </div>
 
                     <div class="bg-white p-6 rounded-xl border border-amber-100 shadow-sm space-y-4 mt-6">
-                        <h4 class="font-bold text-slate-800 text-lg">Declaração de proteção de dados</h4>
-                        <p class="text-sm text-slate-700">A equipe declara que:</p>
-                        <ul class="list-disc pl-5 text-sm text-slate-700 space-y-2">
-                            <li>Não divulgará dados pessoais do(a) aluno(a) (como CPF, endereço, telefone ou informações sensíveis).</li>
-                            <li>Utilizará apenas nome e imagem, quando necessário.</li>
-                            <li>Não comercializará as imagens.</li>
-                            <li>Adotará medidas de segurança para proteção das informações coletadas.</li>
-                        </ul>
-                        <p class="text-sm text-slate-500 pt-4 font-bold italic">Ass: Diretoria da Equipe</p>
-                    </div>
-
-                    <div class="bg-white p-6 rounded-xl border border-amber-100 shadow-sm space-y-4 mt-6">
-                        <p class="text-sm text-slate-700">Declaro que li e estou ciente das informações acima, autorizando o uso da imagem do(a) aluno(a) conforme descrito. <span class="text-red-500 font-bold">*</span></p>
+                        <p class="text-sm text-slate-700">Declaro que li e concordo com os termos de matrícula. <span class="text-red-500 font-bold">*</span></p>
                         <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" id="cad-lgpd-termos" class="w-6 h-6 rounded text-amber-600 border-slate-300 focus:ring-amber-500 cursor-pointer">
+                            <input type="checkbox" id="cad-lgpd-termos" class="w-6 h-6 rounded text-amber-600 border-slate-300 focus:ring-amber-500">
                             <span class="text-sm font-black text-slate-800 uppercase tracking-widest">Concordo</span>
                         </label>
                     </div>
                 </div>
 
                 <div class="pt-6 pb-8">
-                    <button onclick="salvarMatricula()" id="btn-salvar-matricula" class="w-full bg-[#10B981] hover:bg-emerald-600 text-white font-black py-5 rounded-2xl shadow-lg transition-transform transform hover:-translate-y-1 uppercase tracking-widest text-lg flex items-center justify-center">
+                    <button onclick="salvarMatricula()" id="btn-salvar" class="w-full bg-[#10B981] hover:bg-emerald-600 text-white font-black py-5 rounded-2xl shadow-lg transition-transform transform hover:-translate-y-1 uppercase tracking-widest text-lg flex items-center justify-center">
                         <span class="mr-2">✅</span> FINALIZAR MATRÍCULA
                     </button>
                 </div>
-
             </div>
-        </div>
 
+            <div id="form-prof" class="space-y-6 hidden">
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
+                    <div class="flex items-center gap-2 mb-6 border-b border-slate-100 pb-4">
+                        <span class="text-xl">👥</span>
+                        <h3 class="font-black text-slate-800 uppercase tracking-widest text-sm">Registro de Co-Administrador(a)</h3>
+                    </div>
+                    
+                    <div class="space-y-5">
+                        <p class="text-sm text-slate-500 font-medium leading-relaxed">Crie o seu acesso e preencha os seus dados para entrar no sistema da equipe.</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="md:col-span-2">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Nome Completo *</label>
+                                <input type="text" id="prof-nome" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700 uppercase" placeholder="Digite seu nome...">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">CPF *</label>
+                                <input type="text" id="prof-cpf" maxlength="14" oninput="mascaraCPF(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700" placeholder="000.000.000-00">
+                            </div>
+
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">WhatsApp / Telefone *</label>
+                                <input type="text" id="prof-tel" maxlength="15" oninput="mascaraTelefone(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700" placeholder="(00) 00000-0000">
+                            </div>
+
+                            <div class="md:col-span-2 border-t border-slate-100 pt-4 mt-2">
+                                <h4 class="text-xs font-black text-slate-700 mb-2 uppercase tracking-widest">Endereço Residencial</h4>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:col-span-2">
+                                <div class="col-span-1">
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">CEP</label>
+                                    <input type="text" id="prof-cep" maxlength="9" onblur="buscarCEPProf(this.value)" oninput="mascaraCEP(this)" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700" placeholder="00000-000">
+                                </div>
+                                <div class="col-span-1 md:col-span-2">
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Endereço Completo (Rua, Av.)</label>
+                                    <input type="text" id="prof-end" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700" placeholder="Rua, Avenida...">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 md:col-span-2">
+                                <div class="col-span-1">
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Número</label>
+                                    <input type="text" id="prof-num" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700">
+                                </div>
+                                <div class="col-span-1 md:col-span-2">
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Complemento</label>
+                                    <input type="text" id="prof-comp" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700" placeholder="Apto, Sala...">
+                                </div>
+                                <div class="col-span-2 md:col-span-2">
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Bairro</label>
+                                    <input type="text" id="prof-bairro" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-3 md:col-span-2">
+                                <div class="col-span-2">
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Cidade</label>
+                                    <input type="text" id="prof-cidade" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700">
+                                </div>
+                                <div class="col-span-1">
+                                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">UF</label>
+                                    <select id="prof-uf" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 focus:border-indigo-500 outline-none transition-all cursor-pointer appearance-none">
+                                        <option value="" disabled selected>UF</option>
+                                        <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option>
+                                        <option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option>
+                                        <option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option>
+                                        <option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option>
+                                        <option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option>
+                                        <option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option>
+                                        <option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option>
+                                        <option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
+                                        <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="md:col-span-2 border-t border-slate-100 pt-4 mt-2">
+                                <h4 class="text-xs font-black text-slate-700 mb-2 uppercase tracking-widest">Acesso ao Sistema</h4>
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">E-mail Profissional *</label>
+                                <input type="email" id="prof-email" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700" placeholder="email@exemplo.com">
+                            </div>
+
+                            <div class="relative">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Criar Senha *</label>
+                                <input type="password" id="prof-senha" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700 pr-12" placeholder="Mínimo 8 caracteres">
+                                <button type="button" onclick="toggleSenha('prof-senha', this)" class="absolute bottom-3.5 right-4 text-slate-400 hover:text-indigo-500 transition-colors outline-none focus:outline-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>
+                                </button>
+                            </div>
+                            
+                            <div class="relative">
+                                <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5">Confirmar Senha *</label>
+                                <input type="password" id="prof-senha-confirma" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all font-bold text-slate-700" placeholder="Repita a senha">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-indigo-50 rounded-3xl shadow-sm border border-indigo-200 p-6 md:p-8 space-y-6">
+                    <div class="flex items-center gap-2 border-b border-indigo-200/50 pb-4">
+                        <span class="text-xl">🔐</span>
+                        <h3 class="font-black text-indigo-900 uppercase tracking-widest text-sm">Termos e Sigilo (LGPD)</h3>
+                    </div>
+                    
+                    <div class="space-y-4 text-sm text-indigo-900">
+                        <p>Como Co-Administrador(a), você terá acesso a dados pessoais e sensíveis dos alunos da equipe.</p>
+                        <ul class="list-disc pl-5 space-y-2 font-medium">
+                            <li>Comprometo-me a manter <b>absoluto sigilo</b> sobre todas as informações cadastradas no sistema.</li>
+                            <li>Utilizarei os dados única e exclusivamente para a gestão desportiva e administrativa da equipe.</li>
+                            <li>É expressamente proibido compartilhar, vender ou utilizar as imagens e contatos dos alunos para fins não autorizados.</li>
+                            <li>Estou ciente das responsabilidades legais e sanções estabelecidas pela Lei Geral de Proteção de Dados (Lei nº 13.853/2019).</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl border border-indigo-100 shadow-sm space-y-4 mt-6">
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" id="prof-lgpd-termos" class="w-6 h-6 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500">
+                            <span class="text-sm font-black text-slate-800 uppercase tracking-widest">Li e Aceito os Termos de Sigilo <span class="text-red-500">*</span></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="pt-6 pb-8">
+                    <button onclick="salvarProfessor()" id="btn-salvar-prof" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-black py-5 rounded-2xl shadow-lg transition-transform transform hover:-translate-y-1 uppercase tracking-widest text-lg flex items-center justify-center">
+                        <span class="mr-2">🚀</span> CRIAR ACESSO
+                    </button>
+                </div>
+            </div>
+
+        </div>
     </main>
 
     <script type="module">
@@ -342,6 +511,14 @@
                 } catch(e) { console.log("Erro ao carregar logo"); }
 
                 contarAlunos(); 
+                
+                // MOSTRAMOS O FORM DE ALUNO JÁ QUE ESTAMOS LOGADOS (MODO RECEPÇÃO)
+                document.getElementById('cabecalho-form').innerHTML = `
+                    <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Ficha de Matrícula</h2>
+                    <p class="text-xs md:text-sm text-slate-500 font-medium mt-1">Preencha os dados do aluno(a) abaixo.</p>
+                `;
+                document.getElementById('form-aluno').classList.remove('hidden');
+                
             } else {
                 window.location.href = "index.html";
             }
@@ -390,7 +567,7 @@
             const proximaMatriculaNum = quantidadeAlunosAtual + 1;
             const novaMatriculaStr = anoAtual + proximaMatriculaNum.toString().padStart(4, '0');
 
-            const btn = document.getElementById('btn-salvar-matricula');
+            const btn = document.getElementById('btn-salvar');
             const textoBotaoOrig = btn.innerHTML;
             btn.innerHTML = "<span class='mr-2 text-xl'>⏳</span> A SALVAR DADOS...";
             btn.disabled = true;

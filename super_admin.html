@@ -12,13 +12,26 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fafc; }
+        
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        .custom-scroll::-webkit-scrollbar { width: 4px; }
-        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #475569; }
+        /* 🎨 SCROLLBARS MODERNAS (ESTILO MACOS) */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.4); 
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(51, 65, 85, 0.8); 
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(71, 85, 105, 1); 
+        }
         
         .status-blink { animation: blink 2s infinite; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
@@ -37,7 +50,7 @@
                 </div>
                 <div id="badge-ambiente-desktop" class="mt-2"></div>
             </div>
-            <nav class="p-4 space-y-2 flex-1 overflow-y-auto custom-scroll">
+            <nav class="p-4 space-y-2 flex-1 overflow-y-auto">
                 <button onclick="mudarAbaMaster('academias')" id="menu-academias" class="w-full flex items-center gap-3 px-4 py-3 bg-rose-500/10 text-rose-500 rounded-xl font-bold text-xs uppercase tracking-widest border border-rose-500/20 transition-all">
                     <span class="text-lg">🏢</span> Dashboard
                 </button>
@@ -119,7 +132,7 @@
                     <h3 class="text-3xl font-black text-cyan-400 mt-1" id="dash-atletas">0</h3>
                 </div>
                 <div class="bg-slate-900 p-5 rounded-2xl border border-rose-900/30 shadow-xl">
-                    <p class="text-[9px] font-black text-rose-500 uppercase tracking-widest">Risco de Churn (Inativas)</p>
+                    <p class="text-[9px] font-black text-rose-500 uppercase tracking-widest">Sem Alunos (Inativas)</p>
                     <h3 class="text-3xl font-black text-rose-500 mt-1" id="dash-inativas">0</h3>
                 </div>
                 <div class="bg-slate-900 p-5 rounded-2xl border border-amber-900/30 shadow-xl">
@@ -899,7 +912,7 @@
         }
 
         // ==========================================
-        // 🎧 HELPDESK (SUPORTE)
+        // 🎧 HELPDESK (SUPORTE) E RESGATE
         // ==========================================
         window.carregarChamados = async function() {
             const tabela = document.getElementById('tabela-suporte');
@@ -1000,6 +1013,35 @@
                 showToast("Erro ao atualizar chamado.", "error");
             }
         }
+
+        // Função de Resgate (Liberar Login do Professor)
+        window.executarResgateAcesso = async function() {
+            const email = document.getElementById('email-resgate').value.trim();
+            const btn = document.getElementById('btn-resgate');
+
+            if (!email) return showToast("Digite o e-mail para liberar.", "error");
+
+            btn.disabled = true;
+            const txtOriginal = btn.innerHTML;
+            btn.innerHTML = "⏳ Liberando...";
+
+            try {
+                const forcarVerificacao = httpsCallable(functions, 'forcarVerificacaoEmailAdmin');
+                const res = await forcarVerificacao({ email: email, uid: masterUid });
+
+                if (res.data.success) {
+                    showToast(res.data.message, "success");
+                    document.getElementById('email-resgate').value = "";
+                } else {
+                    showToast("Erro: " + res.data.error, "error");
+                }
+            } catch (e) {
+                showToast("Falha na comunicação com o servidor.", "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = txtOriginal;
+            }
+        };
 
         // ==========================================
         // 📢 GESTÃO DO MURAL DE AVISOS
@@ -1264,7 +1306,7 @@
                 let saudeHTML = "";
                 if(eq.total_alunos > 10) saudeHTML = `<span class="text-emerald-400 font-bold text-xs">💪 Saudável (${eq.total_alunos})</span>`;
                 else if(eq.total_alunos > 0) saudeHTML = `<span class="text-cyan-400 font-bold text-xs">🌱 Ativa (${eq.total_alunos})</span>`;
-                else saudeHTML = `<span class="text-rose-500 font-black text-xs status-blink">⚠️ Risco Churn (0)</span>`;
+                else saudeHTML = `<span class="text-rose-500 font-black text-xs status-blink">⚠️ Sem Alunos (0)</span>`;
 
                 // Último Acesso
                 let dataAcessoBadge = `<span class="text-slate-500 font-bold text-[9px] uppercase tracking-widest">Sem Registo</span>`;
@@ -1761,35 +1803,6 @@
             try { await deleteDoc(doc(db, "cupons", codigo)); showToast("Excluído.", "success"); carregarCupons(); } 
             catch(e) { showToast("Erro.", "error"); }
         }
-
-        // Função para executar o resgate de e-mail no Firebase Auth
-        window.executarResgateAcesso = async function() {
-            const email = document.getElementById('email-resgate').value.trim();
-            const btn = document.getElementById('btn-resgate');
-
-            if (!email) return showToast("Digite o e-mail para liberar.", "error");
-
-            btn.disabled = true;
-            const txtOriginal = btn.innerHTML;
-            btn.innerHTML = "⏳ Liberando...";
-
-            try {
-                const forcarVerificacao = httpsCallable(functions, 'forcarVerificacaoEmailAdmin');
-                const res = await forcarVerificacao({ email: email, uid: masterUid });
-
-                if (res.data.success) {
-                    showToast(res.data.message, "success");
-                    document.getElementById('email-resgate').value = "";
-                } else {
-                    showToast("Erro: " + res.data.error, "error");
-                }
-            } catch (e) {
-                showToast("Falha na comunicação com o servidor.", "error");
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = txtOriginal;
-            }
-        };
     </script>
 </body>
 </html>

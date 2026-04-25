@@ -1560,6 +1560,15 @@
             const arquivoLogo = document.getElementById('config-logo').files[0];
 
             if (!novoNome) return showToast("O nome da equipe não pode ficar em branco.", "error");
+            
+            // 🕵️ DETETIVE DE TAMANHO DE IMAGEM
+            if (arquivoLogo) {
+                const tamanhoEmMB = arquivoLogo.size / (1024 * 1024);
+                if (tamanhoEmMB > 2) {
+                    return showToast(`A imagem é muito grande (${tamanhoEmMB.toFixed(1)}MB). O limite é 2MB!`, "error");
+                }
+            }
+
             btn.disabled = true; btn.innerHTML = "Processando...";
 
             try {
@@ -1580,34 +1589,49 @@
                 };
                 
                 if (arquivoLogo) {
+                    // Tenta apagar a logo antiga se existir
                     if (logoEquipeAnterior) {
                         try {
                             const refLogoAntiga = ref(storage, logoEquipeAnterior);
                             await deleteObject(refLogoAntiga);
-                            console.log("Logo antiga apagada do Storage.");
                         } catch (errorDelete) {
-                            console.log("Aviso: Não foi possível apagar a logo antiga (pode já ter sido apagada ou URL externa).");
+                            console.log("Aviso: Logo antiga não encontrada para deletar.");
                         }
                     }
 
                     const timestamp = new Date().getTime();
-                    const caminhoRef = ref(storage, `equipes_logos/${uid}_${timestamp}_${arquivoLogo.name}`);
+                    // Removemos caracteres estranhos do nome do arquivo para evitar bugs no link
+                    const nomeLimpo = arquivoLogo.name.replace(/[^a-zA-Z0-9.]/g, "_");
+                    const caminhoRef = ref(storage, `equipes_logos/${uid}_${timestamp}_${nomeLimpo}`);
                     
-                    // 🔥 AQUI ESTÁ A CORREÇÃO: Enviando o contentType para a regra do Storage aceitar!
                     const metadata = { contentType: arquivoLogo.type || 'image/jpeg' };
+                    
+                    console.log("Iniciando upload para o Storage...");
                     await uploadBytes(caminhoRef, arquivoLogo, metadata);
+                    console.log("Upload concluído! Pegando URL...");
                     
                     updates.url_logo = await getDownloadURL(caminhoRef);
                 }
                 
+                console.log("Salvando dados no Firestore...");
                 await updateDoc(doc(db, "equipes", uid), updates);
                 dadosEquipe = { ...dadosEquipe, ...updates };
 
                 showToast("Equipe atualizada!", "success");
                 setTimeout(() => window.location.reload(), 1500);
+                
             } catch (error) {
-                console.error(error);
-                showToast("Erro ao atualizar.", "error");
+                console.error("ERRO COMPLETO:", error);
+                
+                // 🚨 MOSTRA O ERRO EXATO NA TELA
+                if (error.code === 'storage/unauthorized') {
+                    showToast("Erro: Sem permissão no Storage (Firebase bloqueou).", "error");
+                } else if (error.code === 'permission-denied') {
+                    showToast("Erro: Sem permissão no Banco de Dados (Firestore).", "error");
+                } else {
+                    showToast("Erro: " + error.message, "error");
+                }
+                
                 btn.disabled = false; btn.innerHTML = "Salvar Dados";
             }
         };

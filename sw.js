@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bjj-manager-cache-v2'; // Atualizado para v2 para forçar os celulares a baixarem as novidades
+const CACHE_NAME = 'bjj-manager-cache-v2'; // Atualizado para v2 para forçar limpeza do cache antigo
 const urlsToCache = [
   '/',
   '/login.html',
@@ -29,7 +29,7 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('activate', event => {
-  // Este passo garante que caches antigos (ex: v1) sejam apagados quando o v2 entrar
+  // Este passo garante que caches antigos sejam apagados quando a nova versão entrar
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
@@ -44,13 +44,22 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
+  // Ignora requisições de outras origens (como APIs do Firebase)
+  if (!event.request.url.startsWith(self.location.origin)) return;
+
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        if (response) {
-          return response; // Retorna a versão rápida salva no celular
-        }
-        return fetch(event.request);
+    // ESTRATÉGIA NETWORK-FIRST (Internet primeiro, fallback para o Cache)
+    fetch(event.request)
+      .then(networkResponse => {
+        // Se tem internet e a página carregou, guarda a versão mais fresca no cache!
+        return caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, networkResponse.clone());
+          return networkResponse;
+        });
+      })
+      .catch(() => {
+        // Se a internet caiu (offline), salva o dia entregando o que está no cache!
+        return caches.match(event.request);
       })
   );
 });

@@ -1,7 +1,7 @@
 {
+  "id": "bjj-manager-admin",
   "name": "BJJ Manager",
-  "short_name": "BJJ Maneger",
-  "description": "Acesso exclusivo aos treinos, carteirinha digital e mensalidades.",
+  "short_name": "BJJ Manager",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#0F172A",

@@ -517,7 +517,8 @@
 
         window.verificarAcesso = function(idRecurso) {
             const isImpersonating = sessionStorage.getItem('admin_impersonate') !== null;
-            if (isImpersonating || (dadosEquipe && (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true"))) {
+            // 🔥 CORREÇÃO: Adicionado window.isSuperAdmin para liberar geral!
+            if (isImpersonating || window.isSuperAdmin || (dadosEquipe && (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true"))) {
                 return true; 
             }
 
@@ -603,7 +604,6 @@
                 document.getElementById('config-uf').value = r.uf || "";
             }
         };
-
 
         async function verificarAvisoGlobal() {
             try {
@@ -876,7 +876,7 @@
                 const isImpersonating = sessionStorage.getItem('admin_impersonate') !== null;
                 const isIsento = dadosEquipe && (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true");
                 
-                if (!isImpersonating && !isIsento) {
+                if (!isImpersonating && !isIsento && !window.isSuperAdmin) {
                     const statusAtual = (dadosEquipe && dadosEquipe.status_plano) ? dadosEquipe.status_plano : 'TESTE';
                     const planosBasicos = ['TESTE', 'BASICO', 'BÁSICO'];
                     
@@ -1010,7 +1010,10 @@
                 let isSuper = false;
                 try {
                     const superSnap = await getDoc(doc(db, "super_admins", user.uid));
-                    if (superSnap.exists()) isSuper = true;
+                    if (superSnap.exists()) {
+                        isSuper = true;
+                        window.isSuperAdmin = true; // 🔥 Cria a chave mestre global
+                    }
                 } catch(e) { isSuper = false; }
 
                 try {
@@ -1047,9 +1050,9 @@
                         uid = user.uid;
                         const docMestre = await getDoc(doc(db, "equipes", uid));
                         if (!docMestre.exists()) {
-                            const colabSnap = await getDoc(doc(db, "colaboradores", uid));
-                            if(colabSnap.exists()) {
-                                uid = colabSnap.data().equipe_id;
+                            const colabSnap2 = await getDoc(doc(db, "colaboradores", uid));
+                            if(colabSnap2.exists()) {
+                                uid = colabSnap2.data().equipe_id;
                             }
                         }
                     }
@@ -1092,7 +1095,8 @@
                         const isTrialVencido = (dadosEquipe.status_plano === 'TESTE') && (agora > dataExpiracao);
                         const isIsento = (dadosEquipe.isento === true || String(dadosEquipe.isento) === "true");
 
-                        if ((dadosEquipe.status_plano === 'BLOQUEADO' || isTrialVencido) && !isImpersonating && !isIsento) {
+                        // 🔥 CORREÇÃO: Adicionado !window.isSuperAdmin para nunca bloquear o Mestre!
+                        if ((dadosEquipe.status_plano === 'BLOQUEADO' || isTrialVencido) && !isImpersonating && !isIsento && !window.isSuperAdmin) {
                             document.getElementById('interface-sistema').classList.add('hidden');
                             
                             const telaBloqueio = document.getElementById('tela-bloqueio');
@@ -1136,7 +1140,7 @@
                         }
 
                         // PASSE LIVRE
-                        if (isImpersonating || String(dadosEquipe.isento) === "true") {
+                        if (isImpersonating || window.isSuperAdmin || String(dadosEquipe.isento) === "true") {
                             window.funcionalidadesEquipe = [
                                 "✓ Automação Asaas (PIX/Cartão)", "✓ Vitrine Virtual (Loja Online)", 
                                 "✓ Emissão de Certificados Profissionais", "✓ Gestão de Turmas e Frequência",
@@ -1588,7 +1592,11 @@
 
                     const timestamp = new Date().getTime();
                     const caminhoRef = ref(storage, `equipes_logos/${uid}_${timestamp}_${arquivoLogo.name}`);
-                    await uploadBytes(caminhoRef, arquivoLogo);
+                    
+                    // 🔥 AQUI ESTÁ A CORREÇÃO: Enviando o contentType para a regra do Storage aceitar!
+                    const metadata = { contentType: arquivoLogo.type || 'image/jpeg' };
+                    await uploadBytes(caminhoRef, arquivoLogo, metadata);
+                    
                     updates.url_logo = await getDownloadURL(caminhoRef);
                 }
                 

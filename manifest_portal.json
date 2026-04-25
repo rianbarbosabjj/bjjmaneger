@@ -1,6 +1,6 @@
 {
   "name": "BJJ Manager - Portal do Aluno",
-  "short_name": "BJJ Portal",
+  "short_name": "BJJ Manager - Portal do Aluno",
   "description": "Acesso exclusivo aos treinos, carteirinha digital e mensalidades.",
   "start_url": "portal_aluno.html",
   "display": "standalone",

@@ -1,0 +1,22 @@
+{
+  "id": "bjj-manager-master",
+  "name": "SaaS Master | BJJ Manager",
+  "short_name": "SaaS Master",
+  "description": "Painel de controle central para gestão do BJJ Manager.",
+  "start_url": "/super_admin.html",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#020617",
+  "icons": [
+    {
+      "src": "logo_bjj_maneger.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "logo_bjj_maneger.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

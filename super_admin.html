@@ -37,13 +37,19 @@
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
     </style>
 </head>
-<body class="h-screen flex overflow-hidden selection:bg-rose-500 selection:text-white">
+<body class="h-screen flex overflow-hidden selection:bg-rose-500 selection:text-white relative">
 
     <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
-    <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between hidden md:flex shrink-0 relative z-20 shadow-2xl">
+    <div id="overlay-menu" onclick="toggleMenuMaster()" class="fixed inset-0 bg-black/60 z-[50] hidden md:hidden backdrop-blur-sm transition-opacity"></div>
+
+    <aside id="sidebar-master" class="fixed md:static inset-y-0 left-0 w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out shrink-0 z-[60] shadow-2xl">
         <div class="flex-1 flex flex-col overflow-hidden">
-            <div class="p-6 border-b border-slate-800 flex flex-col items-center justify-center shrink-0">
+            <div class="p-6 border-b border-slate-800 flex flex-col items-center justify-center shrink-0 relative">
+                <button onclick="toggleMenuMaster()" class="md:hidden absolute top-4 right-4 text-slate-500 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+                
                 <img src="logo_bjj_maneger.png" alt="Logo" class="h-16 w-auto mb-3 filter drop-shadow-[0_0_8px_rgba(244,63,94,0.5)]">
                 <div class="flex items-center gap-2">
                     <h1 class="text-xs font-black tracking-widest uppercase text-white">SaaS Master</h1>
@@ -95,15 +101,19 @@
     </aside>
 
     <main class="flex-1 flex flex-col h-full relative overflow-y-auto hide-scrollbar">
-        <header class="md:hidden bg-slate-900 border-b border-slate-800 p-4 flex justify-between items-center sticky top-0 z-30">
-            <div class="flex items-center gap-2">
-                <span class="text-xl">👑</span>
-                <div class="flex flex-col">
-                    <h1 class="text-xs font-black tracking-widest uppercase text-white">SaaS Master</h1>
-                    <div id="badge-ambiente-mobile" class="mt-1"></div>
+        <header class="md:hidden bg-slate-900 border-b border-slate-800 p-4 flex justify-between items-center sticky top-0 z-30 shadow-md">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleMenuMaster()" class="text-slate-400 hover:text-white p-1 focus:outline-none transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-7 h-7"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
+                </button>
+                <div class="flex items-center gap-2">
+                    <span class="text-xl leading-none">👑</span>
+                    <div class="flex flex-col">
+                        <h1 class="text-xs font-black tracking-widest uppercase text-white leading-none">SaaS Master</h1>
+                        <div id="badge-ambiente-mobile" class="mt-1"></div>
+                    </div>
                 </div>
             </div>
-            <button onclick="sairDoMaster()" class="text-xs font-bold text-rose-500 uppercase tracking-widest">Sair</button>
         </header>
 
         <div id="aba-academias" class="p-6 md:p-10 max-w-7xl mx-auto w-full space-y-8 block">
@@ -680,7 +690,7 @@
                         <span class="text-2xl group-hover:scale-110 transition-transform">🥋</span>
                         <span class="text-[9px] font-black text-slate-300 uppercase tracking-widest text-center">Turmas &<br>Presença</span>
                     </button>
-                    <button onclick="entrarComo('cadastro.html')" class="p-4 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-2xl flex flex-col items-center justify-center gap-3 transition-all group shadow-sm">
+                    <button onclick="entrarComo('alunos.html')" class="p-4 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-2xl flex flex-col items-center justify-center gap-3 transition-all group shadow-sm">
                         <span class="text-2xl group-hover:scale-110 transition-transform">👥</span>
                         <span class="text-[9px] font-black text-slate-300 uppercase tracking-widest text-center">Cadastrar<br>Alunos</span>
                     </button>
@@ -1476,6 +1486,13 @@
             if(!eq) return;
             equipeAcessoId = id;
             document.getElementById('acesso-nome-equipe').innerText = (eq.nome_equipe || "Sem Nome").toUpperCase();
+            
+            // Abre o modal removendo o "hidden" e também lidando com o overlay menu do mobile se estiver aberto
+            const overlay = document.getElementById('overlay-menu');
+            if(overlay && !overlay.classList.contains('hidden')) {
+                toggleMenuMaster(); 
+            }
+            
             document.getElementById('modal-acesso-sistema').classList.replace('hidden', 'flex');
         }
 
@@ -1621,6 +1638,22 @@
         }
 
         // ==========================================
+        // MENU MOBILE TOGGLE
+        // ==========================================
+        window.toggleMenuMaster = function() {
+            const sidebar = document.getElementById('sidebar-master');
+            const overlay = document.getElementById('overlay-menu');
+            
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // ==========================================
         // NAVEGAÇÃO
         // ==========================================
         window.mudarAbaMaster = function(abaID) {
@@ -1644,6 +1677,14 @@
             if(abaID === 'academias') renderizarGraficos();
             if(abaID === 'suporte') carregarChamados(); 
             if(abaID === 'auditoria') carregarAuditoria();
+
+            // Fecha o menu mobile se estiver aberto
+            if (window.innerWidth < 768) {
+                const sidebar = document.getElementById('sidebar-master');
+                if(sidebar && !sidebar.classList.contains('-translate-x-full')) {
+                    toggleMenuMaster();
+                }
+            }
         }
 
         window.sairDoMaster = () => signOut(auth).then(() => window.location.href = "index.html");

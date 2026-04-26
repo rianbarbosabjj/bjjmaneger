@@ -6,19 +6,36 @@ const injetarEstilosGlobais = () => {
         const style = document.createElement('style');
         style.id = 'bjj-global-styles';
         style.innerHTML = `
-            /* MODO ESCURO */
+            /* MODO ESCURO GERAL (Pula elementos com a classe .ignorar-dark) */
             html.dark body, html.dark main, html.dark #interface-sistema { background-color: #020617 !important; }
-            html.dark .bg-[#F4F7F8], html.dark .bg-[#F8FAFC] { background-color: #020617 !important; }
-            html.dark .bg-white, html.dark .card-premium { background-color: #0f172a !important; border-color: #1e293b !important; }
-            html.dark .bg-slate-50, html.dark .bg-slate-100 { background-color: #1e293b !important; border-color: #334155 !important; }
-            html.dark .text-slate-900, html.dark .text-slate-800, html.dark .text-slate-700 { color: #f8fafc !important; }
-            html.dark .text-slate-600, html.dark .text-slate-500 { color: #94a3b8 !important; }
-            html.dark .border-slate-200, html.dark .border-slate-100 { border-color: #1e293b !important; }
-            html.dark input, html.dark select, html.dark textarea { 
+            
+            html.dark .bg-[#F4F7F8]:not(.ignorar-dark):not(.ignorar-dark *), 
+            html.dark .bg-[#F8FAFC]:not(.ignorar-dark):not(.ignorar-dark *) { background-color: #020617 !important; }
+            
+            html.dark .bg-white:not(.ignorar-dark):not(.ignorar-dark *), 
+            html.dark .card-premium:not(.ignorar-dark):not(.ignorar-dark *) { background-color: #0f172a !important; border-color: #1e293b !important; }
+            
+            html.dark .bg-slate-50:not(.ignorar-dark):not(.ignorar-dark *), 
+            html.dark .bg-slate-100:not(.ignorar-dark):not(.ignorar-dark *) { background-color: #1e293b !important; border-color: #334155 !important; }
+            
+            html.dark .text-slate-900:not(.ignorar-dark):not(.ignorar-dark *), 
+            html.dark .text-slate-800:not(.ignorar-dark):not(.ignorar-dark *), 
+            html.dark .text-slate-700:not(.ignorar-dark):not(.ignorar-dark *) { color: #f8fafc !important; }
+            
+            html.dark .text-slate-600:not(.ignorar-dark):not(.ignorar-dark *), 
+            html.dark .text-slate-500:not(.ignorar-dark):not(.ignorar-dark *) { color: #94a3b8 !important; }
+            
+            html.dark .border-slate-200:not(.ignorar-dark):not(.ignorar-dark *), 
+            html.dark .border-slate-100:not(.ignorar-dark):not(.ignorar-dark *) { border-color: #1e293b !important; }
+            
+            html.dark input:not(.ignorar-dark):not(.ignorar-dark *), 
+            html.dark select:not(.ignorar-dark):not(.ignorar-dark *), 
+            html.dark textarea:not(.ignorar-dark):not(.ignorar-dark *) { 
                 background-color: #1e293b !important; 
                 color: #f8fafc !important; 
                 border-color: #334155 !important; 
             }
+            
             html.dark input::placeholder, html.dark textarea::placeholder { color: #475569 !important; }
 
             /* SCROLLBAR CUSTOMIZADA */
@@ -50,6 +67,18 @@ window.toggleDarkMode = function() {
         localStorage.setItem('bjj-theme', 'dark');
     }
 };
+
+// ==========================================
+// 🖨️ TRUQUE DA IMPRESSORA (Desliga o Dark Mode na hora de imprimir)
+// ==========================================
+window.addEventListener('beforeprint', () => {
+    document.documentElement.classList.remove('dark');
+});
+window.addEventListener('afterprint', () => {
+    if (localStorage.getItem('bjj-theme') === 'dark') {
+        document.documentElement.classList.add('dark');
+    }
+});
 
 // Lógica de Abrir/Fechar a Gaveta Mobile
 window.toggleBjjMenu = function() {

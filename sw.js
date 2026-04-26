@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bjj-manager-cache-v2'; // Atualizado para v2 para forçar limpeza do cache antigo
+const CACHE_NAME = 'bjj-manager-cache-v4';
 const urlsToCache = [
   '/',
   '/login.html',
@@ -15,8 +15,9 @@ const urlsToCache = [
   '/turmas.html',
   '/super_admin.html',
   '/logo_bjj_maneger.png',
-  '/manifest.json',        // Manifesto do App do Professor
-  '/manifest_aluno.json'   // Manifesto do App do Aluno
+  '/manifest.json',        // Manifesto do Professor
+  '/manifest_portal.json', // Manifesto do Aluno
+  '/manifest_master.json'  // Manifesto do CEO
 ];
 
 self.addEventListener('install', event => {
@@ -29,7 +30,7 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('activate', event => {
-  // Este passo garante que caches antigos sejam apagados quando a nova versão entrar
+  // Garante que versões antigas do cache (v1, v2, v3) sejam apagadas
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
@@ -44,21 +45,20 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-  // Ignora requisições de outras origens (como APIs do Firebase)
+  // Ignora pedidos para fora do domínio (ex: APIs externas)
   if (!event.request.url.startsWith(self.location.origin)) return;
 
   event.respondWith(
-    // ESTRATÉGIA NETWORK-FIRST (Internet primeiro, fallback para o Cache)
     fetch(event.request)
       .then(networkResponse => {
-        // Se tem internet e a página carregou, guarda a versão mais fresca no cache!
+        // Se houver internet, atualiza o cache e entrega a página nova
         return caches.open(CACHE_NAME).then(cache => {
           cache.put(event.request, networkResponse.clone());
           return networkResponse;
         });
       })
       .catch(() => {
-        // Se a internet caiu (offline), salva o dia entregando o que está no cache!
+        // Se estiver offline, entrega o que estiver guardado no cache
         return caches.match(event.request);
       })
   );

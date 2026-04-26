@@ -15,43 +15,56 @@ const injetarEstilosGlobais = () => {
             html.dark .bg-white:not(.ignorar-dark):not(.ignorar-dark *), 
             html.dark .card-premium:not(.ignorar-dark):not(.ignorar-dark *) { background-color: #0f172a !important; border-color: #1e293b !important; }
             
-            /* Engloba todos os tons de cinza usados em fundos (Corrige Certificados) */
+            /* Engloba tons de cinza usados em fundos (Slate, Gray, Zinc, etc) */
             html.dark .bg-slate-50:not(.ignorar-dark):not(.ignorar-dark *), 
             html.dark .bg-slate-100:not(.ignorar-dark):not(.ignorar-dark *),
             html.dark .bg-slate-200:not(.ignorar-dark):not(.ignorar-dark *),
-            html.dark .bg-slate-300:not(.ignorar-dark):not(.ignorar-dark *) { 
+            html.dark .bg-slate-300:not(.ignorar-dark):not(.ignorar-dark *),
+            html.dark .bg-gray-50:not(.ignorar-dark):not(.ignorar-dark *), 
+            html.dark .bg-gray-100:not(.ignorar-dark):not(.ignorar-dark *),
+            html.dark .bg-gray-200:not(.ignorar-dark):not(.ignorar-dark *) { 
                 background-color: #1e293b !important; 
                 border-color: #334155 !important; 
             }
             
-            /* Textos padrão */
+            /* Textos padrão (Agora cobre também Gray) */
             html.dark .text-slate-900:not(.ignorar-dark):not(.ignorar-dark *), 
             html.dark .text-slate-800:not(.ignorar-dark):not(.ignorar-dark *), 
-            html.dark .text-slate-700:not(.ignorar-dark):not(.ignorar-dark *) { color: #f8fafc !important; }
+            html.dark .text-slate-700:not(.ignorar-dark):not(.ignorar-dark *),
+            html.dark .text-gray-900:not(.ignorar-dark):not(.ignorar-dark *), 
+            html.dark .text-gray-800:not(.ignorar-dark):not(.ignorar-dark *), 
+            html.dark .text-gray-700:not(.ignorar-dark):not(.ignorar-dark *) { color: #f8fafc !important; }
             
             html.dark .text-slate-600:not(.ignorar-dark):not(.ignorar-dark *), 
-            html.dark .text-slate-500:not(.ignorar-dark):not(.ignorar-dark *) { color: #94a3b8 !important; }
+            html.dark .text-slate-500:not(.ignorar-dark):not(.ignorar-dark *),
+            html.dark .text-gray-600:not(.ignorar-dark):not(.ignorar-dark *), 
+            html.dark .text-gray-500:not(.ignorar-dark):not(.ignorar-dark *) { color: #94a3b8 !important; }
             
             html.dark .border-slate-200:not(.ignorar-dark):not(.ignorar-dark *), 
-            html.dark .border-slate-100:not(.ignorar-dark):not(.ignorar-dark *) { border-color: #1e293b !important; }
+            html.dark .border-slate-100:not(.ignorar-dark):not(.ignorar-dark *),
+            html.dark .border-gray-200:not(.ignorar-dark):not(.ignorar-dark *), 
+            html.dark .border-gray-100:not(.ignorar-dark):not(.ignorar-dark *) { border-color: #1e293b !important; }
+
+            /* 🔥 CORREÇÃO: Força as Labels a ficarem claras no modo escuro */
+            html.dark label:not(.ignorar-dark):not(.ignorar-dark *) { color: #cbd5e1 !important; }
             
+            /* 🔥 CORREÇÃO: Inputs ficam num tom mais escuro para não se misturarem com os cartões */
             html.dark input:not(.ignorar-dark):not(.ignorar-dark *), 
             html.dark select:not(.ignorar-dark):not(.ignorar-dark *), 
             html.dark textarea:not(.ignorar-dark):not(.ignorar-dark *) { 
-                background-color: #1e293b !important; 
+                background-color: #0f172a !important; 
                 color: #f8fafc !important; 
                 border-color: #334155 !important; 
             }
             
             html.dark input::placeholder, html.dark textarea::placeholder { color: #475569 !important; }
 
-            /* 🔥 FUNDOS COLORIDOS (Corrige Federações, Avisos, Financeiro, etc.) */
+            /* FUNDOS COLORIDOS */
             html.dark .bg-emerald-50:not(.ignorar-dark), html.dark .bg-green-50:not(.ignorar-dark) { background-color: rgba(6, 78, 59, 0.2) !important; border-color: rgba(6, 78, 59, 0.4) !important; }
             html.dark .bg-cyan-50:not(.ignorar-dark), html.dark .bg-blue-50:not(.ignorar-dark), html.dark .bg-indigo-50:not(.ignorar-dark) { background-color: rgba(30, 58, 138, 0.2) !important; border-color: rgba(30, 58, 138, 0.4) !important; }
             html.dark .bg-amber-50:not(.ignorar-dark), html.dark .bg-yellow-50:not(.ignorar-dark) { background-color: rgba(120, 53, 15, 0.2) !important; border-color: rgba(120, 53, 15, 0.4) !important; }
             html.dark .bg-rose-50:not(.ignorar-dark), html.dark .bg-red-50:not(.ignorar-dark) { background-color: rgba(136, 19, 55, 0.2) !important; border-color: rgba(136, 19, 55, 0.4) !important; }
 
-            /* Clareia textos coloridos escuros para combinar com o novo fundo */
             html.dark .text-emerald-800:not(.ignorar-dark), html.dark .text-emerald-900:not(.ignorar-dark) { color: #6ee7b7 !important; }
             html.dark .text-cyan-800:not(.ignorar-dark), html.dark .text-indigo-800:not(.ignorar-dark), html.dark .text-blue-800:not(.ignorar-dark) { color: #7dd3fc !important; }
             html.dark .text-amber-800:not(.ignorar-dark), html.dark .text-amber-900:not(.ignorar-dark) { color: #fcd34d !important; }
@@ -62,6 +75,8 @@ const injetarEstilosGlobais = () => {
             html.dark .hover\\:bg-slate-50:hover:not(.ignorar-dark),
             html.dark .hover\\:bg-slate-100:hover:not(.ignorar-dark),
             html.dark .hover\\:bg-slate-200:hover:not(.ignorar-dark),
+            html.dark .hover\\:bg-gray-50:hover:not(.ignorar-dark),
+            html.dark .hover\\:bg-gray-100:hover:not(.ignorar-dark),
             html.dark .hover\\:bg-white:hover:not(.ignorar-dark) {
                 background-color: #1e293b !important;
                 color: #f8fafc !important;
@@ -84,8 +99,17 @@ const injetarEstilosGlobais = () => {
     }
 };
 
-injetarEstilosGlobais();
+// 🖨️ TRUQUE DA IMPRESSORA (Desliga o Dark Mode na hora de imprimir)
+window.addEventListener('beforeprint', () => {
+    document.documentElement.classList.remove('dark');
+});
+window.addEventListener('afterprint', () => {
+    if (localStorage.getItem('bjj-theme') === 'dark') {
+        document.documentElement.classList.add('dark');
+    }
+});
 
+injetarEstilosGlobais();
 window.toggleDarkMode = function() {
     const htmlTag = document.documentElement;
     if (htmlTag.classList.contains('dark')) {

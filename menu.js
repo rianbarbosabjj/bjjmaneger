@@ -38,6 +38,17 @@ const injetarEstilosGlobais = () => {
             
             html.dark input::placeholder, html.dark textarea::placeholder { color: #475569 !important; }
 
+            /* 🔥 CAÇA-FANTASMAS GLOBAL: BLOQUEIA FUNDOS CLAROS NO HOVER DO MODO ESCURO */
+            html.dark tr:hover td { background-color: #1e293b !important; }
+            
+            html.dark .hover\\:bg-slate-50:hover:not(.ignorar-dark),
+            html.dark .hover\\:bg-slate-100:hover:not(.ignorar-dark),
+            html.dark .hover\\:bg-slate-200:hover:not(.ignorar-dark),
+            html.dark .hover\\:bg-white:hover:not(.ignorar-dark) {
+                background-color: #1e293b !important;
+                color: #f8fafc !important;
+            }
+
             /* SCROLLBAR CUSTOMIZADA */
             .custom-scroll::-webkit-scrollbar { width: 5px; }
             .custom-scroll::-webkit-scrollbar-track { background: transparent; }

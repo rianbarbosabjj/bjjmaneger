@@ -200,10 +200,10 @@ function carregarMenu() {
             </aside>
         `;
 
-        // --- BOTÃO FLUTUANTE DE MENU (Apenas Mobile) ---
+        // --- BOTÃO FLUTUANTE DE MENU (Apenas Mobile - Canto Superior Esquerdo) ---
         const btnHamburguer = `
-            <button id="bjj-hamburger-btn" onclick="toggleBjjMenu()" class="md:hidden fixed bottom-6 right-6 z-[45] bg-slate-900 text-white dark:bg-cyan-600 px-4 py-4 rounded-full shadow-[0_10px_25px_rgba(0,0,0,0.4)] border border-slate-700 dark:border-cyan-500 flex items-center justify-center hover:scale-105 active:scale-95 transition-all">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-7 h-7"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
+            <button id="bjj-hamburger-btn" onclick="toggleBjjMenu()" class="md:hidden fixed top-4 left-4 z-[45] bg-slate-900 text-white p-2.5 rounded-xl shadow-lg border border-slate-800 flex items-center justify-center hover:scale-105 active:scale-95 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
             </button>
         `;
 
@@ -214,10 +214,13 @@ function carregarMenu() {
         const oldMobile = document.querySelector('nav.md\\:hidden');
         if (oldMobile) oldMobile.remove();
 
-        // Remove o antigo painel desktop
+        // Remove o antigo painel desktop e botão hambúrguer antigo (se existir)
         if (containerPrincipal) {
             const oldMenu = containerPrincipal.querySelector('aside');
             if (oldMenu) oldMenu.remove();
+            
+            const oldBtn = document.getElementById('bjj-hamburger-btn');
+            if (oldBtn) oldBtn.remove();
             
             // Insere o novo Menu Gaveta
             containerPrincipal.insertAdjacentHTML('afterbegin', menuSidebar);
